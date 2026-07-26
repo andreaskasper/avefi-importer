@@ -1,0 +1,6 @@
+
+# AVefi Importer — worker cron (server operation example).
+# The worker consumes the jobs queue (detect -> convert -> register_pid).
+# m h  dom mon dow   command
+  */1 *  *   *   *   root  cd /var/www/avefi && ./bot -t detect  > /dev/null 2>&1
+  */1 *  *   *   *   root  cd /var/www/avefi && ./bot -t convert > /dev/null 2>&1

@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://import.av-efi.net/schema/avefi-record.schema.json",
+  "title": "AVefi Import Record",
+  "description": "Interim-Schema für einen internen AVefi-Record (Work → Manifestation → Item). Wird ersetzt, sobald das aus av-efi-schema (LinkML) generierte JSON Schema vorliegt.",
+  "type": "object",
+  "required": ["work"],
+  "properties": {
+    "work": {
+      "type": "object",
+      "required": ["title", "year", "work_type"],
+      "properties": {
+        "title":             { "type": "string", "minLength": 1 },
+        "titles_additional": { "type": "array", "items": { "type": "string" } },
+        "year":              { "type": "integer", "minimum": 1880, "maximum": 2100 },
+        "work_type":         { "type": "string", "enum": ["Spielfilm", "Dokumentarfilm", "Kurzfilm", "Animationsfilm", "Experimentalfilm", "Serie", "unbestimmt"] },
+        "country":           { "type": ["string", "null"] },
+        "genre":             { "type": ["string", "null"] },
+        "language":          { "type": ["string", "null"] },
+        "description":       { "type": ["string", "null"] },
+        "contributors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "role": { "type": ["string", "null"] },
+              "name": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "manifestations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "carrier":      { "type": ["string", "null"] },
+          "duration_min": { "type": ["integer", "null"], "minimum": 0 },
+          "date":         { "type": ["string", "null"] },
+          "note":         { "type": ["string", "null"] }
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "holding_institution": { "type": ["string", "null"] },
+          "signature":           { "type": ["string", "null"] },
+          "location":            { "type": ["string", "null"] },
+          "condition":           { "type": ["string", "null"] }
+        }
+      }
+    },
+    "source": { "type": "object" }
+  }
+}

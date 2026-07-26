@@ -1,0 +1,11 @@
+# Optionale Umgebung für DB-Integrationstests (Codeception Db-Modul).
+# Unit-Tests brauchen das NICHT. Für DB-Tests das Db-Modul in unit.suite.yml
+# aktivieren und den Stack starten (docker compose up).
+modules:
+  config:
+    - Db:
+        dsn: "pgsql:host=localhost;port=5432;dbname=avefi"
+        user: avefi
+        password: avefi
+        populate: false
+        cleanup: false

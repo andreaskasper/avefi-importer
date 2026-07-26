@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ead>
+  <eadheader>
+    <eadid>DFI-EAD-SAMPLE</eadid>
+    <filedesc><titlestmt><titleproper>Filmsammlung DFI (Beispiel)</titleproper></titlestmt></filedesc>
+  </eadheader>
+  <archdesc level="collection">
+    <did>
+      <unittitle>Filmsammlung Deutsches Filminstitut</unittitle>
+      <repository>Deutsches Filminstitut</repository>
+    </did>
+    <dsc>
+      <c01 level="item">
+        <did>
+          <unittitle>Metropolis</unittitle>
+          <unitdate normal="1927">1927</unitdate>
+          <unitid>DFI-1927-001</unitid>
+          <origination><persname role="director">Lang, Fritz</persname></origination>
+          <physdesc><extent>35 mm (153 min)</extent></physdesc>
+          <repository>Deutsches Filminstitut</repository>
+          <physloc>Tresor</physloc>
+          <abstract>Dystopische Metropole der Zukunft.</abstract>
+          <langmaterial><language>Stumm</language></langmaterial>
+        </did>
+      </c01>
+      <c01 level="item">
+        <did>
+          <unittitle>Nosferatu</unittitle>
+          <unitdate normal="1922">1922</unitdate>
+          <unitid>DFI-1922-007</unitid>
+          <origination><persname role="director">Murnau, F. W.</persname></origination>
+          <physdesc><extent>Nitro (94 min)</extent></physdesc>
+          <repository>Deutsches Filminstitut</repository>
+          <physloc>Regal 3</physloc>
+          <abstract>Expressionistischer Vampirfilm.</abstract>
+          <langmaterial><language>Stumm</language></langmaterial>
+        </did>
+      </c01>
+      <c01 level="item">
+        <did>
+          <unittitle>Berlin – Die Sinfonie der Großstadt</unittitle>
+          <unitdate normal="1927">1927</unitdate>
+          <unitid>DFI-1927-042</unitid>
+          <origination><persname role="director">Ruttmann, Walther</persname></origination>
+          <physdesc><extent>35 mm (65 min)</extent></physdesc>
+          <repository>Deutsches Filminstitut</repository>
+          <physloc>Regal 5</physloc>
+          <genreform>Dokumentarfilm</genreform>
+          <langmaterial><language>Stumm</language></langmaterial>
+        </did>
+      </c01>
+    </dsc>
+  </archdesc>
+</ead>

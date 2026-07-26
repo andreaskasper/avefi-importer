@@ -1,0 +1,13 @@
+# logs & temp
+*.log
+tmp/
+*/tmp/
+
+# internal tooling / planning — not for the public repo
+claude*
+.claude/
+CLAUDE.md
+
+# OS / editor
+.DS_Store
+*.swp

@@ -1,0 +1,4 @@
+#!/bin/bash
+# AVefi Importer — run a worker/bot inside the web container.
+#   ./bot -t seed
+cd "$(dirname "$0")" && exec docker compose exec web php app/bot.php "$@"

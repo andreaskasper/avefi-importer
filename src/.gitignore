@@ -1,0 +1,17 @@
+# dependencies
+html/app/code/vendor/
+html/app/code/composer.lock
+
+# runtime
+html/files/
+*.log
+
+# local env / secrets
+.env
+
+# deployment-specific compose (Traefik/hosts) — not for GitHub
+docker-compose.dev.yml
+
+# OS / editor
+.DS_Store
+*.swp

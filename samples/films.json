@@ -1,0 +1,44 @@
+[
+  {
+    "title": "Metropolis",
+    "year": 1927,
+    "director": "Fritz Lang",
+    "work_type": "Spielfilm",
+    "country": "Deutschland",
+    "genre": "Science-Fiction",
+    "language": "Stumm",
+    "carrier": "35 mm",
+    "duration_min": 153,
+    "signature": "DFI-1927-001",
+    "institution": "Deutsches Filminstitut",
+    "location": "Tresor"
+  },
+  {
+    "title": "Nosferatu",
+    "year": 1922,
+    "director": "F. W. Murnau",
+    "work_type": "Spielfilm",
+    "country": "Deutschland",
+    "genre": "Horror",
+    "language": "Stumm",
+    "carrier": "Nitro",
+    "duration_min": 94,
+    "signature": "DFI-1922-007",
+    "institution": "Deutsches Filminstitut",
+    "location": "Regal 3"
+  },
+  {
+    "title": "Berlin – Die Sinfonie der Großstadt",
+    "year": 1927,
+    "director": "Walther Ruttmann",
+    "work_type": "Dokumentarfilm",
+    "country": "Deutschland",
+    "genre": "Dokumentarfilm",
+    "language": "Stumm",
+    "carrier": "35 mm",
+    "duration_min": 65,
+    "signature": "DFI-1927-042",
+    "institution": "Deutsches Filminstitut",
+    "location": "Regal 5"
+  }
+]

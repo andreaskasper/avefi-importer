@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection xmlns="http://www.loc.gov/MARC21/slim">
+  <record>
+    <leader>00000ngm a2200000 a 4500</leader>
+    <controlfield tag="001">film0001</controlfield>
+    <controlfield tag="008">271231s1927    gw            vlger d</controlfield>
+    <datafield tag="245" ind1="0" ind2="0"><subfield code="a">Metropolis /</subfield><subfield code="c">Fritz Lang.</subfield></datafield>
+    <datafield tag="264" ind1=" " ind2="1"><subfield code="c">1927.</subfield></datafield>
+    <datafield tag="100" ind1="1" ind2=" "><subfield code="a">Lang, Fritz,</subfield><subfield code="e">director</subfield></datafield>
+    <datafield tag="300" ind1=" " ind2=" "><subfield code="a">1 film reel (153 min.)</subfield></datafield>
+    <datafield tag="041" ind1=" " ind2=" "><subfield code="a">ger</subfield></datafield>
+    <datafield tag="655" ind1=" " ind2="7"><subfield code="a">Science fiction films</subfield></datafield>
+    <datafield tag="520" ind1=" " ind2=" "><subfield code="a">Dystopische Metropole der Zukunft.</subfield></datafield>
+    <datafield tag="852" ind1=" " ind2=" "><subfield code="a">Deutsches Filminstitut</subfield><subfield code="j">DFI-1927-001</subfield></datafield>
+  </record>
+  <record>
+    <leader>00000ngm a2200000 a 4500</leader>
+    <controlfield tag="001">film0002</controlfield>
+    <controlfield tag="008">220101s1922    gw            vlger d</controlfield>
+    <datafield tag="245" ind1="0" ind2="0"><subfield code="a">Nosferatu</subfield></datafield>
+    <datafield tag="264" ind1=" " ind2="1"><subfield code="c">1922.</subfield></datafield>
+    <datafield tag="100" ind1="1" ind2=" "><subfield code="a">Murnau, F. W.,</subfield><subfield code="e">director</subfield></datafield>
+    <datafield tag="300" ind1=" " ind2=" "><subfield code="a">1 film reel (94 min.)</subfield></datafield>
+    <datafield tag="041" ind1=" " ind2=" "><subfield code="a">ger</subfield></datafield>
+    <datafield tag="655" ind1=" " ind2="7"><subfield code="a">Horror films</subfield></datafield>
+    <datafield tag="852" ind1=" " ind2=" "><subfield code="a">Deutsches Filminstitut</subfield><subfield code="j">DFI-1922-007</subfield></datafield>
+  </record>
+  <record>
+    <leader>00000ngm a2200000 a 4500</leader>
+    <controlfield tag="001">film0003</controlfield>
+    <controlfield tag="008">271231s1927    gw            vdger d</controlfield>
+    <datafield tag="245" ind1="0" ind2="0"><subfield code="a">Berlin :</subfield><subfield code="b">die Sinfonie der Großstadt /</subfield><subfield code="c">Walther Ruttmann.</subfield></datafield>
+    <datafield tag="264" ind1=" " ind2="1"><subfield code="c">1927.</subfield></datafield>
+    <datafield tag="100" ind1="1" ind2=" "><subfield code="a">Ruttmann, Walther,</subfield><subfield code="e">director</subfield></datafield>
+    <datafield tag="300" ind1=" " ind2=" "><subfield code="a">1 film reel (65 min.)</subfield></datafield>
+    <datafield tag="041" ind1=" " ind2=" "><subfield code="a">ger</subfield></datafield>
+    <datafield tag="655" ind1=" " ind2="7"><subfield code="a">Documentary films</subfield></datafield>
+    <datafield tag="852" ind1=" " ind2=" "><subfield code="a">Deutsches Filminstitut</subfield><subfield code="j">DFI-1927-042</subfield></datafield>
+  </record>
+</collection>

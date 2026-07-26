@@ -1,0 +1,16 @@
+paths:
+    tests: codecept_test
+    output: codecept_test/_output
+    data: codecept_test/_data
+    support: codecept_test/_support
+    envs: codecept_test/_envs
+actor_suffix: Tester
+bootstrap: _bootstrap.php
+settings:
+    shuffle: false
+    lint: true
+coverage:
+    enabled: false
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
