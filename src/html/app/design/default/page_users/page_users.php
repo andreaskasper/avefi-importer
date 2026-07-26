@@ -79,7 +79,7 @@ include __DIR__ . "/../layout/appheader.php";
                   <input type="hidden" name="action" value="<?php echo $active ? "lock" : "unlock"; ?>">
                   <button class="btn btn-outline btn-sm" type="submit"><?php echo $active ? "Sperren" : "Entsperren"; ?></button>
                 </form>
-                <form method="post" action="/users/<?php echo $uid; ?>" style="display:inline" onsubmit="return confirm('Diesen User endgültig löschen?');">
+                <form method="post" action="/users/<?php echo $uid; ?>" style="display:inline" data-confirm="Diesen User „<?php echo htmlattr($u['email']); ?>“ endgültig löschen?" data-confirm-title="User löschen" data-confirm-ok="Löschen" data-confirm-danger>
                   <input type="hidden" name="_csrf" value="<?php echo htmlattr($csrf); ?>">
                   <input type="hidden" name="action" value="delete">
                   <button class="iconbtn-del" type="submit" title="Löschen">🗑</button>

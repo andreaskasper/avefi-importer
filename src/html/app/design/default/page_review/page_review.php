@@ -67,7 +67,7 @@ include __DIR__ . "/../layout/appheader.php";
 
         <div style="display:flex;gap:8px;align-items:center">
           <a class="btn btn-outline btn-sm" href="/imports/<?php echo htmlattr((string)$review["import_id"]); ?>/original">⬇ Datei herunterladen</a>
-          <form method="post" action="/reviews/<?php echo $rid; ?>" onsubmit="return confirm('Diesen Import ablehnen?');" style="margin-left:auto">
+          <form method="post" action="/reviews/<?php echo $rid; ?>" data-confirm="Diesen Import wirklich ablehnen? Der Import wird verworfen." data-confirm-title="Import ablehnen" data-confirm-ok="Ablehnen" data-confirm-danger style="margin-left:auto">
             <input type="hidden" name="_csrf" value="<?php echo htmlattr($csrf); ?>">
             <input type="hidden" name="action" value="reject">
             <button class="btn btn-outline btn-sm" type="submit">Ablehnen</button>

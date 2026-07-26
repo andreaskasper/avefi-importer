@@ -50,4 +50,6 @@ Standard `/mnt/files`), `SEED_EMAIL` / `SEED_PASSWORD`.
 - **Upload schlägt fehl** („Verzeichnis konnte nicht angelegt werden"): Rechte am
   Volume korrigieren — `docker compose exec web chown -R www-data:www-data /mnt/files`.
 - **Login geht nicht direkt nach `up`**: Der Admin existiert erst nach dem `seed`-Lauf.
+- **`relation "…" does not exist`** (z. B. `worker_jobs`): Das DB-Volume ist älter als eine
+  Schema-Erweiterung. Verlustfrei nachziehen: `docker compose exec web php app/bot.php -t migrate`.
 - Ausführliche Fehlerbehebung: [README → Troubleshooting](../README.md#-troubleshooting).

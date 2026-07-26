@@ -23,15 +23,23 @@ if ($_ENV["app_env"] === "dev" || isset($_COOKIE["development"])) {
 } else {
 	ini_set("display_errors", "0");
 	set_exception_handler(function (\Throwable $ex) {
-		$logdir = __DIR__ . "/files/logs";
-		if (!is_dir($logdir)) @mkdir($logdir, 0775, true);
+		// Bevorzugt das gemeinsame Log-Verzeichnis src/logs/, falls es existiert;
+		// sonst html/files/logs/ (wird bei Bedarf angelegt).
+		$shared = dirname(__DIR__) . "/logs";
+		if (is_dir($shared)) {
+			$logfile = $shared . "/error.log";
+		} else {
+			$logdir = __DIR__ . "/files/logs";
+			if (!is_dir($logdir)) @mkdir($logdir, 0775, true);
+			$logfile = $logdir . "/error.log";
+		}
 		@file_put_contents(
-			$logdir . "/exception.log",
+			$logfile,
 			date("Y-m-d H:i:s") . " " . $ex->getMessage() . " @ " . $ex->getFile() . ":" . $ex->getLine() . PHP_EOL,
 			FILE_APPEND
 		);
 		header(($_SERVER["SERVER_PROTOCOL"] ?? "HTTP/1.1") . " 500 Internal Server Error");
-		die("Ein unerwarteter Fehler ist aufgetreten. Das Team wurde informiert.");
+		die("Ein unerwarteter Fehler ist aufgetreten. Das Team wurde informiert. ".$logdir." [".date("Y-m-d H:i:s")." ERROR".substr(md5($ex->getMessage()),-3,3)."]");
 	});
 }
 
@@ -73,6 +81,13 @@ function html($txt): string {
 
 function htmlattr($txt): string {
 	return str_replace('"', "", html($txt));
+}
+
+/* Statisches Asset mit Cache-Busting (?version=<mtime>), damit geänderte JS/CSS neu geladen werden. */
+function asset(string $path): string {
+	$file = ($_ENV["basepath"] ?? __DIR__) . $path;
+	$v = @filemtime($file);
+	return $v ? $path . "?version=" . $v : $path;
 }
 
 function print_pre($obj): void {

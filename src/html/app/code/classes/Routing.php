@@ -127,7 +127,7 @@ class Routing {
 
 			$import->setStoragePath(Storage::importDir($import->id()));
 			$import->setStatus("queued", 100);
-			Job::enqueue("detect", $import->id());
+			WorkerJob::enqueue("detect", ["import_id" => $import->id()], $import->id());
 
 			return self::json(["ok" => true, "import" => [
 				"id"          => $import->id(),
@@ -161,7 +161,7 @@ class Routing {
 		$base = self::baseFormatForExt($ext);   // null → der download-Worker rät anhand des Inhalts
 
 		$import = Import::create($instId, $user->id(), $name, 0, $base);
-		Job::enqueue("download", $import->id(), ["url" => $url]);
+		WorkerJob::enqueue("download", ["import_id" => $import->id(), "url" => $url], $import->id());
 		self::redirect("/?added=1");
 	}
 
@@ -428,7 +428,7 @@ class Routing {
 			$profileId = FormatProfile::ensure($key, $label, $import->baseFormat());
 			$import->setFormatProfile($profileId);
 			$import->setStatus("converting");
-			Job::enqueue("convert", $importId, ["converter_key" => $key]);
+			WorkerJob::enqueue("convert", ["import_id" => $importId, "converter_key" => $key], $importId);
 			FormatReview::setStatus($id, "resolved");
 			self::redirect("/reviews?resolved=1");
 			exit;

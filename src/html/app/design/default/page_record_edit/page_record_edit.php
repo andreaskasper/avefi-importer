@@ -175,5 +175,5 @@ include __DIR__ . "/../layout/appheader.php";
 <template id="tpl-manifestation"><?php echo ed_manif_row("__i__"); ?></template>
 <template id="tpl-item"><?php echo ed_item_row("__i__"); ?></template>
 
-<script src="/skins/editor.js"></script>
+<script src="<?php echo html(asset('/skins/editor.js')); ?>"></script>
 <?php include __DIR__ . "/../layout/foot.php"; ?>

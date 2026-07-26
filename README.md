@@ -77,12 +77,13 @@ Then open the app and sign in:
 | **App**     | http://localhost:8080 | login `admin@av-efi.net` / `changeme` |
 | **Adminer** | http://localhost:8081 | PostgreSQL UI (the phpMyAdmin alternative), server `db` |
 
-Try it out with a file from [`samples/`](samples/) (CSV/TSV/JSON/MARC-XML/EAD), then
-process it with the worker:
+Try it out with a file from [`samples/`](samples/) (CSV/TSV/JSON/MARC-XML/EAD). The
+**worker** service picks it up automatically (it polls the `worker_jobs` queue). To
+process the queue manually instead:
 
 ```bash
-docker compose exec web php app/bot.php -t detect
-docker compose exec web php app/bot.php -t convert
+docker compose exec web php app/bot.php -t detect    # drain detect jobs once
+docker compose exec web php app/bot.php -t convert   # drain convert jobs once
 ```
 
 > ⚠️ **`admin@av-efi.net` / `changeme` are default development credentials — change
@@ -144,9 +145,11 @@ src/                         the application
 - **Entity + `My*` pattern.** Data objects pair an entity (`User`, `Import`, …) with a
   session-scoped wrapper (`MyUser`) that resolves the current request context.
 - **Passwords** are hashed with **Argon2id** (`password_hash`).
-- **Worker/queue.** Long-running work runs as CLI bots (`php app/bot.php -t <bot>`:
-  `download`, `detect`, `convert`) that pull jobs from the `jobs` table — frontend and
-  worker share nothing but PostgreSQL and the file system.
+- **Worker/queue.** A continuous **worker daemon** (`bot -t worker`, running as its own
+  `restart: always` service) polls the `worker_jobs` table (`FOR UPDATE SKIP LOCKED`)
+  every minute and dispatches each job to `\worker\<classname>::run($payload)`
+  (`download` / `detect` / `convert`). It self-restarts after 7 days or if RAM > 1 GB.
+  Frontend and worker share nothing but PostgreSQL and the file system.
 - **Converters** implement the `Converter` interface; `ConverterFactory` maps a
   `converter_key` to a class. See `src/docs/architecture.md`.
 
@@ -219,8 +222,15 @@ A rebuilt image (`up -d --build`) does this automatically on start (`CMD … cho
 docker compose exec web php app/bot.php -t seed
 ```
 
-If it still fails, the DB volume may be stale (schema changed since it was first
-created — the init script only runs on an empty volume). Reset it (deletes DB data):
+If it still fails — or you see `relation "…" does not exist` (e.g. `worker_jobs`) — the
+DB volume is stale (the schema changed since it was first created; the init script only
+runs on an *empty* volume). Apply the current schema **without losing data**:
+
+```bash
+docker compose exec web php app/bot.php -t migrate    # idempotent: creates missing tables
+```
+
+As a last resort you can recreate the volume (deletes all DB data):
 
 ```bash
 docker compose down -v && docker compose up -d --build

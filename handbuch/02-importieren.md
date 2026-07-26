@@ -24,12 +24,15 @@ Datei im Hintergrund herunter und stellt sie wie einen normalen Upload in die Pi
 
 ## Verarbeitung (Worker)
 
-Nach dem Upload liegt der Import auf **„Wartend"**. Die eigentliche Verarbeitung
-übernimmt der Worker in zwei Schritten:
+Nach dem Upload liegt der Import auf **„Wartend"**. Die Verarbeitung übernimmt der
+**`worker`-Dienst** automatisch: ein Daemon, der jede Minute die `worker_jobs`-Queue
+pollt und die Schritte `download` → `detect` → `convert` abarbeitet.
+
+Zum manuellen Anstoßen (Debug):
 
 ```bash
-docker compose exec web php app/bot.php -t detect    # Format erkennen
-docker compose exec web php app/bot.php -t convert   # Datensätze erzeugen
+docker compose exec web php app/bot.php -t detect    # detect-Jobs einmal abarbeiten
+docker compose exec web php app/bot.php -t convert   # convert-Jobs einmal abarbeiten
 ```
 
 Ablauf je Import:
@@ -42,9 +45,8 @@ Ablauf je Import:
 | Konvertiert | Datensätze erzeugt, editierbar |
 | Fehler | Parsing/Validierung fehlgeschlagen |
 
-Für Dauerbetrieb laufen die Bots als Schleife (`-r --sleep 30`); Vorlagen dafür sind in
-`src/docker-compose.dev.yml` auskommentiert enthalten (`worker_detect`, `worker_convert`,
-plus `download`).
+Der `worker`-Dienst läuft kontinuierlich (`restart: always`) und startet sich nach
+7 Tagen bzw. bei RAM > 1 GB selbst neu.
 
 ## Format-Erkennung
 

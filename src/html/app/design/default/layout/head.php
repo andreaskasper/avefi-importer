@@ -14,10 +14,12 @@ $body_class = isset($body_class) ? $body_class : "";
 <link rel="icon" type="image/png" sizes="96x96" href="/skins/favicon-96x96.png">
 <link rel="shortcut icon" href="/favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="/skins/apple-touch-icon.png">
-<link rel="stylesheet" href="/skins/app.css">
+<link rel="stylesheet" href="https://library.goo1.de/fontawesome/7/css/all.min.css">
+<link rel="stylesheet" href="<?php echo html(asset('/skins/app.css')); ?>">
 <!-- Vue 3 (global build, vendored) — projektweit verfügbar für interaktive Komponenten -->
-<script src="/skins/vue.global.prod.js"></script>
-<script src="/skins/modal.js"></script>
+<script src="<?php echo html(asset('/skins/vue.global.prod.js')); ?>"></script>
+<script src="<?php echo html(asset('/skins/modal.js')); ?>"></script>
+<script src="<?php echo html(asset('/skins/ui.js')); ?>"></script>
 <script>
   /* Theme früh anwenden, um Flackern zu vermeiden. */
   (function(){ try{ var t=localStorage.getItem("avefi-theme"); if(t) document.documentElement.setAttribute("data-theme", t); }catch(e){} })();

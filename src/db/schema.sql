@@ -80,14 +80,16 @@ DO $$ BEGIN
     CREATE TYPE job_status AS ENUM ('queued','running','done','failed');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
--- Job-Queue: Worker konsumiert per SELECT ... FOR UPDATE SKIP LOCKED (kein Redis nötig)
-CREATE TABLE IF NOT EXISTS jobs (
+-- Worker-Queue: der worker-Daemon konsumiert per SELECT … FOR UPDATE SKIP LOCKED
+-- (kein Redis nötig) und ruft \worker\<classname>::run($payload) auf.
+CREATE TABLE IF NOT EXISTS worker_jobs (
     id           SERIAL PRIMARY KEY,
-    import_id    UUID REFERENCES imports(id) ON DELETE CASCADE,
-    type         TEXT NOT NULL,                -- detect / convert / register_pid
+    classname    TEXT NOT NULL,                -- Worker-Klasse: detect / convert / download / register_pid
+    import_id    UUID REFERENCES imports(id) ON DELETE CASCADE,   -- optional, für Cascade-Cleanup
+    payload      JSONB NOT NULL DEFAULT '{}',
     status       job_status NOT NULL DEFAULT 'queued',
     attempts     INTEGER NOT NULL DEFAULT 0,
-    payload      JSONB NOT NULL DEFAULT '{}',
+    run_at       TIMESTAMPTZ NOT NULL DEFAULT now(),   -- frühester Ausführungszeitpunkt
     error        TEXT,
     created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
     started_at   TIMESTAMPTZ,
@@ -96,7 +98,7 @@ CREATE TABLE IF NOT EXISTS jobs (
 
 CREATE INDEX IF NOT EXISTS idx_imports_institution ON imports(institution_id);
 CREATE INDEX IF NOT EXISTS idx_records_import       ON records(import_id);
-CREATE INDEX IF NOT EXISTS idx_jobs_status          ON jobs(status);
+CREATE INDEX IF NOT EXISTS idx_worker_jobs_status   ON worker_jobs(status, run_at);
 
 -- Start-Institution (Passwort des Admin-Users setzt der Seed-Bot).
 INSERT INTO institutions (name, slug) VALUES ('Deutsches Filminstitut', 'dfi')

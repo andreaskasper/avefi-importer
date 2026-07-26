@@ -69,6 +69,7 @@ a{color:inherit}
   display:inline-flex;align-items:center;gap:7px;text-decoration:none}
 .btn-primary{background:var(--primary);color:#fff}
 .btn-outline{background:var(--surface);color:var(--ink);border:1px solid var(--border-strong)}
+.btn-danger{background:var(--danger);color:#fff}
 .btn-sm{padding:5px 11px;font-size:12.5px}
 .btn[disabled],.btn.disabled{opacity:.45;cursor:not-allowed}
 .ghost{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;

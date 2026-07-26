@@ -125,5 +125,5 @@ include __DIR__ . "/../layout/appheader.php";
   </form>
 
 </main>
-<script src="/skins/upload.js"></script>
+<script src="<?php echo html(asset('/skins/upload.js')); ?>"></script>
 <?php include __DIR__ . "/../layout/foot.php"; ?>

@@ -17,7 +17,7 @@ Format erkennen → ins **AVefi-Schema** (LinkML → JSON) konvertieren → edit
 | Frontend | **Nuxt 4 + Tailwind + FormKit** | Konsistenz mit bestehendem `AV-EFI/frontend`, Komponenten-Wiederverwendung |
 | API | Nuxt/Nitro *oder* schlanke PHP-API | REST, spricht PostgreSQL |
 | **Worker** | **PHP** (CLI, via `supervisor`) | Streaming-Parsing (`XMLReader`, `SplFileObject`) ist in PHP exzellent; vorhandene Erfahrung |
-| Queue | **PostgreSQL-Tabelle `jobs`** (`FOR UPDATE SKIP LOCKED`) | Kein Redis nötig; robust & einfach zu hosten |
+| Queue | **PostgreSQL-Tabelle `worker_jobs`** (`FOR UPDATE SKIP LOCKED`) | Kein Redis nötig; ein `worker`-Daemon (`bot -t worker`, `restart: always`) pollt jede Minute und ruft `\worker\<classname>::run($payload)`; Selbst-Neustart nach 7 Tagen bzw. RAM > 1 GB |
 | Validierung | **JSON Schema** (aus av-efi-schema LinkML generiert), `opis/json-schema` | Sprachneutral: LinkML → JSON Schema → in PHP validierbar |
 
 > Frontend und Worker sind entkoppelt: sie kommunizieren **nur** über PostgreSQL + Dateisystem.
@@ -103,7 +103,12 @@ Work            konzeptuelles Filmwerk   (Titel, Jahr, Werkart, Beteiligte, Iden
        └─ Item       Exemplar            (haltende Institution, Signatur, Standort, Zustand)
 ```
 
-- Validierung: LinkML generiert **JSON Schema** (`project/jsonschema/…`) → im Worker gegen jedes Record prüfen.
+- Validierung: LinkML generiert **JSON Schema**. Das echte Schema liegt im Repo unter
+  `src/html/schema/avefi/model.schema.json` (aus `AV-EFI/av-efi-schema`). Aktuell prüft
+  der Editor gegen das schlanke Interim-Schema `avefi-record.schema.json`; die Abbildung
+  der internen Records auf die echten LinkML-Property-Namen (WorkVariant/Manifestation/
+  Item) ist der nächste Schritt — Manifestation/Item sind dabei **PID-abhängig**
+  (`is_manifestation_of` / `is_item_of` verweisen auf die PID der Elternebene).
 - `completeness` = Anteil ausgefüllter Pflicht- + empfohlener Felder laut Schema (0–100).
 - PID-Registrierung (`21.11155/…`) erfolgt separat (`job(register_pid)`), erst nach `valid`.
 
