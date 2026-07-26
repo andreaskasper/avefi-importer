@@ -22,7 +22,7 @@ $page_title = html($review["filename"]) . " · Format-Review";
 include __DIR__ . "/../layout/head.php";
 include __DIR__ . "/../layout/appheader.php";
 ?>
-<main class="appwrap">
+<main id="main" class="appwrap">
   <div class="crumbs"><a href="/reviews">Format-Review</a><span class="sep">/</span><span><?php echo html($review["filename"]); ?></span></div>
 
   <?php if ($error === "csrf"): ?><div class="alert" style="margin-bottom:14px">Sitzung abgelaufen — bitte erneut absenden.</div><?php endif; ?>

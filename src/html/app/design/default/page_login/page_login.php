@@ -11,7 +11,7 @@ $page_title = "Anmelden · AVefi Importer";
 $body_class = "auth-page";
 include __DIR__ . "/../layout/head.php";
 ?>
-<div class="auth">
+<main id="main" class="auth">
   <div class="login-card">
     <div class="login-wrap">
 
@@ -59,7 +59,7 @@ include __DIR__ . "/../layout/head.php";
 
     </div>
   </div>
-</div>
+</main>
 
 <button class="ghost" id="themeBtn" title="Design wechseln" aria-label="Design wechseln"
         style="position:fixed;top:16px;right:16px">◐ Theme</button>

@@ -4,7 +4,7 @@ $page_title = "Kein Zugriff · AVefi Importer";
 include __DIR__ . "/../layout/head.php";
 include __DIR__ . "/../layout/appheader.php";
 ?>
-<main class="appwrap">
+<main id="main" class="appwrap">
   <div class="empty" style="margin-top:40px">
     <div class="ic">🔒</div>
     <div class="fn" style="font-size:16px;margin-bottom:4px">Kein Zugriff</div>

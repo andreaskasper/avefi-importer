@@ -25,7 +25,7 @@ function ed_contrib_row($i, array $c = []): string {
 	return '<div class="repeat-row"><div class="rr-fields">'
 		. '<input class="input" name="contributors[' . $i . '][role]" placeholder="Rolle (z. B. director)" value="' . $r . '">'
 		. '<input class="input" name="contributors[' . $i . '][name]" placeholder="Name" value="' . $n . '">'
-		. '</div><button type="button" class="iconbtn-del" data-remove title="Entfernen">🗑</button></div>';
+		. '</div><button type="button" class="iconbtn-del" data-remove title="Entfernen" aria-label="Zeile entfernen"><span aria-hidden="true">🗑</span></button></div>';
 }
 function ed_field($label, $name, $val): string {
 	return '<label class="rr-field"><span>' . html($label) . '</span><input class="input" name="' . $name . '" value="' . htmlattr($val ?? "") . '"></label>';
@@ -36,7 +36,7 @@ function ed_manif_row($i, array $m = []): string {
 		. ed_field("Datum", "manifestations[" . $i . "][date]", $m["date"] ?? "")
 		. ed_field("Länge (min)", "manifestations[" . $i . "][duration_min]", $m["duration_min"] ?? "")
 		. ed_field("Notiz", "manifestations[" . $i . "][note]", $m["note"] ?? "")
-		. '</div><button type="button" class="iconbtn-del" data-remove title="Entfernen">🗑</button></div>';
+		. '</div><button type="button" class="iconbtn-del" data-remove title="Entfernen" aria-label="Zeile entfernen"><span aria-hidden="true">🗑</span></button></div>';
 }
 function ed_item_row($i, array $it = []): string {
 	return '<div class="repeat-row rr-block"><div class="rr-grid">'
@@ -44,14 +44,14 @@ function ed_item_row($i, array $it = []): string {
 		. ed_field("Signatur", "items[" . $i . "][signature]", $it["signature"] ?? "")
 		. ed_field("Standort", "items[" . $i . "][location]", $it["location"] ?? "")
 		. ed_field("Zustand", "items[" . $i . "][condition]", $it["condition"] ?? "")
-		. '</div><button type="button" class="iconbtn-del" data-remove title="Entfernen">🗑</button></div>';
+		. '</div><button type="button" class="iconbtn-del" data-remove title="Entfernen" aria-label="Zeile entfernen"><span aria-hidden="true">🗑</span></button></div>';
 }
 
 $page_title = html($title) . " · Editor";
 include __DIR__ . "/../layout/head.php";
 include __DIR__ . "/../layout/appheader.php";
 ?>
-<main class="appwrap">
+<main id="main" class="appwrap">
   <div class="crumbs">
     <a href="/">Importe</a><span class="sep">/</span>
     <a href="/imports/<?php echo htmlattr($import->id()); ?>/records"><?php echo html($import->filename()); ?></a>
@@ -59,8 +59,8 @@ include __DIR__ . "/../layout/appheader.php";
     <span class="sep">/</span><span><?php echo html($title); ?></span>
   </div>
 
-  <?php if ($saved): ?><div class="alert alert-ok" style="margin-bottom:14px">Gespeichert.</div><?php endif; ?>
-  <?php if ($error === "csrf"): ?><div class="alert" style="margin-bottom:14px">Sitzung abgelaufen — bitte erneut speichern.</div><?php endif; ?>
+  <?php if ($saved): ?><div class="alert alert-ok" role="status" style="margin-bottom:14px">Gespeichert.</div><?php endif; ?>
+  <?php if ($error === "csrf"): ?><div class="alert" role="alert" style="margin-bottom:14px">Sitzung abgelaufen — bitte erneut speichern.</div><?php endif; ?>
 
   <form id="editorForm" method="post" action="/imports/<?php echo htmlattr($import->id()); ?>/records/<?php echo (int)$record["id"]; ?>/save">
     <input type="hidden" name="_csrf" value="<?php echo htmlattr($csrf); ?>">
@@ -68,8 +68,8 @@ include __DIR__ . "/../layout/appheader.php";
     <div class="editbar">
       <h2 style="font-size:18px"><?php echo html($title); ?></h2>
       <div style="margin-left:auto;display:flex;gap:8px">
-        <button type="button" class="btn btn-outline btn-sm" id="jsonToggle">{ } JSON-Vorschau</button>
-        <button type="submit" class="btn btn-primary btn-sm">✓ Speichern</button>
+        <button type="button" class="btn btn-outline btn-sm" id="jsonToggle" aria-expanded="false" aria-controls="jsonPreview"><span aria-hidden="true">{ }</span> JSON-Vorschau</button>
+        <button type="submit" class="btn btn-primary btn-sm"><span aria-hidden="true">✓</span> Speichern</button>
       </div>
     </div>
 
@@ -91,14 +91,14 @@ include __DIR__ . "/../layout/appheader.php";
       <div class="ed-main">
         <section id="sec-work">
           <div class="sechead"><span class="tk" style="background:var(--work)"></span><h3>Werk · Grunddaten</h3></div>
-          <div class="frow"><label>Haupttitel <span class="req">*</span></label><div class="fval"><input class="input" name="work[title]" value="<?php echo $ev($work["title"] ?? ""); ?>"></div></div>
-          <div class="frow"><label>Weitere Titel</label><div class="fval"><input class="input" name="work[titles_additional]" value="<?php echo $ev(implode("; ", $work["titles_additional"] ?? [])); ?>" placeholder="mit ; getrennt"></div></div>
-          <div class="frow"><label>Produktionsjahr <span class="req">*</span></label><div class="fval"><input class="input" name="work[year]" value="<?php echo $ev($work["year"] ?? ""); ?>" style="max-width:140px"></div></div>
-          <div class="frow"><label>Herstellungsland</label><div class="fval"><input class="input" name="work[country]" value="<?php echo $ev($work["country"] ?? ""); ?>"></div></div>
-          <div class="frow"><label>Werkart <span class="req">*</span></label><div class="fval"><input class="input" name="work[work_type]" list="worktypes" value="<?php echo $ev($work["work_type"] ?? ""); ?>"></div></div>
-          <div class="frow"><label>Genre</label><div class="fval"><input class="input" name="work[genre]" value="<?php echo $ev($work["genre"] ?? ""); ?>"></div></div>
-          <div class="frow"><label>Sprache(n)</label><div class="fval"><input class="input" name="work[language]" value="<?php echo $ev($work["language"] ?? ""); ?>"></div></div>
-          <div class="frow" style="border-bottom:0"><label>Beschreibung</label><div class="fval"><textarea class="input" name="work[description]" rows="3"><?php echo html($work["description"] ?? ""); ?></textarea></div></div>
+          <div class="frow"><label for="w-title">Haupttitel <span class="req" aria-hidden="true">*</span></label><div class="fval"><input class="input" id="w-title" name="work[title]" required aria-required="true" value="<?php echo $ev($work["title"] ?? ""); ?>"></div></div>
+          <div class="frow"><label for="w-titles">Weitere Titel</label><div class="fval"><input class="input" id="w-titles" name="work[titles_additional]" value="<?php echo $ev(implode("; ", $work["titles_additional"] ?? [])); ?>" placeholder="mit ; getrennt"></div></div>
+          <div class="frow"><label for="w-year">Produktionsjahr <span class="req" aria-hidden="true">*</span></label><div class="fval"><input class="input" id="w-year" name="work[year]" required aria-required="true" value="<?php echo $ev($work["year"] ?? ""); ?>" style="max-width:140px"></div></div>
+          <div class="frow"><label for="w-country">Herstellungsland</label><div class="fval"><input class="input" id="w-country" name="work[country]" value="<?php echo $ev($work["country"] ?? ""); ?>"></div></div>
+          <div class="frow"><label for="w-type">Werkart <span class="req" aria-hidden="true">*</span></label><div class="fval"><input class="input" id="w-type" name="work[work_type]" list="worktypes" required aria-required="true" value="<?php echo $ev($work["work_type"] ?? ""); ?>"></div></div>
+          <div class="frow"><label for="w-genre">Genre</label><div class="fval"><input class="input" id="w-genre" name="work[genre]" value="<?php echo $ev($work["genre"] ?? ""); ?>"></div></div>
+          <div class="frow"><label for="w-lang">Sprache(n)</label><div class="fval"><input class="input" id="w-lang" name="work[language]" value="<?php echo $ev($work["language"] ?? ""); ?>"></div></div>
+          <div class="frow" style="border-bottom:0"><label for="w-desc">Beschreibung</label><div class="fval"><textarea class="input" id="w-desc" name="work[description]" rows="3"><?php echo html($work["description"] ?? ""); ?></textarea></div></div>
           <datalist id="worktypes">
             <option>Spielfilm</option><option>Dokumentarfilm</option><option>Kurzfilm</option>
             <option>Animationsfilm</option><option>Experimentalfilm</option><option>Serie</option><option>unbestimmt</option>
@@ -133,17 +133,17 @@ include __DIR__ . "/../layout/appheader.php";
       <!-- side -->
       <aside class="ed-side">
         <div style="text-align:center">
-          <div class="bigring <?php echo Completeness::ringClass($pct); ?>" style="--p:<?php echo $pct; ?>"><span><b class="tnum"><?php echo $pct; ?>%</b><small>vollständig</small></span></div>
+          <div class="bigring <?php echo Completeness::ringClass($pct); ?>" style="--p:<?php echo $pct; ?>" role="img" aria-label="Vollständigkeit <?php echo $pct; ?> Prozent"><span aria-hidden="true"><b class="tnum"><?php echo $pct; ?>%</b><small>vollständig</small></span></div>
           <p class="note" style="margin-top:0">Wird beim Speichern neu berechnet.</p>
         </div>
         <div>
           <h4 class="side-h">Schema-Prüfung</h4>
           <?php if (empty($schemaErrors)): ?>
-            <div class="val-list"><div class="vi"><span class="m badge b-ok" style="padding:1px 6px">✓</span><span>Record ist schema-gültig</span></div></div>
+            <div class="val-list"><div class="vi"><span class="m badge b-ok" style="padding:1px 6px" aria-hidden="true">✓</span><span>Record ist schema-gültig</span></div></div>
           <?php else: ?>
             <div class="val-list">
               <?php foreach ($schemaErrors as $e): ?>
-                <div class="vi"><span class="m badge b-danger" style="padding:1px 6px">×</span><span><?php echo html($e); ?></span></div>
+                <div class="vi"><span class="m badge b-danger" style="padding:1px 6px" aria-hidden="true">×</span><span><?php echo html($e); ?></span></div>
               <?php endforeach; ?>
             </div>
           <?php endif; ?>
@@ -151,7 +151,7 @@ include __DIR__ . "/../layout/appheader.php";
             <h4 class="side-h" style="margin-top:14px">Empfehlungen</h4>
             <div class="val-list">
               <?php foreach ($recommendations as $r): ?>
-                <div class="vi"><span class="m badge b-warn" style="padding:1px 6px">!</span><span><?php echo html($r["text"]); ?></span></div>
+                <div class="vi"><span class="m badge b-warn" style="padding:1px 6px" aria-hidden="true">!</span><span><?php echo html($r["text"]); ?></span></div>
               <?php endforeach; ?>
             </div>
           <?php endif; ?>
@@ -164,8 +164,8 @@ include __DIR__ . "/../layout/appheader.php";
             <?php if ($import->profileLabel()): ?> · Mapping <?php echo html($import->profileLabel()); ?><?php endif; ?>
           </p>
         </div>
-        <button type="button" class="btn btn-outline" id="pidRegisterBtn" style="justify-content:center">🔗 PID registrieren</button>
-        <button type="submit" class="btn btn-primary" style="justify-content:center">✓ Speichern</button>
+        <button type="button" class="btn btn-outline" id="pidRegisterBtn" style="justify-content:center"><span aria-hidden="true">🔗</span> PID registrieren</button>
+        <button type="submit" class="btn btn-primary" style="justify-content:center"><span aria-hidden="true">✓</span> Speichern</button>
       </aside>
     </div>
   </form>

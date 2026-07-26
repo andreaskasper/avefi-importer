@@ -72,6 +72,29 @@ class Import {
 	}
 	public function createdAt(): ?string  { return $this->row["created_at"] !== null ? (string)$this->row["created_at"] : null; }
 
+	/** Erkanntes Format/Schema-Label (Badge); Fallback: Basisformat. */
+	public function detectedFormat(): ?string {
+		$v = $this->row["detected_format"] ?? null;
+		return $v !== null && $v !== "" ? (string)$v : null;
+	}
+	public function setDetectedFormat(string $label): void {
+		self::tolerant("UPDATE imports SET detected_format = :d WHERE id = :id", [":d" => $label, ":id" => $this->id()]);
+		$this->row["detected_format"] = $label;
+	}
+
+	/**
+	 * Für optionale Zusatz-Spalten (report_json/detected_format): schluckt Fehler,
+	 * falls die Spalte auf einer noch nicht migrierten DB fehlt — die Kern-
+	 * Verarbeitung soll dadurch nicht scheitern. Migration: bot -t migrate.
+	 */
+	private static function tolerant(string $sql, array $params): void {
+		try {
+			DB::execute($sql, $params);
+		} catch (\Throwable $e) {
+			error_log("[Import] Zusatzspalte nicht beschreibbar (Migration ausstehend?): " . $e->getMessage());
+		}
+	}
+
 	/** [Badge-Klasse, Label] für den aktuellen Status. */
 	public function statusBadge(): array {
 		switch ($this->status()) {
@@ -121,7 +144,7 @@ class Import {
 	/** Parse-/Validierungsbericht (Fehlerreport) als JSON ablegen. */
 	public function setReport(array $report): void {
 		$json = json_encode($report, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-		DB::execute("UPDATE imports SET report_json = :r WHERE id = :id", [":r" => $json, ":id" => $this->id()]);
+		self::tolerant("UPDATE imports SET report_json = :r WHERE id = :id", [":r" => $json, ":id" => $this->id()]);
 		$this->row["report_json"] = $json;
 	}
 

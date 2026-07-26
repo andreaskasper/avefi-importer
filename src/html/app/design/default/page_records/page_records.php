@@ -9,7 +9,7 @@ $page_title = html($import->filename()) . " · Datensätze";
 include __DIR__ . "/../layout/head.php";
 include __DIR__ . "/../layout/appheader.php";
 ?>
-<main class="appwrap">
+<main id="main" class="appwrap">
   <div class="crumbs">
     <a href="/">Importe</a><span class="sep">/</span><span><?php echo html($import->filename()); ?></span>
     <span class="sep">/</span><span>Datensätze</span>
@@ -24,23 +24,24 @@ include __DIR__ . "/../layout/appheader.php";
       <?php echo count($records); ?> Werk<?php echo count($records) === 1 ? "" : "e"; ?>
     </span>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-      <input class="input" id="recSearch" placeholder="🔍 Titel, PID suchen…" style="width:220px;padding:7px 11px;font-size:13px">
-      <a class="btn btn-outline btn-sm" href="/imports/<?php echo htmlattr($import->id()); ?>/avefi.json">⬇ AVefi-JSON</a>
+      <input class="input" id="recSearch" placeholder="🔍 Titel, PID suchen…" aria-label="Datensätze nach Titel oder PID durchsuchen" style="width:220px;padding:7px 11px;font-size:13px">
+      <a class="btn btn-outline btn-sm" href="/imports/<?php echo htmlattr($import->id()); ?>/avefi.json"><span aria-hidden="true">⬇</span> AVefi-JSON</a>
     </div>
   </div>
 
   <?php if (empty($records)): ?>
     <div class="tablewrap"><div class="empty">
-      <div class="ic">🎬</div>
+      <div class="ic" aria-hidden="true">🎬</div>
       <div class="fn" style="font-size:15px;margin-bottom:4px">Noch keine Datensätze</div>
       <div class="small">Dieser Import ist noch nicht konvertiert oder hat keine Werke erzeugt.</div>
     </div></div>
   <?php else: ?>
     <div class="tablewrap">
       <table>
+        <caption class="sr-only">Erzeugte AVefi-Werke mit Jahr, Typ, PID, Vollständigkeit und Aktion</caption>
         <thead><tr>
-          <th>Titel</th><th>Jahr</th><th>Typ</th><th>AVefi-PID</th>
-          <th>Manif. / Exempl.</th><th>Vollständigkeit</th><th style="text-align:right">Aktion</th>
+          <th scope="col">Titel</th><th scope="col">Jahr</th><th scope="col">Typ</th><th scope="col">AVefi-PID</th>
+          <th scope="col">Manif. / Exempl.</th><th scope="col">Vollständigkeit</th><th scope="col" style="text-align:right">Aktion</th>
         </tr></thead>
         <tbody>
         <?php foreach ($records as $r):
@@ -62,8 +63,8 @@ include __DIR__ . "/../layout/appheader.php";
             <td><?php echo $r["work_type"] ? '<span class="badge b-neutral">' . html($r["work_type"]) . '</span>' : '<span class="dim">unbestimmt</span>'; ?></td>
             <td class="mono small"><?php echo $r["avefi_pid"] ? html($r["avefi_pid"]) : '<span class="dim">noch keine</span>'; ?></td>
             <td class="tnum small"><?php echo (int)$r["manifestation_count"]; ?> / <?php echo (int)$r["item_count"]; ?></td>
-            <td><div class="ring <?php echo $ring; ?>" style="--p:<?php echo $pct; ?>"><span><?php echo $pct; ?>%</span></div></td>
-            <td style="text-align:right"><a class="btn btn-primary btn-sm" href="<?php echo htmlattr($editUrl); ?>">✎ Bearbeiten</a></td>
+            <td><div class="ring <?php echo $ring; ?>" style="--p:<?php echo $pct; ?>" role="img" aria-label="Vollständigkeit <?php echo $pct; ?> Prozent"><span aria-hidden="true"><?php echo $pct; ?>%</span></div></td>
+            <td style="text-align:right"><a class="btn btn-primary btn-sm" href="<?php echo htmlattr($editUrl); ?>"><span aria-hidden="true">✎</span> Bearbeiten</a></td>
           </tr>
         <?php endforeach; ?>
         </tbody>

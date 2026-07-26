@@ -26,3 +26,4 @@ $body_class = isset($body_class) ? $body_class : "";
 </script>
 </head>
 <body class="<?php echo html($body_class); ?>">
+<a class="skip-link" href="#main">Zum Inhalt springen</a>

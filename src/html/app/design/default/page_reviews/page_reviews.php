@@ -11,14 +11,14 @@ $page_title = "Format-Review · AVefi Importer";
 include __DIR__ . "/../layout/head.php";
 include __DIR__ . "/../layout/appheader.php";
 ?>
-<main class="appwrap">
+<main id="main" class="appwrap">
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
     <h2 style="font-size:19px">Format-Review</h2>
     <span class="dim small"><?php echo count($reviews); ?> offen</span>
   </div>
 
-  <?php if ($resolved): ?><div class="alert alert-ok" style="margin-bottom:14px">Converter zugeordnet — der Import wird konvertiert.</div><?php endif; ?>
-  <?php if ($rejected): ?><div class="alert alert-ok" style="margin-bottom:14px">Import abgelehnt.</div><?php endif; ?>
+  <?php if ($resolved): ?><div class="alert alert-ok" role="status" style="margin-bottom:14px">Converter zugeordnet — der Import wird konvertiert.</div><?php endif; ?>
+  <?php if ($rejected): ?><div class="alert alert-ok" role="status" style="margin-bottom:14px">Import abgelehnt.</div><?php endif; ?>
 
   <?php if (empty($reviews)): ?>
     <div class="tablewrap"><div class="empty">

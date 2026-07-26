@@ -49,6 +49,16 @@ class WorkerJob {
 			[":e" => mb_substr($error, 0, 2000), ":id" => $id]);
 	}
 
+	/** Letzter fehlgeschlagener Job eines Imports (für die Fehler-Detailseite). */
+	public static function lastFailedForImport(string $importId): ?array {
+		return DB::row(
+			"SELECT classname, error, attempts, finished_at FROM worker_jobs
+			  WHERE import_id = :id AND status = 'failed'
+			  ORDER BY finished_at DESC NULLS LAST, id DESC LIMIT 1",
+			[":id" => $importId]
+		);
+	}
+
 	/** Führt einen Job aus: \worker\<classname>::run($payload) + Statuspflege. */
 	public static function process(array $job): void {
 		$classname = (string)$job["classname"];

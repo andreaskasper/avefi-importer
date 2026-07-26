@@ -92,7 +92,11 @@ class convert {
 		}
 		$avefiTotal = count($avefiForReport);
 
+		// Bei 0 Records zusätzlich eine zeilengenaue Diagnose (Warum ging nichts?).
+		$parseDetail = $count === 0 ? \ParseDiagnostics::analyze($path, $import->baseFormat()) : null;
+
 		$report = [
+			"stage"           => "convert",
 			"converter"       => $key,
 			"native"          => $isNative,
 			"schema"          => "av-efi-schema (WorkVariant/Manifestation/Item)",
@@ -104,6 +108,7 @@ class convert {
 				"row_errors"    => $rowErrors,
 			],
 			"parse_errors"    => $parseErrors,
+			"parse_detail"    => $parseDetail,
 			"invalid_records" => $invalidRecords,
 		];
 		$import->setReport($report);

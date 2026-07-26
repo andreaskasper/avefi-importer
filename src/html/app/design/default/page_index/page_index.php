@@ -17,18 +17,18 @@ $page_title = "Importe · AVefi Importer";
 include __DIR__ . "/../layout/head.php";
 include __DIR__ . "/../layout/appheader.php";
 ?>
-<main class="appwrap">
+<main id="main" class="appwrap">
 
-  <?php if (isset($_GET["added"])): ?><div class="alert alert-ok" style="margin-bottom:14px">Import angelegt — die Datei wird im Hintergrund geladen und verarbeitet.</div><?php endif; ?>
-  <?php if (isset($_GET["urlerror"])): ?><div class="alert" style="margin-bottom:14px">URL konnte nicht übernommen werden (ungültig oder nicht erlaubt).</div><?php endif; ?>
+  <?php if (isset($_GET["added"])): ?><div class="alert alert-ok" role="status" style="margin-bottom:14px">Import angelegt — die Datei wird im Hintergrund geladen und verarbeitet.</div><?php endif; ?>
+  <?php if (isset($_GET["urlerror"])): ?><div class="alert" role="alert" style="margin-bottom:14px">URL konnte nicht übernommen werden (ungültig oder nicht erlaubt).</div><?php endif; ?>
 
-  <div id="dropzone" class="dropzone"
+  <div id="dropzone" class="dropzone" role="group" aria-label="Datei-Upload per Ablegen oder Auswählen"
        data-upload-url="/upload"
        data-csrf="<?php echo htmlattr($csrf); ?>"
        data-maxbytes="209715200">
-    <input type="file" id="fileInput" multiple hidden
+    <input type="file" id="fileInput" multiple hidden aria-label="Metadaten-Dateien auswählen"
            accept=".csv,.tsv,.xml,.ead,.marcxml,.marc,.json">
-    <div class="ic">⬆</div>
+    <div class="ic" aria-hidden="true">⬆</div>
     <h3>Dateien hier ablegen oder auswählen</h3>
     <p>Mehrere Dateien möglich · max. 200 MB · Format wird automatisch erkannt</p>
     <div class="formats">
@@ -40,12 +40,13 @@ include __DIR__ . "/../layout/appheader.php";
 
   <form class="urlform" method="post" action="/upload/url">
     <input type="hidden" name="_csrf" value="<?php echo htmlattr($csrf); ?>">
-    <span class="dim small" style="white-space:nowrap">oder per URL:</span>
-    <input class="input" type="url" name="url" placeholder="https://…/metadaten.csv" required>
+    <span class="dim small" style="white-space:nowrap" id="urlLabel">oder per URL:</span>
+    <input class="input" type="url" name="url" placeholder="https://…/metadaten.csv" required
+           aria-labelledby="urlLabel" aria-label="Metadaten-URL">
     <button class="btn btn-outline btn-sm" type="submit">Von URL laden</button>
   </form>
 
-  <div id="uploadList" class="upload-list" hidden></div>
+  <div id="uploadList" class="upload-list" role="status" aria-live="polite" aria-label="Upload-Status" hidden></div>
 
   <div class="grid2" style="margin:16px 0">
     <div class="card kpi"><span class="v tnum"><?php echo $recCount; ?></span><span class="l">Datensätze konvertiert</span></div>
@@ -55,7 +56,7 @@ include __DIR__ . "/../layout/appheader.php";
   <?php if (empty($imports)): ?>
     <div class="tablewrap" id="importsTable">
       <div class="empty">
-        <div class="ic">📂</div>
+        <div class="ic" aria-hidden="true">📂</div>
         <div class="fn" style="font-size:15px;margin-bottom:4px">Noch keine Importe</div>
         <div class="small">Lade oben eine Metadaten-Datei hoch, um zu starten.</div>
       </div>
@@ -63,9 +64,10 @@ include __DIR__ . "/../layout/appheader.php";
   <?php else: ?>
     <div class="tablewrap" id="importsTable">
       <table>
+        <caption class="sr-only">Ihre Importe mit Format, Fortschritt, Verarbeitungsstatus und Aktionen</caption>
         <thead><tr>
-          <th>Datei</th><th>Format</th><th>Upload</th><th>Verarbeitung</th>
-          <th>Datensätze</th><th>Hochgeladen</th><th style="text-align:right">Aktion</th>
+          <th scope="col">Datei</th><th scope="col">Format</th><th scope="col">Upload</th><th scope="col">Verarbeitung</th>
+          <th scope="col">Datensätze</th><th scope="col">Hochgeladen</th><th scope="col" style="text-align:right">Aktion</th>
         </tr></thead>
         <tbody>
         <?php foreach ($imports as $imp):
@@ -80,30 +82,38 @@ include __DIR__ . "/../layout/appheader.php";
               <div class="fn"><?php echo html($imp->filename()); ?></div>
               <?php if ($sizeMb !== ""): ?><div class="dim small"><?php echo html($sizeMb); ?></div><?php endif; ?>
             </td>
-            <td><?php if ($imp->baseFormat()): ?><span class="fmt"><?php echo html(strtoupper($imp->baseFormat())); ?></span><?php else: ?><span class="dim">–</span><?php endif; ?></td>
+            <?php $fmtLabel = $imp->detectedFormat() ?: ($imp->baseFormat() ? strtoupper($imp->baseFormat()) : null); ?>
+            <td><?php if ($fmtLabel !== null): ?><span class="fmt" title="<?php echo htmlattr($fmtLabel); ?>"><?php echo html($fmtLabel); ?></span><?php else: ?><span class="dim">–</span><?php endif; ?></td>
             <td style="min-width:120px">
-              <div class="prog <?php echo $progress >= 100 ? "ok" : "acc"; ?>"><i style="width:<?php echo $progress; ?>%"></i></div>
-              <div class="dim small tnum"><?php echo $progress; ?> %</div>
+              <div class="prog <?php echo $progress >= 100 ? "ok" : "acc"; ?>" role="progressbar"
+                   aria-valuemin="0" aria-valuemax="100" aria-valuenow="<?php echo $progress; ?>"
+                   aria-label="Upload-Fortschritt <?php echo $progress; ?> Prozent"><i style="width:<?php echo $progress; ?>%"></i></div>
+              <div class="dim small tnum" aria-hidden="true"><?php echo $progress; ?> %</div>
             </td>
             <td><span class="badge <?php echo $badgeClass; ?>"><span class="bd"></span><?php echo html($badgeLabel); ?></span></td>
             <td class="tnum"><?php echo $imp->recordCount() > 0 ? $imp->recordCount() : '<span class="dim">–</span>'; ?></td>
             <td class="dim small tnum"><?php echo html($when); ?></td>
             <td style="text-align:right">
               <div style="display:inline-flex;gap:6px;align-items:center;justify-content:flex-end">
-                <?php if ($imp->report() !== null):
+                <?php if ($imp->status() === "error"): ?>
+                  <a class="btn btn-outline btn-sm"
+                     href="/imports/<?php echo htmlattr($imp->id()); ?>/details"
+                     style="color:var(--danger);border-color:var(--danger)"
+                     title="Fehlerdetails ansehen"><span aria-hidden="true">⚠</span> Details</a>
+                <?php elseif ($imp->report() !== null):
                   $hasIssues = $imp->hasReportIssues(); ?>
                   <a class="btn btn-outline btn-sm"
                      href="/imports/<?php echo htmlattr($imp->id()); ?>/report"
                      <?php if ($hasIssues): ?>style="color:var(--danger);border-color:var(--danger)"<?php endif; ?>
-                     title="Prüfbericht ansehen"><?php echo $hasIssues ? "⚠ Report" : "✓ Report"; ?></a>
+                     title="Prüfbericht ansehen"><span aria-hidden="true"><?php echo $hasIssues ? "⚠" : "✓"; ?></span> <?php echo $hasIssues ? "Report (Beanstandungen)" : "Report"; ?></a>
                 <?php endif; ?>
                 <?php if ($isConverted): ?>
-                  <a class="btn btn-primary btn-sm" href="/imports/<?php echo htmlattr($imp->id()); ?>/records">✎ Bearbeiten</a>
+                  <a class="btn btn-primary btn-sm" href="/imports/<?php echo htmlattr($imp->id()); ?>/records"><span aria-hidden="true">✎</span> Bearbeiten</a>
                 <?php else: ?>
-                  <span class="btn btn-outline btn-sm disabled">✎ Bearbeiten</span>
+                  <span class="btn btn-outline btn-sm disabled" aria-disabled="true"><span aria-hidden="true">✎</span> Bearbeiten</span>
                 <?php endif; ?>
                 <button type="button" class="iconbtn-del" data-del="<?php echo htmlattr($imp->id()); ?>"
-                        title="Import löschen" aria-label="Import löschen">🗑</button>
+                        title="Import löschen" aria-label="Import löschen"><span aria-hidden="true">🗑</span></button>
               </div>
             </td>
           </tr>

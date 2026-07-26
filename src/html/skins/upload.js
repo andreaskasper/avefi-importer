@@ -101,13 +101,15 @@
     el.className = "upload-item";
     el.innerHTML =
       '<div class="ui-head"><span class="fn"></span><span class="ui-status dim small">0 %</span></div>' +
-      '<div class="prog acc"><i style="width:0%"></i></div>';
+      '<div class="prog acc" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Upload-Fortschritt"><i style="width:0%"></i></div>';
     el.querySelector(".fn").textContent = name;
     uploadList.appendChild(el);
     return el;
   }
   function setProgress(item, pct) {
-    item.querySelector(".prog > i").style.width = pct + "%";
+    var bar = item.querySelector(".prog");
+    bar.querySelector("i").style.width = pct + "%";
+    bar.setAttribute("aria-valuenow", pct);
     var s = item.querySelector(".ui-status");
     if (s && !item.dataset.done) s.textContent = pct + " %";
   }

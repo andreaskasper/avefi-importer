@@ -38,7 +38,10 @@
 
   var jt = document.getElementById("jsonToggle");
   var jp = document.getElementById("jsonPreview");
-  if (jt && jp) jt.addEventListener("click", function () { jp.hidden = !jp.hidden; });
+  if (jt && jp) jt.addEventListener("click", function () {
+    jp.hidden = !jp.hidden;
+    jt.setAttribute("aria-expanded", jp.hidden ? "false" : "true");
+  });
 
   // PID-Registrierung ist noch nicht freigeschaltet — Hinweis-Modal zeigen.
   var pidBtn = document.getElementById("pidRegisterBtn");

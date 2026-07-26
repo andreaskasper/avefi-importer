@@ -65,3 +65,23 @@ gezielt prüfen: Der Report benennt jeden beanstandeten Record einzeln.
 - Ist die Quelle **bereits natives AVefi-JSON** (Array mit `category: "avefi:…"`,
   bzw. `has_record`-Container), wird sie **erkannt und unverändert durchgereicht**
   (kein erneutes Mapping); das Original bleibt erhalten. Beispiel: [`samples/avefi-native.json`](../samples/avefi-native.json).
+
+## Fehlerdetails (Verarbeitungsfehler)
+
+Schlägt die **Verarbeitung** fehl (Status **Fehler**), zeigt die Import-Übersicht
+statt „Bearbeiten" einen roten Button **„⚠ Details"** → `/imports/<uuid>/details`.
+Die Seite erklärt den Fehler konkret:
+
+- **Stufe & Worker-Meldung**: In welchem Schritt (Download / Erkennung / Konvertierung)
+  es hakte und die Roh-Fehlermeldung.
+- **Position**: Zeile und Spalte des Fehlers.
+- **Code-Ausschnitt**: die betroffene Zeile (± Kontext) mit markierter Fehlerstelle.
+- **Lösungshinweis**: was konkret zu tun ist.
+
+Erkannte Fehlerquellen:
+
+| Format | Beispiele |
+|--------|-----------|
+| **JSON** | Syntaxfehler mit Zeile/Spalte: überzähliges/fehlendes Komma, nicht geschlossene Zeichenkette, fehlender Doppelpunkt, einfache statt doppelter Anführungszeichen, ungültiges Escape … (selbst-enthaltener `JsonLint`) |
+| **XML/MARC-XML/EAD** | nicht geschlossene/verschachtelte Tags, ungültige Zeichen — Position via `libxml` |
+| **CSV/TSV** | uneinheitliche Spaltenzahl (mit Zeilennummer), fehlende Titel-Spalte, keine Datenzeilen |

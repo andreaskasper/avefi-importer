@@ -15,7 +15,7 @@ $page_title = html($import->filename()) . " · Report";
 include __DIR__ . "/../layout/head.php";
 include __DIR__ . "/../layout/appheader.php";
 ?>
-<main class="appwrap">
+<main id="main" class="appwrap">
   <div class="crumbs">
     <a href="/">Importe</a><span class="sep">/</span><span><?php echo html($import->filename()); ?></span>
     <span class="sep">/</span><span>Report</span>
@@ -28,7 +28,7 @@ include __DIR__ . "/../layout/appheader.php";
     <span class="dim small"><?php echo html($import->filename()); ?></span>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
       <a class="btn btn-outline btn-sm" href="/imports/<?php echo htmlattr($import->id()); ?>/records">Datensätze</a>
-      <a class="btn btn-outline btn-sm" href="/imports/<?php echo htmlattr($import->id()); ?>/avefi.json">⬇ AVefi-JSON</a>
+      <a class="btn btn-outline btn-sm" href="/imports/<?php echo htmlattr($import->id()); ?>/avefi.json"><span aria-hidden="true">⬇</span> AVefi-JSON</a>
     </div>
   </div>
 
@@ -50,11 +50,11 @@ include __DIR__ . "/../layout/appheader.php";
     ?>
 
     <?php if ($allGood): ?>
-      <div class="alert alert-ok" style="margin-bottom:16px">
-        ✓ Alles in Ordnung — <?php echo $av; ?> AVefi-Record<?php echo $av === 1 ? "" : "s"; ?> entsprechen dem av-efi-schema.
+      <div class="alert alert-ok" role="status" style="margin-bottom:16px">
+        <span aria-hidden="true">✓</span> Alles in Ordnung — <?php echo $av; ?> AVefi-Record<?php echo $av === 1 ? "" : "s"; ?> entsprechen dem av-efi-schema.
       </div>
     <?php else: ?>
-      <div class="alert" style="margin-bottom:16px">
+      <div class="alert" role="alert" style="margin-bottom:16px">
         Es gibt Beanstandungen. <?php echo $vbad; ?> von <?php echo $av; ?> AVefi-Record<?php echo $av === 1 ? "" : "s"; ?> entsprechen noch nicht dem Schema<?php echo $parse ? ", außerdem " . count($parse) . " Parse-Hinweis(e)" : ""; ?>.
       </div>
     <?php endif; ?>
@@ -79,7 +79,8 @@ include __DIR__ . "/../layout/appheader.php";
       <h3 class="side-h" style="margin:0 0 8px">Schema-Beanstandungen</h3>
       <div class="tablewrap">
         <table>
-          <thead><tr><th style="width:34%">Record</th><th style="width:16%">Typ</th><th>Beanstandung(en)</th></tr></thead>
+          <caption class="sr-only">AVefi-Records mit Schema-Beanstandungen</caption>
+          <thead><tr><th scope="col" style="width:34%">Record</th><th scope="col" style="width:16%">Typ</th><th scope="col">Beanstandung(en)</th></tr></thead>
           <tbody>
           <?php foreach ($invalid as $iv):
             $cls   = $iv["class"] ?? null;

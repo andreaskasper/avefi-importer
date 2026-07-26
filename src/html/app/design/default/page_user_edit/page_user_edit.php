@@ -20,8 +20,8 @@ include __DIR__ . "/../layout/appheader.php";
   <div class="crumbs"><a href="/users">Nutzerverwaltung</a><span class="sep">/</span><span><?php echo html($user->email()); ?></span></div>
   <h2 style="font-size:19px;margin-bottom:14px">User bearbeiten</h2>
 
-  <?php if ($saved): ?><div class="alert alert-ok" style="margin-bottom:16px">Gespeichert.</div><?php endif; ?>
-  <?php if ($error && isset($errText[$error])): ?><div class="alert" style="margin-bottom:16px"><?php echo html($errText[$error]); ?></div><?php endif; ?>
+  <?php if ($saved): ?><div class="alert alert-ok" role="status" style="margin-bottom:16px">Gespeichert.</div><?php endif; ?>
+  <?php if ($error && isset($errText[$error])): ?><div class="alert" role="alert" style="margin-bottom:16px"><?php echo html($errText[$error]); ?></div><?php endif; ?>
 
   <div class="card" style="margin-bottom:16px">
     <h3 style="font-size:15px;margin-bottom:14px">Stammdaten</h3>

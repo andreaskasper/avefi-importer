@@ -22,6 +22,7 @@ class Routing {
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/records/(\d+)/save$@', $path, $m)) { self::recordSave($m[1], (int)$m[2]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/records$@', $path, $m))            { self::records($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/report$@', $path, $m))             { self::report($m[1]); exit; }
+		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/details$@', $path, $m))            { self::details($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/avefi\.json$@', $path, $m))        { self::avefiJson($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/original$@', $path, $m))           { self::originalDownload($m[1]); exit; }
 
@@ -282,6 +283,23 @@ class Routing {
 	private static function report(string $importId): void {
 		$import = self::ownedImportOr404($importId);
 		self::view("page_report/page_report", ["active" => "imports", "import" => $import]);
+	}
+
+	/** Fehler-Detailseite (Verarbeitungsfehler mit Position/Ausschnitt/Erklärung). */
+	private static function details(string $importId): void {
+		$import = self::ownedImportOr404($importId);
+		$report = $import->report();
+		$detail = is_array($report) && isset($report["parse_detail"]) && is_array($report["parse_detail"])
+			? $report["parse_detail"] : null;
+		// Fallback: Live-Diagnose, falls kein gespeicherter Bericht vorliegt (Altimporte).
+		if ($detail === null) {
+			$path = Storage::firstOrgFile($importId);
+			if ($path !== null) $detail = ParseDiagnostics::analyze($path, $import->baseFormat());
+		}
+		$failed = WorkerJob::lastFailedForImport($importId);
+		self::view("page_details/page_details", [
+			"active" => "imports", "import" => $import, "detail" => $detail, "failed" => $failed,
+		]);
 	}
 
 	/** Datensatz-Editor. */
