@@ -164,6 +164,7 @@ include __DIR__ . "/../layout/appheader.php";
             <?php if ($import->profileLabel()): ?> · Mapping <?php echo html($import->profileLabel()); ?><?php endif; ?>
           </p>
         </div>
+        <button type="button" class="btn btn-outline" id="pidRegisterBtn" style="justify-content:center">🔗 PID registrieren</button>
         <button type="submit" class="btn btn-primary" style="justify-content:center">✓ Speichern</button>
       </aside>
     </div>

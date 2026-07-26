@@ -17,6 +17,7 @@ $body_class = isset($body_class) ? $body_class : "";
 <link rel="stylesheet" href="/skins/app.css">
 <!-- Vue 3 (global build, vendored) — projektweit verfügbar für interaktive Komponenten -->
 <script src="/skins/vue.global.prod.js"></script>
+<script src="/skins/modal.js"></script>
 <script>
   /* Theme früh anwenden, um Flackern zu vermeiden. */
   (function(){ try{ var t=localStorage.getItem("avefi-theme"); if(t) document.documentElement.setAttribute("data-theme", t); }catch(e){} })();

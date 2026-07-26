@@ -39,4 +39,19 @@
   var jt = document.getElementById("jsonToggle");
   var jp = document.getElementById("jsonPreview");
   if (jt && jp) jt.addEventListener("click", function () { jp.hidden = !jp.hidden; });
+
+  // PID-Registrierung ist noch nicht freigeschaltet — Hinweis-Modal zeigen.
+  var pidBtn = document.getElementById("pidRegisterBtn");
+  if (pidBtn) {
+    pidBtn.addEventListener("click", function () {
+      if (window.AvefiModal) {
+        AvefiModal.alert({
+          title: "PID-Registrierung",
+          message: "Diese Funktion ist noch nicht freigeschaltet. Die Vergabe von AVefi-PIDs erfolgt zu einem späteren Zeitpunkt durch AVefi."
+        });
+      } else {
+        alert("Diese Funktion ist noch nicht freigeschaltet.");
+      }
+    });
+  }
 })();

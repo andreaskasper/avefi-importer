@@ -25,6 +25,13 @@ services:
       DB_USER:    avefi
       DB_PASS:    avefi
       FILES_PATH: /mnt/files
+      # PID-Registrierung — noch nicht aktiv, von AVefi später zu konfigurieren
+      # (siehe handbuch/06-pid-registrierung.md):
+      # PID_ENDPOINT: ""
+      # PID_PREFIX:   "21.11155"
+      # PID_USER:     ""
+      # PID_PASSWORD: ""
+      # PID_DRYRUN:   "true"
     depends_on:
       db:
         condition: service_healthy

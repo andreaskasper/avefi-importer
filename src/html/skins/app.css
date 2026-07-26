@@ -136,6 +136,17 @@ tbody tr:hover{background:var(--surface-2)}
 .ui-ok{color:var(--ok);font-weight:600}
 .ui-err{color:var(--danger);font-weight:600}
 
+/* modal (AvefiModal) */
+.modal-overlay{position:fixed;inset:0;background:rgba(20,35,42,.45);display:grid;place-items:center;z-index:200;padding:20px}
+.modal-box{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  box-shadow:var(--shadow);overflow:hidden}
+.modal-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.modal-head h3{font-size:15px;flex:1}
+.modal-x{border:0;background:none;font-size:20px;line-height:1;color:var(--muted);cursor:pointer;padding:0 4px}
+.modal-x:hover{color:var(--ink)}
+.modal-body{padding:16px;font-size:14px;color:var(--ink);line-height:1.55}
+.modal-foot{padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
 /* delete import */
 .iconbtn-del{border:1px solid var(--border);background:var(--surface);border-radius:8px;padding:5px 9px;cursor:pointer;
   color:var(--muted);font-size:13px;line-height:1}
