@@ -21,6 +21,7 @@ class Routing {
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/records/(\d+)/edit$@', $path, $m)) { self::recordEdit($m[1], (int)$m[2]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/records/(\d+)/save$@', $path, $m)) { self::recordSave($m[1], (int)$m[2]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/records$@', $path, $m))            { self::records($m[1]); exit; }
+		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/report$@', $path, $m))             { self::report($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/avefi\.json$@', $path, $m))        { self::avefiJson($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/original$@', $path, $m))           { self::originalDownload($m[1]); exit; }
 
@@ -275,6 +276,12 @@ class Routing {
 		$import  = self::ownedImportOr404($importId);
 		$records = Record::forImport($importId);
 		self::view("page_records/page_records", ["active" => "imports", "import" => $import, "records" => $records]);
+	}
+
+	/** Parse-/Validierungsbericht eines Imports (Fehlerreport). */
+	private static function report(string $importId): void {
+		$import = self::ownedImportOr404($importId);
+		self::view("page_report/page_report", ["active" => "imports", "import" => $import]);
 	}
 
 	/** Datensatz-Editor. */

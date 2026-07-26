@@ -118,6 +118,28 @@ class Import {
 		$this->row["format_profile_id"] = $profileId;
 	}
 
+	/** Parse-/Validierungsbericht (Fehlerreport) als JSON ablegen. */
+	public function setReport(array $report): void {
+		$json = json_encode($report, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+		DB::execute("UPDATE imports SET report_json = :r WHERE id = :id", [":r" => $json, ":id" => $this->id()]);
+		$this->row["report_json"] = $json;
+	}
+
+	/** Bericht als Array (oder null). */
+	public function report(): ?array {
+		$raw = $this->row["report_json"] ?? null;
+		if ($raw === null || $raw === "") return null;
+		$r = json_decode((string)$raw, true);
+		return is_array($r) ? $r : null;
+	}
+
+	/** Hat der Import einen Bericht mit Beanstandungen? */
+	public function hasReportIssues(): bool {
+		$r = $this->report();
+		if ($r === null) return false;
+		return !empty($r["parse_errors"]) || (int)($r["summary"]["invalid"] ?? 0) > 0 || (int)($r["summary"]["row_errors"] ?? 0) > 0;
+	}
+
 	public function setCounts(int $records, int $errors): void {
 		DB::execute("UPDATE imports SET record_count = :r, error_count = :e WHERE id = :id",
 			[":r" => $records, ":e" => $errors, ":id" => $this->id()]);

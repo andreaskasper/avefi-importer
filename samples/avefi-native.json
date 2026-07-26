@@ -1,0 +1,32 @@
+[
+  {
+    "category": "avefi:WorkVariant",
+    "type": "Monographic",
+    "has_primary_title": { "has_name": "Die Reise nach Leonberg", "type": "PreferredTitle" },
+    "has_alternative_title": [ { "has_name": "Reise nach Leonberg", "type": "AlternativeTitle" } ],
+    "has_identifier": [ { "category": "avefi:LocalResource", "id": "SAMPLE010921_work" } ],
+    "has_event": [
+      {
+        "category": "avefi:ProductionEvent",
+        "has_date": "1965",
+        "has_activity": [
+          { "category": "avefi:DirectingActivity", "type": "Director",
+            "has_agent": [ { "category": "avefi:Agent", "has_name": "Erika Muster" } ] }
+        ]
+      }
+    ]
+  },
+  {
+    "category": "avefi:Manifestation",
+    "has_primary_title": { "has_name": "Die Reise nach Leonberg", "type": "TitleProper" },
+    "is_manifestation_of": [ { "category": "avefi:LocalResource", "id": "SAMPLE010921_work" } ],
+    "has_identifier": [ { "category": "avefi:LocalResource", "id": "SAMPLE010921_manifestation" } ]
+  },
+  {
+    "category": "avefi:Item",
+    "has_primary_title": { "has_name": "Die Reise nach Leonberg", "type": "TitleProper" },
+    "is_item_of": { "category": "avefi:LocalResource", "id": "SAMPLE010921_manifestation" },
+    "has_identifier": [ { "category": "avefi:LocalResource", "id": "SAMPLE010921_item" } ],
+    "has_duration": { "has_value": "PT00H14M00S" }
+  }
+]

@@ -90,6 +90,13 @@ include __DIR__ . "/../layout/appheader.php";
             <td class="dim small tnum"><?php echo html($when); ?></td>
             <td style="text-align:right">
               <div style="display:inline-flex;gap:6px;align-items:center;justify-content:flex-end">
+                <?php if ($imp->report() !== null):
+                  $hasIssues = $imp->hasReportIssues(); ?>
+                  <a class="btn btn-outline btn-sm"
+                     href="/imports/<?php echo htmlattr($imp->id()); ?>/report"
+                     <?php if ($hasIssues): ?>style="color:var(--danger);border-color:var(--danger)"<?php endif; ?>
+                     title="Prüfbericht ansehen"><?php echo $hasIssues ? "⚠ Report" : "✓ Report"; ?></a>
+                <?php endif; ?>
                 <?php if ($isConverted): ?>
                   <a class="btn btn-primary btn-sm" href="/imports/<?php echo htmlattr($imp->id()); ?>/records">✎ Bearbeiten</a>
                 <?php else: ?>

@@ -49,8 +49,13 @@ CREATE TABLE IF NOT EXISTS imports (
     record_count       INTEGER NOT NULL DEFAULT 0,
     error_count        INTEGER NOT NULL DEFAULT 0,
     storage_path       TEXT,
+    report_json        JSONB,                -- Parse-/Validierungsbericht (Fehlerreport)
     created_at         TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Nachrüst-Spalte für Bestands-DBs (migrate-Bot): CREATE TABLE IF NOT EXISTS legt
+-- neue Spalten nicht an, daher hier idempotent per ALTER.
+ALTER TABLE imports ADD COLUMN IF NOT EXISTS report_json JSONB;
 
 CREATE TABLE IF NOT EXISTS records (
     id                   SERIAL PRIMARY KEY,

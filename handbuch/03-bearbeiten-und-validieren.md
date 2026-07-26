@@ -40,3 +40,28 @@ Werkart-Liste). Erst ein **gültiger** Datensatz ist Voraussetzung für die spä
 
 > Hinweis: MARC-XML/EAD liefern oft keine saubere Werkart — solche Datensätze sind
 > zunächst „ungültig" und werden im Editor ergänzt.
+
+## Prüfbericht (Fehlerreport)
+
+Jeder verarbeitete Import erhält einen **Prüfbericht**. In der Import-Übersicht führt
+der Button **„✓ Report"** bzw. **„⚠ Report"** (rot bei Beanstandungen) zur Seite
+`/imports/<uuid>/report`. Der Bericht prüft das ausgelieferte `avefi.v1.json` gegen
+das **echte av-efi-schema** (Klassen WorkVariant / Manifestation / Item) und zeigt:
+
+- **Kennzahlen**: Datensätze (Werke), geprüfte AVefi-Records, schema-gültig, mit Beanstandung.
+- **Parse-Hinweise**: Zeilen/Dateien, die nicht (vollständig) gelesen werden konnten
+  (kaputtes CSV/TSV/JSON/XML, fehlende Pflichtspalten …).
+- **Schema-Beanstandungen**: je Record die konkreten Verstöße (fehlende Pflichtfelder,
+  unzulässige Enum-Werte, falsche/fehlende `category` …).
+
+So lässt sich auch ein **bereits als AVefi eingereichtes, aber fehlerhaftes** Schema
+gezielt prüfen: Der Report benennt jeden beanstandeten Record einzeln.
+
+## AVefi-Ausgabe & natives AVefi
+
+- Für CSV/TSV/JSON/MARC-XML/EAD wird intern gemappt und `avefi.v1.json` als echtes
+  AVefi-Record-Set (`WorkVariant` + `Manifestation` + `Item`, verknüpft über
+  `LocalResource`-IDs) geschrieben — siehe `AvefiMapper`.
+- Ist die Quelle **bereits natives AVefi-JSON** (Array mit `category: "avefi:…"`,
+  bzw. `has_record`-Container), wird sie **erkannt und unverändert durchgereicht**
+  (kein erneutes Mapping); das Original bleibt erhalten. Beispiel: [`samples/avefi-native.json`](../samples/avefi-native.json).

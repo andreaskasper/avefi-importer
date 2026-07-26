@@ -7,6 +7,7 @@
 class ConverterFactory {
 
 	private const LABELS = [
+		"avefi_json_v1"   => "AVefi (nativ)",
 		"generic_csv_v1"  => "Generisch (Tabelle)",
 		"generic_json_v1" => "Generisch (JSON)",
 		"marcxml_v1"      => "MARC-XML",
@@ -26,6 +27,8 @@ class ConverterFactory {
 	/** Instanziiert einen Converter für den gegebenen key (oder null). */
 	public static function make(string $key, ?string $baseFormat = null): ?Converter {
 		switch ($key) {
+			case "avefi_json_v1":
+				return new \converters\AvefiJsonConverter();
 			case "generic_csv_v1":
 				return new \converters\GenericCsvConverter($baseFormat === "tsv" ? "\t" : "auto");
 			case "generic_json_v1":
@@ -45,6 +48,11 @@ class ConverterFactory {
 	 */
 	public static function genericKey(?string $baseFormat, array $analysis): ?string {
 		$columns = $analysis["columns"] ?? [];
+
+		// Bereits natives AVefi-JSON? → nicht neu mappen, sondern Passthrough-Converter.
+		if ($baseFormat === "json" && self::looksLikeAvefi($columns, $analysis["sample"] ?? null)) {
+			return "avefi_json_v1";
+		}
 		if (in_array($baseFormat, ["csv", "tsv"], true) && RecordMapper::hasTitleColumn($columns)) {
 			return "generic_csv_v1";
 		}
@@ -67,5 +75,20 @@ class ConverterFactory {
 			return "ead_v1";
 		}
 		return null;
+	}
+
+	/**
+	 * Sieht die JSON-Quelle nach nativem AVefi aus? Signale: AVefi-typische Keys
+	 * (has_primary_title / has_record / is_manifestation_of / is_item_of) oder ein
+	 * category-Wert, der mit "avefi:" beginnt.
+	 */
+	private static function looksLikeAvefi(array $columns, $sample): bool {
+		$cols = array_map(fn($c) => strtolower((string)$c), $columns);
+		foreach (["has_primary_title", "has_record", "is_manifestation_of", "is_item_of"] as $marker) {
+			if (in_array($marker, $cols, true)) return true;
+		}
+		$first = is_array($sample) ? ($sample[0] ?? null) : null;
+		if (is_array($first) && isset($first["category"]) && str_starts_with((string)$first["category"], "avefi:")) return true;
+		return false;
 	}
 }

@@ -11,7 +11,7 @@ Unterstützte Formate: **CSV · TSV · JSON · MARC-XML · EAD · (weitere XML �
 
 Beispieldateien zum Ausprobieren liegen im Repository unter
 [`samples/`](../samples/) (`films.csv`, `films.tsv`, `films.json`, `films.marcxml`,
-`films.ead`).
+`films.ead`, `avefi-native.json`).
 
 ## Import via URL
 
