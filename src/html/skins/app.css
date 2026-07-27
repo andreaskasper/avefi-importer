@@ -394,3 +394,16 @@ select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible,
 .btn-xs{padding:3px 9px;font-size:11.5px;border-radius:6px}
 .linkbtn{border:0;background:none;cursor:pointer;color:var(--ink-dim,#889);font-size:16px;line-height:1;padding:0 4px}
 .linkbtn:hover{color:var(--danger)}
+
+/* Klickbare ID-Badges (öffnen Detail-Modal) */
+.idbadge-info{display:inline-flex;align-items:center;gap:6px;border:0;background:none;font:inherit;cursor:pointer;padding:0;color:inherit}
+.idbadge-info:hover .idbadge-lab{text-decoration:underline}
+.idbadge-info:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:6px}
+
+/* Normdaten-Detail-Modal */
+.detail-box{max-width:520px}
+.detail-content{display:block}
+.detail-img{float:right;max-width:150px;max-height:190px;margin:0 0 10px 14px;border-radius:10px;object-fit:cover;background:var(--surface-2)}
+.detail-desc{font-weight:600;margin:0 0 8px}
+.detail-extract{margin:0;color:var(--ink);line-height:1.6}
+.detail-content::after{content:"";display:block;clear:both}

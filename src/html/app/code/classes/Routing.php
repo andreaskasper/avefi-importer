@@ -46,6 +46,10 @@ class Routing {
 				self::lookup();
 				exit;
 
+			case "/lookup/detail":
+				self::lookupDetail();
+				exit;
+
 			case "/upload":
 				self::upload();
 				exit;
@@ -298,6 +302,14 @@ class Routing {
 			? array_map("trim", explode(",", (string)$_GET["sources"])) : null;
 		$results = AuthorityLookup::search($q, $kind, $sources);
 		self::json(["ok" => true, "kind" => $kind, "results" => $results]);
+	}
+
+	/** Ausführliche Detail-Infos zu einem Normdaten-Treffer (für das Editor-Modal). */
+	private static function lookupDetail(): void {
+		if (!MyUser::isLoggedIn()) { self::json(["ok" => false, "error" => "Nicht angemeldet."], 401); return; }
+		$source = (string)($_GET["source"] ?? "");
+		$id     = (string)($_GET["id"] ?? "");
+		self::json(["ok" => true, "detail" => AuthorityLookup::detail($source, $id)]);
 	}
 
 	/** Fehler-Detailseite (Verarbeitungsfehler mit Position/Ausschnitt/Erklärung). */

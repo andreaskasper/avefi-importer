@@ -211,8 +211,9 @@
 
   var App = window.Vue.createApp({
     data: function () {
-      return { m: parse(boot.record), config: CFG, tab: "work", saving: false, savedAt: 0, errors: [], completeness: boot.completeness || 0, showJson: false, matchingAll: false };
+      return { m: parse(boot.record), config: CFG, tab: "work", saving: false, savedAt: 0, errors: [], completeness: boot.completeness || 0, showJson: false, matchingAll: false, detailOpen: false, detailLoading: false, detail: null };
     },
+    provide: function () { var self = this; return { showDetail: function (s, id) { self.showDetail(s, id); } }; },
     computed: {
       titleText: function () { return this.m.work.primaryTitle.has_name || "Ohne Titel"; },
       avefiOut: function () { return serialize(this.m); },
@@ -247,6 +248,15 @@
       addItem: function () { this.m.items.push({ primaryTitle: { has_name: this.m.work.primaryTitle.has_name, type: "TitleProper" }, element_type: "", has_colour_type: "", has_sound_type: "", has_frame_rate: "", has_access_status: "", duration: "", languages: [], identifiers: [], notes: [], _raw: { category: "avefi:Item" } }); },
       rm: function (list, i) { list.splice(i, 1); },
       pid: function () { if (window.AvefiModal) AvefiModal.alert({ title: "PID-Registrierung", message: "Diese Funktion ist noch nicht freigeschaltet. Die PID-Vergabe übernimmt AVefi zu einem späteren Zeitpunkt." }); },
+      showDetail: function (source, id) {
+        if (!source || !id) return;
+        var self = this; this.detailOpen = true; this.detailLoading = true; this.detail = null;
+        fetch(boot.lookupUrl + "/detail?source=" + encodeURIComponent(source) + "&id=" + encodeURIComponent(id), { credentials: "same-origin" })
+          .then(function (r) { return r.json(); })
+          .then(function (j) { self.detailLoading = false; self.detail = (j && j.detail) || null; })
+          .catch(function () { self.detailLoading = false; self.detail = { title: id, description: "Detail konnte nicht geladen werden.", extract: "", image: "", url: "", wikiUrl: "" }; });
+      },
+      closeDetail: function () { this.detailOpen = false; this.detail = null; },
       save: function () {
         var self = this; if (this.saving) return; this.saving = true;
         var payload = serialize(this.m); payload._csrf = boot.csrf;
@@ -280,18 +290,21 @@
   // same_as-Chips
   App.component("same-as", {
     props: ["list"],
+    inject: { showDetail: { default: function () { return function () {}; } } },
     methods: {
       src: function (r) { return r._source || srcOf(r.category); },
-      title: function (r) { return [r._label, r._description, r.id].filter(function (x) { return x && x !== ""; }).join(" · "); },
+      title: function (r) { return [r._label, r._description, r.id].filter(function (x) { return x && x !== ""; }).join(" · ") + " — Details anzeigen"; },
       rm: function (i) { this.list.splice(i, 1); }
     },
     template:
       '<span class="chips" v-if="list && list.length">' +
-        '<span class="idbadge" v-for="(r,i) in list" :key="i" :title="title(r)">' +
-          '<span class="idbadge-src" :class="\'src-\'+src(r).toLowerCase()">{{ src(r) }}</span>' +
-          '<span class="idbadge-lab" v-if="r._label && r._label!==r.id">{{ r._label }}</span>' +
-          '<span class="idbadge-desc" v-if="r._description">{{ r._description }}</span>' +
-          '<span class="idbadge-id">{{ r.id }}</span>' +
+        '<span class="idbadge" v-for="(r,i) in list" :key="i">' +
+          '<button type="button" class="idbadge-info" :title="title(r)" @click="showDetail(src(r).toLowerCase(), r.id)">' +
+            '<span class="idbadge-src" :class="\'src-\'+src(r).toLowerCase()">{{ src(r) }}</span>' +
+            '<span class="idbadge-lab" v-if="r._label && r._label!==r.id">{{ r._label }}</span>' +
+            '<span class="idbadge-desc" v-if="r._description">{{ r._description }}</span>' +
+            '<span class="idbadge-id">{{ r.id }}</span>' +
+          '</button>' +
           '<button type="button" class="idbadge-x" @click="rm(i)" aria-label="ID entfernen">×</button>' +
         '</span>' +
       '</span>'
@@ -327,6 +340,7 @@
   // Entity-Zeile (Subject/Person/Körperschaft/Ort)
   App.component("entity-row", {
     props: ["entity"],
+    inject: { showDetail: { default: function () { return function () {}; } } },
     computed: {
       kinds: function () { return CFG.subjectKinds || []; },
       meta: function () { return kindMeta(this.entity._kind); },
@@ -360,10 +374,10 @@
           '<same-as :list="entity.same_as"></same-as>' +
           '<div class="ed-suggest" v-if="!hasId && entity._suggest && entity._suggest.length">' +
             '<span class="ed-suggest-lbl">Vorschlag:</span>' +
-            '<span class="idbadge" v-for="r in entity._suggest" :key="r.source+r.id" :title="r.description">' +
+            '<button type="button" class="idbadge idbadge-info" v-for="r in entity._suggest" :key="r.source+r.id" :title="(r.description||\'\')+\' — Details anzeigen\'" @click="showDetail(r.source, r.id)">' +
               '<span class="idbadge-src" :class="\'src-\'+r.source">{{ r.source }}</span>' +
               '<span class="idbadge-lab">{{ r.label }}</span><span class="idbadge-id">{{ r.id }}</span>' +
-            '</span>' +
+            '</button>' +
             '<button type="button" class="btn btn-outline btn-xs" @click="accept">Übernehmen</button>' +
             '<button type="button" class="linkbtn" @click="dismiss" aria-label="Vorschlag verwerfen">×</button>' +
           '</div>' +

@@ -194,6 +194,30 @@ include __DIR__ . "/../layout/appheader.php";
         </div>
         <button type="button" class="btn btn-outline" @click="addItem">+ Exemplar</button>
       </section>
+
+      <!-- Normdaten-Detail-Modal -->
+      <div class="modal-overlay" v-if="detailOpen" @click.self="closeDetail">
+        <div class="modal-box detail-box" role="dialog" aria-modal="true" aria-label="Normdaten-Detail">
+          <div class="modal-head">
+            <h3>{{ detail && detail.title ? detail.title : 'Detail' }}</h3>
+            <button type="button" class="modal-x" @click="closeDetail" aria-label="Schließen">×</button>
+          </div>
+          <div class="modal-body">
+            <div v-if="detailLoading" class="dim"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> lädt …</div>
+            <div v-else-if="detail" class="detail-content">
+              <img v-if="detail.image" :src="detail.image" alt="" class="detail-img" referrerpolicy="no-referrer">
+              <p v-if="detail.description" class="detail-desc">{{ detail.description }}</p>
+              <p v-if="detail.extract" class="detail-extract">{{ detail.extract }}</p>
+              <p v-if="!detail.extract && !detail.description" class="dim">Keine weitere Beschreibung verfügbar.</p>
+            </div>
+          </div>
+          <div class="modal-foot">
+            <a v-if="detail && detail.wikiUrl" class="btn btn-outline btn-sm" :href="detail.wikiUrl" target="_blank" rel="noopener">Wikipedia ↗</a>
+            <a v-if="detail && detail.url" class="btn btn-outline btn-sm" :href="detail.url" target="_blank" rel="noopener">{{ detail.source==='gnd' ? 'GND' : (detail.source==='wikidata' ? 'Wikidata' : 'Quelle') }} ↗</a>
+            <button type="button" class="btn btn-primary btn-sm" @click="closeDetail">Schließen</button>
+          </div>
+        </div>
+      </div>
     </div>
   </template>
 </main>

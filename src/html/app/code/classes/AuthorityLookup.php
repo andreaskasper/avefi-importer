@@ -59,6 +59,89 @@ class AuthorityLookup {
 		return $out;
 	}
 
+	/* ---------------- Detail (für „Wikipedia-Auszug"-Modal) ---------------- */
+
+	private const ID_PATTERN = ["wikidata" => '/^[LPQ]\d+$/', "gnd" => '/^[-\dX]+$/', "viaf" => '/^\d+$/'];
+
+	/** Ausführliche Infos zu einem Treffer: {title, description, extract, image, url, wikiUrl}. */
+	public static function detail(string $source, string $id): array {
+		$source = strtolower(trim($source));
+		$empty = ["source" => $source, "id" => $id, "title" => $id, "description" => "", "extract" => "", "image" => "", "url" => "", "wikiUrl" => ""];
+		if (!isset(self::ID_PATTERN[$source]) || !preg_match(self::ID_PATTERN[$source], $id)) return $empty;
+		try {
+			if ($source === "wikidata") return self::detailWikidata($id);
+			if ($source === "gnd")      return self::detailGnd($id);
+			if ($source === "viaf")     return self::detailViaf($id);
+		} catch (\Throwable $e) {
+			error_log("[AuthorityLookup] detail {$source}/{$id}: " . $e->getMessage());
+		}
+		return $empty;
+	}
+
+	private static function detailWikidata(string $id): array {
+		$j = self::get("https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&ids=" . rawurlencode($id)
+			. "&props=labels%7Cdescriptions%7Csitelinks%7Cclaims&languages=de%7Cen");
+		$e = $j["entities"][$id] ?? [];
+		$title = $e["labels"]["de"]["value"] ?? $e["labels"]["en"]["value"] ?? $id;
+		$desc  = $e["descriptions"]["de"]["value"] ?? $e["descriptions"]["en"]["value"] ?? "";
+		$wikiTitle = null; $lang = "de";
+		if (!empty($e["sitelinks"]["dewiki"]["title"]))      { $wikiTitle = $e["sitelinks"]["dewiki"]["title"]; $lang = "de"; }
+		elseif (!empty($e["sitelinks"]["enwiki"]["title"]))  { $wikiTitle = $e["sitelinks"]["enwiki"]["title"]; $lang = "en"; }
+		$extract = ""; $image = ""; $wikiUrl = "";
+		if ($wikiTitle !== null) { $s = self::wikiSummary($lang, $wikiTitle); $extract = $s["extract"]; $image = $s["image"]; $wikiUrl = $s["url"]; }
+		if ($image === "") {
+			$p18 = $e["claims"]["P18"][0]["mainsnak"]["datavalue"]["value"] ?? null;
+			if (is_string($p18)) $image = "https://commons.wikimedia.org/wiki/Special:FilePath/" . rawurlencode($p18) . "?width=320";
+		}
+		return ["source" => "wikidata", "id" => $id, "title" => $title, "description" => $desc, "extract" => $extract, "image" => $image, "url" => "https://www.wikidata.org/wiki/" . $id, "wikiUrl" => $wikiUrl];
+	}
+
+	private static function detailGnd(string $id): array {
+		$j = self::get("https://lobid.org/gnd/" . rawurlencode($id) . ".json");
+		$title = (string)($j["preferredName"] ?? $id);
+		$bits = [];
+		foreach (($j["professionOrOccupation"] ?? []) as $p) { if (!empty($p["label"])) { $bits[] = $p["label"]; if (count($bits) >= 2) break; } }
+		$dob = $j["dateOfBirth"][0] ?? null; $dod = $j["dateOfDeath"][0] ?? null;
+		if ($dob || $dod) $bits[] = trim(($dob ?: "") . "–" . ($dod ?: ""), "–") !== "" ? ("* " . ($dob ?: "?") . ($dod ? " † " . $dod : "")) : "";
+		$desc = trim(implode(" · ", array_filter($bits)));
+		if ($desc === "") {
+			foreach (["definition", "biographicalOrHistoricalInformation"] as $k) {
+				$v = $j[$k][0]["label"] ?? $j[$k][0] ?? null;
+				if (is_string($v) && $v !== "") { $desc = $v; break; }
+			}
+		}
+		$image = (string)($j["depiction"][0]["thumbnail"] ?? $j["depiction"][0]["id"] ?? "");
+		$extract = ""; $wikiUrl = "";
+		foreach (($j["sameAs"] ?? []) as $sa) {
+			$u = (string)($sa["id"] ?? "");
+			if (preg_match('#^https?://de\.wikipedia\.org/wiki/(.+)$#', $u, $mm)) {
+				$s = self::wikiSummary("de", rawurldecode($mm[1]));
+				$extract = $s["extract"]; if ($image === "") $image = $s["image"]; $wikiUrl = $s["url"];
+				break;
+			}
+		}
+		return ["source" => "gnd", "id" => $id, "title" => $title, "description" => $desc, "extract" => $extract, "image" => $image, "url" => (string)($j["id"] ?? "https://d-nb.info/gnd/" . $id), "wikiUrl" => $wikiUrl];
+	}
+
+	private static function detailViaf(string $id): array {
+		$j = self::get("https://viaf.org/viaf/" . rawurlencode($id) . "/viaf.json");
+		$data = $j["mainHeadings"]["data"] ?? null;
+		$title = "";
+		if (is_array($data)) $title = (string)($data["text"] ?? ($data[0]["text"] ?? ""));
+		if ($title === "") $title = $id;
+		return ["source" => "viaf", "id" => $id, "title" => $title, "description" => "VIAF-Normdatensatz", "extract" => "", "image" => "", "url" => "https://viaf.org/viaf/" . $id, "wikiUrl" => ""];
+	}
+
+	private static function wikiSummary(string $lang, string $title): array {
+		$lang = preg_match('/^[a-z]{2}$/', $lang) ? $lang : "de";
+		$j = self::get("https://{$lang}.wikipedia.org/api/rest_v1/page/summary/" . rawurlencode(str_replace(" ", "_", $title)));
+		return [
+			"extract" => (string)($j["extract"] ?? ""),
+			"image"   => (string)($j["thumbnail"]["source"] ?? ""),
+			"url"     => (string)($j["content_urls"]["desktop"]["page"] ?? ""),
+		];
+	}
+
 	/* ---------------- GND (lobid.org) ---------------- */
 
 	private static function gnd(string $q, string $kind): array {
