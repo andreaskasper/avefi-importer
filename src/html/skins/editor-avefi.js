@@ -26,6 +26,17 @@
     return "";
   }
   function debounce(fn, ms) { var t; return function () { var a = arguments, self = this; clearTimeout(t); t = setTimeout(function () { fn.apply(self, a); }, ms); }; }
+  function norm(s) { return String(s == null ? "" : s).toLowerCase().trim().replace(/\s+/g, " "); }
+  // Eindeutige Treffer: je Quelle genau EIN exakter Label-Treffer (sonst mehrdeutig → nicht vorschlagen).
+  function confidentMatches(name, results) {
+    var n = norm(name), bySrc = {};
+    (results || []).forEach(function (r) { if (norm(r.label) === n) { (bySrc[r.source] = bySrc[r.source] || []).push(r); } });
+    var out = [];
+    Object.keys(bySrc).forEach(function (s) { if (bySrc[s].length === 1) out.push(bySrc[s][0]); });
+    return out;
+  }
+  function sameAsEntry(r) { return { category: r.category, id: r.id, _label: r.label, _source: r.source, _description: r.description }; }
+  function addSameAs(list, r) { if (!list.some(function (x) { return x.category === r.category && x.id === r.id; })) list.push(sameAsEntry(r)); }
 
   // Entfernt transiente (_…) Felder rekursiv und leere Werte.
   function cleanDeep(v) {
@@ -200,7 +211,7 @@
 
   var App = window.Vue.createApp({
     data: function () {
-      return { m: parse(boot.record), config: CFG, tab: "work", saving: false, savedAt: 0, errors: [], completeness: boot.completeness || 0, showJson: false };
+      return { m: parse(boot.record), config: CFG, tab: "work", saving: false, savedAt: 0, errors: [], completeness: boot.completeness || 0, showJson: false, matchingAll: false };
     },
     computed: {
       titleText: function () { return this.m.work.primaryTitle.has_name || "Ohne Titel"; },
@@ -211,6 +222,22 @@
       enumVals: function (name) { return ENUMS[name] || []; },
       addAlt: function () { this.m.work.altTitles.push({ has_name: "", type: "AlternativeTitle" }); },
       addSubject: function () { this.m.work.subjects.push({ _kind: "subject", has_name: "", same_as: [] }); },
+      matchAll: function () {
+        var self = this;
+        var open = this.m.work.subjects.filter(function (s) { return (s.has_name || "").trim().length >= 3 && !(s.same_as || []).length; });
+        if (!open.length) { if (window.AvefiModal) AvefiModal.alert("Keine offenen Begriffe ohne ID zum Abgleichen."); return; }
+        this.matchingAll = true;
+        var hit = 0;
+        Promise.all(open.map(function (s) {
+          return lookup(s._kind, kindMeta(s._kind).sources, s.has_name.trim()).then(function (rs) {
+            var best = confidentMatches(s.has_name.trim(), rs);
+            if (best.length) { if (!s.same_as) s.same_as = []; best.forEach(function (r) { addSameAs(s.same_as, r); }); s._suggest = []; hit++; }
+          });
+        })).then(function () {
+          self.matchingAll = false;
+          if (window.AvefiModal) AvefiModal.alert(hit + " von " + open.length + " Begriffen eindeutig zugeordnet (GND/Wikidata/VIAF).");
+        });
+      },
       addActivity: function () { this.m.work.activities.push({ category: "avefi:DirectingActivity", type: "", name: "", same_as: [] }); },
       addEvent: function () { this.m.work.events.push({ category: "avefi:PublicationEvent", type: "", has_date: "" }); },
       addGenre: function () { this.m.work.genres.push({ has_name: "", same_as: [] }); },
@@ -253,11 +280,20 @@
   // same_as-Chips
   App.component("same-as", {
     props: ["list"],
-    methods: { label: function (r) { return (r._source || srcOf(r.category)) + ": " + r.id; }, rm: function (i) { this.list.splice(i, 1); } },
+    methods: {
+      src: function (r) { return r._source || srcOf(r.category); },
+      title: function (r) { return [r._label, r._description, r.id].filter(function (x) { return x && x !== ""; }).join(" · "); },
+      rm: function (i) { this.list.splice(i, 1); }
+    },
     template:
       '<span class="chips" v-if="list && list.length">' +
-        '<span class="idbadge" v-for="(r,i) in list" :key="i" :title="r._label">{{ label(r) }}' +
-          '<button type="button" class="idbadge-x" @click="rm(i)" aria-label="ID entfernen">×</button></span>' +
+        '<span class="idbadge" v-for="(r,i) in list" :key="i" :title="title(r)">' +
+          '<span class="idbadge-src" :class="\'src-\'+src(r).toLowerCase()">{{ src(r) }}</span>' +
+          '<span class="idbadge-lab" v-if="r._label && r._label!==r.id">{{ r._label }}</span>' +
+          '<span class="idbadge-desc" v-if="r._description">{{ r._description }}</span>' +
+          '<span class="idbadge-id">{{ r.id }}</span>' +
+          '<button type="button" class="idbadge-x" @click="rm(i)" aria-label="ID entfernen">×</button>' +
+        '</span>' +
       '</span>'
   });
 
@@ -293,19 +329,44 @@
     props: ["entity"],
     computed: {
       kinds: function () { return CFG.subjectKinds || []; },
-      meta: function () { return kindMeta(this.entity._kind); }
+      meta: function () { return kindMeta(this.entity._kind); },
+      hasId: function () { return (this.entity.same_as || []).length > 0; }
+    },
+    created: function () {
+      this.runMatch = debounce(this.match, 450);
+      if (this.entity.has_name && !this.hasId) this.runMatch();
+    },
+    watch: {
+      "entity.has_name": function () { if (this.hasId) this.entity._suggest = []; else this.runMatch(); },
+      "entity._kind": function () { if (!this.hasId) this.runMatch(); }
     },
     methods: {
-      pick: function (r) { if (!this.entity.same_as) this.entity.same_as = []; if (!this.entity.same_as.some(function (x) { return x.category === r.category && x.id === r.id; })) this.entity.same_as.push({ category: r.category, id: r.id, _label: r.label, _source: r.source }); }
+      match: function () {
+        var self = this, name = (this.entity.has_name || "").trim();
+        if (name.length < 3 || this.hasId) { this.entity._suggest = []; return; }
+        lookup(this.entity._kind, this.meta.sources, name).then(function (rs) { self.entity._suggest = confidentMatches(name, rs); });
+      },
+      pick: function (r) { if (!this.entity.same_as) this.entity.same_as = []; addSameAs(this.entity.same_as, r); this.entity._suggest = []; },
+      accept: function () { var self = this; if (!this.entity.same_as) this.entity.same_as = []; (this.entity._suggest || []).forEach(function (r) { addSameAs(self.entity.same_as, r); }); this.entity._suggest = []; },
+      dismiss: function () { this.entity._suggest = []; }
     },
     template:
       '<div class="ed-entity">' +
-        '<select class="input kindsel" v-model="entity._kind">' +
+        '<select class="input kindsel" v-model="entity._kind" aria-label="Art">' +
           '<option v-for="k in kinds" :key="k.kind" :value="k.kind">{{ k.label }}</option>' +
         '</select>' +
         '<div class="ed-entity-main">' +
           '<authority-field v-model="entity.has_name" :kind="entity._kind" :sources="meta.sources" :placeholder="meta.label+\' suchen …\'" @pick="pick"></authority-field>' +
           '<same-as :list="entity.same_as"></same-as>' +
+          '<div class="ed-suggest" v-if="!hasId && entity._suggest && entity._suggest.length">' +
+            '<span class="ed-suggest-lbl">Vorschlag:</span>' +
+            '<span class="idbadge" v-for="r in entity._suggest" :key="r.source+r.id" :title="r.description">' +
+              '<span class="idbadge-src" :class="\'src-\'+r.source">{{ r.source }}</span>' +
+              '<span class="idbadge-lab">{{ r.label }}</span><span class="idbadge-id">{{ r.id }}</span>' +
+            '</span>' +
+            '<button type="button" class="btn btn-outline btn-xs" @click="accept">Übernehmen</button>' +
+            '<button type="button" class="linkbtn" @click="dismiss" aria-label="Vorschlag verwerfen">×</button>' +
+          '</div>' +
         '</div>' +
         '<button type="button" class="iconbtn-del" @click="$emit(\'remove\')" aria-label="Eintrag entfernen"><span aria-hidden="true">🗑</span></button>' +
       '</div>'
@@ -318,7 +379,7 @@
       cats: function () { return CFG.activityCategories || []; },
       typeEnum: function () { var cats = CFG.activityCategories || []; for (var i = 0; i < cats.length; i++) if (cats[i].category === this.act.category) return cats[i].enum; return ""; }
     },
-    methods: { pick: function (r) { if (!this.act.same_as) this.act.same_as = []; if (!this.act.same_as.some(function (x) { return x.id === r.id; })) this.act.same_as.push({ category: r.category, id: r.id, _label: r.label, _source: r.source }); } },
+    methods: { pick: function (r) { if (!this.act.same_as) this.act.same_as = []; addSameAs(this.act.same_as, r); } },
     template:
       '<div class="ed-entity">' +
         '<select class="input kindsel" v-model="act.category">' +

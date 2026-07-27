@@ -99,8 +99,14 @@ include __DIR__ . "/../layout/appheader.php";
         </div>
 
         <div class="ed-card">
-          <h3>Schlagwörter · Personen · Orte</h3>
-          <p class="note">Tippen und einen Treffer wählen — die GND-/Wikidata-/VIAF-ID wird automatisch als <code>same_as</code> angehängt.</p>
+          <div class="ed-card-head">
+            <h3>Schlagwörter · Personen · Orte</h3>
+            <button type="button" class="btn btn-outline btn-sm" @click="matchAll" :disabled="matchingAll" title="Begriffe ohne ID automatisch gegen GND/Wikidata/VIAF abgleichen">
+              <span v-if="matchingAll"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> gleicht ab …</span>
+              <span v-else>Automatisch abgleichen</span>
+            </button>
+          </div>
+          <p class="note">Tippen und einen Treffer wählen — oder die ID wird bei eindeutigem Treffer automatisch vorgeschlagen (GND/Wikidata/VIAF) und als <code>same_as</code> angehängt.</p>
           <entity-row v-for="(s,i) in m.work.subjects" :key="i" :entity="s" @remove="rm(m.work.subjects,i)"></entity-row>
           <button type="button" class="btn btn-outline btn-sm" @click="addSubject">+ Eintrag</button>
         </div>
