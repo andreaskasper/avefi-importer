@@ -1,51 +1,27 @@
 <?php
 /*
- * Datensatz-Editor (Screen 4). Erwartet: $import, $record (row), $saved, $error.
- * Speichern via POST an /imports/<uuid>/records/<id>/save (Routing::recordSave).
+ * Datensatz-Editor (AVefi-Schema, Vue3). Erwartet: $import, $record, $canonical, $config.
+ * Der eigentliche Editor ist eine Vue-App (skins/editor-avefi.js); Daten werden als
+ * JSON eingebettet und per JSON an .../save gepostet.
  */
 if (!defined("avefi_entrypoint")) { http_response_code(403); exit; }
 
-$csrf = Csrf::token();
-$data = json_decode((string)($record["data_json"] ?? "{}"), true) ?: [];
-$work    = $data["work"] ?? [];
-$manifs  = $data["manifestations"] ?? [];
-$items   = $data["items"] ?? [];
-$contribs = $work["contributors"] ?? [];
-$source  = $data["source"] ?? [];
-$pct             = (int)$record["completeness"];
-$schemaErrors    = SchemaValidator::validate($data);
-$recommendations = array_values(array_filter(Completeness::issues($data), fn($i) => $i["level"] === "warn"));
-$title   = trim((string)($record["work_title"] ?? "")) !== "" ? $record["work_title"] : "Ohne Titel";
+$csrf  = Csrf::token();
+$disp  = AvefiMapper::workDisplay($canonical["work"] ?? []);
+$title = trim((string)($disp["title"] ?? "")) !== "" ? $disp["title"] : "Ohne Titel";
+$pct   = Completeness::forAvefi($canonical);
 
-$ev = fn($v) => htmlattr($v ?? "");
-
-/* Wiederholbare Zeilen — dieselbe Funktion für vorhandene Zeilen und JS-Templates. */
-function ed_contrib_row($i, array $c = []): string {
-	$r = htmlattr($c["role"] ?? ""); $n = htmlattr($c["name"] ?? "");
-	return '<div class="repeat-row"><div class="rr-fields">'
-		. '<input class="input" name="contributors[' . $i . '][role]" placeholder="Rolle (z. B. director)" value="' . $r . '">'
-		. '<input class="input" name="contributors[' . $i . '][name]" placeholder="Name" value="' . $n . '">'
-		. '</div><button type="button" class="iconbtn-del" data-remove title="Entfernen" aria-label="Zeile entfernen"><span aria-hidden="true">🗑</span></button></div>';
-}
-function ed_field($label, $name, $val): string {
-	return '<label class="rr-field"><span>' . html($label) . '</span><input class="input" name="' . $name . '" value="' . htmlattr($val ?? "") . '"></label>';
-}
-function ed_manif_row($i, array $m = []): string {
-	return '<div class="repeat-row rr-block"><div class="rr-grid">'
-		. ed_field("Träger", "manifestations[" . $i . "][carrier]", $m["carrier"] ?? "")
-		. ed_field("Datum", "manifestations[" . $i . "][date]", $m["date"] ?? "")
-		. ed_field("Länge (min)", "manifestations[" . $i . "][duration_min]", $m["duration_min"] ?? "")
-		. ed_field("Notiz", "manifestations[" . $i . "][note]", $m["note"] ?? "")
-		. '</div><button type="button" class="iconbtn-del" data-remove title="Entfernen" aria-label="Zeile entfernen"><span aria-hidden="true">🗑</span></button></div>';
-}
-function ed_item_row($i, array $it = []): string {
-	return '<div class="repeat-row rr-block"><div class="rr-grid">'
-		. ed_field("Haltende Institution", "items[" . $i . "][holding_institution]", $it["holding_institution"] ?? "")
-		. ed_field("Signatur", "items[" . $i . "][signature]", $it["signature"] ?? "")
-		. ed_field("Standort", "items[" . $i . "][location]", $it["location"] ?? "")
-		. ed_field("Zustand", "items[" . $i . "][condition]", $it["condition"] ?? "")
-		. '</div><button type="button" class="iconbtn-del" data-remove title="Entfernen" aria-label="Zeile entfernen"><span aria-hidden="true">🗑</span></button></div>';
-}
+$boot = [
+	"record"       => $canonical,
+	"config"       => $config,
+	"csrf"         => $csrf,
+	"saveUrl"      => "/imports/" . $import->id() . "/records/" . (int)$record["id"] . "/save",
+	"lookupUrl"    => "/lookup",
+	"recordsUrl"   => "/imports/" . $import->id() . "/records",
+	"filename"     => $import->filename(),
+	"completeness" => $pct,
+];
+$jsonFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
 
 $page_title = html($title) . " · Editor";
 include __DIR__ . "/../layout/head.php";
@@ -59,121 +35,161 @@ include __DIR__ . "/../layout/appheader.php";
     <span class="sep">/</span><span><?php echo html($title); ?></span>
   </div>
 
-  <?php if ($saved): ?><div class="alert alert-ok" role="status" style="margin-bottom:14px">Gespeichert.</div><?php endif; ?>
-  <?php if ($error === "csrf"): ?><div class="alert" role="alert" style="margin-bottom:14px">Sitzung abgelaufen — bitte erneut speichern.</div><?php endif; ?>
+  <noscript><div class="alert" role="alert" style="margin:12px 0">Der Editor benötigt JavaScript.</div></noscript>
 
-  <form id="editorForm" method="post" action="/imports/<?php echo htmlattr($import->id()); ?>/records/<?php echo (int)$record["id"]; ?>/save">
-    <input type="hidden" name="_csrf" value="<?php echo htmlattr($csrf); ?>">
+  <div id="editorApp" data-boot="<?php echo htmlattr(''); ?>">
+    <div class="dim small" style="padding:24px">Editor wird geladen …</div>
+  </div>
 
-    <div class="editbar">
-      <h2 style="font-size:18px"><?php echo html($title); ?></h2>
-      <div style="margin-left:auto;display:flex;gap:8px">
-        <button type="button" class="btn btn-outline btn-sm" id="jsonToggle" aria-expanded="false" aria-controls="jsonPreview"><span aria-hidden="true">{ }</span> JSON-Vorschau</button>
-        <button type="submit" class="btn btn-primary btn-sm"><span aria-hidden="true">✓</span> Speichern</button>
-      </div>
-    </div>
+  <script id="editorBoot" type="application/json"><?php echo json_encode($boot, $jsonFlags); ?></script>
 
-    <pre id="jsonPreview" class="jsonprev" hidden><?php echo html(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)); ?></pre>
-
-    <div class="editor">
-      <!-- structure nav -->
-      <nav class="ed-nav">
-        <div class="tier">Werk</div>
-        <a href="#sec-work"><span class="tk" style="background:var(--work)"></span> Grunddaten</a>
-        <a href="#sec-contrib"><span class="tk" style="background:var(--work)"></span> Beteiligte <span class="st dim">(<?php echo count($contribs); ?>)</span></a>
-        <div class="tier">Manifestation (<?php echo count($manifs); ?>)</div>
-        <a href="#sec-manif"><span class="tk" style="background:var(--manif)"></span> Manifestationen</a>
-        <div class="tier">Exemplar (<?php echo count($items); ?>)</div>
-        <a href="#sec-items"><span class="tk" style="background:var(--item)"></span> Exemplare</a>
-      </nav>
-
-      <!-- form -->
-      <div class="ed-main">
-        <section id="sec-work">
-          <div class="sechead"><span class="tk" style="background:var(--work)"></span><h3>Werk · Grunddaten</h3></div>
-          <div class="frow"><label for="w-title">Haupttitel <span class="req" aria-hidden="true">*</span></label><div class="fval"><input class="input" id="w-title" name="work[title]" required aria-required="true" value="<?php echo $ev($work["title"] ?? ""); ?>"></div></div>
-          <div class="frow"><label for="w-titles">Weitere Titel</label><div class="fval"><input class="input" id="w-titles" name="work[titles_additional]" value="<?php echo $ev(implode("; ", $work["titles_additional"] ?? [])); ?>" placeholder="mit ; getrennt"></div></div>
-          <div class="frow"><label for="w-year">Produktionsjahr <span class="req" aria-hidden="true">*</span></label><div class="fval"><input class="input" id="w-year" name="work[year]" required aria-required="true" value="<?php echo $ev($work["year"] ?? ""); ?>" style="max-width:140px"></div></div>
-          <div class="frow"><label for="w-country">Herstellungsland</label><div class="fval"><input class="input" id="w-country" name="work[country]" value="<?php echo $ev($work["country"] ?? ""); ?>"></div></div>
-          <div class="frow"><label for="w-type">Werkart <span class="req" aria-hidden="true">*</span></label><div class="fval"><input class="input" id="w-type" name="work[work_type]" list="worktypes" required aria-required="true" value="<?php echo $ev($work["work_type"] ?? ""); ?>"></div></div>
-          <div class="frow"><label for="w-genre">Genre</label><div class="fval"><input class="input" id="w-genre" name="work[genre]" value="<?php echo $ev($work["genre"] ?? ""); ?>"></div></div>
-          <div class="frow"><label for="w-lang">Sprache(n)</label><div class="fval"><input class="input" id="w-lang" name="work[language]" value="<?php echo $ev($work["language"] ?? ""); ?>"></div></div>
-          <div class="frow" style="border-bottom:0"><label for="w-desc">Beschreibung</label><div class="fval"><textarea class="input" id="w-desc" name="work[description]" rows="3"><?php echo html($work["description"] ?? ""); ?></textarea></div></div>
-          <datalist id="worktypes">
-            <option>Spielfilm</option><option>Dokumentarfilm</option><option>Kurzfilm</option>
-            <option>Animationsfilm</option><option>Experimentalfilm</option><option>Serie</option><option>unbestimmt</option>
-          </datalist>
-        </section>
-
-        <section id="sec-contrib">
-          <div class="sechead"><span class="tk" style="background:var(--work)"></span><h3>Beteiligte</h3></div>
-          <div id="contribList" class="repeat-list">
-            <?php foreach ($contribs as $i => $c) echo ed_contrib_row($i, is_array($c) ? $c : []); ?>
-          </div>
-          <button type="button" class="btn btn-outline btn-sm" data-add="contributor">+ Beteiligte:r</button>
-        </section>
-
-        <section id="sec-manif">
-          <div class="sechead"><span class="tk" style="background:var(--manif)"></span><h3>Manifestationen</h3></div>
-          <div id="manifList" class="repeat-list">
-            <?php foreach ($manifs as $i => $m) echo ed_manif_row($i, is_array($m) ? $m : []); ?>
-          </div>
-          <button type="button" class="btn btn-outline btn-sm" data-add="manifestation">+ Manifestation</button>
-        </section>
-
-        <section id="sec-items">
-          <div class="sechead"><span class="tk" style="background:var(--item)"></span><h3>Exemplare</h3></div>
-          <div id="itemList" class="repeat-list">
-            <?php foreach ($items as $i => $it) echo ed_item_row($i, is_array($it) ? $it : []); ?>
-          </div>
-          <button type="button" class="btn btn-outline btn-sm" data-add="item">+ Exemplar</button>
-        </section>
+  <template id="editorTpl">
+    <div>
+      <div class="editbar">
+        <h2 class="ed-title">{{ titleText }}</h2>
+        <div class="bigring ed-ring" :class="completeness<50?'low':(completeness<80?'mid':'')" :style="{'--p':completeness}" role="img" :aria-label="'Vollständigkeit '+completeness+' Prozent'"><span aria-hidden="true"><b class="tnum">{{ completeness }}%</b></span></div>
+        <div class="ed-actions">
+          <button type="button" class="btn btn-outline btn-sm" @click="showJson=!showJson" :aria-expanded="showJson?'true':'false'"><span aria-hidden="true">{ }</span> JSON</button>
+          <button type="button" class="btn btn-outline btn-sm" @click="pid"><span aria-hidden="true">🔗</span> PID</button>
+          <button type="button" class="btn btn-primary btn-sm" @click="save" :disabled="saving">
+            <span v-if="saving"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Speichern…</span>
+            <span v-else><span aria-hidden="true">✓</span> Speichern</span>
+          </button>
+        </div>
       </div>
 
-      <!-- side -->
-      <aside class="ed-side">
-        <div style="text-align:center">
-          <div class="bigring <?php echo Completeness::ringClass($pct); ?>" style="--p:<?php echo $pct; ?>" role="img" aria-label="Vollständigkeit <?php echo $pct; ?> Prozent"><span aria-hidden="true"><b class="tnum"><?php echo $pct; ?>%</b><small>vollständig</small></span></div>
-          <p class="note" style="margin-top:0">Wird beim Speichern neu berechnet.</p>
+      <div v-if="savedAt" class="alert alert-ok" role="status" style="margin:0 0 12px">Gespeichert.</div>
+      <div v-if="errors.length" class="alert" role="alert" style="margin:0 0 12px">
+        <b>{{ errors.length }} Schema-Hinweis(e)</b> — Speichern bleibt möglich:
+        <ul class="ed-errs"><li v-for="(e,i) in errors" :key="i">{{ e }}</li></ul>
+      </div>
+
+      <pre v-if="showJson" class="jsonprev" aria-label="AVefi-JSON-Vorschau">{{ jsonText }}</pre>
+
+      <div class="ed-tabs" role="tablist">
+        <button type="button" role="tab" :aria-selected="tab==='work'" :class="{on:tab==='work'}" @click="tab='work'">Werk</button>
+        <button type="button" role="tab" :aria-selected="tab==='manifestations'" :class="{on:tab==='manifestations'}" @click="tab='manifestations'">Manifestationen ({{ m.manifestations.length }})</button>
+        <button type="button" role="tab" :aria-selected="tab==='items'" :class="{on:tab==='items'}" @click="tab='items'">Exemplare ({{ m.items.length }})</button>
+      </div>
+
+      <!-- WERK -->
+      <section v-show="tab==='work'" class="ed-tabpanel">
+        <div class="ed-card">
+          <h3>Grunddaten</h3>
+          <div class="ed-grid2">
+            <label class="ed-f"><span>Werkart *</span><enum-select v-model="m.work.type" enum-name="WorkVariantTypeEnum"></enum-select></label>
+            <label class="ed-f"><span>Variante</span><enum-select v-model="m.work.variant_type" enum-name="VariantTypeEnum"></enum-select></label>
+            <label class="ed-f"><span>Produktionsjahr</span><input class="input" v-model="m.work.productionYear" placeholder="z. B. 1966 oder 1966-05-21~"></label>
+          </div>
         </div>
-        <div>
-          <h4 class="side-h">Schema-Prüfung</h4>
-          <?php if (empty($schemaErrors)): ?>
-            <div class="val-list"><div class="vi"><span class="m badge b-ok" style="padding:1px 6px" aria-hidden="true">✓</span><span>Record ist schema-gültig</span></div></div>
-          <?php else: ?>
-            <div class="val-list">
-              <?php foreach ($schemaErrors as $e): ?>
-                <div class="vi"><span class="m badge b-danger" style="padding:1px 6px" aria-hidden="true">×</span><span><?php echo html($e); ?></span></div>
-              <?php endforeach; ?>
+
+        <div class="ed-card">
+          <h3>Titel</h3>
+          <div class="ed-title-row">
+            <input class="input" v-model="m.work.primaryTitle.has_name" placeholder="Haupttitel *" aria-label="Haupttitel">
+            <enum-select v-model="m.work.primaryTitle.type" enum-name="TitleTypeEnum"></enum-select>
+            <span class="ed-primary-badge" title="Bevorzugter Titel">primär</span>
+          </div>
+          <div class="ed-title-row" v-for="(t,i) in m.work.altTitles" :key="i">
+            <input class="input" v-model="t.has_name" placeholder="Weiterer Titel" aria-label="Weiterer Titel">
+            <enum-select v-model="t.type" enum-name="TitleTypeEnum"></enum-select>
+            <button type="button" class="iconbtn-del" @click="rm(m.work.altTitles,i)" aria-label="Titel entfernen"><span aria-hidden="true">🗑</span></button>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" @click="addAlt">+ Titel</button>
+        </div>
+
+        <div class="ed-card">
+          <h3>Schlagwörter · Personen · Orte</h3>
+          <p class="note">Tippen und einen Treffer wählen — die GND-/Wikidata-/VIAF-ID wird automatisch als <code>same_as</code> angehängt.</p>
+          <entity-row v-for="(s,i) in m.work.subjects" :key="i" :entity="s" @remove="rm(m.work.subjects,i)"></entity-row>
+          <button type="button" class="btn btn-outline btn-sm" @click="addSubject">+ Eintrag</button>
+        </div>
+
+        <div class="ed-card">
+          <h3>Beteiligte</h3>
+          <p class="note">Tätigkeit + Person; die Person kann direkt mit GND/Wikidata/VIAF verknüpft werden.</p>
+          <activity-row v-for="(a,i) in m.work.activities" :key="i" :act="a" @remove="rm(m.work.activities,i)"></activity-row>
+          <button type="button" class="btn btn-outline btn-sm" @click="addActivity">+ Beteiligte:r</button>
+        </div>
+
+        <div class="ed-card">
+          <h3>Weitere Ereignisse</h3>
+          <div class="ed-title-row" v-for="(e,i) in m.work.events" :key="i">
+            <select class="input" v-model="e.category" aria-label="Ereignisart"><option v-for="c in (config.eventCategories||[])" :key="c.category" :value="c.category">{{ c.label }}</option></select>
+            <input class="input" v-model="e.has_date" placeholder="Datum (EDTF)" aria-label="Ereignisdatum">
+            <button type="button" class="iconbtn-del" @click="rm(m.work.events,i)" aria-label="Ereignis entfernen"><span aria-hidden="true">🗑</span></button>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" @click="addEvent">+ Ereignis</button>
+        </div>
+
+        <div class="ed-card">
+          <h3>Genre &amp; Form</h3>
+          <div class="ed-title-row" v-for="(g,i) in m.work.genres" :key="i">
+            <input class="input" v-model="g.has_name" placeholder="Genre" aria-label="Genre">
+            <button type="button" class="iconbtn-del" @click="rm(m.work.genres,i)" aria-label="Genre entfernen"><span aria-hidden="true">🗑</span></button>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" @click="addGenre">+ Genre</button>
+          <div class="ed-forms">
+            <div class="ed-title-row" v-for="(f,i) in m.work.forms" :key="'f'+i">
+              <enum-select v-model="m.work.forms[i]" enum-name="WorkFormEnum" placeholder="Form"></enum-select>
+              <button type="button" class="iconbtn-del" @click="rm(m.work.forms,i)" aria-label="Form entfernen"><span aria-hidden="true">🗑</span></button>
             </div>
-          <?php endif; ?>
-          <?php if ($recommendations): ?>
-            <h4 class="side-h" style="margin-top:14px">Empfehlungen</h4>
-            <div class="val-list">
-              <?php foreach ($recommendations as $r): ?>
-                <div class="vi"><span class="m badge b-warn" style="padding:1px 6px" aria-hidden="true">!</span><span><?php echo html($r["text"]); ?></span></div>
-              <?php endforeach; ?>
-            </div>
-          <?php endif; ?>
+            <button type="button" class="btn btn-outline btn-sm" @click="m.work.forms.push('')">+ Form</button>
+          </div>
         </div>
-        <div>
-          <h4 class="side-h">Herkunft</h4>
-          <p class="small dim" style="margin:0">
-            Quelle: <b><?php echo html($source["file"] ?? $import->filename()); ?></b>
-            <?php if (isset($source["row"])): ?> · Zeile <?php echo (int)$source["row"]; ?><?php endif; ?>
-            <?php if ($import->profileLabel()): ?> · Mapping <?php echo html($import->profileLabel()); ?><?php endif; ?>
-          </p>
+
+        <div class="ed-card">
+          <h3>Identifier &amp; Notizen</h3>
+          <div class="ed-title-row" v-for="(r,i) in m.work.identifiers" :key="i">
+            <select class="input" v-model="r.resourceType" aria-label="Identifier-Typ"><option value="LocalResource">Lokal</option><option value="AVefiResource">AVefi-PID</option></select>
+            <input class="input" v-model="r.id" placeholder="ID" aria-label="Identifier">
+            <button type="button" class="iconbtn-del" @click="rm(m.work.identifiers,i)" aria-label="Identifier entfernen"><span aria-hidden="true">🗑</span></button>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" @click="addIdentifier(m.work.identifiers)">+ Identifier</button>
+          <div class="ed-title-row" v-for="(n,i) in m.work.notes" :key="'n'+i">
+            <input class="input" v-model="m.work.notes[i]" placeholder="Notiz" aria-label="Notiz">
+            <button type="button" class="iconbtn-del" @click="rm(m.work.notes,i)" aria-label="Notiz entfernen"><span aria-hidden="true">🗑</span></button>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" @click="addNote(m.work.notes)">+ Notiz</button>
         </div>
-        <button type="button" class="btn btn-outline" id="pidRegisterBtn" style="justify-content:center"><span aria-hidden="true">🔗</span> PID registrieren</button>
-        <button type="submit" class="btn btn-primary" style="justify-content:center"><span aria-hidden="true">✓</span> Speichern</button>
-      </aside>
+      </section>
+
+      <!-- MANIFESTATIONEN -->
+      <section v-show="tab==='manifestations'" class="ed-tabpanel">
+        <div class="ed-card" v-for="(mf,i) in m.manifestations" :key="i">
+          <div class="ed-card-head"><h3>Manifestation {{ i+1 }}</h3><button type="button" class="iconbtn-del" @click="rm(m.manifestations,i)" aria-label="Manifestation entfernen"><span aria-hidden="true">🗑</span></button></div>
+          <div class="ed-title-row"><input class="input" v-model="mf.primaryTitle.has_name" placeholder="Titel" aria-label="Manifestations-Titel"><enum-select v-model="mf.primaryTitle.type" enum-name="TitleTypeEnum"></enum-select></div>
+          <div class="ed-title-row" v-for="(r,j) in mf.identifiers" :key="j"><select class="input" v-model="r.resourceType" aria-label="Identifier-Typ"><option value="LocalResource">Lokal</option><option value="AVefiResource">AVefi-PID</option></select><input class="input" v-model="r.id" placeholder="ID" aria-label="Identifier"><button type="button" class="iconbtn-del" @click="rm(mf.identifiers,j)" aria-label="Identifier entfernen"><span aria-hidden="true">🗑</span></button></div>
+          <button type="button" class="btn btn-outline btn-sm" @click="addIdentifier(mf.identifiers)">+ Identifier</button>
+        </div>
+        <button type="button" class="btn btn-outline" @click="addManifestation">+ Manifestation</button>
+      </section>
+
+      <!-- EXEMPLARE -->
+      <section v-show="tab==='items'" class="ed-tabpanel">
+        <div class="ed-card" v-for="(it,i) in m.items" :key="i">
+          <div class="ed-card-head"><h3>Exemplar {{ i+1 }}</h3><button type="button" class="iconbtn-del" @click="rm(m.items,i)" aria-label="Exemplar entfernen"><span aria-hidden="true">🗑</span></button></div>
+          <div class="ed-title-row"><input class="input" v-model="it.primaryTitle.has_name" placeholder="Titel" aria-label="Exemplar-Titel"><enum-select v-model="it.primaryTitle.type" enum-name="TitleTypeEnum"></enum-select></div>
+          <div class="ed-grid2">
+            <label class="ed-f"><span>Elementtyp</span><enum-select v-model="it.element_type" enum-name="ItemElementTypeEnum"></enum-select></label>
+            <label class="ed-f"><span>Farbe</span><enum-select v-model="it.has_colour_type" enum-name="ColourTypeEnum"></enum-select></label>
+            <label class="ed-f"><span>Ton</span><enum-select v-model="it.has_sound_type" enum-name="SoundTypeEnum"></enum-select></label>
+            <label class="ed-f"><span>Bildrate</span><enum-select v-model="it.has_frame_rate" enum-name="FrameRateEnum"></enum-select></label>
+            <label class="ed-f"><span>Zugang</span><enum-select v-model="it.has_access_status" enum-name="ItemAccessStatusEnum"></enum-select></label>
+            <label class="ed-f"><span>Dauer (ISO 8601)</span><input class="input" v-model="it.duration" placeholder="PT01H30M00S"></label>
+          </div>
+          <div class="ed-sub">
+            <span class="ed-sublabel">Sprachen</span>
+            <div class="ed-title-row" v-for="(l,j) in it.languages" :key="j"><enum-select v-model="l.code" enum-name="LanguageCodeEnum" placeholder="Sprache"></enum-select><enum-select v-model="l.usage" enum-name="LanguageUsageEnum" placeholder="Verwendung"></enum-select><button type="button" class="iconbtn-del" @click="rm(it.languages,j)" aria-label="Sprache entfernen"><span aria-hidden="true">🗑</span></button></div>
+            <button type="button" class="btn btn-outline btn-sm" @click="it.languages.push({code:'',usage:''})">+ Sprache</button>
+          </div>
+          <div class="ed-title-row" v-for="(r,j) in it.identifiers" :key="'id'+j"><select class="input" v-model="r.resourceType" aria-label="Identifier-Typ"><option value="LocalResource">Lokal</option><option value="AVefiResource">AVefi-PID</option></select><input class="input" v-model="r.id" placeholder="ID" aria-label="Identifier"><button type="button" class="iconbtn-del" @click="rm(it.identifiers,j)" aria-label="Identifier entfernen"><span aria-hidden="true">🗑</span></button></div>
+          <button type="button" class="btn btn-outline btn-sm" @click="addIdentifier(it.identifiers)">+ Identifier</button>
+        </div>
+        <button type="button" class="btn btn-outline" @click="addItem">+ Exemplar</button>
+      </section>
     </div>
-  </form>
+  </template>
 </main>
-
-<template id="tpl-contributor"><?php echo ed_contrib_row("__i__"); ?></template>
-<template id="tpl-manifestation"><?php echo ed_manif_row("__i__"); ?></template>
-<template id="tpl-item"><?php echo ed_item_row("__i__"); ?></template>
-
-<script src="<?php echo html(asset('/skins/editor.js')); ?>"></script>
+<script src="<?php echo html(asset('/skins/editor-avefi.js')); ?>"></script>
 <?php include __DIR__ . "/../layout/foot.php"; ?>

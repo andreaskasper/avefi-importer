@@ -42,6 +42,10 @@ class Routing {
 				self::redirect("/login");
 				exit;
 
+			case "/lookup":
+				self::lookup();
+				exit;
+
 			case "/upload":
 				self::upload();
 				exit;
@@ -285,6 +289,17 @@ class Routing {
 		self::view("page_report/page_report", ["active" => "imports", "import" => $import]);
 	}
 
+	/** Normdaten-Autocomplete (GND/Wikidata/VIAF) für den Editor. */
+	private static function lookup(): void {
+		if (!MyUser::isLoggedIn()) { self::json(["ok" => false, "error" => "Nicht angemeldet."], 401); return; }
+		$q    = (string)($_GET["q"] ?? "");
+		$kind = (string)($_GET["kind"] ?? "subject");
+		$sources = (isset($_GET["sources"]) && $_GET["sources"] !== "")
+			? array_map("trim", explode(",", (string)$_GET["sources"])) : null;
+		$results = AuthorityLookup::search($q, $kind, $sources);
+		self::json(["ok" => true, "kind" => $kind, "results" => $results]);
+	}
+
 	/** Fehler-Detailseite (Verarbeitungsfehler mit Position/Ausschnitt/Erklärung). */
 	private static function details(string $importId): void {
 		$import = self::ownedImportOr404($importId);
@@ -307,81 +322,58 @@ class Routing {
 		$import = self::ownedImportOr404($importId);
 		$rec    = Record::find($recordId, $importId);
 		if ($rec === null) { http_response_code(404); self::view("page_404/page_404"); exit; }
+		$data      = json_decode((string)($rec["data_json"] ?? "{}"), true) ?: [];
+		$canonical = AvefiMapper::canonical($data, "rec" . $recordId);
 		self::view("page_record_edit/page_record_edit", [
 			"active" => "imports", "import" => $import, "record" => $rec,
-			"saved"  => isset($_GET["saved"]), "error" => $_GET["error"] ?? null,
+			"canonical" => $canonical, "config" => EditorConfig::build(),
 		]);
 	}
 
-	/** Speichern des Editors (POST). */
+	/** Speichern des Editors — JSON-Body mit der kanonischen AVefi-Struktur. */
 	private static function recordSave(string $importId, int $recordId): void {
 		$import = self::ownedImportOr404($importId);
-		if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") { self::redirect("/imports/{$importId}/records/{$recordId}/edit"); exit; }
+		if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") { self::json(["ok" => false, "error" => "POST erwartet."], 405); return; }
 		$rec = Record::find($recordId, $importId);
-		if ($rec === null) { http_response_code(404); self::view("page_404/page_404"); exit; }
-		if (!Csrf::check($_POST["_csrf"] ?? null)) { self::redirect("/imports/{$importId}/records/{$recordId}/edit?error=csrf"); exit; }
+		if ($rec === null) { self::json(["ok" => false, "error" => "Datensatz nicht gefunden."], 404); return; }
 
-		$existing = json_decode((string)($rec["data_json"] ?? "{}"), true) ?: [];
-		$data = self::buildRecordData($_POST, is_array($existing["source"] ?? null) ? $existing["source"] : []);
-		Record::save($recordId, $importId, $data, Completeness::forRecord($data));
-		self::redirect("/imports/{$importId}/records/{$recordId}/edit?saved=1");
-	}
+		$body = json_decode((string)file_get_contents("php://input"), true);
+		if (!is_array($body)) { self::json(["ok" => false, "error" => "Ungültige Daten."], 400); return; }
+		if (!Csrf::check($body["_csrf"] ?? null)) { self::json(["ok" => false, "error" => "Sitzung abgelaufen — bitte Seite neu laden."], 400); return; }
 
-	/** Baut aus POST-Daten den internen AVefi-Record (source bleibt erhalten). */
-	private static function buildRecordData(array $post, array $source): array {
-		$w = (array)($post["work"] ?? []);
-		$str = fn(string $k) => isset($w[$k]) && trim((string)$w[$k]) !== "" ? trim((string)$w[$k]) : null;
-
-		$titlesAdd = [];
-		foreach (preg_split('/[;\n]+/', (string)($w["titles_additional"] ?? "")) ?: [] as $t) {
-			$t = trim($t); if ($t !== "") $titlesAdd[] = $t;
-		}
-
-		$contributors = [];
-		foreach ((array)($post["contributors"] ?? []) as $c) {
-			$name = trim((string)($c["name"] ?? ""));
-			if ($name === "") continue;
-			$role = trim((string)($c["role"] ?? ""));
-			$contributors[] = ["role" => $role !== "" ? $role : "contributor", "name" => $name];
-		}
-
-		$work = [
-			"title"             => $str("title"),
-			"titles_additional" => $titlesAdd,
-			"year"              => (preg_match('/\d{4}/', (string)($w["year"] ?? ""), $ym)) ? (int)$ym[0] : null,
-			"work_type"         => $str("work_type"),
-			"country"           => $str("country"),
-			"genre"             => $str("genre"),
-			"language"          => $str("language"),
-			"description"       => $str("description"),
-			"contributors"      => $contributors,
+		$canonical = [
+			"work"           => is_array($body["work"] ?? null) ? $body["work"] : ["category" => "avefi:WorkVariant"],
+			"manifestations" => array_values(array_filter((array)($body["manifestations"] ?? []), "is_array")),
+			"items"          => array_values(array_filter((array)($body["items"] ?? []), "is_array")),
 		];
 
-		$manifestations = [];
-		foreach ((array)($post["manifestations"] ?? []) as $m) {
-			$carrier = trim((string)($m["carrier"] ?? ""));
-			$date    = trim((string)($m["date"] ?? ""));
-			$note    = trim((string)($m["note"] ?? ""));
-			$dur     = preg_match('/\d+/', (string)($m["duration_min"] ?? ""), $dm) ? (int)$dm[0] : null;
-			if ($carrier === "" && $date === "" && $note === "" && $dur === null) continue;
-			$manifestations[] = array_filter([
-				"carrier" => $carrier ?: null, "date" => $date ?: null, "duration_min" => $dur, "note" => $note ?: null,
-			], fn($v) => $v !== null && $v !== "");
+		// Schema-Beanstandungen sammeln (Speichern bleibt erlaubt — Kuratieren ist iterativ).
+		$errors = [];
+		foreach (AvefiMapper::validateSet(AvefiMapper::flatten($canonical)) as $v) {
+			foreach ($v["errors"] as $e) $errors[] = ($v["class"] ?? $v["category"] ?? "?") . " · " . $e;
 		}
 
-		$items = [];
-		foreach ((array)($post["items"] ?? []) as $it) {
-			$inst = trim((string)($it["holding_institution"] ?? ""));
-			$sig  = trim((string)($it["signature"] ?? ""));
-			$loc  = trim((string)($it["location"] ?? ""));
-			$cond = trim((string)($it["condition"] ?? ""));
-			if ($inst === "" && $sig === "" && $loc === "" && $cond === "") continue;
-			$items[] = array_filter([
-				"holding_institution" => $inst ?: null, "signature" => $sig ?: null, "location" => $loc ?: null, "condition" => $cond ?: null,
-			], fn($v) => $v !== null && $v !== "");
-		}
+		$existing = json_decode((string)($rec["data_json"] ?? "{}"), true) ?: [];
+		$source   = is_array($existing["source"] ?? null) ? $existing["source"] : [];
+		$store    = ["avefi" => $canonical, "source" => $source];
+		$pct      = Completeness::forAvefi($canonical);
+		Record::saveAvefi($recordId, $importId, $store, AvefiMapper::workDisplay($canonical["work"]), $canonical, $pct);
 
-		return ["work" => $work, "manifestations" => $manifestations, "items" => $items, "source" => $source];
+		self::regenerateExport($import);
+		self::json(["ok" => true, "completeness" => $pct, "errors" => $errors, "display" => AvefiMapper::workDisplay($canonical["work"])]);
+	}
+
+	/** Schreibt avefi.v1.json aus dem aktuellen Stand aller Records neu (nach Bearbeitung). */
+	private static function regenerateExport(Import $import): void {
+		$all = [];
+		foreach (Record::forImport($import->id()) as $r) {
+			$data = json_decode((string)($r["data_json"] ?? "{}"), true) ?: [];
+			$all  = array_merge($all, AvefiMapper::flatten(AvefiMapper::canonical($data, "rec" . $r["id"])));
+		}
+		@file_put_contents(
+			Storage::avefiPath($import->id()),
+			json_encode(array_values($all), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+		);
 	}
 
 	/** Download der erzeugten AVefi-JSON eines Imports. */

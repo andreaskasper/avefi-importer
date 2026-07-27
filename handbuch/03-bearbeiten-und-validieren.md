@@ -14,32 +14,40 @@ falls der Datensatz das Schema noch nicht erfüllt.
 Vollständigkeit = Anteil ausgefüllter Pflicht- + empfohlener Felder:
 Rot < 50 %, Gelb < 80 %, Grün ≥ 80 %.
 
-## Editor
+## Editor (AVefi-Schema)
 
-Der Editor bildet die AVefi-Hierarchie **Werk → Manifestation → Exemplar** ab:
+Der Editor bearbeitet die **echte AVefi-Struktur** (WorkVariant → Manifestation → Item)
+und ist eine interaktive Vue-Oberfläche mit den Reitern **Werk / Manifestationen / Exemplare**.
 
-- **Werk · Grunddaten**: Haupttitel\*, weitere Titel, Produktionsjahr\*, Herstellungsland,
-  Werkart\*, Genre, Sprache, Beschreibung (\* = Pflichtfeld).
-- **Beteiligte / Manifestationen / Exemplare**: wiederholbare Blöcke — mit „+ …"
-  hinzufügen, mit 🗑 entfernen.
-- **{ } JSON-Vorschau**: zeigt den Rohdatensatz.
-- **✓ Speichern**: schreibt die Daten und **berechnet Vollständigkeit + Validierung neu**.
+**Werk-Ebene:**
+
+- **Titel** — beliebig viele Titel, jeder mit **Typ** (`TitleTypeEnum`: PreferredTitle,
+  TitleProper, AlternativeTitle, TranslatedTitle …); ein Titel ist der primäre.
+- **Schlagwörter · Personen · Orte** (`has_subject`) — pro Eintrag die Art wählen
+  (Schlagwort / Person / Körperschaft / Ort). Beim Tippen schlägt das System **proaktiv
+  Normdaten** vor (GND, Wikidata, VIAF); ein Klick hängt die ID als `same_as` an
+  (sichtbar als Chip). Welche Quellen erlaubt sind, richtet sich pro Feld nach dem Schema.
+- **Beteiligte** — Tätigkeit (Regie, Kamera, Musik …) + Person, die Person ebenfalls
+  mit GND/Wikidata/VIAF verknüpfbar.
+- **Ereignisse, Genre & Form, Identifier, Notizen** — jeweils wiederholbar.
+
+**Manifestation / Exemplar:** Titel, Identifier, Notizen; beim Exemplar zusätzlich
+Elementtyp, Farbe, Ton, Bildrate, Zugang, Dauer und Sprachen — alle Auswahllisten
+kommen direkt aus dem Schema (`model.schema.json`).
+
+**Speichern** schreibt den Datensatz als JSON, berechnet die Vollständigkeit neu und
+aktualisiert `avefi.v1.json`. Über **{ } JSON** lässt sich der erzeugte AVefi-Datensatz
+live ansehen.
 
 ## Schema-Prüfung
 
-Rechts im Editor:
+Beim Speichern wird der Datensatz gegen das **echte av-efi-schema**
+(WorkVariant / Manifestation / Item, [`model.schema.json`](../src/html/schema/avefi/model.schema.json))
+geprüft; Beanstandungen erscheinen als Hinweisliste (Speichern bleibt möglich — Kuratieren
+ist iterativ). Der ausführliche Bericht liegt weiterhin unter **Report**.
 
-- **Schema-Prüfung** — „Record ist schema-gültig" oder eine Liste konkreter Verstöße
-  (z. B. *„work.work_type ist erforderlich"*, *„… hat einen unzulässigen Wert"*).
-- **Empfehlungen** — fehlende, aber empfohlene Felder (Genre, Sprache, …).
-
-Geprüft wird gegen [`src/html/schema/avefi-record.schema.json`](../src/html/schema/avefi-record.schema.json).
-**Pflicht** sind aktuell Haupttitel, Produktionsjahr und Werkart (aus fester
-Werkart-Liste). Erst ein **gültiger** Datensatz ist Voraussetzung für die spätere
-[PID-Registrierung](06-pid-registrierung.md).
-
-> Hinweis: MARC-XML/EAD liefern oft keine saubere Werkart — solche Datensätze sind
-> zunächst „ungültig" und werden im Editor ergänzt.
+> Normdaten-Autocomplete: Der Server ruft dafür GND (lobid.org), Wikidata und VIAF ab —
+> ein Internet-Ausgang des Servers ist Voraussetzung.
 
 ## Prüfbericht (Fehlerreport)
 

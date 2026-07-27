@@ -37,6 +37,28 @@ class Record {
 		return DB::row("SELECT * FROM records WHERE id = :id AND import_id = :iid", [":id" => $id, ":iid" => $importId]);
 	}
 
+	/**
+	 * Speichert die kanonische AVefi-Struktur ($store enthält avefi+source) und
+	 * pflegt die denormalisierten Spalten aus $disp (Titel/Jahr/Typ) + $canonical.
+	 */
+	public static function saveAvefi(int $id, string $importId, array $store, array $disp, array $canonical, int $completeness): void {
+		DB::execute(
+			"UPDATE records SET work_title = :t, work_year = :y, work_type = :wt,
+			        manifestation_count = :mc, item_count = :ic, completeness = :c, data_json = :d
+			  WHERE id = :id AND import_id = :iid",
+			[
+				":t"  => $disp["title"] ?? null,
+				":y"  => isset($disp["year"]) && $disp["year"] !== null ? (int)$disp["year"] : null,
+				":wt" => $disp["type"] ?? null,
+				":mc" => count($canonical["manifestations"] ?? []),
+				":ic" => count($canonical["items"] ?? []),
+				":c"  => $completeness,
+				":d"  => json_encode($store, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+				":id" => $id, ":iid" => $importId,
+			]
+		);
+	}
+
 	/** Aktualisiert Record + denormalisierte Felder. */
 	public static function save(int $id, string $importId, array $data, int $completeness): void {
 		$work = $data["work"] ?? [];

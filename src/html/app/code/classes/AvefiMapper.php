@@ -103,6 +103,69 @@ class AvefiMapper {
 		return $out;
 	}
 
+	/**
+	 * Wie toAvefi(), aber gruppiert nach Ebene: {work, manifestations[], items[]}.
+	 * Das ist die kanonische, im Editor bearbeitete Struktur.
+	 */
+	public static function toAvefiGrouped(array $rec, string $baseId): array {
+		return self::group(self::toAvefi($rec, $baseId));
+	}
+
+	/** Flaches AVefi-Set → {work, manifestations[], items[]}. */
+	public static function group(array $set): array {
+		$work = null; $manifs = []; $items = [];
+		foreach ($set as $r) {
+			if (!is_array($r)) continue;
+			switch ($r["category"] ?? null) {
+				case "avefi:WorkVariant":   if ($work === null) $work = $r; break;
+				case "avefi:Manifestation": $manifs[] = $r; break;
+				case "avefi:Item":          $items[]  = $r; break;
+			}
+		}
+		return ["work" => $work ?? ["category" => "avefi:WorkVariant"], "manifestations" => $manifs, "items" => $items];
+	}
+
+	/** Kanonische {work,manifestations,items}-Struktur eines gespeicherten data_json. */
+	public static function canonical(array $data, string $baseId = "rec"): array {
+		if (isset($data["avefi"]) && is_array($data["avefi"]) && isset($data["avefi"]["work"])) {
+			$a = $data["avefi"];
+			return [
+				"work"           => is_array($a["work"] ?? null) ? $a["work"] : ["category" => "avefi:WorkVariant"],
+				"manifestations" => array_values(array_filter((array)($a["manifestations"] ?? []), "is_array")),
+				"items"          => array_values(array_filter((array)($a["items"] ?? []), "is_array")),
+			];
+		}
+		// Nativer Import: Original unter source.avefi.
+		if (isset($data["source"]["avefi"]) && is_array($data["source"]["avefi"])) {
+			$a = $data["source"]["avefi"];
+			return [
+				"work"           => is_array($a["work"] ?? null) ? $a["work"] : ["category" => "avefi:WorkVariant"],
+				"manifestations" => array_values(array_filter((array)($a["manifestations"] ?? []), "is_array")),
+				"items"          => array_values(array_filter((array)($a["items"] ?? []), "is_array")),
+			];
+		}
+		// Alt-Format (internes Record) → nach AVefi migrieren.
+		return self::toAvefiGrouped($data, $baseId);
+	}
+
+	/** Flaches Set aus einer kanonischen Struktur (für Validierung/Export). */
+	public static function flatten(array $canonical): array {
+		$out = [];
+		if (is_array($canonical["work"] ?? null)) $out[] = $canonical["work"];
+		foreach (($canonical["manifestations"] ?? []) as $m) if (is_array($m)) $out[] = $m;
+		foreach (($canonical["items"] ?? []) as $it) if (is_array($it)) $out[] = $it;
+		return $out;
+	}
+
+	/** Anzeige-Werte (Titel/Jahr/Typ) aus einem AVefi-WorkVariant. */
+	public static function workDisplay(array $work): array {
+		return [
+			"title" => self::titleName($work["has_primary_title"] ?? null),
+			"year"  => self::yearFromEvents($work["has_event"] ?? null),
+			"type"  => is_string($work["type"] ?? null) ? $work["type"] : null,
+		];
+	}
+
 	/* ============================ AVefi → intern ============================ */
 
 	/**

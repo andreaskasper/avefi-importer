@@ -46,9 +46,14 @@ include __DIR__ . "/../layout/appheader.php";
         <tbody>
         <?php foreach ($records as $r):
           $data = json_decode((string)($r["data_json"] ?? "{}"), true) ?: [];
-          $valid = SchemaValidator::isValid($data);
+          $canonical = AvefiMapper::canonical($data, "rec" . (int)$r["id"]);
+          $valid = true;
+          foreach (AvefiMapper::validateSet(AvefiMapper::flatten($canonical)) as $v) if (!empty($v["errors"])) { $valid = false; break; }
           $contribs = [];
-          foreach (($data["work"]["contributors"] ?? []) as $c) if (!empty($c["name"])) $contribs[] = $c["name"];
+          foreach (($canonical["work"]["has_event"] ?? []) as $ev)
+            foreach (($ev["has_activity"] ?? []) as $act)
+              foreach (($act["has_agent"] ?? []) as $ag)
+                if (!empty($ag["has_name"])) $contribs[] = $ag["has_name"];
           $pct   = (int)$r["completeness"];
           $ring  = Completeness::ringClass($pct);
           $title = trim((string)($r["work_title"] ?? "")) !== "" ? $r["work_title"] : "Ohne Titel";

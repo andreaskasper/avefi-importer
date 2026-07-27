@@ -328,3 +328,53 @@ a:focus-visible,button:focus-visible,.btn:focus-visible,input:focus-visible,
 select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible,
 .dropzone:focus-visible,.menu-item:focus-visible{
   outline:2px solid var(--primary);outline-offset:2px;border-radius:6px}
+
+/* ---------- AVefi-Editor (Vue) ---------- */
+.editbar{display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.ed-title{font-size:19px;margin:0}
+.ed-ring{width:52px;height:52px;font-size:11px}
+.ed-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.ed-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.ed-tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:9px 16px;font:inherit;font-size:14px;font-weight:600;color:var(--ink-dim,#667);cursor:pointer}
+.ed-tabs button.on{color:var(--primary);border-bottom-color:var(--primary)}
+.ed-tabpanel{display:flex;flex-direction:column;gap:16px}
+.ed-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+.ed-card h3{font-size:14px;margin:0 0 12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-dim,#667)}
+.ed-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.ed-card-head h3{margin:0}
+.ed-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.ed-f{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--ink-dim,#667)}
+.ed-title-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.ed-title-row .input{flex:1}
+.ed-title-row .input[type],.ed-title-row select{min-width:0}
+.ed-primary-badge{font-size:11px;font-weight:700;color:var(--ok);background:var(--ok-bg);padding:2px 8px;border-radius:999px;white-space:nowrap}
+.ed-entity{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px}
+.ed-entity .kindsel{width:130px;flex:none}
+.ed-entity .rolesel{width:170px;flex:none}
+.ed-entity-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.ed-forms{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border)}
+.ed-sub{margin:10px 0;padding:10px;border:1px dashed var(--border);border-radius:8px}
+.ed-sublabel{font-size:12px;font-weight:700;color:var(--ink-dim,#667);display:block;margin-bottom:6px}
+.ed-errs{margin:6px 0 0;padding-left:18px;font-size:12.5px}
+
+/* ID-Chips (same_as) */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.idbadge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;
+  background:var(--surface-2);border:1px solid var(--border-strong);border-radius:999px;padding:2px 4px 2px 9px}
+.idbadge-x{border:0;background:none;cursor:pointer;font-size:15px;line-height:1;color:var(--ink-dim,#889);padding:0 4px}
+.idbadge-x:hover{color:var(--danger)}
+
+/* Autocomplete */
+.ac-wrap{position:relative}
+.ac-menu{position:absolute;z-index:40;left:0;right:0;top:calc(100% + 2px);background:var(--surface);
+  border:1px solid var(--border-strong);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.18);
+  max-height:340px;overflow:auto}
+.ac-item{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;width:100%;text-align:left;
+  border:0;background:none;font:inherit;padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--border)}
+.ac-item:hover{background:var(--surface-2)}
+.ac-item .ac-lab{font-weight:600}
+.ac-item .ac-desc{grid-column:2;font-size:12px;color:var(--ink-dim,#778)}
+.ac-item .ac-id{font-size:11px;color:var(--ink-dim,#889);font-family:ui-monospace,monospace;align-self:center}
+.ac-src{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:#fff;
+  background:var(--ink-dim,#889);border-radius:5px;padding:2px 6px;align-self:center;height:fit-content}
+.ac-src.src-gnd{background:#7a4fb5}.ac-src.src-wikidata{background:#2a7ab0}.ac-src.src-viaf{background:#b5763f}
