@@ -82,6 +82,15 @@ include __DIR__ . "/../layout/appheader.php";
           <div class="tablewrap">
             <table class="maptable">
               <caption class="sr-only">Zuordnung der Quellspalten auf das AVefi-Schema</caption>
+              <!-- Feste Breiten: die Tabelle soll nie breiter werden als ihr Platz.
+                   Zu lange Werte werden gekürzt, der volle Text steht im Tooltip. -->
+              <colgroup>
+                <col style="width:18%">
+                <col :style="{ width: merged ? '44%' : '24%' }">
+                <col :style="{ width: merged ? '28%' : '25%' }">
+                <col style="width:23%" v-if="!merged">
+                <col style="width:76px">
+              </colgroup>
               <thead><tr>
                 <th scope="col">Quellspalte</th>
                 <th scope="col" v-if="merged">Beispiel &rarr; Ergebnis</th>
@@ -150,6 +159,7 @@ include __DIR__ . "/../layout/appheader.php";
                       <span class="dim" v-else>–</span>
                     </td>
                     <td class="maprowbtns">
+                      <div class="rowbtns">
                       <button type="button" class="iconbtn-menu" @click="toggleOpen(col)"
                               :aria-expanded="open[col] ? 'true' : 'false'" :aria-label="'Kette für ' + col + ' bearbeiten'"
                               title="Konverter-Kette">
@@ -158,10 +168,11 @@ include __DIR__ . "/../layout/appheader.php";
                               :aria-pressed="spec(col).ignore ? 'true' : 'false'" :aria-label="'Spalte ' + col + ' ignorieren'"
                               title="Spalte ignorieren">
                         <i class="fa-solid fa-ban" aria-hidden="true"></i></button>
+                      </div>
                     </td>
                   </tr>
                   <tr v-if="open[col]" :key="col + '-chain'" class="chainrow">
-                    <td colspan="5">
+                    <td :colspan="merged ? 4 : 5">
                       <!-- Verzweigung: Spalte → globale Kette → je Zweig eigene Kette und Ziel -->
                       <div class="branch">
                         <div class="branch-src">

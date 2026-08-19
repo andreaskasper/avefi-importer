@@ -452,7 +452,6 @@ button.menu-item{width:100%;text-align:left;border:0;background:none;cursor:poin
 .tsel{display:flex;gap:6px;align-items:center;margin-bottom:5px}
 .tsel .input{min-width:230px}
 .tsugg{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.maprowbtns{white-space:nowrap;display:flex;gap:5px}
 .mapresult .okval{color:var(--ok);font-weight:600;font-size:12.5px}
 .mapresult .errval{color:var(--danger);font-size:12.5px;margin-top:2px}
 
@@ -530,13 +529,32 @@ ul.tight li{margin-bottom:3px;font-size:13px}
 .newprofile h3{font-size:14px;margin-bottom:5px}
 .newprofile .row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:11px}
 
-/* ------- Beispiel- und Ergebniszellen (zeilenweise ausgerichtet) ------- */
+/* ------- Beispiel- und Ergebniszellen (zeilenweise ausgerichtet) -------
+   Die Zuordnungstabelle hat feste Spaltenbreiten (colgroup + table-layout:fixed).
+   Damit bleibt sie immer so breit wie ihr Platz und braucht keinen waagerechten
+   Rollbalken; zu lange Werte werden gekürzt und stehen vollständig im Tooltip. */
+.maptable{table-layout:fixed}
+.maptable td,.maptable th{overflow:hidden}
+.maptable td .fn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 .exline{display:flex;align-items:baseline;gap:6px;min-height:20px;line-height:20px;font-size:12.5px}
 .exline + .exline{margin-top:3px}
-.exraw{max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
-.excount{font-size:11px;white-space:nowrap}
-.exarrow{color:var(--faint);font-size:11px}
-.exline .okval,.exline .errval{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* min-width:0 ist nötig, damit Kürzen in einem Flex-Element überhaupt greift. */
+.exline > *{min-width:0}
+.exraw{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);flex:0 1 auto}
+.excount{font-size:11px;white-space:nowrap;flex:none}
+.exarrow{color:var(--faint);font-size:11px;flex:none}
+.exline .okval,.exline .errval{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto}
 .mapresult .exline{justify-content:flex-start}
 .fillhint{color:var(--warn)}
 .branch-result .exline{min-height:22px;line-height:22px}
+
+/* Ziel-Kürzel und Vorschläge dürfen die Spalte nicht sprengen. */
+.tchips .chip,.tsugg .chip{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:5px}
+.tchips .chip span,.tsugg .chip span{overflow:hidden;text-overflow:ellipsis}
+.maprowbtns{white-space:nowrap}
+.maprowbtns .rowbtns{display:flex;gap:5px}
+
+/* Die aufgeklappte Verzweigung nutzt die volle Breite und rollt nicht mit. */
+.chainrow td{overflow:visible}
