@@ -647,7 +647,6 @@ class Routing {
 			"headerHash" => $head["hash"],
 			"rowCount"   => (int)($head["row_count"] ?? count($head["rows"] ?? [])),
 			"columns"    => $head["columns"],
-			"rows"       => array_slice($head["rows"] ?? [], 0, 25),
 			"mapping"    => $mapping,
 			"profile"    => $profile === null ? null : [
 				"id" => $profile->id(), "name" => $profile->name(),
@@ -718,37 +717,18 @@ class Routing {
 	}
 
 	/**
-	 * Führt die Ketten auf den echten Beispielzeilen aus. Bewusst serverseitig:
-	 * Vorschau und spätere Konvertierung laufen so durch denselben Code.
+	 * Führt die Ketten auf echten Beispielzeilen aus. Bewusst serverseitig: Vorschau
+	 * und spätere Konvertierung laufen so durch denselben Code.
+	 *
+	 * Welche Zeilen gerechnet werden, entscheidet MappingPreview — je Spalte werden
+	 * gefüllte Werte gesucht statt stur die ersten Zeilen zu nehmen.
 	 */
 	private static function mappingPreview(array $body, array $head) {
 		$mapping = is_array($body["mapping"] ?? null) ? $body["mapping"] : [];
-		$limit   = max(1, min(25, (int)($body["limit"] ?? 8)));
-		$runner  = new MappingRunner($mapping);
-
-		$rows = array_slice($head["rows"], 0, $limit);
-		$out  = [];
-		$first = null;
-		$issues = [];
-		foreach ($rows as $i => $row) {
-			$r = $runner->runRow($row, "vorschau" . ($i + 1));
-			$out[] = ["cells" => $r["cells"]];
-			if ($first === null) {
-				$first = $r["canonical"];
-				foreach (AvefiMapper::validateSet(AvefiMapper::flatten($r["canonical"])) as $v) {
-					foreach ($v["errors"] as $e) $issues[] = ($v["class"] ?? "?") . ": " . $e;
-				}
-			}
-		}
-
-		return self::json([
-			"ok"       => true,
-			"rows"     => $out,
-			"canonical" => $first,
-			"schema"   => $issues,
-			"checks"   => $runner->staticCheck(),
-			"coverage" => self::coverage($mapping),
-		]);
+		$res = MappingPreview::build($head, $mapping);
+		$res["ok"]       = true;
+		$res["coverage"] = self::coverage($mapping);
+		return self::json($res);
 	}
 
 	/** Welche Ziele belegt das Profil? Grundlage für den Ergebnisbaum. */

@@ -199,7 +199,6 @@
         mapping: normalize(clone(boot.mapping), boot.columns),
         name: boot.profile ? boot.profile.name : boot.suggestedName,
         columns: boot.columns.slice(),
-        rows: boot.rows,
         targetGroups: TARGET_GROUPS,
         targets: TARGETS,
         foreign: boot.foreign || [],
@@ -207,7 +206,9 @@
         hints: boot.hints || {},
         vocabulary: boot.vocabulary || {},
         open: {},            // aufgeklappte Spalten
-        preview: null,
+        previewCols: {},     // Spalte => {examples:[…], filled:{n,of,total}}
+        evaluatedRows: 0,
+        merged: (function () { try { return localStorage.getItem("avefi-map-merged") === "1"; } catch (e) { return false; } })(),
         checks: [],
         schemaIssues: [],
         coverage: {},
@@ -264,23 +265,39 @@
       /* Reines Lesen — das Auffüllen passiert einmalig in normalize(), nicht beim
          Rendern. Eine Mutation während des Renderns würde Vue in eine Schleife schicken. */
       spec: function (col) { return this.mapping.columns[col]; },
-      sampleOf: function (col) {
-        var out = [];
-        for (var i = 0; i < this.rows.length && out.length < 3; i++) {
-          var v = (this.rows[i][col] || "").trim();
-          if (v !== "" && out.indexOf(v) < 0) out.push(v);
-        }
-        return out;
+      /* Beispiele einer Spalte: bis zu drei verschiedene gefüllte Werte mit Ergebnis.
+         Der Server sucht sie gezielt — die ersten Zeilen sind oft leer. */
+      examplesOf: function (col) {
+        var c = this.previewCols[col];
+        return c ? c.examples : [];
       },
-      resultOf: function (col) {
-        if (!this.preview || !this.preview.length) return null;
-        return this.preview[0].cells[col] || null;
+      filledOf: function (col) {
+        var c = this.previewCols[col];
+        return c ? c.filled : null;
       },
-      /* Ergebnis eines einzelnen Zweigs — die Vorschau liefert je Ausgabe das Ziel mit. */
-      resultFor: function (col, targetKey) {
-        var c = this.resultOf(col);
-        if (!c) return null;
-        return { outputs: c.outputs.filter(function (o) { return o.target === targetKey; }), errors: c.errors };
+      /* „gefüllt in 57 von 77 Zeilen" — nur zeigen, wenn es Lücken gibt. */
+      fillLabel: function (col) {
+        var f = this.filledOf(col);
+        if (!f || !f.of || f.n === f.of) return "";
+        if (this.spec(col) && this.spec(col).ignore) return "";   // bei ignorierten Spalten belanglos
+        var scope = (f.total && f.total > f.of) ? " der Stichprobe" : "";
+        return "gefüllt in " + f.n + " von " + f.of + " Zeilen" + scope;
+      },
+      /* Warnfarbe erst, wenn die Lücke erklärungsbedürftig wird. */
+      fillSparse: function (col) {
+        var f = this.filledOf(col);
+        return !!f && f.of > 0 && f.n / f.of < 0.5;
+      },
+      outputsFor: function (example, targetKey) {
+        return (example.outputs || []).filter(function (o) { return o.target === targetKey; });
+      },
+      /* Alle Ausgaben eines Beispiels, unabhängig vom Zweig. */
+      valuesOf: function (example) {
+        return (example.outputs || []).map(function (o) { return o.value; });
+      },
+      toggleMerged: function () {
+        this.merged = !this.merged;
+        try { localStorage.setItem("avefi-map-merged", this.merged ? "1" : "0"); } catch (e) {}
       },
       branchCount: function (col) { return (this.spec(col).targets || []).length; },
       targetsOf: function (col) {
@@ -336,7 +353,11 @@
         var s = this.spec(col), t = s.targets[i];
         if (!t) return;
         var vals = this.vocabulary[col] || [];
-        if (!vals.length) { this.error = "Diese Spalte hat zu viele verschiedene Werte für eine Werteliste."; return; }
+        if (!vals.length) {
+          AvefiModal.alert({ title: "Keine Werteliste möglich",
+            message: "Diese Spalte hat zu viele verschiedene Werte, um daraus eine Zuordnungsliste vorzubefüllen." });
+          return;
+        }
         t.post = t.post || [];
         var vm = null;
         t.post.forEach(function (st) { if (st.op === "valuemap") vm = st; });
@@ -388,11 +409,12 @@
       runPreview: function () {
         var self = this;
         this.busy = true;
-        this.post("preview", { mapping: this.mapping, limit: 8 }).then(function (res) {
+        this.post("preview", { mapping: this.mapping }).then(function (res) {
           self.busy = false;
           if (!res.ok) { self.error = res.error || "Vorschau fehlgeschlagen."; return; }
           self.error = null;
-          self.preview = res.rows;
+          self.previewCols = res.columns || {};
+          self.evaluatedRows = res.evaluatedRows || 0;
           self.checks = res.checks || [];
           self.schemaIssues = res.schema || [];
           self.coverage = res.coverage || {};

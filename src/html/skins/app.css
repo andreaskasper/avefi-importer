@@ -529,3 +529,14 @@ ul.tight li{margin-bottom:3px;font-size:13px}
   padding:16px 18px;margin-bottom:16px}
 .newprofile h3{font-size:14px;margin-bottom:5px}
 .newprofile .row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:11px}
+
+/* ------- Beispiel- und Ergebniszellen (zeilenweise ausgerichtet) ------- */
+.exline{display:flex;align-items:baseline;gap:6px;min-height:20px;line-height:20px;font-size:12.5px}
+.exline + .exline{margin-top:3px}
+.exraw{max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.excount{font-size:11px;white-space:nowrap}
+.exarrow{color:var(--faint);font-size:11px}
+.exline .okval,.exline .errval{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mapresult .exline{justify-content:flex-start}
+.fillhint{color:var(--warn)}
+.branch-result .exline{min-height:22px;line-height:22px}

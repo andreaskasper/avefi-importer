@@ -53,10 +53,26 @@ Die Arbeitsfläche ist eine Tabelle mit einer Zeile je Quellspalte:
 
 | Spalte | Bedeutung |
 |---|---|
-| **Quellspalte** | Name aus der Kopfzeile |
-| **Beispielwerte** | die ersten tatsächlich vorkommenden Werte |
+| **Quellspalte** | Name aus der Kopfzeile, darunter die Belegung |
+| **Beispielwerte** | bis zu drei verschiedene tatsächlich vorkommende Werte mit ihrer Häufigkeit |
 | **Ziel** | wohin der Wert im AVefi-Schema gehört |
-| **Ergebnis** | was dabei herauskommt — grün, oder rot mit Begründung |
+| **Ergebnis** | was aus jedem Beispiel wird — grün, oder rot mit Begründung |
+
+Beispiel und Ergebnis stehen auf gleicher Höhe: die dritte Zeile links gehört zur
+dritten Zeile rechts. Wer beides lieber nebeneinander liest, schaltet oben rechts auf
+**Zusammen** um — dann steht `1953 → 1953` in einer Spalte. Die Wahl wird gemerkt.
+
+**Die Beispiele werden gesucht, nicht abgezählt.** Der Editor nimmt je Spalte die ersten
+drei *verschiedenen gefüllten* Werte, nicht die ersten drei Zeilen. Das ist wichtiger,
+als es klingt: In der Paderborner Liste hat die erste Zeile kein Produktionsjahr und die
+ersten drei keine Regieangabe — eine Vorschau, die an Zeile 1 klebt, zeigt dort nichts
+und sieht aus, als sei die Zuordnung kaputt. Bei Wertelisten hat die Suche nach
+*verschiedenen* Werten einen zweiten Nutzen: Man sieht sofort, ob alle vorkommenden
+Schreibweisen abgedeckt sind.
+
+Unter dem Spaltennamen steht die Belegung („gefüllt in 57 von 77 Zeilen"), sobald es
+Lücken gibt. Ist eine Spalte in der ganzen Stichprobe leer, sagt der Editor das
+ausdrücklich — dann weiß man, dass nicht die Zuordnung schuld ist.
 
 Rechts steht der **Ergebnisbaum**: Werk, Fassung, Exemplar mit den belegten Feldern.
 Er zeigt die Struktur, die entsteht, und woher jeder Wert kommt.
@@ -132,6 +148,10 @@ Geprüft wird an zwei Stellen:
   er vorgeschlagen und lässt sich mit einem Klick einsetzen.
 - **Beim Konvertieren** — jeder Wert gegen Werteliste, Muster und Anzahl. Verstöße
   stehen zeilengenau im Prüfbericht.
+
+Die Schema-Prüfung im Editor läuft über alle für die Vorschau gerechneten Zeilen, nicht
+nur über die erste; gleiche Beanstandungen werden zusammengefasst und mit ihrer
+Häufigkeit gezeigt.
 
 Hinweise **blockieren nicht**. Quelldaten sind selten sauber, und „erstmal grob,
 Feinschliff später" ist ein legitimer Arbeitsstand. Blockiert wird nur, was gar nicht

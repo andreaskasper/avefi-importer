@@ -44,6 +44,11 @@ include __DIR__ . "/../layout/appheader.php";
           <input class="input" v-model="name" aria-label="Name des Mapping-Profils">
         </label>
         <div class="map-actions">
+          <button type="button" class="btn btn-outline btn-sm" @click="toggleMerged()"
+                  :aria-pressed="merged ? 'true' : 'false'"
+                  :title="merged ? 'Beispiel und Ergebnis getrennt anzeigen' : 'Beispiel und Ergebnis zusammen anzeigen'">
+            <i class="fa-solid" :class="merged ? 'fa-table-columns' : 'fa-right-long'" aria-hidden="true"></i>
+            {{ merged ? 'Getrennt' : 'Zusammen' }}</button>
           <span class="dim small" v-if="busy"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> rechnet …</span>
           <button type="button" :class="canStart ? 'btn btn-outline' : 'btn btn-primary'"
                   @click="save(false)" :disabled="saving">Speichern</button>
@@ -79,9 +84,10 @@ include __DIR__ . "/../layout/appheader.php";
               <caption class="sr-only">Zuordnung der Quellspalten auf das AVefi-Schema</caption>
               <thead><tr>
                 <th scope="col">Quellspalte</th>
-                <th scope="col">Beispielwerte</th>
+                <th scope="col" v-if="merged">Beispiel &rarr; Ergebnis</th>
+                <th scope="col" v-else>Beispielwerte</th>
                 <th scope="col">Ziel</th>
-                <th scope="col">Ergebnis</th>
+                <th scope="col" v-if="!merged">Ergebnis</th>
                 <th scope="col"><span class="sr-only">Aktionen</span></th>
               </tr></thead>
               <tbody>
@@ -91,10 +97,24 @@ include __DIR__ . "/../layout/appheader.php";
                     <td>
                       <div class="fn">{{ col }}</div>
                       <div class="dim small" v-if="mapping.columns[col] && mapping.columns[col].ignore">ignoriert</div>
+                      <div class="dim small" :class="fillSparse(col) ? 'fillhint' : ''"
+                           v-if="fillLabel(col)">{{ fillLabel(col) }}</div>
                     </td>
-                    <td class="dim small">
-                      <div v-for="v in sampleOf(col)" :key="v" class="samplev">{{ v }}</div>
-                      <span v-if="!sampleOf(col).length">–</span>
+                    <td class="excell">
+                      <template v-if="examplesOf(col).length">
+                        <div v-for="(e,i) in examplesOf(col)" :key="i" class="exline">
+                          <span class="exraw" :title="e.raw">{{ e.raw }}</span>
+                          <span class="dim excount" v-if="e.count > 1">{{ e.count }}&times;</span>
+                          <template v-if="merged">
+                            <i class="fa-solid fa-arrow-right-long exarrow" aria-hidden="true"></i>
+                            <span v-if="valuesOf(e).length" class="okval">{{ valuesOf(e).join(' · ') }}</span>
+                            <span v-else-if="e.errors.length" class="errval">{{ e.errors[0] }}</span>
+                            <span v-else class="dim">kein Wert</span>
+                          </template>
+                        </div>
+                      </template>
+                      <span class="dim small" v-else-if="filledOf(col) && !filledOf(col).n">in der Stichprobe durchgehend leer</span>
+                      <span class="dim" v-else>–</span>
                     </td>
                     <td>
                       <div v-if="branchCount(col)" class="tchips">
@@ -117,13 +137,15 @@ include __DIR__ . "/../layout/appheader.php";
                         <button type="button" class="btn btn-outline btn-sm" @click="addTarget(col,'')">Ziel wählen</button>
                       </div>
                     </td>
-                    <td class="mapresult">
-                      <template v-if="resultOf(col)">
-                        <div v-for="(o,i) in resultOf(col).outputs" :key="i" class="okval">
-                          <i class="fa-solid fa-check" aria-hidden="true"></i> {{ o.value }}</div>
-                        <div v-for="(e,i) in resultOf(col).errors" :key="'e'+i" class="errval">
-                          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ e }}</div>
-                        <span class="dim" v-if="!resultOf(col).outputs.length && !resultOf(col).errors.length">–</span>
+                    <td class="mapresult" v-if="!merged">
+                      <template v-if="examplesOf(col).length">
+                        <div v-for="(e,i) in examplesOf(col)" :key="i" class="exline">
+                          <span v-if="valuesOf(e).length" class="okval">
+                            <i class="fa-solid fa-check" aria-hidden="true"></i> {{ valuesOf(e).join(' · ') }}</span>
+                          <span v-else-if="e.errors.length" class="errval">
+                            <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ e.errors[0] }}</span>
+                          <span v-else class="dim">kein Wert</span>
+                        </div>
                       </template>
                       <span class="dim" v-else>–</span>
                     </td>
@@ -144,7 +166,7 @@ include __DIR__ . "/../layout/appheader.php";
                       <div class="branch">
                         <div class="branch-src">
                           <span class="branch-col"><i class="fa-solid fa-table-columns" aria-hidden="true"></i> {{ col }}</span>
-                          <span class="dim small" v-if="sampleOf(col).length">z. B. „{{ sampleOf(col)[0] }}“</span>
+                          <span class="dim small" v-if="fillLabel(col)">{{ fillLabel(col) }}</span>
                         </div>
 
                         <div class="branch-global">
@@ -177,11 +199,18 @@ include __DIR__ . "/../layout/appheader.php";
                                 </select>
                               </label>
 
-                              <div class="branch-result" v-if="resultFor(col, t.target)">
-                                <div v-for="(o,j) in resultFor(col, t.target).outputs" :key="j" class="okval">
-                                  <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i> {{ o.value }}</div>
-                                <div class="dim small" v-if="!resultFor(col, t.target).outputs.length">
-                                  ergibt für die erste Zeile keinen Wert</div>
+                              <div class="branch-result" v-if="examplesOf(col).length">
+                                <div v-for="(e,j) in examplesOf(col)" :key="j" class="exline">
+                                  <span class="exraw" :title="e.raw">{{ e.raw }}</span>
+                                  <i class="fa-solid fa-arrow-right-long exarrow" aria-hidden="true"></i>
+                                  <span v-if="outputsFor(e, t.target).length" class="okval">
+                                    {{ outputsFor(e, t.target).map(function(o){return o.value;}).join(' · ') }}</span>
+                                  <span v-else-if="e.errors.length" class="errval">{{ e.errors[0] }}</span>
+                                  <span v-else class="dim">kein Wert</span>
+                                </div>
+                              </div>
+                              <div class="branch-result dim small" v-else>
+                                Diese Spalte ist in der Stichprobe leer — kein Beispiel möglich.
                               </div>
 
                               <div class="vocabhint" v-if="enumFor(col,i)">
@@ -239,8 +268,11 @@ include __DIR__ . "/../layout/appheader.php";
               <div class="dim small" v-else>– nichts zugeordnet –</div>
             </div>
             <div class="alert" role="status" v-if="schemaIssues.length" style="margin-top:10px">
-              <b>Schema-Beanstandungen im ersten Datensatz:</b>
-              <ul class="tight"><li v-for="(s,i) in schemaIssues" :key="i">{{ s }}</li></ul>
+              <b>Schema-Beanstandungen</b>
+              <span class="dim small">in {{ evaluatedRows }} geprüften Zeilen</span>
+              <ul class="tight"><li v-for="(s,i) in schemaIssues" :key="i">
+                {{ s.message }} <span class="dim">({{ s.rows }}&times;)</span>
+              </li></ul>
             </div>
           </div>
 
