@@ -34,7 +34,7 @@ class Import {
 	/** @return self[] */
 	public static function forInstitution(int $institutionId): array {
 		$rows = DB::rows(
-			"SELECT i.*, fp.label AS profile_label
+			"SELECT i.*, fp.label AS profile_label, fp.converter_key AS converter_key
 			   FROM imports i
 			   LEFT JOIN format_profiles fp ON fp.id = i.format_profile_id
 			  WHERE i.institution_id = :iid
@@ -71,6 +71,50 @@ class Import {
 		return isset($this->row["profile_label"]) && $this->row["profile_label"] !== null ? (string)$this->row["profile_label"] : null;
 	}
 	public function createdAt(): ?string  { return $this->row["created_at"] !== null ? (string)$this->row["created_at"] : null; }
+
+	/**
+	 * converter_key des zugeordneten Format-Profils (oder null, wenn noch keines
+	 * zugeordnet ist — dann gibt es nichts zu wiederholen). Kommt bei forInstitution()
+	 * schon aus dem JOIN, sonst wird nachgeladen.
+	 */
+	public function converterKey(): ?string {
+		if (array_key_exists("converter_key", $this->row)) {
+			$v = $this->row["converter_key"];
+			return ($v !== null && $v !== "") ? (string)$v : null;
+		}
+		$pid = $this->row["format_profile_id"] ?? null;
+		if ($pid === null) return null;
+		$v = DB::value("SELECT converter_key FROM format_profiles WHERE id = :id", [":id" => (int)$pid]);
+		$this->row["converter_key"] = $v;
+		return ($v !== null && $v !== "") ? (string)$v : null;
+	}
+
+	/** Kann dieser Import erneut konvertiert werden? */
+	public function canReconvert(): bool {
+		return $this->converterKey() !== null
+			&& in_array($this->status(), ["converted", "error", "converting"], true);
+	}
+
+	/**
+	 * import_id => Anzahl von Hand bearbeiteter Datensätze, für alle Importe einer
+	 * Institution in einer Abfrage (kein N+1). Leeres Array, falls edited_at fehlt.
+	 */
+	public static function editedCounts(int $institutionId): array {
+		try {
+			$rows = DB::rows(
+				"SELECT r.import_id, COUNT(*) AS n
+				   FROM records r JOIN imports i ON i.id = r.import_id
+				  WHERE i.institution_id = :iid AND r.edited_at IS NOT NULL
+				  GROUP BY r.import_id",
+				[":iid" => $institutionId]
+			);
+		} catch (\Throwable $e) {
+			return [];
+		}
+		$out = [];
+		foreach ($rows as $r) $out[(string)$r["import_id"]] = (int)$r["n"];
+		return $out;
+	}
 
 	/** Erkanntes Format/Schema-Label (Badge); Fallback: Basisformat. */
 	public function detectedFormat(): ?string {

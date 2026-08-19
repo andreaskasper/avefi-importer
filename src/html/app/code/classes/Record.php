@@ -32,6 +32,30 @@ class Record {
 		);
 	}
 
+	/**
+	 * Markiert einen Datensatz als von Hand bearbeitet. Tolerant gegenüber einer
+	 * noch nicht migrierten DB (Spalte edited_at fehlt) — Speichern soll daran
+	 * nicht scheitern. Migration: bot -t migrate.
+	 */
+	public static function markEdited(int $id, string $importId): void {
+		try {
+			DB::execute("UPDATE records SET edited_at = now() WHERE id = :id AND import_id = :iid",
+				[":id" => $id, ":iid" => $importId]);
+		} catch (\Throwable $e) {
+			error_log("[Record] edited_at nicht schreibbar (Migration ausstehend?): " . $e->getMessage());
+		}
+	}
+
+	/** Anzahl der von Hand bearbeiteten Datensätze eines Imports (0, falls Spalte fehlt). */
+	public static function countEdited(string $importId): int {
+		try {
+			return (int)DB::value("SELECT COUNT(*) FROM records WHERE import_id = :iid AND edited_at IS NOT NULL",
+				[":iid" => $importId]);
+		} catch (\Throwable $e) {
+			return 0;
+		}
+	}
+
 	/** Einzelner Record, auf den Import eingegrenzt. */
 	public static function find(int $id, string $importId): ?array {
 		return DB::row("SELECT * FROM records WHERE id = :id AND import_id = :iid", [":id" => $id, ":iid" => $importId]);

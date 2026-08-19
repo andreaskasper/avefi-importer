@@ -51,7 +51,10 @@ class convert {
 					continue;
 				}
 				if (!$isNative) {
-					$avefiOut = array_merge($avefiOut, \AvefiMapper::toAvefi($rec, self::baseId($import->id(), $idx)));
+					// Anhängen statt array_merge im Schleifenrumpf: array_merge kopiert bei jedem
+					// Durchlauf das gesamte bisherige Array (quadratischer Aufwand, spürbar ab
+					// einigen tausend Datensätzen).
+					foreach (\AvefiMapper::toAvefi($rec, self::baseId($import->id(), $idx)) as $node) $avefiOut[] = $node;
 				}
 			}
 		} catch (\Throwable $e) {

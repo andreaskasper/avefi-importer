@@ -12,6 +12,7 @@ $csrf   = Csrf::token();
 $imports  = $instId !== null ? Import::forInstitution($instId) : [];
 $recCount = $instId !== null ? Import::countRecordsForInstitution($instId) : 0;
 $awaiting = $instId !== null ? Import::countAwaitingForInstitution($instId) : 0;
+$editedCounts = $instId !== null ? Import::editedCounts($instId) : [];   // import_id => Anzahl von Hand bearbeiteter Datensätze
 
 $page_title = "Importe · AVefi Importer";
 include __DIR__ . "/../layout/head.php";
@@ -62,7 +63,7 @@ include __DIR__ . "/../layout/appheader.php";
       </div>
     </div>
   <?php else: ?>
-    <div class="tablewrap" id="importsTable">
+    <div class="tablewrap" id="importsTable" data-import-actions data-csrf="<?php echo htmlattr($csrf); ?>">
       <table>
         <caption class="sr-only">Ihre Importe mit Format, Fortschritt, Verarbeitungsstatus und Aktionen</caption>
         <thead><tr>
@@ -94,26 +95,53 @@ include __DIR__ . "/../layout/appheader.php";
             <td class="tnum"><?php echo $imp->recordCount() > 0 ? $imp->recordCount() : '<span class="dim">–</span>'; ?></td>
             <td class="dim small tnum"><?php echo html($when); ?></td>
             <td style="text-align:right">
-              <div style="display:inline-flex;gap:6px;align-items:center;justify-content:flex-end">
+              <div class="rowactions">
                 <?php if ($imp->status() === "error"): ?>
                   <a class="btn btn-outline btn-sm"
                      href="/imports/<?php echo htmlattr($imp->id()); ?>/details"
                      style="color:var(--danger);border-color:var(--danger)"
-                     title="Fehlerdetails ansehen"><span aria-hidden="true">⚠</span> Details</a>
-                <?php elseif ($imp->report() !== null):
-                  $hasIssues = $imp->hasReportIssues(); ?>
-                  <a class="btn btn-outline btn-sm"
-                     href="/imports/<?php echo htmlattr($imp->id()); ?>/report"
-                     <?php if ($hasIssues): ?>style="color:var(--danger);border-color:var(--danger)"<?php endif; ?>
-                     title="Prüfbericht ansehen"><span aria-hidden="true"><?php echo $hasIssues ? "⚠" : "✓"; ?></span> <?php echo $hasIssues ? "Report (Beanstandungen)" : "Report"; ?></a>
-                <?php endif; ?>
-                <?php if ($isConverted): ?>
-                  <a class="btn btn-primary btn-sm" href="/imports/<?php echo htmlattr($imp->id()); ?>/records"><span aria-hidden="true">✎</span> Bearbeiten</a>
+                     title="Fehlerdetails ansehen"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Details</a>
+                <?php elseif ($isConverted): ?>
+                  <a class="btn btn-primary btn-sm" href="/imports/<?php echo htmlattr($imp->id()); ?>/records"><i class="fa-solid fa-pen" aria-hidden="true"></i> Bearbeiten</a>
                 <?php else: ?>
-                  <span class="btn btn-outline btn-sm disabled" aria-disabled="true"><span aria-hidden="true">✎</span> Bearbeiten</span>
+                  <span class="btn btn-outline btn-sm disabled" aria-disabled="true"><i class="fa-solid fa-pen" aria-hidden="true"></i> Bearbeiten</span>
                 <?php endif; ?>
-                <button type="button" class="iconbtn-del" data-del="<?php echo htmlattr($imp->id()); ?>"
-                        title="Import löschen" aria-label="Import löschen"><span aria-hidden="true">🗑</span></button>
+
+                <div class="rowmenu">
+                  <button type="button" class="iconbtn-menu" data-menu-btn
+                          aria-haspopup="true" aria-expanded="false"
+                          aria-label="Weitere Aktionen für <?php echo htmlattr($imp->filename()); ?>"
+                          title="Weitere Aktionen"><i class="fa-solid fa-ellipsis" aria-hidden="true"></i></button>
+                  <div class="menu menu-float" data-menu role="menu" hidden
+                       aria-label="Aktionen für <?php echo htmlattr($imp->filename()); ?>">
+
+                    <?php if ($imp->status() !== "error" && $imp->report() !== null): ?>
+                      <a class="menu-item" role="menuitem" href="/imports/<?php echo htmlattr($imp->id()); ?>/report">
+                        <span class="mi" aria-hidden="true"><i class="fa-solid fa-clipboard-check"></i></span>Prüfbericht<?php if ($imp->hasReportIssues()): ?> <span class="dim">· Beanstandungen</span><?php endif; ?></a>
+                    <?php endif; ?>
+
+                    <a class="menu-item" role="menuitem" href="/imports/<?php echo htmlattr($imp->id()); ?>/original">
+                      <span class="mi" aria-hidden="true"><i class="fa-solid fa-file-arrow-down"></i></span>Original herunterladen</a>
+
+                    <?php if ($isConverted): ?>
+                      <a class="menu-item" role="menuitem" href="/imports/<?php echo htmlattr($imp->id()); ?>/avefi.json">
+                        <span class="mi" aria-hidden="true"><i class="fa-solid fa-code"></i></span>AVefi-JSON herunterladen</a>
+                    <?php endif; ?>
+
+                    <?php if ($imp->canReconvert()): ?>
+                      <button type="button" class="menu-item" role="menuitem"
+                              data-action="reconvert" data-id="<?php echo htmlattr($imp->id()); ?>"
+                              data-edited="<?php echo (int)($editedCounts[$imp->id()] ?? 0); ?>">
+                        <span class="mi" aria-hidden="true"><i class="fa-solid fa-rotate"></i></span>Neu konvertieren</button>
+                    <?php endif; ?>
+
+                    <div class="menu-sep" role="separator"></div>
+
+                    <button type="button" class="menu-item danger" role="menuitem"
+                            data-action="delete" data-id="<?php echo htmlattr($imp->id()); ?>">
+                      <span class="mi" aria-hidden="true"><i class="fa-solid fa-trash-can"></i></span>Löschen</button>
+                  </div>
+                </div>
               </div>
             </td>
           </tr>
@@ -136,11 +164,7 @@ include __DIR__ . "/../layout/appheader.php";
     <p class="note">Nach dem Upload liegt der Import auf „Wartend" — die Format-Erkennung und Konvertierung übernimmt der Worker.</p>
   </div>
 
-  <form id="deleteForm" method="post" action="/import/delete" hidden>
-    <input type="hidden" name="_csrf" value="<?php echo htmlattr($csrf); ?>">
-    <input type="hidden" name="id" value="">
-  </form>
-
 </main>
 <script src="<?php echo html(asset('/skins/upload.js')); ?>"></script>
+<script src="<?php echo html(asset('/skins/imports.js')); ?>"></script>
 <?php include __DIR__ . "/../layout/foot.php"; ?>

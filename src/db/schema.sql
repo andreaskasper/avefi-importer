@@ -74,6 +74,10 @@ CREATE TABLE IF NOT EXISTS records (
     created_at           TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Nachrüst-Spalte: markiert von Hand bearbeitete Datensätze. Wird gebraucht, um vor
+-- dem Neukonvertieren ehrlich sagen zu können, wie viel Handarbeit verloren geht.
+ALTER TABLE records ADD COLUMN IF NOT EXISTS edited_at TIMESTAMPTZ;
+
 CREATE TABLE IF NOT EXISTS format_reviews (
     id           SERIAL PRIMARY KEY,
     import_id    UUID NOT NULL REFERENCES imports(id) ON DELETE CASCADE,

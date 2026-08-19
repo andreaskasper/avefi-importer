@@ -407,3 +407,26 @@ select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible,
 .detail-desc{font-weight:600;margin:0 0 8px}
 .detail-extract{margin:0;color:var(--ink);line-height:1.6}
 .detail-content::after{content:"";display:block;clear:both}
+
+/* ------- Zeilenaktionen + „…"-Kontextmenü ------- */
+.rowactions{display:inline-flex;gap:6px;align-items:center;justify-content:flex-end}
+.rowmenu{position:relative;display:inline-flex}
+.iconbtn-menu{border:1px solid var(--border);background:var(--surface);border-radius:8px;
+  padding:5px 10px;cursor:pointer;color:var(--muted);font-size:13px;line-height:1}
+.iconbtn-menu:hover{border-color:var(--border-strong);color:var(--ink)}
+.iconbtn-menu[aria-expanded="true"]{border-color:var(--primary);color:var(--primary)}
+.iconbtn-menu:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+/* Beim Öffnen wird das Menü an <body> gehängt und fest positioniert (JS setzt
+   left/top), damit .tablewrap mit overflow:auto es nicht abschneidet. */
+.menu.menu-float{position:fixed;right:auto;top:0;left:0;min-width:246px}
+button.menu-item{width:100%;text-align:left;border:0;background:none;cursor:pointer;
+  font-family:inherit;font-size:13.5px;font-weight:600;color:var(--ink)}
+.menu-item:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+.menu-item .mi{display:inline-block;width:20px;color:var(--faint)}
+.menu-item:hover .mi{color:inherit}
+.menu-item .dim{font-weight:600}
+.menu-item.danger{color:var(--danger)}
+.menu-item.danger .mi{color:var(--danger);opacity:.7}
+.menu-item.danger:hover{background:var(--danger-bg)}
+.menu-sep{height:1px;background:var(--border);margin:5px 6px}

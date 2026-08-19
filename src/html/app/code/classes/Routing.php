@@ -25,6 +25,7 @@ class Routing {
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/details$@', $path, $m))            { self::details($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/avefi\.json$@', $path, $m))        { self::avefiJson($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/original$@', $path, $m))           { self::originalDownload($m[1]); exit; }
+		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/reconvert$@', $path, $m))          { self::reconvert($m[1]); exit; }
 
 		/* Format-Review (nur Admin) */
 		if (preg_match('@^/reviews/(\d+)$@', $path, $m)) { self::review((int)$m[1]); exit; }
@@ -212,6 +213,7 @@ class Routing {
 			$import->delete();
 			return self::json(["ok" => true]);
 		} catch (\Throwable $e) {
+			error_log("[deleteImport] " . $e->getMessage());
 			return self::json(["ok" => false, "error" => "Unerwarteter Fehler beim Löschen."], 500);
 		}
 	}
@@ -370,6 +372,7 @@ class Routing {
 		$store    = ["avefi" => $canonical, "source" => $source];
 		$pct      = Completeness::forAvefi($canonical);
 		Record::saveAvefi($recordId, $importId, $store, AvefiMapper::workDisplay($canonical["work"]), $canonical, $pct);
+		Record::markEdited($recordId, $importId);
 
 		self::regenerateExport($import);
 		self::json(["ok" => true, "completeness" => $pct, "errors" => $errors, "display" => AvefiMapper::workDisplay($canonical["work"])]);
@@ -380,7 +383,9 @@ class Routing {
 		$all = [];
 		foreach (Record::forImport($import->id()) as $r) {
 			$data = json_decode((string)($r["data_json"] ?? "{}"), true) ?: [];
-			$all  = array_merge($all, AvefiMapper::flatten(AvefiMapper::canonical($data, "rec" . $r["id"])));
+			// Anhängen statt array_merge im Schleifenrumpf: array_merge kopiert bei jedem
+			// Durchlauf das gesamte bisherige Array (quadratischer Aufwand).
+			foreach (AvefiMapper::flatten(AvefiMapper::canonical($data, "rec" . $r["id"])) as $node) $all[] = $node;
 		}
 		@file_put_contents(
 			Storage::avefiPath($import->id()),
@@ -567,6 +572,38 @@ class Routing {
 		}
 		self::redirect("/users/{$id}");
 		exit;
+	}
+
+	/**
+	 * Erneute Konvertierung eines Imports mit dem bereits zugeordneten Converter.
+	 * POST, JSON. Verwirft bestehende Datensätze — die Rückfrage dazu stellt das
+	 * Frontend, weil nur dort bekannt ist, wie viele davon von Hand bearbeitet sind.
+	 */
+	private static function reconvert(string $importId) {
+		try {
+			if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") return self::json(["ok" => false, "error" => "Methode nicht erlaubt."], 405);
+			$user = MyUser::current();
+			if ($user === null)                        return self::json(["ok" => false, "error" => "Nicht angemeldet."], 401);
+			if (!Csrf::check($_POST["_csrf"] ?? null)) return self::json(["ok" => false, "error" => "Ungültiges Sicherheits-Token."], 403);
+
+			$import = Import::byId($importId);
+			if ($import === null || (!$user->isAdmin() && $import->institutionId() !== $user->institutionId()))
+				return self::json(["ok" => false, "error" => "Import nicht gefunden."], 404);
+
+			if (Storage::firstOrgFile($importId) === null)
+				return self::json(["ok" => false, "error" => "Die Originaldatei ist nicht mehr vorhanden."], 409);
+
+			$key = $import->converterKey();
+			if ($key === null)
+				return self::json(["ok" => false, "error" => "Für diesen Import ist noch kein Converter zugeordnet."], 409);
+
+			$import->setStatus("converting");
+			WorkerJob::enqueue("convert", ["import_id" => $importId, "converter_key" => $key], $importId);
+			return self::json(["ok" => true]);
+		} catch (\Throwable $e) {
+			error_log("[reconvert] " . $e->getMessage());
+			return self::json(["ok" => false, "error" => "Unerwarteter Fehler beim Neukonvertieren."], 500);
+		}
 	}
 
 	/** Download der hochgeladenen Originaldatei (Owner oder Admin). */

@@ -126,45 +126,4 @@
     if (ok) item.querySelector(".prog").className = "prog ok";
   }
 
-  /* ---- Löschen ---- */
-  function notify(msg) { if (window.AvefiModal) AvefiModal.alert(msg); else alert(msg); }
-
-  function deleteImport(btn, id) {
-    if (window.AvefiUI) AvefiUI.spin(btn, ""); else btn.disabled = true;
-    function reset() { if (window.AvefiUI) AvefiUI.unspin(btn); else btn.disabled = false; }
-
-    var form = new FormData();
-    form.append("_csrf", CSRF);
-    form.append("id", id);
-
-    fetch("/import/delete", { method: "POST", body: form, credentials: "same-origin" })
-      .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
-      .then(function (res) {
-        if (res && res.ok) {
-          var row = btn.closest("tr");
-          if (row) row.parentNode.removeChild(row);
-        } else {
-          reset();
-          notify((res && res.error) ? res.error : "Löschen fehlgeschlagen.");
-        }
-      })
-      .catch(function () { reset(); notify("Löschen fehlgeschlagen."); });
-  }
-
-  document.addEventListener("click", function (e) {
-    var btn = e.target.closest ? e.target.closest("[data-del]") : null;
-    if (!btn) return;
-    var id = btn.getAttribute("data-del");
-    if (window.AvefiModal) {
-      AvefiModal.confirm({
-        title: "Import löschen",
-        message: "Diesen Import inklusive hochgeladener Datei löschen?",
-        okText: "Löschen",
-        danger: true,
-        onConfirm: function () { deleteImport(btn, id); }
-      });
-    } else if (confirm("Diesen Import löschen?")) {
-      deleteImport(btn, id);
-    }
-  });
 })();
