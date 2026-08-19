@@ -452,8 +452,10 @@ button.menu-item{width:100%;text-align:left;border:0;background:none;cursor:poin
 .tsel{display:flex;gap:6px;align-items:center;margin-bottom:5px}
 .tsel .input{min-width:230px}
 .tsugg{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.mapresult .okval{color:var(--ok);font-weight:600;font-size:12.5px}
-.mapresult .errval{color:var(--danger);font-size:12.5px;margin-top:2px}
+/* Grün und Rot gelten überall, wo ein Vorschau-Ergebnis steht — getrennte Ansicht,
+   zusammengelegte Ansicht und Verzweigung. */
+.okval{color:var(--ok);font-weight:600;font-size:12.5px}
+.errval{color:var(--danger);font-size:12.5px}
 
 .chip{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:4px 10px;
   font-size:12px;font-weight:600;cursor:pointer;color:var(--muted)}
@@ -518,7 +520,6 @@ ul.tight li{margin-bottom:3px;font-size:13px}
 .branch-target{display:flex;flex-direction:column;gap:3px;margin-top:9px}
 .branch-target .input{max-width:420px}
 .branch-result{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
-.branch-result .okval{color:var(--ok);font-weight:600;font-size:12.5px}
 .branch-add-item{margin-top:14px}
 .tchips{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
 .tchips .chip{cursor:pointer}
@@ -545,6 +546,7 @@ ul.tight li{margin-bottom:3px;font-size:13px}
 .excount{font-size:11px;white-space:nowrap;flex:none}
 .exarrow{color:var(--faint);font-size:11px;flex:none}
 .exline .okval,.exline .errval{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto}
+.exline .okval i,.exline .errval i{flex:none;margin-right:3px}
 .mapresult .exline{justify-content:flex-start}
 .fillhint{color:var(--warn)}
 .branch-result .exline{min-height:22px;line-height:22px}

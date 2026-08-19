@@ -116,8 +116,10 @@ include __DIR__ . "/../layout/appheader.php";
                           <span class="dim excount" v-if="e.count > 1">{{ e.count }}&times;</span>
                           <template v-if="merged">
                             <i class="fa-solid fa-arrow-right-long exarrow" aria-hidden="true"></i>
-                            <span v-if="valuesOf(e).length" class="okval">{{ valuesOf(e).join(' · ') }}</span>
-                            <span v-else-if="e.errors.length" class="errval">{{ e.errors[0] }}</span>
+                            <span v-if="valuesOf(e).length" class="okval">
+                              <i class="fa-solid fa-check" aria-hidden="true"></i>{{ valuesOf(e).join(' · ') }}</span>
+                            <span v-else-if="e.errors.length" class="errval" :title="e.errors.join(' · ')">
+                              <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>{{ e.errors[0] }}</span>
                             <span v-else class="dim">kein Wert</span>
                           </template>
                         </div>
@@ -151,8 +153,8 @@ include __DIR__ . "/../layout/appheader.php";
                         <div v-for="(e,i) in examplesOf(col)" :key="i" class="exline">
                           <span v-if="valuesOf(e).length" class="okval">
                             <i class="fa-solid fa-check" aria-hidden="true"></i> {{ valuesOf(e).join(' · ') }}</span>
-                          <span v-else-if="e.errors.length" class="errval">
-                            <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> {{ e.errors[0] }}</span>
+                          <span v-else-if="e.errors.length" class="errval" :title="e.errors.join(' · ')">
+                            <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>{{ e.errors[0] }}</span>
                           <span v-else class="dim">kein Wert</span>
                         </div>
                       </template>
@@ -215,8 +217,9 @@ include __DIR__ . "/../layout/appheader.php";
                                   <span class="exraw" :title="e.raw">{{ e.raw }}</span>
                                   <i class="fa-solid fa-arrow-right-long exarrow" aria-hidden="true"></i>
                                   <span v-if="outputsFor(e, t.target).length" class="okval">
-                                    {{ outputsFor(e, t.target).map(function(o){return o.value;}).join(' · ') }}</span>
-                                  <span v-else-if="e.errors.length" class="errval">{{ e.errors[0] }}</span>
+                                    <i class="fa-solid fa-check" aria-hidden="true"></i>{{ outputsFor(e, t.target).map(function(o){return o.value;}).join(' · ') }}</span>
+                                  <span v-else-if="e.errors.length" class="errval" :title="e.errors.join(' · ')">
+                                    <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>{{ e.errors[0] }}</span>
                                   <span v-else class="dim">kein Wert</span>
                                 </div>
                               </div>
