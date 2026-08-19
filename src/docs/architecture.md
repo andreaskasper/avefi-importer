@@ -117,3 +117,6 @@ Work            konzeptuelles Filmwerk   (Titel, Jahr, Werkart, Beteiligte, Iden
 - [ ] Konkrete Feldliste für Editor-Formular (FormKit) ableiten
 - [ ] Auth: Passwort (Argon2id) + optional Shibboleth/eduGAIN
 - [ ] Ersten Converter (`dfi_csv_v3`) an echter Beispieldatei bauen
+
+> Vue-Oberflächen prüfen (Template-Übersetzung und Mount ohne Browser):
+> siehe [`frontend-pruefen.md`](frontend-pruefen.md).

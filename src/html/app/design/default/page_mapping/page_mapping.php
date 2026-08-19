@@ -20,10 +20,16 @@ include __DIR__ . "/../layout/appheader.php";
     echo json_encode($boot, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP);
   ?></script>
 
-  <div id="mappingApp">
-    <noscript><div class="alert" role="alert">Der Zuordnungs-Editor braucht JavaScript.</div></noscript>
+  <noscript><div class="alert" role="alert">Der Zuordnungs-Editor braucht JavaScript.</div></noscript>
 
-    <template>
+  <div id="mappingApp">
+    <div class="dim small" style="padding:24px">Zuordnungs-Editor wird geladen …</div>
+  </div>
+
+  <!-- Das Wurzel-Template liegt AUSSERHALB des Mount-Elements und wird per
+       template:-Option übergeben. Innerhalb von #mappingApp würde Vue die
+       In-DOM-Übersetzung nutzen und dabei den Inhalt des <template> verlieren. -->
+  <template id="mappingTpl">
       <div class="map-head">
         <div>
           <h2><?php echo html($subject); ?></h2>
@@ -270,8 +276,7 @@ include __DIR__ . "/../layout/appheader.php";
           </div>
         </aside>
       </div>
-    </template>
-  </div>
+  </template>
 </main>
 <script src="<?php echo html(asset('/skins/mapping-editor.js')); ?>"></script>
 <?php include __DIR__ . "/../layout/foot.php"; ?>

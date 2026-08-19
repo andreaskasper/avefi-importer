@@ -185,7 +185,14 @@
 
   /* ---------------- Anwendung ---------------- */
 
+  var tplEl = document.getElementById("mappingTpl");
+  if (!tplEl) { mount.innerHTML = "<div class='alert' role='alert'>Das Editor-Template fehlt.</div>"; return; }
+
   var app = Vue.createApp({
+    // Ausdrücklich übergeben statt In-DOM-Übersetzung: läge das <template> im
+    // Mount-Element, würde Vue dessen Inhalt beim Übersetzen verlieren und
+    // eine leere Seite rendern.
+    template: tplEl.innerHTML,
     components: { "chain-editor": ChainEditor },
     data: function () {
       return {
