@@ -499,3 +499,33 @@ button.menu-item{width:100%;text-align:left;border:0;background:none;cursor:poin
 .defrow .input{min-width:0}
 ul.tight{margin:6px 0 0 18px;padding:0}
 ul.tight li{margin-bottom:3px;font-size:13px}
+
+/* ------- Verzweigung: Spalte → globale Kette → Zweige mit eigenem Ziel ------- */
+.branch{padding:8px 2px}
+.branch-src{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.branch-col{font-weight:700;font-size:13.5px}
+.branch-col i{color:var(--muted);margin-right:5px}
+.branch-global{position:relative;padding-left:18px;margin-bottom:2px}
+.branch-global::before{content:"";position:absolute;left:6px;top:0;bottom:-10px;width:2px;background:var(--border-strong)}
+.branch-list{position:relative;padding-left:18px}
+.branch-list::before{content:"";position:absolute;left:6px;top:0;bottom:26px;width:2px;background:var(--border-strong)}
+.branch-item{position:relative;padding-left:22px;margin-top:12px}
+.branch-connector{position:absolute;left:-12px;top:16px;width:32px;height:2px;background:var(--border-strong)}
+.branch-body{border:1px solid var(--border);border-left:3px solid var(--primary);border-radius:9px;
+  padding:10px 12px;background:var(--surface)}
+.branch-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.branch-no{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+.branch-head .iconbtn-del{margin-left:auto}
+.branch-target{display:flex;flex-direction:column;gap:3px;margin-top:9px}
+.branch-target .input{max-width:420px}
+.branch-result{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+.branch-result .okval{color:var(--ok);font-weight:600;font-size:12.5px}
+.branch-add-item{margin-top:14px}
+.tchips{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.tchips .chip{cursor:pointer}
+
+/* ------- Neues Profil aus Beispieldatei ------- */
+.newprofile{border:1px dashed var(--border-strong);border-radius:12px;background:var(--surface);
+  padding:16px 18px;margin-bottom:16px}
+.newprofile h3{font-size:14px;margin-bottom:5px}
+.newprofile .row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:11px}

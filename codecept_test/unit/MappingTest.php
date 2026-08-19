@@ -242,6 +242,45 @@ class MappingTest extends \Codeception\Test\Unit
         $this->assertSame("SuppliedDevisedTitle", $c["work"]["has_primary_title"]["type"]);
     }
 
+    /* ---------- eine Spalte, mehrere Ziele ---------- */
+
+    public function testEineSpalteBedientMehrereZieleMitEigenerKette()
+    {
+        // Spalte → globale Kette → je Zweig eigene Kette → eigenes Ziel.
+        $m = ["columns" => ["Regie" => [
+            "pre" => [["op" => "trim"]],
+            "targets" => [
+                ["target" => "work.activity.directing", "post" => [["op" => "split", "sep" => ";"]]],
+                ["target" => "work.subject.person",     "post" => [["op" => "uppercase"]]],
+            ],
+        ]]];
+        $r = (new MappingRunner($m))->runRow(["Regie" => "  Lang; Murnau "], "t1");
+        $c = $r["canonical"];
+
+        // Zweig 1: aufgeteilt in zwei Beteiligte
+        $agents = $c["work"]["has_event"][0]["has_activity"][0]["has_agent"];
+        $this->assertSame(["Lang", "Murnau"], array_column($agents, "has_name"));
+
+        // Zweig 2: derselbe Quellwert, andere Kette, anderes Ziel
+        $this->assertSame("LANG; MURNAU", $c["work"]["has_subject"][0]["has_name"]);
+
+        // Die Vorschau muss jeden Ausgabewert seinem Zweig zuordnen können.
+        $targets = array_column($r["cells"]["Regie"]["outputs"], "target");
+        $this->assertContains("work.activity.directing", $targets);
+        $this->assertContains("work.subject.person", $targets);
+    }
+
+    public function testGlobaleKetteGiltFuerAlleZweige()
+    {
+        $m = ["columns" => ["t" => [
+            "pre" => [["op" => "replace", "search" => "Film: ", "with" => ""]],
+            "targets" => [["target" => "work.title.primary"], ["target" => "item.title.primary"]],
+        ]]];
+        $c = (new MappingRunner($m))->runRow(["t" => "Film: Metropolis"], "t1")["canonical"];
+        $this->assertSame("Metropolis", $c["work"]["has_primary_title"]["has_name"]);
+        $this->assertSame("Metropolis", $c["items"][0]["has_primary_title"]["has_name"]);
+    }
+
     /* ---------- statische Prüfung ---------- */
 
     public function testListeInEinwertigesZielIstEinNogo()

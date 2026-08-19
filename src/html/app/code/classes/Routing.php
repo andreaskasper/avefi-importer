@@ -29,6 +29,9 @@ class Routing {
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/mapping$@', $path, $m))            { self::mappingEditor($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/mapping/(preview|save|adopt)$@', $path, $m)) { self::mappingAction($m[1], $m[2]); exit; }
 		if (preg_match('@^/mappings/(\d+)/export$@', $path, $m))                         { self::mappingExport((int)$m[1]); exit; }
+		if (preg_match('@^/mappings/(\d+)/edit$@', $path, $m))                           { self::profileEditor((int)$m[1]); exit; }
+		if (preg_match('@^/mappings/(\d+)/(preview|save)$@', $path, $m))                 { self::profileAction((int)$m[1], $m[2]); exit; }
+		if ($path === "/mappings/new")                                                   { self::profileFromSample(); exit; }
 		if (preg_match('@^/mappings/(\d+)$@', $path, $m))                                { self::mappingDetail((int)$m[1]); exit; }
 
 		/* Format-Review (nur Admin) */
@@ -622,6 +625,45 @@ class Routing {
 		return TableHeader::read($path, $import->baseFormat());
 	}
 
+	/**
+	 * Boot-Nutzlast des Editors. Dieselbe Struktur für beide Betriebsarten — einmal
+	 * an einem Import (mit Originaldatei), einmal an einem gespeicherten Profil
+	 * (mit hinterlegter Stichprobe). Unterschied ist nur $endpoint und ob am Ende
+	 * eine Konvertierung angestoßen werden kann.
+	 */
+	private static function mappingBoot(array $head, ?MappingProfile $profile, User $user,
+	                                    string $endpoint, string $subject, bool $canStart): array {
+		$instId  = $user->institutionId();
+		$mapping = $profile !== null
+			? MappingProfile::adopt($profile->mapping(), $head["columns"])["mapping"]
+			: MappingProfile::emptyMapping($head["columns"]);
+
+		return [
+			"csrf"       => Csrf::token(),
+			"endpoint"   => $endpoint,
+			"canStart"   => $canStart,
+			"subject"    => $subject,
+			"baseFormat" => (string)($head["base_format"] ?? ""),
+			"headerHash" => $head["hash"],
+			"rowCount"   => (int)($head["row_count"] ?? count($head["rows"] ?? [])),
+			"columns"    => $head["columns"],
+			"rows"       => array_slice($head["rows"] ?? [], 0, 25),
+			"mapping"    => $mapping,
+			"profile"    => $profile === null ? null : [
+				"id" => $profile->id(), "name" => $profile->name(),
+				"version" => $profile->version(), "complete" => $profile->isComplete(),
+			],
+			"suggestedName" => $profile !== null ? $profile->name()
+			                   : MappingProfile::suggestName($user->institutionName(), $subject),
+			"targets"     => TargetCatalog::forFrontend(),
+			"transforms"  => Transform::catalog(),
+			"suggestions" => MappingSuggest::forColumns($head["columns"]),
+			"vocabulary"  => MappingSuggest::vocabularyCandidates($head["distinct"] ?? []),
+			"foreign"     => MappingProfile::othersForHash($head["hash"], $instId),
+			"hints"       => MappingProfile::targetHints($head["columns"], $instId),
+		];
+	}
+
 	/** Mapping-Editor (Seite). */
 	private static function mappingEditor(string $importId): void {
 		$import = self::ownedImportOr404($importId);
@@ -630,43 +672,18 @@ class Routing {
 		$head = self::tableOf($import);
 		if ($head === null) { http_response_code(404); self::view("page_404/page_404"); exit; }
 
-		$user    = MyUser::current();
-		$instId  = $user->institutionId();
-		$profile = MappingProfile::findOwn($instId, $head["hash"]);
-
-		if ($profile !== null) {
-			$adopted = MappingProfile::adopt($profile->mapping(), $head["columns"]);
-			$mapping = $adopted["mapping"];
-		} else {
-			$mapping = MappingProfile::emptyMapping($head["columns"]);
-		}
-
-		$boot = [
-			"csrf"       => Csrf::token(),
-			"importId"   => $import->id(),
-			"filename"   => $import->filename(),
-			"baseFormat" => (string)$import->baseFormat(),
-			"headerHash" => $head["hash"],
-			"rowCount"   => $head["row_count"],
-			"columns"    => $head["columns"],
-			"rows"       => array_slice($head["rows"], 0, 25),
-			"mapping"    => $mapping,
-			"profile"    => $profile === null ? null : [
-				"id" => $profile->id(), "name" => $profile->name(),
-				"version" => $profile->version(), "complete" => $profile->isComplete(),
-			],
-			"suggestedName" => MappingProfile::suggestName($user->institutionName(), $import->filename()),
-			"targets"    => TargetCatalog::forFrontend(),
-			"transforms" => Transform::catalog(),
-			"suggestions" => MappingSuggest::forColumns($head["columns"]),
-			"vocabulary" => MappingSuggest::vocabularyCandidates($head["distinct"]),
-			"foreign"    => MappingProfile::othersForHash($head["hash"], $instId),
-			"hints"      => MappingProfile::targetHints($head["columns"], $instId),
-		];
+		$user = MyUser::current();
+		$head["base_format"] = (string)$import->baseFormat();
+		$profile = MappingProfile::findOwn($user->institutionId(), $head["hash"]);
 
 		self::view("page_mapping/page_mapping", [
-			"active" => "imports", "import" => $import, "boot" => $boot,
-			"profile" => $profile, "columnCount" => count($head["columns"]),
+			"active"      => "imports",
+			"boot"        => self::mappingBoot($head, $profile, $user,
+			                     "/imports/" . $import->id() . "/mapping", $import->filename(), true),
+			"subject"     => $import->filename(),
+			"backUrl"     => "/",
+			"backLabel"   => "Importe",
+			"columnCount" => count($head["columns"]),
 		]);
 	}
 
@@ -791,6 +808,7 @@ class Routing {
 			$profile->update($mapping, $name !== "" ? $name : null, $user->id());
 		}
 
+		$profile->setSample($head);   // damit das Profil später ohne die Datei bearbeitbar bleibt
 		$import->setHeaderHash($head["hash"]);
 		$import->setMappingProfile($profile->id(), $profile->version());
 
@@ -815,6 +833,132 @@ class Routing {
 			"open"    => MappingProfile::openColumns($mapping),
 			"checks"  => $checks,
 		]);
+	}
+
+	/* ==================== Profil-Editor (ohne Import) ==================== */
+
+	/** Profil samt Stichprobe holen; ohne Stichprobe ist kein Bearbeiten möglich. */
+	private static function profileOr404(int $id): array {
+		if (!MyUser::isLoggedIn()) { self::redirect("/login"); exit; }
+		$profile = MappingProfile::byId($id);
+		if ($profile === null) { http_response_code(404); self::view("page_404/page_404"); exit; }
+		return [$profile, MyUser::current()];
+	}
+
+	/** Editor für ein gespeichertes Profil — arbeitet auf der hinterlegten Stichprobe. */
+	private static function profileEditor(int $id): void {
+		[$profile, $user] = self::profileOr404($id);
+
+		// Ändern darf nur die besitzende Einrichtung: ein Profil ist global sichtbar
+		// und anderswo produktiv im Einsatz.
+		if ($profile->institutionId() !== $user->institutionId()) { self::redirect("/mappings?error=fremd"); exit; }
+
+		$sample = $profile->sample();
+		if ($sample === null) { self::redirect("/mappings/{$id}?error=nosample"); exit; }
+
+		$head = [
+			"columns"     => $sample["columns"],
+			"rows"        => $sample["rows"] ?? [],
+			"distinct"    => $sample["distinct"] ?? [],
+			"hash"        => $profile->headerHash(),
+			"row_count"   => count($sample["rows"] ?? []),
+			"base_format" => $profile->baseFormat(),
+		];
+
+		self::view("page_mapping/page_mapping", [
+			"active"      => "mappings",
+			"boot"        => self::mappingBoot($head, $profile, $user, "/mappings/" . $id, $profile->name(), false),
+			"subject"     => $profile->name(),
+			"backUrl"     => "/mappings",
+			"backLabel"   => "Zuordnungen",
+			"columnCount" => count($head["columns"]),
+		]);
+	}
+
+	/** preview / save für den Profil-Editor — JSON. */
+	private static function profileAction(int $id, string $action) {
+		if (!MyUser::isLoggedIn())                            return self::json(["ok" => false, "error" => "Nicht angemeldet."], 401);
+		if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") return self::json(["ok" => false, "error" => "POST erwartet."], 405);
+
+		$profile = MappingProfile::byId($id);
+		$user    = MyUser::current();
+		if ($profile === null)                                          return self::json(["ok" => false, "error" => "Profil nicht gefunden."], 404);
+		if ($profile->institutionId() !== $user->institutionId())        return self::json(["ok" => false, "error" => "Dieses Profil gehört einer anderen Einrichtung."], 403);
+
+		$body = json_decode((string)file_get_contents("php://input"), true);
+		if (!is_array($body))                      return self::json(["ok" => false, "error" => "Ungültige Daten."], 400);
+		if (!Csrf::check($body["_csrf"] ?? null))  return self::json(["ok" => false, "error" => "Sitzung abgelaufen — bitte Seite neu laden."], 403);
+
+		$sample = $profile->sample();
+		if ($sample === null)                      return self::json(["ok" => false, "error" => "Für dieses Profil ist keine Stichprobe hinterlegt."], 409);
+		$head = ["columns" => $sample["columns"], "rows" => $sample["rows"] ?? [], "distinct" => $sample["distinct"] ?? []];
+
+		try {
+			if ($action === "preview") return self::mappingPreview($body, $head);
+
+			$mapping = is_array($body["mapping"] ?? null) ? $body["mapping"] : [];
+			$runner  = new MappingRunner($mapping);
+			$checks  = $runner->staticCheck();
+			if (array_filter($checks, fn($c) => $c["level"] === "nogo")) {
+				return self::json(["ok" => false, "error" => "Das Profil enthält Fehler, die so nicht verarbeitet werden können.",
+				                   "checks" => $checks], 422);
+			}
+			$profile->update($mapping, (string)($body["name"] ?? ""), $user->id());
+			return self::json([
+				"ok"      => true,
+				"started" => false,
+				"profile" => ["id" => $profile->id(), "name" => $profile->name(),
+				              "version" => $profile->version(), "complete" => $profile->isComplete()],
+				"open"    => MappingProfile::openColumns($mapping),
+				"checks"  => $checks,
+			]);
+		} catch (\Throwable $e) {
+			error_log("[mappings/{$action}] " . $e->getMessage());
+			return self::json(["ok" => false, "error" => "Unerwarteter Fehler: " . $e->getMessage()], 500);
+		}
+	}
+
+	/**
+	 * Neues Profil aus einer hochgeladenen Beispieldatei. Die Datei wird nur gelesen,
+	 * nicht gespeichert — abgelegt werden Kopfzeile und Stichprobe im Profil.
+	 */
+	private static function profileFromSample(): void {
+		if (!MyUser::isLoggedIn()) { self::redirect("/login"); exit; }
+		$user = MyUser::current();
+		if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") { self::redirect("/mappings"); exit; }
+		if (!Csrf::check($_POST["_csrf"] ?? null))            { self::redirect("/mappings?error=csrf"); exit; }
+
+		$f = $_FILES["sample"] ?? null;
+		if (!is_array($f) || ($f["error"] ?? 1) !== UPLOAD_ERR_OK) { self::redirect("/mappings?error=upload"); exit; }
+
+		$ext  = strtolower(pathinfo((string)($f["name"] ?? ""), PATHINFO_EXTENSION));
+		$base = in_array($ext, ["tsv", "tab"], true) ? "tsv" : "csv";
+
+		try {
+			$head = TableHeader::read($f["tmp_name"], $base);
+		} catch (\Throwable $e) {
+			error_log("[mappings/new] " . $e->getMessage());
+			self::redirect("/mappings?error=parse"); exit;
+		}
+		if (empty($head["columns"])) { self::redirect("/mappings?error=parse"); exit; }
+
+		$existing = MappingProfile::findOwn($user->institutionId(), $head["hash"]);
+		if ($existing !== null) {
+			// Kopfzeile schon bekannt: Stichprobe auffrischen und dorthin führen,
+			// statt ein zweites Profil für dieselbe Datei anzulegen.
+			$existing->setSample($head);
+			self::redirect("/mappings/" . $existing->id() . "/edit?msg=exists");
+			exit;
+		}
+
+		$profile = MappingProfile::create(
+			$user->institutionId(), $user->id(), $head["hash"], $base,
+			MappingProfile::suggestName($user->institutionName(), (string)($f["name"] ?? "Tabelle")),
+			MappingProfile::emptyMapping($head["columns"])
+		);
+		$profile->setSample($head);
+		self::redirect("/mappings/" . $profile->id() . "/edit?msg=new");
+		exit;
 	}
 
 	/* ==================== Profilverwaltung ==================== */

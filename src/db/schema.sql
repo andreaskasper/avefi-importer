@@ -131,6 +131,10 @@ CREATE TABLE IF NOT EXISTS authority_cache (
     UNIQUE (source, kind, query_norm)
 );
 
+-- Stichprobe der Quelldatei (Spalten, ~25 Zeilen, Wertelisten). Damit lässt sich ein
+-- Profil auch ohne den zugehörigen Import bearbeiten und die Vorschau bleibt echt.
+ALTER TABLE mapping_profiles ADD COLUMN IF NOT EXISTS sample_json JSONB;
+
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS header_hash        TEXT;
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS mapping_profile_id INTEGER REFERENCES mapping_profiles(id) ON DELETE SET NULL;
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS mapping_version    INTEGER;

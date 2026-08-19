@@ -30,10 +30,24 @@ Beim Zuordnen bietet der Editor fremde Profile mit derselben Kopfzeile zur Über
 an. Übernommen wird eine **Kopie** — Änderungen daran verändern nichts am Original
 einer anderen Einrichtung.
 
+## Ein Profil anlegen — ohne vorherigen Import
+
+Auf **Zuordnungen** genügt eine **Beispieldatei**: eine CSV oder TSV mit der Kopfzeile,
+für die die Zuordnung gelten soll. Der Editor öffnet sich mit den echten Spalten und
+Werten. Die Datei selbst wird nicht gespeichert — abgelegt werden die Spaltennamen und
+etwa 25 Beispielzeilen, damit die Vorschau auch Monate später noch etwas zeigt.
+
+Ist die Kopfzeile bereits bekannt, führt der Weg zum vorhandenen Profil und frischt
+dessen Beispieldaten auf, statt ein zweites Profil für dieselbe Datei anzulegen.
+
+Ein exportiertes Profil-JSON lässt sich weiterhin einlesen — es steht als Zweitweg
+hinter „Stattdessen ein exportiertes Profil einlesen".
+
 ## Der Editor
 
-Aufruf über den Knopf **„Zuordnen"** in der Importliste, später über
-**„…" › „Zuordnung ansehen"**.
+Aufruf über den Knopf **„Zuordnen"** in der Importliste, über **„…" › „Zuordnung
+ansehen"** oder über **„Bearbeiten"** auf der Seite Zuordnungen. Am Import kann er die
+Konvertierung gleich anstoßen; am gespeicherten Profil wird nur gespeichert.
 
 Die Arbeitsfläche ist eine Tabelle mit einer Zeile je Quellspalte:
 
@@ -64,11 +78,30 @@ Der Editor schlägt zu jeder Spalte Ziele vor, aus zwei Quellen:
 
 Vorschläge werden nie automatisch übernommen. Ein Klick übernimmt sie.
 
+### Eine Spalte, mehrere Ziele
+
+Eine Quellspalte kann in beliebig viele Ziele fließen. Klappt man eine Zeile auf, zeigt
+der Editor die Verzweigung:
+
+```
+Spalte „Regie"
+  │
+  ├─ Konverter für alle Ziele:   Leerraum entfernen
+  │
+  ├── Zweig 1 ── Aufteilen „;" ──→ Werk › Beteiligte › Regie      → Lang, Murnau
+  └── Zweig 2 ── Normdaten GND ──→ Werk › Erschließung › Person   → 118569120
+```
+
+Die obere Kette gilt für alle Zweige; jeder Zweig hat darunter seine eigene Kette und
+sein eigenes Ziel. Unter jedem Zweig steht, was für die erste Beispielzeile dabei
+herauskommt. In der zusammengeklappten Zeile erscheinen die Ziele als Kürzel, bei mehr
+als einem zusätzlich die Zahl der Zweige.
+
 ### Konverter
 
 Zwischen Quellwert und Ziel liegt eine Kette von Konvertern. Sie gliedert sich in
-Schritte **vor** der Zuordnung (gelten für alle Ziele der Spalte) und **nach** der
-Zuordnung (je Ziel).
+Schritte **vor** der Zuordnung (gelten für alle Zweige der Spalte) und **nach** der
+Zuordnung (je Zweig).
 
 | Gruppe | Operationen |
 |---|---|

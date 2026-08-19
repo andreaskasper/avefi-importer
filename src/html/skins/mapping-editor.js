@@ -204,6 +204,8 @@
         checks: [],
         schemaIssues: [],
         coverage: {},
+        canStart: !!boot.canStart,
+        subject: boot.subject,
         busy: false,
         saving: false,
         message: null,
@@ -265,8 +267,18 @@
       },
       resultOf: function (col) {
         if (!this.preview || !this.preview.length) return null;
-        var c = this.preview[0].cells[col];
-        return c || null;
+        return this.preview[0].cells[col] || null;
+      },
+      /* Ergebnis eines einzelnen Zweigs — die Vorschau liefert je Ausgabe das Ziel mit. */
+      resultFor: function (col, targetKey) {
+        var c = this.resultOf(col);
+        if (!c) return null;
+        return { outputs: c.outputs.filter(function (o) { return o.target === targetKey; }), errors: c.errors };
+      },
+      branchCount: function (col) { return (this.spec(col).targets || []).length; },
+      targetsOf: function (col) {
+        var self = this;
+        return (this.spec(col).targets || []).map(function (t) { return self.targets[t.target] || null; });
       },
       toggleOpen: function (col) { this.open[col] = !this.open[col]; },
       toggleIgnore: function (col) {
@@ -357,7 +369,9 @@
       /* --- Server --- */
       post: function (action, body) {
         body._csrf = boot.csrf;
-        return fetch("/imports/" + boot.importId + "/mapping/" + action, {
+        // Derselbe Editor bedient zwei Betriebsarten: an einem Import
+        // (/imports/<uuid>/mapping) und an einem gespeicherten Profil (/mappings/<id>).
+        return fetch(boot.endpoint + "/" + action, {
           method: "POST", credentials: "same-origin",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
@@ -414,6 +428,7 @@
             return;
           }
           if (res.started) { window.location.href = "/?added=1"; return; }
+          if (res.profile && !boot.profile) boot.profile = res.profile;   // erstes Speichern
           self.error = null;
           self.message = "Profil „" + res.profile.name + "“ gespeichert (Fassung " + res.profile.version + ").";
         }).catch(function () { self.saving = false; self.error = "Speichern fehlgeschlagen — keine Verbindung."; });

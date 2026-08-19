@@ -5,13 +5,14 @@
  */
 if (!defined("avefi_entrypoint")) { http_response_code(403); exit; }
 
-$page_title = html($import->filename()) . " · Zuordnung";
+$page_title = html($subject) . " · Zuordnung";
 include __DIR__ . "/../layout/head.php";
 include __DIR__ . "/../layout/appheader.php";
 ?>
 <main id="main" class="appwrap wide">
   <div class="crumbs">
-    <a href="/">Importe</a><span class="sep">/</span><span><?php echo html($import->filename()); ?></span>
+    <a href="<?php echo htmlattr($backUrl); ?>"><?php echo html($backLabel); ?></a>
+    <span class="sep">/</span><span><?php echo html($subject); ?></span>
     <span class="sep">/</span><span>Zuordnung</span>
   </div>
 
@@ -25,9 +26,8 @@ include __DIR__ . "/../layout/appheader.php";
     <template>
       <div class="map-head">
         <div>
-          <h2><?php echo html($import->filename()); ?></h2>
+          <h2><?php echo html($subject); ?></h2>
           <div class="dim small">
-            <?php echo html(strtoupper((string)$import->baseFormat())); ?> ·
             <?php echo (int)$columnCount; ?> Spalten · {{ mappedCount }} zugeordnet ·
             {{ ignoredCount }} ignoriert ·
             <span :class="openColumns.length ? 'warnhint' : ''">{{ openColumns.length }} offen</span>
@@ -39,9 +39,10 @@ include __DIR__ . "/../layout/appheader.php";
         </label>
         <div class="map-actions">
           <span class="dim small" v-if="busy"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> rechnet …</span>
-          <button type="button" class="btn btn-outline" @click="save(false)" :disabled="saving">Speichern</button>
-          <button type="button" class="btn btn-primary" @click="save(true)" :disabled="saving || blockers.length">
-            Speichern &amp; konvertieren</button>
+          <button type="button" :class="canStart ? 'btn btn-outline' : 'btn btn-primary'"
+                  @click="save(false)" :disabled="saving">Speichern</button>
+          <button v-if="canStart" type="button" class="btn btn-primary" @click="save(true)"
+                  :disabled="saving || blockers.length">Speichern &amp; konvertieren</button>
         </div>
       </div>
 
@@ -90,15 +91,13 @@ include __DIR__ . "/../layout/appheader.php";
                       <span v-if="!sampleOf(col).length">–</span>
                     </td>
                     <td>
-                      <div v-for="(t,i) in (spec(col).targets||[])" :key="i" class="tsel">
-                        <select class="input" v-model="t.target" @change="refresh()" :aria-label="'Ziel für ' + col">
-                          <option value="">– Ziel wählen –</option>
-                          <optgroup v-for="g in targetGroups" :key="g.label" :label="g.label">
-                            <option v-for="tt in g.items" :key="tt.key" :value="tt.key">{{ tt.label }}</option>
-                          </optgroup>
-                        </select>
-                        <button type="button" class="iconbtn-del" @click="removeTarget(col,i)" :aria-label="'Ziel entfernen'">
-                          <i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+                      <div v-if="branchCount(col)" class="tchips">
+                        <button type="button" class="chip" v-for="(t,i) in spec(col).targets" :key="i"
+                                @click="open[col]=true" :title="targetLabel(t.target)">
+                          <span v-if="targets[t.target]">{{ targets[t.target].levelLabel }} › {{ targets[t.target].label }}</span>
+                          <span v-else class="warnhint">Ziel fehlt</span>
+                        </button>
+                        <span class="dim small" v-if="branchCount(col) > 1">{{ branchCount(col) }} Zweige</span>
                       </div>
                       <div class="tsugg" v-if="!(spec(col).targets||[]).length && !spec(col).ignore">
                         <button type="button" class="chip chip-sugg" v-for="s in (suggestions[col]||[])" :key="s.target"
@@ -111,7 +110,6 @@ include __DIR__ . "/../layout/appheader.php";
                           <i class="fa-solid fa-people-group" aria-hidden="true"></i> {{ targets[h.target] ? targets[h.target].label : h.target }}</button>
                         <button type="button" class="btn btn-outline btn-sm" @click="addTarget(col,'')">Ziel wählen</button>
                       </div>
-                      <button type="button" class="linkbtn" v-if="(spec(col).targets||[]).length" @click="addTarget(col,'')">+ weiteres Ziel</button>
                     </td>
                     <td class="mapresult">
                       <template v-if="resultOf(col)">
@@ -136,16 +134,62 @@ include __DIR__ . "/../layout/appheader.php";
                   </tr>
                   <tr v-if="open[col]" :key="col + '-chain'" class="chainrow">
                     <td colspan="5">
-                      <div class="chainbox">
-                        <chain-editor :chain="spec(col).pre" :columns="columns" label="Vor der Zuordnung (gilt für alle Ziele)"
-                                      @change="refresh()"></chain-editor>
-                        <div v-for="(t,i) in (spec(col).targets||[])" :key="i" class="chaintarget">
-                          <chain-editor :chain="t.post" :columns="columns"
-                                        :label="'Nach der Zuordnung → ' + targetLabel(t.target)" @change="refresh()"></chain-editor>
-                          <div class="vocabhint" v-if="enumFor(col,i)">
-                            <span class="dim small">Zulässige Werte: {{ enumFor(col,i).join(', ') }}</span>
-                            <button type="button" class="btn btn-outline btn-sm" @click="prefillVocabulary(col,i)">
-                              Werteliste aus der Datei vorbefüllen</button>
+                      <!-- Verzweigung: Spalte → globale Kette → je Zweig eigene Kette und Ziel -->
+                      <div class="branch">
+                        <div class="branch-src">
+                          <span class="branch-col"><i class="fa-solid fa-table-columns" aria-hidden="true"></i> {{ col }}</span>
+                          <span class="dim small" v-if="sampleOf(col).length">z. B. „{{ sampleOf(col)[0] }}“</span>
+                        </div>
+
+                        <div class="branch-global">
+                          <chain-editor :chain="spec(col).pre" :columns="columns"
+                                        label="Konverter für alle Ziele dieser Spalte" @change="refresh()"></chain-editor>
+                        </div>
+
+                        <div class="branch-list">
+                          <div class="branch-item" v-for="(t,i) in spec(col).targets" :key="i">
+                            <div class="branch-connector" aria-hidden="true"></div>
+                            <div class="branch-body">
+                              <div class="branch-head">
+                                <span class="branch-no">Zweig {{ i + 1 }}</span>
+                                <button type="button" class="iconbtn-del" @click="removeTarget(col,i)"
+                                        :aria-label="'Zweig ' + (i+1) + ' von ' + col + ' entfernen'">
+                                  <i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+                              </div>
+
+                              <chain-editor :chain="t.post" :columns="columns"
+                                            label="Weitere Konverter nur für dieses Ziel" @change="refresh()"></chain-editor>
+
+                              <label class="branch-target">
+                                <span class="step-plabel">Ziel im AVefi-Schema</span>
+                                <select class="input" v-model="t.target" @change="refresh()"
+                                        :aria-label="'Ziel von Zweig ' + (i+1) + ' für ' + col">
+                                  <option value="">– Ziel wählen –</option>
+                                  <optgroup v-for="g in targetGroups" :key="g.label" :label="g.label">
+                                    <option v-for="tt in g.items" :key="tt.key" :value="tt.key">{{ tt.label }}</option>
+                                  </optgroup>
+                                </select>
+                              </label>
+
+                              <div class="branch-result" v-if="resultFor(col, t.target)">
+                                <div v-for="(o,j) in resultFor(col, t.target).outputs" :key="j" class="okval">
+                                  <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i> {{ o.value }}</div>
+                                <div class="dim small" v-if="!resultFor(col, t.target).outputs.length">
+                                  ergibt für die erste Zeile keinen Wert</div>
+                              </div>
+
+                              <div class="vocabhint" v-if="enumFor(col,i)">
+                                <span class="dim small">Zulässige Werte: {{ enumFor(col,i).join(', ') }}</span>
+                                <button type="button" class="btn btn-outline btn-sm" @click="prefillVocabulary(col,i)">
+                                  Werteliste aus der Datei vorbefüllen</button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="branch-item branch-add-item">
+                            <div class="branch-connector" aria-hidden="true"></div>
+                            <button type="button" class="btn btn-outline btn-sm" @click="addTarget(col,'')">
+                              <i class="fa-solid fa-plus" aria-hidden="true"></i> weiteres Ziel für diese Spalte</button>
                           </div>
                         </div>
                       </div>

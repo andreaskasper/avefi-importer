@@ -170,6 +170,39 @@ class MappingProfile {
 	public function createdBy(): ?int      { return $this->row["created_by_user_id"] !== null ? (int)$this->row["created_by_user_id"] : null; }
 	public function updatedAt(): ?string   { return $this->row["updated_at"] !== null ? (string)$this->row["updated_at"] : null; }
 
+	/** Gespeicherte Stichprobe: ["columns"=>[], "rows"=>[], "distinct"=>[]] oder null. */
+	public function sample(): ?array {
+		$raw = $this->row["sample_json"] ?? null;
+		if ($raw === null || $raw === "") return null;
+		$s = json_decode((string)$raw, true);
+		return is_array($s) && !empty($s["columns"]) ? $s : null;
+	}
+
+	/**
+	 * Legt eine Stichprobe ab. Bewusst gedeckelt: 25 Zeilen reichen für die Vorschau
+	 * (die zeigt acht), und eine ganze Datei gehört nicht in die Profiltabelle.
+	 */
+	public function setSample(array $head): void {
+		$sample = [
+			"columns"  => $head["columns"] ?? [],
+			"rows"     => array_slice($head["rows"] ?? [], 0, 25),
+			"distinct" => $head["distinct"] ?? [],
+			"stamp"    => date("c"),
+		];
+		self::tolerant("UPDATE mapping_profiles SET sample_json = :s WHERE id = :id",
+			[":s" => self::encode($sample), ":id" => $this->id()]);
+		$this->row["sample_json"] = self::encode($sample);
+	}
+
+	/** Für Zusatzspalten, die auf einer noch nicht migrierten DB fehlen können. */
+	private static function tolerant(string $sql, array $params): void {
+		try {
+			DB::execute($sql, $params);
+		} catch (\Throwable $e) {
+			error_log("[MappingProfile] Zusatzspalte nicht beschreibbar (Migration ausstehend?): " . $e->getMessage());
+		}
+	}
+
 	public function mapping(): array {
 		$m = json_decode((string)($this->row["mapping_json"] ?? "{}"), true);
 		return is_array($m) ? $m : [];

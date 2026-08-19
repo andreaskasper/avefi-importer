@@ -87,6 +87,10 @@ include __DIR__ . "/../layout/appheader.php";
           kannst du es übernehmen — es wird dabei kopiert.</p>
         <?php endif; ?>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <?php if ($own && $profile->sample() !== null): ?>
+            <a class="btn btn-primary btn-sm" href="/mappings/<?php echo $profile->id(); ?>/edit">
+              <i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Zuordnung bearbeiten</a>
+          <?php endif; ?>
           <a class="btn btn-outline btn-sm" href="/mappings/<?php echo $profile->id(); ?>/export">
             <i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Exportieren</a>
           <?php if ($own): ?>

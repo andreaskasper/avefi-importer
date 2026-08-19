@@ -12,12 +12,16 @@ $MSG = [
   "imported" => "Profil aus der Datei angelegt.",
   "updated"  => "Vorhandenes Profil aus der Datei aktualisiert.",
   "restored" => "Frühere Fassung wiederhergestellt.",
+  "new"      => "Profil angelegt — ordne jetzt die Spalten zu.",
+  "exists"   => "Für diese Kopfzeile gibt es bereits ein Profil. Die Beispieldaten wurden aufgefrischt.",
 ];
 $ERR = [
   "csrf"   => "Sitzung abgelaufen — bitte erneut absenden.",
   "fremd"  => "Dieses Profil gehört einer anderen Einrichtung und kann hier nicht geändert werden.",
   "upload" => "Die Datei konnte nicht gelesen werden.",
   "format" => "Das ist keine gültige Profil-Datei (erwartet wird ein Export aus diesem Importer).",
+  "parse"  => "Aus der Datei ließ sich keine Kopfzeile lesen. Erwartet wird eine CSV- oder TSV-Datei mit Spaltennamen in der ersten Zeile.",
+  "nosample" => "Für dieses Profil sind keine Beispieldaten hinterlegt — lade eine passende Datei hoch, um es zu bearbeiten.",
 ];
 
 $page_title = "Zuordnungen · AVefi Importer";
@@ -28,12 +32,6 @@ include __DIR__ . "/../layout/appheader.php";
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
     <h2 style="font-size:19px">Zuordnungen</h2>
     <span class="dim small"><?php echo count($profiles); ?> Profile</span>
-    <form method="post" action="/mappings" enctype="multipart/form-data" style="margin-left:auto;display:flex;gap:8px;align-items:center">
-      <input type="hidden" name="_csrf" value="<?php echo htmlattr($csrf); ?>">
-      <input class="input" type="file" name="file" accept=".json,application/json" required
-             aria-label="Profil-Datei auswählen" style="max-width:260px">
-      <button class="btn btn-outline btn-sm" type="submit">Profil importieren</button>
-    </form>
   </div>
 
   <?php if ($msg !== null && isset($MSG[$msg])): ?>
@@ -43,11 +41,36 @@ include __DIR__ . "/../layout/appheader.php";
     <div class="alert" role="alert" style="margin-bottom:14px"><?php echo html($ERR[$error]); ?></div>
   <?php endif; ?>
 
+  <div class="newprofile">
+    <h3>Neue Zuordnung anlegen</h3>
+    <p class="note" style="margin:0">
+      Wähle eine Beispieldatei (CSV oder TSV) mit der Kopfzeile, für die die Zuordnung gelten soll.
+      Der Editor öffnet sich mit deinen echten Spalten und Werten. Die Datei wird nur gelesen —
+      gespeichert werden die Spaltennamen und einige Beispielzeilen für die Vorschau.
+    </p>
+    <form method="post" action="/mappings/new" enctype="multipart/form-data" class="row">
+      <input type="hidden" name="_csrf" value="<?php echo htmlattr($csrf); ?>">
+      <input class="input" type="file" name="sample" accept=".csv,.tsv,.tab,text/csv" required
+             aria-label="Beispieldatei auswählen" style="max-width:320px">
+      <button class="btn btn-primary btn-sm" type="submit">
+        <i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Zuordnung beginnen</button>
+    </form>
+    <details style="margin-top:12px">
+      <summary class="dim small" style="cursor:pointer">Stattdessen ein exportiertes Profil einlesen</summary>
+      <form method="post" action="/mappings" enctype="multipart/form-data" class="row">
+        <input type="hidden" name="_csrf" value="<?php echo htmlattr($csrf); ?>">
+        <input class="input" type="file" name="file" accept=".json,application/json" required
+               aria-label="Profil-Datei auswählen" style="max-width:320px">
+        <button class="btn btn-outline btn-sm" type="submit">Profil-JSON importieren</button>
+      </form>
+    </details>
+  </div>
+
   <?php if (empty($profiles)): ?>
     <div class="tablewrap"><div class="empty">
       <div class="ic" aria-hidden="true">🗺</div>
       <div class="fn" style="font-size:15px;margin-bottom:4px">Noch keine Zuordnungen</div>
-      <div class="small">Ein Profil entsteht, sobald du eine CSV- oder TSV-Datei hochlädst und ihre Spalten zuordnest.</div>
+      <div class="small">Lade oben eine Beispieldatei hoch, um die erste anzulegen.</div>
     </div></div>
   <?php else: ?>
     <div class="tablewrap">
@@ -82,6 +105,10 @@ include __DIR__ . "/../layout/appheader.php";
             <td class="dim small tnum"><?php echo html($when); ?></td>
             <td style="text-align:right">
               <div class="rowactions">
+                <?php if ($own): ?>
+                  <a class="btn btn-primary btn-sm" href="/mappings/<?php echo (int)$p["id"]; ?>/edit">
+                    <i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Bearbeiten</a>
+                <?php endif; ?>
                 <a class="btn btn-outline btn-sm" href="/mappings/<?php echo (int)$p["id"]; ?>">Ansehen</a>
                 <a class="btn btn-outline btn-sm" href="/mappings/<?php echo (int)$p["id"]; ?>/export"
                    title="Als JSON exportieren"><i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i></a>
