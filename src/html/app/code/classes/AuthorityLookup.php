@@ -50,6 +50,70 @@ class AuthorityLookup {
 		return array_slice($results, 0, 30);
 	}
 
+	/**
+	 * Eindeutige Normdaten-ID zu einem Namen — für den authority-Konverter im Import.
+	 *
+	 * Übernommen wird nur bei Eindeutigkeit: genau ein Treffer der gewählten Quelle,
+	 * dessen Label exakt (nach Kleinschreibung und Trimmen) auf die Anfrage passt.
+	 * Mehrdeutige Namen bleiben offen, statt eine falsche ID einzutragen.
+	 *
+	 * Ergebnisse werden dauerhaft zwischengespeichert (Tabelle authority_cache),
+	 * auch die Nicht-Treffer. Kulturdaten sind repetitiv: dieselben 200 Regisseure
+	 * in 5000 Zeilen ergäben sonst 5000 HTTP-Anfragen mitten im Worker-Job.
+	 */
+	public static function resolveId(string $name, string $source, string $kind, array &$errors = []): string {
+		$name = trim($name);
+		if ($name === "") return "";
+		$norm = mb_strtolower($name);
+
+		$cached = self::cacheGet($source, $kind, $norm);
+		if ($cached !== null) return (string)($cached["id"] ?? "");
+
+		$id = "";
+		try {
+			$hits = self::search($name, $kind, [$source]);
+			$exact = [];
+			foreach ($hits as $h) {
+				if (mb_strtolower(trim((string)($h["label"] ?? ""))) === $norm) $exact[] = $h;
+			}
+			if (count($exact) === 1) {
+				$id = (string)($exact[0]["id"] ?? "");
+			} elseif (count($exact) > 1) {
+				$errors[] = "„{$name}“ ist in {$source} mehrdeutig (" . count($exact) . " Treffer) — keine ID übernommen";
+			}
+		} catch (\Throwable $e) {
+			error_log("[AuthorityLookup] resolveId: " . $e->getMessage());
+			return "";   // Fehlschlag NICHT zwischenspeichern
+		}
+
+		self::cachePut($source, $kind, $norm, ["id" => $id]);
+		return $id;
+	}
+
+	private static function cacheGet(string $source, string $kind, string $norm): ?array {
+		try {
+			$raw = \DB::value("SELECT result_json FROM authority_cache WHERE source = :s AND kind = :k AND query_norm = :q",
+				[":s" => $source, ":k" => $kind, ":q" => $norm]);
+			if ($raw === null) return null;
+			$d = json_decode((string)$raw, true);
+			return is_array($d) ? $d : null;
+		} catch (\Throwable $e) { return null; }
+	}
+
+	private static function cachePut(string $source, string $kind, string $norm, array $result): void {
+		try {
+			\DB::execute(
+				"INSERT INTO authority_cache (source, kind, query_norm, result_json)
+				 VALUES (:s, :k, :q, :r)
+				 ON CONFLICT (source, kind, query_norm) DO UPDATE SET result_json = EXCLUDED.result_json",
+				[":s" => $source, ":k" => $kind, ":q" => $norm,
+				 ":r" => json_encode($result, JSON_UNESCAPED_UNICODE)]
+			);
+		} catch (\Throwable $e) {
+			error_log("[AuthorityLookup] Cache nicht schreibbar: " . $e->getMessage());
+		}
+	}
+
 	/** Erlaubte (aktive) Quellen für einen Feld-kind – fürs Frontend. */
 	public static function sourcesForKind(string $kind): array {
 		$class = self::KIND[$kind][0] ?? "Subject";

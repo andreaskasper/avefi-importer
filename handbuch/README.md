@@ -10,6 +10,7 @@ Anleitungen für Betrieb und Nutzung des AVefi Importers.
 4. [Format-Review (Admin)](04-format-review.md) — unbekannte Formate auflösen
 5. [Benutzerverwaltung (Admin)](05-benutzerverwaltung.md) — Konten anlegen, sperren, Passwörter
 6. [PID-Registrierung](06-pid-registrierung.md) — Konzept & geplanter Ablauf *(noch nicht implementiert)*
+7. [Zuordnungen (Mapping-Profile)](07-zuordnungen.md) — CSV/TSV-Spalten dem AVefi-Schema zuordnen
 
 ## Kurzüberblick
 

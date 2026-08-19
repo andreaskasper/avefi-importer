@@ -45,6 +45,13 @@ class detect {
 			return;
 		}
 
+		// Tabellarische Quellen laufen immer über den Header-Hash und ein gespeichertes
+		// Mapping-Profil — die alte Titelspalten-Heuristik als stiller Türsteher entfällt.
+		if (\TableHeader::isTabular($base)) {
+			self::routeTable($import, $path, $base);
+			return;
+		}
+
 		$key = \FingerprintRegistry::resolve($fp) ?? \ConverterFactory::genericKey($base, $analysis);
 
 		if ($key !== null) {
@@ -62,5 +69,46 @@ class detect {
 		]);
 		$import->setStatus("awaiting_format_review");
 		echo "[detect] {$import->filename()} → Format-Review (unbekanntes Format)\n";
+	}
+
+	/**
+	 * CSV/TSV: Kopfzeilen-Hash bilden und ein Mapping-Profil suchen. Vorhanden und
+	 * vollständig → konvertieren. Sonst pausiert der Import, bis jemand die Zuordnung
+	 * gebaut hat; das ist keine Fehlersituation, sondern der vorgesehene Weg.
+	 */
+	private static function routeTable(\Import $import, string $path, ?string $base): void {
+		$head = \TableHeader::read($path, $base, 5);
+		$hash = $head["hash"];
+		$import->setHeaderHash($hash);
+		$import->setDetectedFormat(strtoupper((string)$base) . " · " . count($head["columns"]) . " Spalten");
+
+		if (!$head["columns"]) {
+			$import->setReport([
+				"stage"   => "detect",
+				"summary" => ["records" => 0, "avefi_records" => 0, "valid" => 0, "invalid" => 0, "row_errors" => 0],
+				"parse_errors" => ["Die Datei enthält keine lesbare Kopfzeile."],
+			]);
+			$import->setStatus("error");
+			echo "[detect] {$import->filename()} → Fehler (keine Kopfzeile)\n";
+			return;
+		}
+
+		$profile = \MappingProfile::findOwn($import->institutionId(), $hash);
+		if ($profile !== null && $profile->isComplete()) {
+			$import->setMappingProfile($profile->id(), $profile->version());
+			$import->setStatus("converting");
+			\WorkerJob::enqueue("convert",
+				["import_id" => $import->id(), "converter_key" => "mapping_profile:" . $profile->id()],
+				$import->id());
+			echo "[detect] {$import->filename()} → Profil „{$profile->name()}\" (v{$profile->version()})\n";
+			return;
+		}
+
+		\FormatReview::open($import->id(), $hash, [
+			"columns" => $head["columns"],
+			"sample"  => array_slice($head["rows"], 0, 3),
+		]);
+		$import->setStatus("awaiting_format_review");
+		echo "[detect] {$import->filename()} → Zuordnung nötig (Kopfzeile {$hash})\n";
 	}
 }

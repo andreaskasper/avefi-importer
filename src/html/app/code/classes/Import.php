@@ -77,7 +77,38 @@ class Import {
 	 * zugeordnet ist — dann gibt es nichts zu wiederholen). Kommt bei forInstitution()
 	 * schon aus dem JOIN, sonst wird nachgeladen.
 	 */
+	public function mappingProfileId(): ?int {
+		$v = $this->row["mapping_profile_id"] ?? null;
+		return $v !== null ? (int)$v : null;
+	}
+
+	public function setMappingProfile(int $profileId, int $version): void {
+		self::tolerant("UPDATE imports SET mapping_profile_id = :p, mapping_version = :v WHERE id = :id",
+			[":p" => $profileId, ":v" => $version, ":id" => $this->id()]);
+		$this->row["mapping_profile_id"] = $profileId;
+		$this->row["mapping_version"]    = $version;
+	}
+
+	public function headerHash(): ?string {
+		$v = $this->row["header_hash"] ?? null;
+		return ($v !== null && $v !== "") ? (string)$v : null;
+	}
+
+	public function setHeaderHash(string $hash): void {
+		self::tolerant("UPDATE imports SET header_hash = :h WHERE id = :id", [":h" => $hash, ":id" => $this->id()]);
+		$this->row["header_hash"] = $hash;
+	}
+
+	/** Läuft dieser Import über ein Mapping-Profil (tabellarische Quelle)? */
+	public function usesMapping(): bool {
+		return TableHeader::isTabular($this->baseFormat());
+	}
+
 	public function converterKey(): ?string {
+		// Ein zugeordnetes Mapping-Profil hat Vorrang vor dem Code-Converter.
+		$mp = $this->mappingProfileId();
+		if ($mp !== null) return "mapping_profile:" . $mp;
+
 		if (array_key_exists("converter_key", $this->row)) {
 			$v = $this->row["converter_key"];
 			return ($v !== null && $v !== "") ? (string)$v : null;

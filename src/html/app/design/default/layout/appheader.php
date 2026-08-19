@@ -11,6 +11,7 @@ $inst = $me ? $me->institutionName() : null;
   </a>
   <nav aria-label="Hauptnavigation">
     <a href="/" class="<?php echo $active === "imports" ? "on" : ""; ?>"<?php echo $active === "imports" ? ' aria-current="page"' : ""; ?>>Importe</a>
+    <a href="/mappings" class="<?php echo $active === "mappings" ? "on" : ""; ?>"<?php echo $active === "mappings" ? ' aria-current="page"' : ""; ?>>Zuordnungen</a>
     <?php if ($me && $me->isAdmin()): $openReviews = FormatReview::countOpen(); ?>
       <a href="/reviews" class="<?php echo $active === "reviews" ? "on" : ""; ?>">Format-Review<?php if ($openReviews > 0): ?> <span class="badge b-wait" style="padding:1px 6px;margin-left:2px"><?php echo $openReviews; ?></span><?php endif; ?></a>
     <?php endif; ?>

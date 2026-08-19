@@ -4,6 +4,15 @@ Wird der Fingerabdruck einer hochgeladenen Datei keinem Converter zugeordnet, pa
 der Import mit Status **„Neues Format – Review nötig"**. Administrator:innen lösen das
 über den Menüpunkt **Format-Review** (mit Zähler-Badge) in der Kopfzeile.
 
+
+## Hinweis: CSV und TSV laufen über Zuordnungen
+
+Tabellarische Quellen erreichen dieses Review nicht mehr. Sie werden über den
+Kopfzeilen-Schlüssel einem **Mapping-Profil** zugeordnet; fehlt eines, öffnet der
+Importer den Zuordnungs-Editor für die Person, der der Import gehört — siehe
+[Zuordnungen](07-zuordnungen.md). Das Format-Review bleibt für XML, EAD, MARC-XML und
+JSON zuständig, wo die Struktur ein Code-Converter auflöst.
+
 ## Übersicht
 
 `/reviews` listet alle offenen Reviews: Datei, Format, hochladende Institution,

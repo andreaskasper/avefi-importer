@@ -21,11 +21,20 @@ class ConverterFactory {
 
 	/** Menschlich lesbares Label je converter_key (für format_profiles.label). */
 	public static function label(string $key): string {
+		if (str_starts_with($key, "mapping_profile:")) {
+			$p = MappingProfile::byId((int)substr($key, 16));
+			return $p !== null ? "Mapping-Profil: " . $p->name() : "Mapping-Profil";
+		}
 		return self::LABELS[$key] ?? $key;
 	}
 
 	/** Instanziiert einen Converter für den gegebenen key (oder null). */
 	public static function make(string $key, ?string $baseFormat = null): ?Converter {
+		// Gespeichertes Mapping-Profil: "mapping_profile:<id>"
+		if (str_starts_with($key, "mapping_profile:")) {
+			$profile = MappingProfile::byId((int)substr($key, 16));
+			return $profile !== null ? new \converters\ProfileTableConverter($profile, $baseFormat) : null;
+		}
 		switch ($key) {
 			case "avefi_json_v1":
 				return new \converters\AvefiJsonConverter();

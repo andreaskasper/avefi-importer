@@ -87,6 +87,57 @@ CREATE TABLE IF NOT EXISTS format_reviews (
     created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Mapping-Profile: gespeicherte Spaltenzuordnungen je Kopfzeile (header_hash).
+-- Global sichtbar; die Auflösung bevorzugt das Profil der eigenen Institution.
+-- Getrennt von format_profiles, das die im Code vorhandenen Converter beschreibt.
+CREATE TABLE IF NOT EXISTS mapping_profiles (
+    id                 SERIAL PRIMARY KEY,
+    institution_id     INTEGER NOT NULL REFERENCES institutions(id) ON DELETE CASCADE,
+    created_by_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    header_hash        TEXT NOT NULL,          -- md5 über normalisierte, sortierte Header + Basisformat
+    base_format        TEXT NOT NULL,
+    name               TEXT NOT NULL,
+    mapping_json       JSONB NOT NULL DEFAULT '{}',
+    version            INTEGER NOT NULL DEFAULT 1,
+    complete           BOOLEAN NOT NULL DEFAULT false,
+    derived_from_id    INTEGER REFERENCES mapping_profiles(id) ON DELETE SET NULL,
+    created_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (institution_id, header_hash)
+);
+
+-- Versionsverlauf: ein verunglücktes Mapping soll zurückholbar sein, und ein Import
+-- muss belegen können, mit welchem Stand er entstanden ist.
+CREATE TABLE IF NOT EXISTS mapping_profile_versions (
+    id           SERIAL PRIMARY KEY,
+    profile_id   INTEGER NOT NULL REFERENCES mapping_profiles(id) ON DELETE CASCADE,
+    version      INTEGER NOT NULL,
+    name         TEXT NOT NULL DEFAULT '',
+    mapping_json JSONB NOT NULL,
+    user_id      INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (profile_id, version)
+);
+
+-- Normdaten-Cache: Kulturdaten sind repetitiv (dieselben 200 Regisseure in 5000
+-- Zeilen). Ohne Cache bedeutet ein authority-Konverter tausende HTTP-Anfragen.
+CREATE TABLE IF NOT EXISTS authority_cache (
+    id          SERIAL PRIMARY KEY,
+    source      TEXT NOT NULL,          -- gnd/wikidata/viaf
+    kind        TEXT NOT NULL,          -- subject/person/corporate/place
+    query_norm  TEXT NOT NULL,
+    result_json JSONB NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (source, kind, query_norm)
+);
+
+ALTER TABLE imports ADD COLUMN IF NOT EXISTS header_hash        TEXT;
+ALTER TABLE imports ADD COLUMN IF NOT EXISTS mapping_profile_id INTEGER REFERENCES mapping_profiles(id) ON DELETE SET NULL;
+ALTER TABLE imports ADD COLUMN IF NOT EXISTS mapping_version    INTEGER;
+
+CREATE INDEX IF NOT EXISTS idx_mapping_profiles_hash ON mapping_profiles(header_hash);
+CREATE INDEX IF NOT EXISTS idx_imports_header_hash   ON imports(header_hash);
+
 DO $$ BEGIN
     CREATE TYPE job_status AS ENUM ('queued','running','done','failed');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;

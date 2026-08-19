@@ -26,6 +26,10 @@ class Routing {
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/avefi\.json$@', $path, $m))        { self::avefiJson($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/original$@', $path, $m))           { self::originalDownload($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/reconvert$@', $path, $m))          { self::reconvert($m[1]); exit; }
+		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/mapping$@', $path, $m))            { self::mappingEditor($m[1]); exit; }
+		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/mapping/(preview|save|adopt)$@', $path, $m)) { self::mappingAction($m[1], $m[2]); exit; }
+		if (preg_match('@^/mappings/(\d+)/export$@', $path, $m))                         { self::mappingExport((int)$m[1]); exit; }
+		if (preg_match('@^/mappings/(\d+)$@', $path, $m))                                { self::mappingDetail((int)$m[1]); exit; }
 
 		/* Format-Review (nur Admin) */
 		if (preg_match('@^/reviews/(\d+)$@', $path, $m)) { self::review((int)$m[1]); exit; }
@@ -67,6 +71,9 @@ class Routing {
 				self::profile();
 				exit;
 
+			case "/mappings":
+				self::mappingsIndex();
+				exit;
 			case "/reviews":
 				self::reviewsList();
 				exit;
@@ -274,7 +281,7 @@ class Routing {
 		if (!MyUser::isLoggedIn()) { self::redirect("/login"); exit; }
 		$user   = MyUser::current();
 		$import = Import::byId($importId);
-		if ($import === null || $import->institutionId() !== $user->institutionId()) {
+		if ($import === null || (!$user->isAdmin() && $import->institutionId() !== $user->institutionId())) {
 			http_response_code(404);
 			self::view("page_404/page_404");
 			exit;
@@ -604,6 +611,316 @@ class Routing {
 			error_log("[reconvert] " . $e->getMessage());
 			return self::json(["ok" => false, "error" => "Unerwarteter Fehler beim Neukonvertieren."], 500);
 		}
+	}
+
+	/* ==================== Mapping-Editor ==================== */
+
+	/** Liest Kopfzeile und Stichprobe der Originaldatei eines Imports. */
+	private static function tableOf(Import $import): ?array {
+		$path = Storage::firstOrgFile($import->id());
+		if ($path === null || !is_file($path)) return null;
+		return TableHeader::read($path, $import->baseFormat());
+	}
+
+	/** Mapping-Editor (Seite). */
+	private static function mappingEditor(string $importId): void {
+		$import = self::ownedImportOr404($importId);
+		if (!$import->usesMapping()) { http_response_code(404); self::view("page_404/page_404"); exit; }
+
+		$head = self::tableOf($import);
+		if ($head === null) { http_response_code(404); self::view("page_404/page_404"); exit; }
+
+		$user    = MyUser::current();
+		$instId  = $user->institutionId();
+		$profile = MappingProfile::findOwn($instId, $head["hash"]);
+
+		if ($profile !== null) {
+			$adopted = MappingProfile::adopt($profile->mapping(), $head["columns"]);
+			$mapping = $adopted["mapping"];
+		} else {
+			$mapping = MappingProfile::emptyMapping($head["columns"]);
+		}
+
+		$boot = [
+			"csrf"       => Csrf::token(),
+			"importId"   => $import->id(),
+			"filename"   => $import->filename(),
+			"baseFormat" => (string)$import->baseFormat(),
+			"headerHash" => $head["hash"],
+			"rowCount"   => $head["row_count"],
+			"columns"    => $head["columns"],
+			"rows"       => array_slice($head["rows"], 0, 25),
+			"mapping"    => $mapping,
+			"profile"    => $profile === null ? null : [
+				"id" => $profile->id(), "name" => $profile->name(),
+				"version" => $profile->version(), "complete" => $profile->isComplete(),
+			],
+			"suggestedName" => MappingProfile::suggestName($user->institutionName(), $import->filename()),
+			"targets"    => TargetCatalog::forFrontend(),
+			"transforms" => Transform::catalog(),
+			"suggestions" => MappingSuggest::forColumns($head["columns"]),
+			"vocabulary" => MappingSuggest::vocabularyCandidates($head["distinct"]),
+			"foreign"    => MappingProfile::othersForHash($head["hash"], $instId),
+			"hints"      => MappingProfile::targetHints($head["columns"], $instId),
+		];
+
+		self::view("page_mapping/page_mapping", [
+			"active" => "imports", "import" => $import, "boot" => $boot,
+			"profile" => $profile, "columnCount" => count($head["columns"]),
+		]);
+	}
+
+	/** preview / save / adopt — JSON. */
+	private static function mappingAction(string $importId, string $action) {
+		if (!MyUser::isLoggedIn())                  return self::json(["ok" => false, "error" => "Nicht angemeldet."], 401);
+		if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") return self::json(["ok" => false, "error" => "POST erwartet."], 405);
+
+		$user   = MyUser::current();
+		$import = Import::byId($importId);
+		if ($import === null || (!$user->isAdmin() && $import->institutionId() !== $user->institutionId()))
+			return self::json(["ok" => false, "error" => "Import nicht gefunden."], 404);
+
+		$body = json_decode((string)file_get_contents("php://input"), true);
+		if (!is_array($body))                       return self::json(["ok" => false, "error" => "Ungültige Daten."], 400);
+		if (!Csrf::check($body["_csrf"] ?? null))   return self::json(["ok" => false, "error" => "Sitzung abgelaufen — bitte Seite neu laden."], 403);
+
+		$head = self::tableOf($import);
+		if ($head === null)                         return self::json(["ok" => false, "error" => "Originaldatei fehlt."], 409);
+
+		try {
+			switch ($action) {
+				case "preview": return self::mappingPreview($body, $head);
+				case "adopt":   return self::mappingAdopt($body, $head);
+				case "save":    return self::mappingSave($body, $head, $import, $user);
+			}
+		} catch (\Throwable $e) {
+			error_log("[mapping/{$action}] " . $e->getMessage());
+			return self::json(["ok" => false, "error" => "Unerwarteter Fehler: " . $e->getMessage()], 500);
+		}
+		return self::json(["ok" => false, "error" => "Unbekannte Aktion."], 400);
+	}
+
+	/**
+	 * Führt die Ketten auf den echten Beispielzeilen aus. Bewusst serverseitig:
+	 * Vorschau und spätere Konvertierung laufen so durch denselben Code.
+	 */
+	private static function mappingPreview(array $body, array $head) {
+		$mapping = is_array($body["mapping"] ?? null) ? $body["mapping"] : [];
+		$limit   = max(1, min(25, (int)($body["limit"] ?? 8)));
+		$runner  = new MappingRunner($mapping);
+
+		$rows = array_slice($head["rows"], 0, $limit);
+		$out  = [];
+		$first = null;
+		$issues = [];
+		foreach ($rows as $i => $row) {
+			$r = $runner->runRow($row, "vorschau" . ($i + 1));
+			$out[] = ["cells" => $r["cells"]];
+			if ($first === null) {
+				$first = $r["canonical"];
+				foreach (AvefiMapper::validateSet(AvefiMapper::flatten($r["canonical"])) as $v) {
+					foreach ($v["errors"] as $e) $issues[] = ($v["class"] ?? "?") . ": " . $e;
+				}
+			}
+		}
+
+		return self::json([
+			"ok"       => true,
+			"rows"     => $out,
+			"canonical" => $first,
+			"schema"   => $issues,
+			"checks"   => $runner->staticCheck(),
+			"coverage" => self::coverage($mapping),
+		]);
+	}
+
+	/** Welche Ziele belegt das Profil? Grundlage für den Ergebnisbaum. */
+	private static function coverage(array $mapping): array {
+		$out = [];
+		foreach (($mapping["columns"] ?? []) as $col => $spec) {
+			if (!is_array($spec) || !empty($spec["ignore"])) continue;
+			foreach (($spec["targets"] ?? []) as $t) {
+				$k = (string)($t["target"] ?? "");
+				if ($k !== "") $out[$k][] = ["column" => (string)$col, "source" => "column"];
+			}
+		}
+		foreach (($mapping["defaults"] ?? []) as $d) {
+			$k = (string)($d["target"] ?? "");
+			if ($k !== "") $out[$k][] = ["column" => (string)($d["value"] ?? ""), "source" => "default"];
+		}
+		return $out;
+	}
+
+	/** Fremdes Profil übernehmen — als Kopie, nicht als Verweis. */
+	private static function mappingAdopt(array $body, array $head) {
+		$src = MappingProfile::byId((int)($body["profile_id"] ?? 0));
+		if ($src === null) return self::json(["ok" => false, "error" => "Profil nicht gefunden."], 404);
+		$res = MappingProfile::adopt($src->mapping(), $head["columns"]);
+		return self::json([
+			"ok"      => true,
+			"mapping" => $res["mapping"],
+			"matched" => $res["matched"],
+			"missing" => $res["missing"],
+			"extra"   => $res["extra"],
+			"from"    => ["id" => $src->id(), "name" => $src->name()],
+		]);
+	}
+
+	/** Profil speichern und optional die Konvertierung starten. */
+	private static function mappingSave(array $body, array $head, Import $import, User $user) {
+		$mapping = is_array($body["mapping"] ?? null) ? $body["mapping"] : [];
+		$name    = trim((string)($body["name"] ?? ""));
+		$start   = !empty($body["start"]);
+
+		$runner   = new MappingRunner($mapping);
+		$checks   = $runner->staticCheck();
+		$blockers = array_values(array_filter($checks, fn($c) => $c["level"] === "nogo"));
+		if ($blockers) {
+			return self::json(["ok" => false, "error" => "Das Profil enthält Fehler, die so nicht verarbeitet werden können.",
+			                   "checks" => $checks], 422);
+		}
+
+		$instId  = $import->institutionId();
+		$profile = MappingProfile::findOwn($instId, $head["hash"]);
+		if ($profile === null) {
+			if ($name === "") $name = MappingProfile::suggestName($user->institutionName(), $import->filename());
+			$profile = MappingProfile::create($instId, $user->id(), $head["hash"],
+				(string)$import->baseFormat(), $name, $mapping,
+				isset($body["derived_from"]) ? (int)$body["derived_from"] : null);
+		} else {
+			$profile->update($mapping, $name !== "" ? $name : null, $user->id());
+		}
+
+		$import->setHeaderHash($head["hash"]);
+		$import->setMappingProfile($profile->id(), $profile->version());
+
+		$started = false;
+		if ($start && $profile->isComplete()) {
+			$import->setStatus("converting");
+			WorkerJob::enqueue("convert",
+				["import_id" => $import->id(), "converter_key" => "mapping_profile:" . $profile->id()],
+				$import->id());
+			foreach (DB::rows("SELECT id FROM format_reviews WHERE import_id = :i AND status = 'open'",
+			                  [":i" => $import->id()]) as $r) {
+				FormatReview::setStatus((int)$r["id"], "resolved");
+			}
+			$started = true;
+		}
+
+		return self::json([
+			"ok"      => true,
+			"started" => $started,
+			"profile" => ["id" => $profile->id(), "name" => $profile->name(),
+			              "version" => $profile->version(), "complete" => $profile->isComplete()],
+			"open"    => MappingProfile::openColumns($mapping),
+			"checks"  => $checks,
+		]);
+	}
+
+	/* ==================== Profilverwaltung ==================== */
+
+	private static function mappingsIndex(): void {
+		if (!MyUser::isLoggedIn()) { self::redirect("/login"); exit; }
+		$user = MyUser::current();
+
+		if (($_SERVER["REQUEST_METHOD"] ?? "GET") === "POST") { self::mappingImport($user); return; }
+
+		self::view("page_mappings/page_mappings", [
+			"active"   => "mappings",
+			"profiles" => MappingProfile::listAll($user->institutionId()),
+			"ownInst"  => $user->institutionId(),
+			"msg"      => $_GET["msg"] ?? null,
+			"error"    => $_GET["error"] ?? null,
+		]);
+	}
+
+	/** Umbenennen, löschen, Version zurückholen. */
+	private static function mappingDetail(int $id): void {
+		if (!MyUser::isLoggedIn()) { self::redirect("/login"); exit; }
+		$user    = MyUser::current();
+		$profile = MappingProfile::byId($id);
+		if ($profile === null) { http_response_code(404); self::view("page_404/page_404"); exit; }
+
+		if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") {
+			self::view("page_mapping_detail/page_mapping_detail", [
+				"active" => "mappings", "profile" => $profile,
+				"versions" => $profile->versions(), "own" => $profile->institutionId() === $user->institutionId(),
+			]);
+			exit;
+		}
+
+		if (!Csrf::check($_POST["_csrf"] ?? null))                { self::redirect("/mappings?error=csrf"); exit; }
+		// Ändern darf nur die besitzende Institution: ein global sichtbares Profil
+		// wird anderswo produktiv genutzt.
+		if ($profile->institutionId() !== $user->institutionId()) { self::redirect("/mappings?error=fremd"); exit; }
+
+		switch ((string)($_POST["action"] ?? "")) {
+			case "rename":
+				$profile->rename((string)($_POST["name"] ?? ""));
+				self::redirect("/mappings/{$id}?msg=renamed");
+				exit;
+			case "restore":
+				$v = (int)($_POST["version"] ?? 0);
+				$m = $profile->versionMapping($v);
+				if ($m !== null) { $profile->update($m, null, $user->id()); self::redirect("/mappings/{$id}?msg=restored"); exit; }
+				self::redirect("/mappings/{$id}?error=version");
+				exit;
+			case "delete":
+				$profile->delete();
+				self::redirect("/mappings?msg=deleted");
+				exit;
+		}
+		self::redirect("/mappings/{$id}");
+		exit;
+	}
+
+	/** Profil als JSON mit Herkunftskopf. */
+	private static function mappingExport(int $id): void {
+		if (!MyUser::isLoggedIn()) { self::redirect("/login"); exit; }
+		$profile = MappingProfile::byId($id);
+		if ($profile === null) { http_response_code(404); self::view("page_404/page_404"); exit; }
+
+		$inst = DB::value("SELECT name FROM institutions WHERE id = :i", [":i" => $profile->institutionId()]);
+		$doc = [
+			"avefi_mapping_profile" => 1,
+			"name"        => $profile->name(),
+			"base_format" => $profile->baseFormat(),
+			"header_hash" => $profile->headerHash(),
+			"version"     => $profile->version(),
+			"exported_by" => (string)$inst,
+			"exported_at" => date("c"),
+			"mapping"     => $profile->mapping(),
+		];
+		$slug = preg_replace('/[^a-zA-Z0-9_-]+/', "-", $profile->name()) ?? "profil";
+		header("Content-Type: application/json; charset=utf-8");
+		header('Content-Disposition: attachment; filename="mapping-' . trim($slug, "-") . '.json"');
+		echo json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+		exit;
+	}
+
+	/** Profil aus einer hochgeladenen JSON-Datei anlegen. */
+	private static function mappingImport(User $user): void {
+		if (!Csrf::check($_POST["_csrf"] ?? null)) { self::redirect("/mappings?error=csrf"); exit; }
+		$f = $_FILES["file"] ?? null;
+		if (!is_array($f) || ($f["error"] ?? 1) !== UPLOAD_ERR_OK) { self::redirect("/mappings?error=upload"); exit; }
+
+		$doc = json_decode((string)file_get_contents($f["tmp_name"]), true);
+		if (!is_array($doc) || !isset($doc["avefi_mapping_profile"]) || !is_array($doc["mapping"] ?? null)) {
+			self::redirect("/mappings?error=format"); exit;
+		}
+		$hash = (string)($doc["header_hash"] ?? "");
+		if ($hash === "") { self::redirect("/mappings?error=format"); exit; }
+
+		$existing = MappingProfile::findOwn($user->institutionId(), $hash);
+		if ($existing !== null) {
+			$existing->update($doc["mapping"], (string)($doc["name"] ?? ""), $user->id());
+			self::redirect("/mappings?msg=updated"); exit;
+		}
+		MappingProfile::create($user->institutionId(), $user->id(), $hash,
+			(string)($doc["base_format"] ?? "csv"),
+			(string)($doc["name"] ?? "Importiertes Profil"), $doc["mapping"]);
+		self::redirect("/mappings?msg=imported");
+		exit;
 	}
 
 	/** Download der hochgeladenen Originaldatei (Owner oder Admin). */

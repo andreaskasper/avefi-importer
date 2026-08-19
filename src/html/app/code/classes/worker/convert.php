@@ -30,6 +30,9 @@ class convert {
 		if ($path === null) throw new \RuntimeException("Originaldatei fehlt.");
 
 		$isNative = ($key === "avefi_json_v1");
+		// Profil-Konverter liefern bereits fertige AVefi-Datensätze — dann entfällt
+		// der Umweg über das interne Format und AvefiMapper::toAvefi.
+		$isCanonical = $converter instanceof \CanonicalConverter;
 
 		// Idempotent: vorhandene Records dieses Imports entfernen.
 		\DB::execute("DELETE FROM records WHERE import_id = :id", [":id" => $import->id()]);
@@ -43,14 +46,20 @@ class convert {
 			foreach ($converter->convert($path) as $rec) {
 				$idx++;
 				try {
-					\Record::create($import->id(), $rec);
+					if ($isCanonical) {
+						\Record::createAvefi($import->id(), $rec["canonical"] ?? [], $rec["source"] ?? []);
+					} else {
+						\Record::create($import->id(), $rec);
+					}
 					$count++;
 				} catch (\Throwable $e) {
 					$rowErrors++;
 					self::pushError($parseErrors, "Datensatz {$idx}: " . $e->getMessage());
 					continue;
 				}
-				if (!$isNative) {
+				if ($isCanonical) {
+					foreach (\AvefiMapper::flatten($rec["canonical"] ?? []) as $node) $avefiOut[] = $node;
+				} elseif (!$isNative) {
 					// Anhängen statt array_merge im Schleifenrumpf: array_merge kopiert bei jedem
 					// Durchlauf das gesamte bisherige Array (quadratischer Aufwand, spürbar ab
 					// einigen tausend Datensätzen).
@@ -101,6 +110,7 @@ class convert {
 		$report = [
 			"stage"           => "convert",
 			"converter"       => $key,
+			"mapping"         => $isCanonical && method_exists($converter, "report") ? $converter->report() : null,
 			"native"          => $isNative,
 			"schema"          => "av-efi-schema (WorkVariant/Manifestation/Item)",
 			"summary"         => [

@@ -101,6 +101,8 @@ include __DIR__ . "/../layout/appheader.php";
                      href="/imports/<?php echo htmlattr($imp->id()); ?>/details"
                      style="color:var(--danger);border-color:var(--danger)"
                      title="Fehlerdetails ansehen"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Details</a>
+                <?php elseif ($imp->status() === "awaiting_format_review" && $imp->usesMapping()): ?>
+                  <a class="btn btn-primary btn-sm" href="/imports/<?php echo htmlattr($imp->id()); ?>/mapping"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Zuordnen</a>
                 <?php elseif ($isConverted): ?>
                   <a class="btn btn-primary btn-sm" href="/imports/<?php echo htmlattr($imp->id()); ?>/records"><i class="fa-solid fa-pen" aria-hidden="true"></i> Bearbeiten</a>
                 <?php else: ?>
@@ -114,6 +116,11 @@ include __DIR__ . "/../layout/appheader.php";
                           title="Weitere Aktionen"><i class="fa-solid fa-ellipsis" aria-hidden="true"></i></button>
                   <div class="menu menu-float" data-menu role="menu" hidden
                        aria-label="Aktionen für <?php echo htmlattr($imp->filename()); ?>">
+
+                    <?php if ($imp->usesMapping() && $imp->status() !== "awaiting_format_review"): ?>
+                      <a class="menu-item" role="menuitem" href="/imports/<?php echo htmlattr($imp->id()); ?>/mapping">
+                        <span class="mi" aria-hidden="true"><i class="fa-solid fa-diagram-project"></i></span>Zuordnung ansehen</a>
+                    <?php endif; ?>
 
                     <?php if ($imp->status() !== "error" && $imp->report() !== null): ?>
                       <a class="menu-item" role="menuitem" href="/imports/<?php echo htmlattr($imp->id()); ?>/report">

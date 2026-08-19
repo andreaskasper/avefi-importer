@@ -33,6 +33,32 @@ class Record {
 	}
 
 	/**
+	 * Legt einen Datensatz aus einer fertigen kanonischen AVefi-Struktur an
+	 * (Profil-Konverter und nativer Import) — ohne Umweg über das interne Format.
+	 */
+	public static function createAvefi(string $importId, array $canonical, array $source): int {
+		$disp = AvefiMapper::workDisplay($canonical["work"] ?? []);
+		return (int)DB::insert("records", [
+			"import_id"           => $importId,
+			"work_title"          => $disp["title"] ?? null,
+			"work_year"           => self::yearOf($disp["year"] ?? null),
+			"work_type"           => $disp["type"] ?? null,
+			"manifestation_count" => count($canonical["manifestations"] ?? []),
+			"item_count"          => count($canonical["items"] ?? []),
+			"completeness"        => Completeness::forAvefi($canonical),
+			"data_json"           => json_encode(["avefi" => $canonical, "source" => $source],
+			                                     JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+			"source_row"          => $source["row"] ?? null,
+		], "id");
+	}
+
+	/** Jahreszahl aus einem EDTF-Datum („1961-03-12" → 1961). */
+	private static function yearOf($v): ?int {
+		if ($v === null || $v === "") return null;
+		return preg_match('/(\d{4})/', (string)$v, $m) ? (int)$m[1] : null;
+	}
+
+	/**
 	 * Markiert einen Datensatz als von Hand bearbeitet. Tolerant gegenüber einer
 	 * noch nicht migrierten DB (Spalte edited_at fehlt) — Speichern soll daran
 	 * nicht scheitern. Migration: bot -t migrate.
