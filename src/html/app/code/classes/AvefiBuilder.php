@@ -21,16 +21,29 @@ class AvefiBuilder {
 
 	/**
 	 * Schreibt einen Wert an sein Ziel.
+	 *
+	 * @param array $sameAs  Normdaten-Treffer zu diesem Wert, je [category, id, resource].
+	 *                       Bei benannten Entitäten (Person, Schlagwort, Ort, Genre) werden
+	 *                       sie als same_as angehängt; bei reinen Kennungs-Zielen ersetzen
+	 *                       sie den Namen, weil dort die ID der Wert ist.
 	 * @return string[]  Beanstandungen
 	 */
-	public function write(array $target, $value): array {
+	public function write(array $target, $value, array $sameAs = []): array {
+		$w = $target["writer"];
+
+		// Kennungs-Ziele: Wurde zu einem Namen eine ID gefunden, ist SIE der Wert.
+		if ($sameAs && in_array($w["kind"], ["sameas", "identifier"], true)) {
+			foreach ($sameAs as $r) {
+				if (($r["resource"] ?? null) === ($w["resource"] ?? null)) { $value = $r["id"]; break; }
+			}
+		}
+
 		$errors = TargetCatalog::validateValue($target, $value);
 		if ($errors) return $errors;
 
 		$v = is_scalar($value) ? trim((string)$value) : "";
 		if ($v === "") return [];
 
-		$w     = $target["writer"];
 		$level = $target["level"];
 		$node  =& $this->node($level);
 		if ($level === "manifestation") $this->touchedManif = true;
@@ -56,16 +69,27 @@ class AvefiBuilder {
 				break;
 
 			case "named":
-				foreach (($node[$w["prop"]] ?? []) as $e) if (($e["has_name"] ?? null) === $v) return [];
-				$node[$w["prop"]][] = ["has_name" => $v];
+				foreach (($node[$w["prop"]] ?? []) as $i => $e) {
+					if (($e["has_name"] ?? null) === $v) {
+						self::mergeSameAs($node[$w["prop"]][$i], $sameAs, ["GNDResource"]);
+						return [];
+					}
+				}
+				$entry = ["has_name" => $v];
+				self::mergeSameAs($entry, $sameAs, ["GNDResource"]);   // Genre erlaubt nur GND
+				$node[$w["prop"]][] = $entry;
 				break;
 
 			case "subject":
 				$entry = ["category" => "avefi:" . $w["class"], "has_name" => $v];
 				if (isset($w["agentType"])) $entry["type"] = $w["agentType"];
-				foreach (($node["has_subject"] ?? []) as $e) {
-					if (($e["has_name"] ?? null) === $v && ($e["category"] ?? null) === $entry["category"]) return [];
+				foreach (($node["has_subject"] ?? []) as $i => $e) {
+					if (($e["has_name"] ?? null) === $v && ($e["category"] ?? null) === $entry["category"]) {
+						self::mergeSameAs($node["has_subject"][$i], $sameAs, SchemaModel::sameAsTypes($w["class"]));
+						return [];
+					}
 				}
+				self::mergeSameAs($entry, $sameAs, SchemaModel::sameAsTypes($w["class"]));
 				$node["has_subject"][] = $entry;
 				break;
 
@@ -74,8 +98,15 @@ class AvefiBuilder {
 				// Regie und Kamera landen also im selben Ereignis, nicht in zweien.
 				$ev =& $this->event($node, "avefi:ProductionEvent", null);
 				$act =& $this->activity($ev, $w["category"], $w["type"]);
-				foreach (($act["has_agent"] ?? []) as $a) if (($a["has_name"] ?? null) === $v) return [];
-				$act["has_agent"][] = ["category" => "avefi:Agent", "has_name" => $v, "type" => $w["agentType"] ?? "Person"];
+				foreach (($act["has_agent"] ?? []) as $i => $a) {
+					if (($a["has_name"] ?? null) === $v) {
+						self::mergeSameAs($act["has_agent"][$i], $sameAs, SchemaModel::sameAsTypes("Agent"));
+						return [];
+					}
+				}
+				$agent = ["category" => "avefi:Agent", "has_name" => $v, "type" => $w["agentType"] ?? "Person"];
+				self::mergeSameAs($agent, $sameAs, SchemaModel::sameAsTypes("Agent"));
+				$act["has_agent"][] = $agent;
 				break;
 
 			case "eventdate":
@@ -197,6 +228,28 @@ class AvefiBuilder {
 		}
 
 		return ["work" => $work, "manifestations" => $manifs, "items" => $items];
+	}
+
+	/**
+	 * Hängt gefundene Normdaten als same_as an eine Entität. Erlaubt sind nur die
+	 * Resource-Typen, die das Schema für diese Klasse vorsieht — eine TGN-ID an einer
+	 * Person wäre schemawidrig.
+	 */
+	private static function mergeSameAs(array &$entity, array $sameAs, array $allowedTypes): void {
+		foreach ($sameAs as $r) {
+			$type = (string)($r["resource"] ?? "");
+			if ($allowedTypes && !in_array($type, $allowedTypes, true)) continue;
+			$ref = ["category" => $r["category"], "id" => $r["id"]];
+			foreach (($entity["same_as"] ?? []) as $e) {
+				if (($e["id"] ?? null) === $ref["id"] && ($e["category"] ?? null) === $ref["category"]) continue 2;
+			}
+			$entity["same_as"][] = $ref;
+		}
+	}
+
+	/** Kann dieses Ziel überhaupt Normdaten aufnehmen? */
+	public static function acceptsAuthority(array $target): bool {
+		return in_array($target["writer"]["kind"] ?? "", ["activity", "subject", "named", "sameas", "identifier"], true);
 	}
 
 	/* ---------------- Interne Helfer ---------------- */

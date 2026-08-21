@@ -30,6 +30,12 @@ class AuthorityLookup {
 
 	private const UA = "AVefiImporter/1.0 (+https://avefiimporter.goo1.de)";
 
+	/** Interner Quell-Key → Resource-Typ („gnd" → „GNDResource"). */
+	public static function resourceTypeFor(string $source): ?string {
+		foreach (self::ACTIVE as $resType => $key) if ($key === $source) return $resType;
+		return null;
+	}
+
 	public static function search(string $q, string $kind, ?array $sources = null): array {
 		$q = trim($q);
 		if (mb_strlen($q) < 2) return [];

@@ -114,32 +114,32 @@ class Transform {
 	 * Führt eine Kette aus.
 	 * @param mixed $value  Startwert (String oder Liste)
 	 * @param array $ctx    ["row"=>assoc, "diag"=>Diagnostics|null]
-	 * @return array{value:mixed,notes:string[],errors:string[]}
+	 * @return array{value:mixed,notes:string[],errors:string[],enrich:array}
 	 */
 	public static function run(array $chain, $value, array $ctx = []): array {
-		$notes = []; $errors = [];
+		$notes = []; $errors = []; $enrich = [];
 		foreach ($chain as $step) {
 			if (!is_array($step)) continue;
 			$op = (string)($step["op"] ?? "");
 			if (!self::exists($op)) { $errors[] = "Unbekannte Operation „{$op}\""; continue; }
 			try {
-				$value = self::apply($op, $step, $value, $ctx, $notes, $errors);
+				$value = self::apply($op, $step, $value, $ctx, $notes, $errors, $enrich);
 			} catch (\Throwable $e) {
 				$errors[] = "{$op}: " . $e->getMessage();
 			}
 		}
-		return ["value" => $value, "notes" => $notes, "errors" => $errors];
+		return ["value" => $value, "notes" => $notes, "errors" => $errors, "enrich" => $enrich];
 	}
 
 	/** Wendet eine Operation an; Listen werden elementweise behandelt, wo sinnvoll. */
-	private static function apply(string $op, array $p, $value, array $ctx, array &$notes, array &$errors) {
+	private static function apply(string $op, array $p, $value, array $ctx, array &$notes, array &$errors, array &$enrich = []) {
 		$elementwise = ["trim", "lowercase", "uppercase", "ucfirst", "replace", "substring",
 		                "template", "number", "year", "date", "duration", "valuemap", "authority"];
 
 		if (is_array($value) && in_array($op, $elementwise, true)) {
 			$out = [];
 			foreach ($value as $v) {
-				$r = self::apply($op, $p, $v, $ctx, $notes, $errors);
+				$r = self::apply($op, $p, $v, $ctx, $notes, $errors, $enrich);
 				if ($r === null || $r === "") continue;
 				if (is_array($r)) { foreach ($r as $x) $out[] = $x; } else { $out[] = $r; }
 			}
@@ -238,8 +238,25 @@ class Transform {
 				return self::valuemap((string)$value, $p, $notes, $errors);
 
 			case "authority":
-				return AuthorityLookup::resolveId((string)$value, (string)($p["source"] ?? "gnd"),
-				                                  (string)($p["kind"] ?? "person"), $errors);
+				// Reichert an, statt zu ersetzen: Der Name bleibt der Wert, die gefundene
+				// ID wird über den Nebenkanal gemeldet und vom AvefiBuilder als same_as
+				// an die erzeugte Entität gehängt. Vorher wurde der Name mit der ID
+				// überschrieben — bei einem Regie-Feld stand dann die GND-Nummer im Namen.
+				$source = (string)($p["source"] ?? "gnd");
+				$id = AuthorityLookup::resolveId((string)$value, $source,
+				                                 (string)($p["kind"] ?? "person"), $errors);
+				if ($id !== "") {
+					$resType = AuthorityLookup::resourceTypeFor($source);
+					if ($resType !== null) {
+						$enrich[] = [
+							"value"    => (string)$value,
+							"category" => SchemaModel::resourceCategory($resType),
+							"id"       => $id,
+							"resource" => $resType,
+						];
+					}
+				}
+				return $value;
 		}
 		return $value;
 	}

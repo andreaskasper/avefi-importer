@@ -22,6 +22,7 @@ $ERR = [
   "format" => "Das ist keine gültige Profil-Datei (erwartet wird ein Export aus diesem Importer).",
   "parse"  => "Aus der Datei ließ sich keine Kopfzeile lesen. Erwartet wird eine CSV- oder TSV-Datei mit Spaltennamen in der ersten Zeile.",
   "nosample" => "Für dieses Profil sind keine Beispieldaten hinterlegt — lade eine passende Datei hoch, um es zu bearbeiten.",
+  "jsonhier" => "Das ist eine JSON-Datei. In dieses Feld gehört die Tabelle, für die das Profil gelten soll — ein exportiertes Profil liest du darunter über „Profil-JSON importieren“ ein.",
 ];
 
 $page_title = "Zuordnungen · AVefi Importer";

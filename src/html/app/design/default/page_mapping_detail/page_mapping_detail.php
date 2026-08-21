@@ -4,8 +4,26 @@
  * Erwartet: $profile, $versions, $own.
  */
 if (!defined("avefi_entrypoint")) { http_response_code(403); exit; }
-$csrf = Csrf::token();
-$m    = $profile->mapping();
+$csrf   = Csrf::token();
+$sample = $profile->sample();
+$m      = $profile->mapping();
+
+$MSG = [
+  "renamed"          => "Profil umbenannt.",
+  "restored"         => "Frühere Fassung wiederhergestellt.",
+  "updated"          => "Profil aus der Datei aktualisiert.",
+  "imported"         => "Profil aus der Datei angelegt.",
+  "imported_nosample" => "Profil angelegt. Die Datei enthielt keine Beispieldaten — reiche unten eine passende Tabelle nach, dann lässt sich die Zuordnung bearbeiten.",
+];
+$ERR = [
+  "csrf"     => "Sitzung abgelaufen — bitte erneut absenden.",
+  "version"  => "Diese Fassung ließ sich nicht wiederherstellen.",
+  "upload"   => "Die Datei konnte nicht gelesen werden.",
+  "parse"    => "Aus der Datei ließ sich keine Kopfzeile mit mehreren Spalten lesen. Erwartet wird eine CSV- oder TSV-Datei.",
+  "jsonhier" => "Das ist eine JSON-Datei. Hier gehört die Tabelle hin, aus der das Profil gebaut wurde — ein exportiertes Profil liest du über „Zuordnungen“ ein.",
+  "hash"     => "Die Kopfzeile dieser Datei passt nicht zu diesem Profil. Die Spaltennamen müssen dieselben sein.",
+  "nosample" => "Für dieses Profil sind keine Beispieldaten hinterlegt — ohne sie kann der Editor keine Vorschau rechnen. Reiche unten eine passende Tabelle nach.",
+];
 $cols = is_array($m["columns"] ?? null) ? $m["columns"] : [];
 $open = MappingProfile::openColumns($m);
 
@@ -16,8 +34,12 @@ include __DIR__ . "/../layout/appheader.php";
 <main id="main" class="appwrap">
   <div class="crumbs"><a href="/mappings">Zuordnungen</a><span class="sep">/</span><span><?php echo html($profile->name()); ?></span></div>
 
-  <?php if (isset($_GET["msg"])): ?><div class="alert alert-ok" role="status" style="margin-bottom:14px">Gespeichert.</div><?php endif; ?>
-  <?php if (isset($_GET["error"])): ?><div class="alert" role="alert" style="margin-bottom:14px">Das hat nicht geklappt.</div><?php endif; ?>
+  <?php if ($msg !== null): ?>
+    <div class="alert alert-ok" role="status" style="margin-bottom:14px"><?php echo html($MSG[$msg] ?? "Gespeichert."); ?></div>
+  <?php endif; ?>
+  <?php if ($error !== null): ?>
+    <div class="alert" role="alert" style="margin-bottom:14px"><?php echo html($ERR[$error] ?? "Das hat nicht geklappt."); ?></div>
+  <?php endif; ?>
 
   <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
     <h2 style="font-size:19px"><?php echo html($profile->name()); ?></h2>
@@ -70,6 +92,25 @@ include __DIR__ . "/../layout/appheader.php";
     </div>
 
     <div style="display:flex;flex-direction:column;gap:14px">
+      <?php if ($own && $sample === null): ?>
+        <div class="card" style="border-color:var(--warn)">
+          <h4 class="side-h" style="margin-bottom:8px">Beispieldaten fehlen</h4>
+          <p class="note" style="margin:0 0 10px">
+            Der Editor rechnet die Vorschau auf echten Zeilen. Für dieses Profil sind keine
+            hinterlegt — das passiert bei Profilen aus einem älteren Export. Lade die Tabelle
+            hoch, für die das Profil gilt; gespeichert werden daraus nur die Spaltennamen und
+            einige Beispielzeilen.
+          </p>
+          <form method="post" action="/mappings/<?php echo $profile->id(); ?>/sample"
+                enctype="multipart/form-data" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input type="hidden" name="_csrf" value="<?php echo htmlattr($csrf); ?>">
+            <input class="input" type="file" name="sample" accept=".csv,.tsv,.tab,text/csv" required
+                   aria-label="Passende Tabelle auswählen" style="max-width:250px">
+            <button class="btn btn-primary btn-sm" type="submit">Nachreichen</button>
+          </form>
+        </div>
+      <?php endif; ?>
+
       <div class="card">
         <h4 class="side-h" style="margin-bottom:12px">Verwaltung</h4>
         <?php if ($own): ?>
@@ -87,7 +128,7 @@ include __DIR__ . "/../layout/appheader.php";
           kannst du es übernehmen — es wird dabei kopiert.</p>
         <?php endif; ?>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <?php if ($own && $profile->sample() !== null): ?>
+          <?php if ($own && $sample !== null): ?>
             <a class="btn btn-primary btn-sm" href="/mappings/<?php echo $profile->id(); ?>/edit">
               <i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Zuordnung bearbeiten</a>
           <?php endif; ?>

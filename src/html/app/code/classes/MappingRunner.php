@@ -87,6 +87,13 @@ class MappingRunner {
 						"message" => "„{$target['label']}“ erwartet ein Datum im ISO-Format.",
 						"fix" => ["op" => "date"]];
 				}
+				if (self::chainHas($chain, "authority") && !AvefiBuilder::acceptsAuthority($target)) {
+					$out[] = ["level" => "warn", "column" => (string)$col,
+						"message" => "„Normdaten nachschlagen“ wirkt bei „{$target['label']}“ nicht — "
+						           . "gefundene IDs lassen sich nur an Personen, Schlagwörtern, Orten, "
+						           . "Genres und Kennungs-Zielen hinterlegen.",
+						"fix" => null];
+				}
 				if (str_starts_with($target["type"], "enum:") && !self::chainHas($chain, "valuemap")) {
 					$out[] = ["level" => "warn", "column" => (string)$col,
 						"message" => "„{$target['label']}“ hat eine feste Werteliste — ohne Zuordnung werden "
@@ -155,14 +162,24 @@ class MappingRunner {
 				$cellErrors = array_merge($cellErrors, $post["errors"]);
 				foreach ($post["notes"] as $n) $builder->addNote($col, $n);
 
+				// Normdaten-Treffer nach Quellwert bündeln: Der Wert bleibt der Name,
+				// die ID hängt der Builder als same_as an die erzeugte Entität.
+				$found = [];
+				foreach (array_merge($pre["enrich"] ?? [], $post["enrich"] ?? []) as $e) {
+					$found[(string)$e["value"]][] = $e;
+				}
+
 				$values = is_array($post["value"]) ? $post["value"] : [$post["value"]];
 				if (!$target["multi"]) $values = array_slice($values, 0, 1);
 
 				foreach ($values as $v) {
-					$errs = $builder->write($target, $v);
+					$errs = $builder->write($target, $v, $found[(string)$v] ?? []);
 					$cellErrors = array_merge($cellErrors, $errs);
 					if (!$errs && is_scalar($v) && trim((string)$v) !== "") {
-						$outputs[] = ["target" => $key, "label" => $target["path"] ?? $target["label"], "value" => (string)$v];
+						$out = ["target" => $key, "label" => $target["path"] ?? $target["label"], "value" => (string)$v];
+						$ids = array_column($found[(string)$v] ?? [], "id");
+						if ($ids) $out["ids"] = $ids;
+						$outputs[] = $out;
 					}
 				}
 			}

@@ -194,6 +194,21 @@ class MappingProfile {
 		$this->row["sample_json"] = self::encode($sample);
 	}
 
+	/** Übernimmt eine fertige Stichprobe (aus einem Profil-Export). */
+	public function restoreSample(array $sample): bool {
+		if (empty($sample["columns"]) || !is_array($sample["columns"])) return false;
+		$clean = [
+			"columns"  => array_values($sample["columns"]),
+			"rows"     => array_slice(is_array($sample["rows"] ?? null) ? $sample["rows"] : [], 0, 25),
+			"distinct" => is_array($sample["distinct"] ?? null) ? $sample["distinct"] : [],
+			"stamp"    => (string)($sample["stamp"] ?? date("c")),
+		];
+		self::tolerant("UPDATE mapping_profiles SET sample_json = :s WHERE id = :id",
+			[":s" => self::encode($clean), ":id" => $this->id()]);
+		$this->row["sample_json"] = self::encode($clean);
+		return true;
+	}
+
 	/** Für Zusatzspalten, die auf einer noch nicht migrierten DB fehlen können. */
 	private static function tolerant(string $sql, array $params): void {
 		try {

@@ -138,7 +138,24 @@ schlimmere Übel als eine unsaubere Notiz.
 
 **Normdaten** sind standardmäßig aus. Eingeschaltet fragen sie externe Dienste ab und
 verlangsamen den Import spürbar; Ergebnisse werden dauerhaft zwischengespeichert, und
-übernommen wird nur bei Eindeutigkeit.
+übernommen wird nur bei Eindeutigkeit — genau ein Treffer, dessen Name exakt auf die
+Anfrage passt.
+
+Der Konverter **ersetzt den Wert nicht, er ergänzt ihn**. Aus „Heinz Sielmann" wird also
+nicht die GND-Nummer, sondern:
+
+```json
+{ "category": "avefi:Agent",
+  "has_name": "Heinz Sielmann",
+  "type": "Person",
+  "same_as": [ { "category": "avefi:GNDResource", "id": "1337928623" } ] }
+```
+
+Das greift bei Personen, Schlagwörtern, Orten und Genres. Bei den reinen Kennungs-Zielen
+(Werk › Kennungen › Verknüpfung GND) ist die ID der eigentliche Wert und wird als solcher
+eingetragen. Hängt der Konverter an einem Ziel, das keine Normdaten aufnehmen kann — etwa
+am Haupttitel —, weist der Editor darauf hin. Angehängt werden nur Quellen, die das Schema
+für die jeweilige Klasse vorsieht; eine Wikidata-ID an einem Genre bleibt außen vor.
 
 ### Prüfung
 
@@ -195,9 +212,15 @@ neuen Stand anwenden will, nutzt in der Importliste **„…" › „Neu konvert
 
 ### Export und Import
 
-**Exportieren** legt das Profil als JSON-Datei mit Herkunftskopf ab. **Importieren**
-liest sie wieder ein: Passt der Kopfzeilen-Schlüssel zu einem eigenen Profil, wird
-dieses aktualisiert, sonst entsteht ein neues.
+**Exportieren** legt das Profil als JSON-Datei mit Herkunftskopf ab. Darin stecken auch
+die Beispieldaten — ohne sie kann der Editor beim Empfänger keine Vorschau rechnen. Die
+Datei enthält damit einige echte Zeilen aus der Quelltabelle; das ist beim Weitergeben zu
+bedenken.
+
+**Importieren** liest sie wieder ein: Passt der Kopfzeilen-Schlüssel zu einem eigenen
+Profil, wird dieses aktualisiert, sonst entsteht ein neues. Stammt die Datei aus einem
+älteren Export ohne Beispieldaten, sagt der Importer das und bietet an, eine passende
+Tabelle nachzureichen — die Spaltennamen müssen dabei dieselben sein.
 
 Das Format ist ein Artefakt dieses Importers und **kein** Austauschformat mit dem
 Python-Konverter `efi-conv`.

@@ -30,6 +30,7 @@ class Routing {
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/mapping/(preview|save|adopt)$@', $path, $m)) { self::mappingAction($m[1], $m[2]); exit; }
 		if (preg_match('@^/mappings/(\d+)/export$@', $path, $m))                         { self::mappingExport((int)$m[1]); exit; }
 		if (preg_match('@^/mappings/(\d+)/edit$@', $path, $m))                           { self::profileEditor((int)$m[1]); exit; }
+		if (preg_match('@^/mappings/(\d+)/sample$@', $path, $m))                         { self::profileSample((int)$m[1]); exit; }
 		if (preg_match('@^/mappings/(\d+)/(preview|save)$@', $path, $m))                 { self::profileAction((int)$m[1], $m[2]); exit; }
 		if ($path === "/mappings/new")                                                   { self::profileFromSample(); exit; }
 		if (preg_match('@^/mappings/(\d+)$@', $path, $m))                                { self::mappingDetail((int)$m[1]); exit; }
@@ -914,13 +915,19 @@ class Routing {
 		$ext  = strtolower(pathinfo((string)($f["name"] ?? ""), PATHINFO_EXTENSION));
 		$base = in_array($ext, ["tsv", "tab"], true) ? "tsv" : "csv";
 
+		// Hier gehört eine Tabelle hin, kein Profil-JSON. Ohne diese Prüfung entstand
+		// klaglos ein Profil mit einer einzigen unsinnigen Spalte.
+		if ($ext === "json" || self::looksLikeJson($f["tmp_name"])) {
+			self::redirect("/mappings?error=jsonhier"); exit;
+		}
+
 		try {
 			$head = TableHeader::read($f["tmp_name"], $base);
 		} catch (\Throwable $e) {
 			error_log("[mappings/new] " . $e->getMessage());
 			self::redirect("/mappings?error=parse"); exit;
 		}
-		if (empty($head["columns"])) { self::redirect("/mappings?error=parse"); exit; }
+		if (count($head["columns"]) < 2) { self::redirect("/mappings?error=parse"); exit; }
 
 		$existing = MappingProfile::findOwn($user->institutionId(), $head["hash"]);
 		if ($existing !== null) {
@@ -938,6 +945,43 @@ class Routing {
 		);
 		$profile->setSample($head);
 		self::redirect("/mappings/" . $profile->id() . "/edit?msg=new");
+		exit;
+	}
+
+	/** Beginnt die Datei mit einer JSON-Klammer? */
+	private static function looksLikeJson(string $path): bool {
+		$fh = @fopen($path, "r");
+		if ($fh === false) return false;
+		$head = (string)fread($fh, 64);
+		fclose($fh);
+		$head = ltrim(preg_replace('/^\xEF\xBB\xBF/', "", $head) ?? $head);
+		return str_starts_with($head, "{") || str_starts_with($head, "[");
+	}
+
+	/** Beispieldaten für ein vorhandenes Profil nachreichen. */
+	private static function profileSample(int $id): void {
+		[$profile, $user] = self::profileOr404($id);
+		if ($profile->institutionId() !== $user->institutionId()) { self::redirect("/mappings?error=fremd"); exit; }
+		if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") { self::redirect("/mappings/{$id}"); exit; }
+		if (!Csrf::check($_POST["_csrf"] ?? null))            { self::redirect("/mappings/{$id}?error=csrf"); exit; }
+
+		$f = $_FILES["sample"] ?? null;
+		if (!is_array($f) || ($f["error"] ?? 1) !== UPLOAD_ERR_OK) { self::redirect("/mappings/{$id}?error=upload"); exit; }
+		if (self::looksLikeJson($f["tmp_name"]))                   { self::redirect("/mappings/{$id}?error=jsonhier"); exit; }
+
+		try {
+			$head = TableHeader::read($f["tmp_name"], $profile->baseFormat());
+		} catch (\Throwable $e) {
+			error_log("[mappings/sample] " . $e->getMessage());
+			self::redirect("/mappings/{$id}?error=parse"); exit;
+		}
+		if (count($head["columns"]) < 2) { self::redirect("/mappings/{$id}?error=parse"); exit; }
+
+		// Die Kopfzeile muss zum Profil gehören, sonst passt die Zuordnung nicht.
+		if ($head["hash"] !== $profile->headerHash()) { self::redirect("/mappings/{$id}?error=hash"); exit; }
+
+		$profile->setSample($head);
+		self::redirect("/mappings/{$id}/edit?msg=sample");
 		exit;
 	}
 
@@ -969,6 +1013,7 @@ class Routing {
 			self::view("page_mapping_detail/page_mapping_detail", [
 				"active" => "mappings", "profile" => $profile,
 				"versions" => $profile->versions(), "own" => $profile->institutionId() === $user->institutionId(),
+				"msg" => $_GET["msg"] ?? null, "error" => $_GET["error"] ?? null,
 			]);
 			exit;
 		}
@@ -1014,6 +1059,9 @@ class Routing {
 			"exported_by" => (string)$inst,
 			"exported_at" => date("c"),
 			"mapping"     => $profile->mapping(),
+			// Beispieldaten mitgeben: Ohne sie lässt sich ein eingelesenes Profil nicht
+			// bearbeiten, weil die Vorschau echte Zeilen braucht.
+			"sample"      => $profile->sample(),
 		];
 		$slug = preg_replace('/[^a-zA-Z0-9_-]+/', "-", $profile->name()) ?? "profil";
 		header("Content-Type: application/json; charset=utf-8");
@@ -1035,15 +1083,21 @@ class Routing {
 		$hash = (string)($doc["header_hash"] ?? "");
 		if ($hash === "") { self::redirect("/mappings?error=format"); exit; }
 
+		$sample = is_array($doc["sample"] ?? null) ? $doc["sample"] : null;
+
 		$existing = MappingProfile::findOwn($user->institutionId(), $hash);
 		if ($existing !== null) {
 			$existing->update($doc["mapping"], (string)($doc["name"] ?? ""), $user->id());
-			self::redirect("/mappings?msg=updated"); exit;
+			if ($sample !== null && $existing->sample() === null) $existing->restoreSample($sample);
+			self::redirect("/mappings/" . $existing->id() . "?msg=updated"); exit;
 		}
-		MappingProfile::create($user->institutionId(), $user->id(), $hash,
+		$profile = MappingProfile::create($user->institutionId(), $user->id(), $hash,
 			(string)($doc["base_format"] ?? "csv"),
 			(string)($doc["name"] ?? "Importiertes Profil"), $doc["mapping"]);
-		self::redirect("/mappings?msg=imported");
+		$ok = $sample !== null && $profile->restoreSample($sample);
+		// Ältere Exporte haben keine Beispieldaten — dann führt der Weg über das
+		// Nachreichen einer passenden Datei statt in eine unbrauchbare Bearbeitung.
+		self::redirect("/mappings/" . $profile->id() . ($ok ? "/edit?msg=imported" : "?msg=imported_nosample"));
 		exit;
 	}
 
