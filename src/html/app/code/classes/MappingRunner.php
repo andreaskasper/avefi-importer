@@ -17,6 +17,10 @@ class MappingRunner {
 	private array $columns;      // Spalte => Spezifikation
 	private array $defaults;
 	private array $grouping;
+	/** Vom Menschen bestätigte Normdaten-Zuordnungen: Quelle → Wert → Eintrag. */
+	private array $authorities;
+	/** Zählt, woher die vergebenen IDs stammen. */
+	private array $idOrigin = ["bestaetigt" => 0, "automatisch" => 0];
 
 	/** Sammelstelle für den Prüfbericht: Spalte => ["errors"=>n, "samples"=>[…]] */
 	private array $columnIssues = [];
@@ -27,7 +31,19 @@ class MappingRunner {
 		$this->columns  = is_array($mapping["columns"] ?? null) ? $mapping["columns"] : [];
 		$this->defaults = is_array($mapping["defaults"] ?? null) ? $mapping["defaults"] : [];
 		$this->grouping = is_array($mapping["grouping"] ?? null) ? $mapping["grouping"] : [];
+
+		// Schlüssel auf die Vergleichsform bringen, damit Schreibweise und Leerraum
+		// keine Rolle spielen.
+		$this->authorities = [];
+		foreach (is_array($mapping["authorities"] ?? null) ? $mapping["authorities"] : [] as $src => $entries) {
+			if (!is_array($entries)) continue;
+			foreach ($entries as $value => $entry) {
+				if (is_array($entry)) $this->authorities[(string)$src][AuthorityLookup::compareForm((string)$value)] = $entry;
+			}
+		}
 	}
+
+	public function idOrigins(): array { return $this->idOrigin; }
 
 	/* ---------------- Statische Prüfung (Entwurfszeit) ---------------- */
 
@@ -94,11 +110,22 @@ class MappingRunner {
 						           . "Genres und Kennungs-Zielen hinterlegen.",
 						"fix" => null];
 				}
-				if (str_starts_with($target["type"], "enum:") && !self::chainHas($chain, "valuemap")) {
-					$out[] = ["level" => "warn", "column" => (string)$col,
-						"message" => "„{$target['label']}“ hat eine feste Werteliste — ohne Zuordnung werden "
-						           . "abweichende Schreibweisen beanstandet.",
-						"fix" => ["op" => "valuemap"]];
+				if (str_starts_with($target["type"], "enum:")) {
+					$vm = self::chainStep($chain, "valuemap");
+					if ($vm === null) {
+						$out[] = ["level" => "warn", "column" => (string)$col,
+							"message" => "„{$target['label']}“ hat eine feste Werteliste — ohne Zuordnung werden "
+							           . "abweichende Schreibweisen beanstandet.",
+							"fix" => ["op" => "valuemap"]];
+					} elseif (!self::valuemapFilled($vm)) {
+						// Die Warnung verschwand bisher, sobald die Zuordnung EXISTIERTE.
+						// Eine leere Zuordnung liefert aber „kein Wert" — Datenverlust
+						// hinter einer grünen Anzeige.
+						$out[] = ["level" => "warn", "column" => (string)$col,
+							"message" => "Die Werteliste für „{$target['label']}“ ist noch leer. Solange kein "
+							           . "Zielwert eingetragen ist, kommt für diese Spalte nichts an.",
+							"fix" => null];
+					}
 				}
 			}
 		}
@@ -121,7 +148,20 @@ class MappingRunner {
 	}
 
 	private static function chainHas(array $chain, string $op): bool {
-		foreach ($chain as $s) if (is_array($s) && ($s["op"] ?? "") === $op) return true;
+		return self::chainStep($chain, $op) !== null;
+	}
+
+	/** Erster Schritt einer Kette mit dieser Operation (oder null). */
+	private static function chainStep(array $chain, string $op): ?array {
+		foreach ($chain as $s) if (is_array($s) && ($s["op"] ?? "") === $op) return $s;
+		return null;
+	}
+
+	/** Hat eine Werteliste mindestens einen ausgefüllten Zielwert? */
+	private static function valuemapFilled(array $step): bool {
+		foreach (is_array($step["map"] ?? null) ? $step["map"] : [] as $v) {
+			if (trim((string)$v) !== "") return true;
+		}
 		return false;
 	}
 
@@ -140,7 +180,7 @@ class MappingRunner {
 		$builder = new AvefiBuilder();
 		$cells   = [];
 		$errors  = [];
-		$ctx     = ["row" => $row];
+		$ctx     = ["row" => $row, "authorities" => $this->authorities];
 
 		foreach ($this->columns as $col => $spec) {
 			$col = (string)$col;
@@ -167,6 +207,8 @@ class MappingRunner {
 				$found = [];
 				foreach (array_merge($pre["enrich"] ?? [], $post["enrich"] ?? []) as $e) {
 					$found[(string)$e["value"]][] = $e;
+					$origin = (string)($e["origin"] ?? "");
+					if (isset($this->idOrigin[$origin])) $this->idOrigin[$origin]++;
 				}
 
 				$values = is_array($post["value"]) ? $post["value"] : [$post["value"]];
@@ -177,8 +219,13 @@ class MappingRunner {
 					$cellErrors = array_merge($cellErrors, $errs);
 					if (!$errs && is_scalar($v) && trim((string)$v) !== "") {
 						$out = ["target" => $key, "label" => $target["path"] ?? $target["label"], "value" => (string)$v];
-						$ids = array_column($found[(string)$v] ?? [], "id");
-						if ($ids) $out["ids"] = $ids;
+						if (!empty($found[(string)$v])) {
+							$out["ids"] = array_map(fn($e) => [
+								"id"     => (string)$e["id"],
+								"note"   => (string)($e["note"] ?? ""),
+								"origin" => (string)($e["origin"] ?? ""),
+							], $found[(string)$v]);
+						}
 						$outputs[] = $out;
 					}
 				}

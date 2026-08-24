@@ -93,3 +93,14 @@ Erkannte Fehlerquellen:
 | **JSON** | Syntaxfehler mit Zeile/Spalte: überzähliges/fehlendes Komma, nicht geschlossene Zeichenkette, fehlender Doppelpunkt, einfache statt doppelter Anführungszeichen, ungültiges Escape … (selbst-enthaltener `JsonLint`) |
 | **XML/MARC-XML/EAD** | nicht geschlossene/verschachtelte Tags, ungültige Zeichen — Position via `libxml` |
 | **CSV/TSV** | uneinheitliche Spaltenzahl (mit Zeilennummer), fehlende Titel-Spalte, keine Datenzeilen |
+
+## Belegung der Kernfelder
+
+Der Prüfbericht weist aus, wie oft Titel, Regie, Produktionsdatum und Produktionsland
+belegt sind, und wie viele Datensätze alle vier tragen. Über diese vier Angaben lässt
+sich ein Werk über Häuser hinweg wiedererkennen — Datensätze mit allen vieren eignen
+sich für einen Abgleich, bei zweien wird jede Zusammenführung zum Ratespiel.
+
+Beispiel aus der Paderborner Liste: 77 Datensätze, Titel durchgehend belegt,
+Produktionsdatum in 74 Prozent, Produktionsland in 61, Regie in 45 — und 31 Datensätze
+(40 Prozent) mit allen vier Angaben.

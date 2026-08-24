@@ -84,13 +84,49 @@ class MappingPreview {
 
 		usort($schema, fn($a, $b) => $b["rows"] <=> $a["rows"]);
 
+		$checks = array_merge($runner->staticCheck(), self::dataChecks($mapping, $out));
+
 		return [
 			"columns"        => $out,
 			"canonical"      => $canonical,
 			"schema"         => array_slice(array_values($schema), 0, self::MAX_SCHEMA),
 			"evaluatedRows"  => count($needed),
-			"checks"         => $runner->staticCheck(),
+			"checks"         => $checks,
 		];
+	}
+
+	/**
+	 * Hinweise, die erst an den Daten sichtbar werden. Bisher prüfte nur die
+	 * statische Analyse, und die kennt die Werte nicht: Dass in „Land" ein
+	 * Schrägstrich steht und damit zwei Länder gemeint sind, sieht man erst hier.
+	 */
+	private static function dataChecks(array $mapping, array $columns): array {
+		$out = [];
+		foreach (($mapping["columns"] ?? []) as $col => $spec) {
+			if (!is_array($spec) || !empty($spec["ignore"])) continue;
+			$examples = $columns[(string)$col]["examples"] ?? [];
+			if (!$examples) continue;
+
+			$pre = is_array($spec["pre"] ?? null) ? $spec["pre"] : [];
+			foreach (($spec["targets"] ?? []) as $t) {
+				$target = TargetCatalog::get((string)($t["target"] ?? ""));
+				if ($target === null || !$target["multi"]) continue;
+				$chain = array_merge($pre, is_array($t["post"] ?? null) ? $t["post"] : []);
+				foreach ($chain as $s) if (is_array($s) && ($s["op"] ?? "") === "split") continue 2;
+
+				foreach ([";" => "Semikolon", "/" => "Schrägstrich", "," => "Komma"] as $sep => $name) {
+					$hits = 0;
+					foreach ($examples as $e) if (str_contains((string)$e["raw"], $sep)) $hits++;
+					if ($hits < max(1, (int)ceil(count($examples) / 2))) continue;
+					$out[] = ["level" => "warn", "column" => (string)$col,
+						"message" => "Die Werte enthalten ein {$name}. „{$target['label']}“ nimmt mehrere Werte auf — "
+						           . "mit „Aufteilen“ wird daraus je Wert ein eigener Eintrag statt einer langen Zeichenkette.",
+						"fix" => ["op" => "split", "sep" => $sep]];
+					continue 3;
+				}
+			}
+		}
+		return $out;
 	}
 
 	/**

@@ -141,6 +141,10 @@ verlangsamen den Import spürbar; Ergebnisse werden dauerhaft zwischengespeicher
 übernommen wird nur bei Eindeutigkeit — genau ein Treffer, dessen Name exakt auf die
 Anfrage passt.
 
+Der GND-Abgleich vergleicht auch die umgedrehte Namensform: Die GND führt Personen als
+„Sielmann, Heinz", in Tabellen steht „Heinz Sielmann". Ohne diesen Vergleich blieben
+Personen praktisch immer ohne Treffer, während Körperschaften und Orte gefunden wurden.
+
 Der Konverter **ersetzt den Wert nicht, er ergänzt ihn**. Aus „Heinz Sielmann" wird also
 nicht die GND-Nummer, sondern:
 
@@ -156,6 +160,37 @@ Das greift bei Personen, Schlagwörtern, Orten und Genres. Bei den reinen Kennun
 eingetragen. Hängt der Konverter an einem Ziel, das keine Normdaten aufnehmen kann — etwa
 am Haupttitel —, weist der Editor darauf hin. Angehängt werden nur Quellen, die das Schema
 für die jeweilige Klasse vorsieht; eine Wikidata-ID an einem Genre bleibt außen vor.
+
+### Bestätigte Zuordnungen
+
+Bleibt ein Name mehrdeutig — „Günther Wolf" gibt es in der GND mehrfach —, trägt der
+Importer **nichts** ein. Eine falsche Normdaten-ID wandert in den Verbund und ist später
+schwer zu korrigieren; eine Lücke füllt jemand nach.
+
+Im aufgeklappten Zweig steht deshalb unter der Kette eine Liste der vorkommenden Werte
+mit ihrem Stand: automatisch aufgelöst, von Hand bestätigt oder bewusst offen gelassen.
+Über **Zuordnen** zeigt der Editor die Kandidaten samt Beruf und Lebensdaten; die
+Auswahl wird im Profil festgehalten und gilt beim nächsten Import weiter. **Bewusst
+offen lassen** merkt sich, dass jemand vergeblich gesucht hat — dann fragt der Editor
+nicht wieder danach.
+
+Bestätigte Zuordnungen gelten vor der Automatik. Umgekehrt wird nie ein automatisches
+Ergebnis als bestätigt ausgegeben: Sonst könnte später niemand mehr sagen, was geprüft
+ist und was geraten. Der Prüfbericht weist beides getrennt aus.
+
+### Länderangaben
+
+Der Konverter **Land** führt die gängigen Schreibweisen zusammen: `DE`, `DEU`, `D`,
+`BRD` und `Deutschland` ergeben alle „Deutschland" samt GND-Verweis. Historische Formen
+wie `CSSR`, `UdSSR` oder `DE bis 1945` sind ebenfalls hinterlegt.
+
+Stehen mehrere Länder in einer Zelle (`GRL/DE`), gehört ein **Aufteilen** auf `/` davor —
+dann entstehen zwei Produktionsländer statt eines Ortsnamens mit Schrägstrich. Der Editor
+schlägt das von selbst vor, sobald er ein Trennzeichen in den Beispielwerten sieht.
+
+Die Tabelle liegt als `src/html/data/countries.json` im Repo und stammt aus Wikidata
+(ISO 3166-1 mit deutschem Namen und GND-ID). Eigene Schreibweisen lassen sich dort
+nachtragen.
 
 ### Prüfung
 

@@ -238,8 +238,9 @@ class MappingProfile {
 		$cols = [];
 		foreach ($columns as $c) $cols[(string)$c] = ["pre" => [], "targets" => []];
 		return [
-			"version"  => 1,
-			"columns"  => $cols,
+			"version"     => 1,
+			"columns"     => $cols,
+			"authorities" => new \stdClass(),   // Quelle → Wert → bestätigte Zuordnung
 			"defaults" => [],
 			"row"      => ["represents" => "item"],
 			"grouping" => ["work" => ["by" => []], "manifestation" => ["by" => []]],
@@ -297,7 +298,7 @@ class MappingProfile {
 				$missing[] = (string)$c;
 			}
 		}
-		foreach (["defaults", "row", "grouping"] as $k) {
+		foreach (["defaults", "row", "grouping", "authorities"] as $k) {
 			if (isset($foreignMapping[$k])) $out[$k] = $foreignMapping[$k];
 		}
 		return [

@@ -67,33 +67,106 @@ class AuthorityLookup {
 	 * auch die Nicht-Treffer. Kulturdaten sind repetitiv: dieselben 200 Regisseure
 	 * in 5000 Zeilen ergäben sonst 5000 HTTP-Anfragen mitten im Worker-Job.
 	 */
-	public static function resolveId(string $name, string $source, string $kind, array &$errors = []): string {
+	public static function resolveId(string $name, string $source, string $kind, array &$errors = []): array {
+		$empty = ["id" => "", "label" => "", "note" => "", "candidates" => []];
 		$name = trim($name);
-		if ($name === "") return "";
-		$norm = mb_strtolower($name);
+		if ($name === "") return $empty;
+		$norm = self::compareForm($name);
 
 		$cached = self::cacheGet($source, $kind, $norm);
-		if ($cached !== null) return (string)($cached["id"] ?? "");
+		if ($cached !== null) return $cached + $empty;
 
-		$id = "";
 		try {
-			$hits = self::search($name, $kind, [$source]);
-			$exact = [];
-			foreach ($hits as $h) {
-				if (mb_strtolower(trim((string)($h["label"] ?? ""))) === $norm) $exact[] = $h;
-			}
-			if (count($exact) === 1) {
-				$id = (string)($exact[0]["id"] ?? "");
-			} elseif (count($exact) > 1) {
-				$errors[] = "„{$name}“ ist in {$source} mehrdeutig (" . count($exact) . " Treffer) — keine ID übernommen";
-			}
+			$hits  = self::search($name, $kind, [$source]);
+			$exact = self::exactMatches($hits, $norm);
 		} catch (\Throwable $e) {
 			error_log("[AuthorityLookup] resolveId: " . $e->getMessage());
-			return "";   // Fehlschlag NICHT zwischenspeichern
+			return $empty;   // Fehlschlag NICHT zwischenspeichern
 		}
 
-		self::cachePut($source, $kind, $norm, ["id" => $id]);
-		return $id;
+		$result = $empty;
+		if (count($exact) === 1) {
+			$result["id"]    = (string)($exact[0]["id"] ?? "");
+			$result["label"] = (string)($exact[0]["label"] ?? "");
+			$result["note"]  = (string)($exact[0]["description"] ?? "");
+		} elseif (count($exact) > 1) {
+			// Mehrdeutig: nichts übernehmen, aber die Kandidaten merken — der Mensch
+			// soll sehen, dass etwas gefunden wurde, statt vor einer Leerstelle zu stehen.
+			$errors[] = "„{$name}“ ist in {$source} mehrdeutig (" . count($exact) . " Treffer) — keine ID übernommen";
+			$result["candidates"] = self::asCandidates($exact);
+		}
+		self::cachePut($source, $kind, $norm, $result);
+		return $result;
+	}
+
+	/**
+	 * Exakte Treffer, wobei die invertierte Namensform mitgezählt wird.
+	 *
+	 * Die GND führt Personen als „Sielmann, Heinz". Ein reiner Zeichenvergleich mit
+	 * „Heinz Sielmann" trifft deshalb nie — GND-Personen blieben praktisch immer ohne
+	 * ID, während Körperschaften und Orte (dort steht die natürliche Form) trafen.
+	 */
+	private static function exactMatches(array $hits, string $norm): array {
+		$out = [];
+		foreach ($hits as $h) {
+			foreach (self::comparableForms((string)($h["label"] ?? "")) as $form) {
+				if ($form === $norm) { $out[] = $h; continue 2; }
+			}
+		}
+		return $out;
+	}
+
+	/** Ein Label und, falls es „Nachname, Vorname" ist, seine umgedrehte Form. */
+	public static function comparableForms(string $label): array {
+		$forms = [self::compareForm($label)];
+		if (substr_count($label, ",") === 1) {
+			[$a, $b] = array_map("trim", explode(",", $label));
+			if ($a !== "" && $b !== "") $forms[] = self::compareForm($b . " " . $a);
+		}
+		return $forms;
+	}
+
+	/** Vergleichsform: Kleinschreibung, zusammengezogener Leerraum. */
+	public static function compareForm(string $s): string {
+		return mb_strtolower(trim(preg_replace('/\s+/u', " ", $s) ?? $s));
+	}
+
+	/** @return array<int,array{id:string,label:string,note:string}> */
+	private static function asCandidates(array $hits): array {
+		$out = [];
+		foreach (array_slice($hits, 0, 8) as $h) {
+			$out[] = ["id" => (string)($h["id"] ?? ""), "label" => (string)($h["label"] ?? ""),
+			          "note" => (string)($h["description"] ?? "")];
+		}
+		return $out;
+	}
+
+	/**
+	 * Kandidaten zu einem Namen, unabhängig von der Eindeutigkeit — für die
+	 * Auswahl im Editor. Nutzt bewusst NICHT den Cache: Hier will jemand sehen,
+	 * was es gibt, nicht das gespeicherte Ergebnis der Automatik.
+	 * @return array<int,array{source:string,id:string,label:string,note:string,exact:bool}>
+	 */
+	public static function candidates(string $name, string $kind, array $sources = ["gnd", "wikidata", "viaf"]): array {
+		$name = trim($name);
+		if ($name === "") return [];
+		$norm = self::compareForm($name);
+		$out  = [];
+		foreach ($sources as $src) {
+			try {
+				foreach (self::search($name, $kind, [$src]) as $h) {
+					$exact = false;
+					foreach (self::comparableForms((string)($h["label"] ?? "")) as $f) if ($f === $norm) $exact = true;
+					$out[] = ["source" => $src, "id" => (string)($h["id"] ?? ""),
+					          "label" => (string)($h["label"] ?? ""), "note" => (string)($h["description"] ?? ""),
+					          "type" => (string)($h["agentType"] ?? ""), "exact" => $exact];
+				}
+			} catch (\Throwable $e) {
+				error_log("[AuthorityLookup] candidates {$src}: " . $e->getMessage());
+			}
+		}
+		usort($out, fn($a, $b) => ($b["exact"] <=> $a["exact"]));
+		return array_slice($out, 0, 24);
 	}
 
 	private static function cacheGet(string $source, string $kind, string $norm): ?array {
@@ -227,6 +300,10 @@ class AuthorityLookup {
 				"source"       => "gnd",
 				"id"           => $id,
 				"label"        => (string)($m["preferredName"] ?? $id),
+				// Art des Datensatzes: erlaubt der Oberfläche, Person und Körperschaft
+				// auseinanderzuhalten, ohne dass jemand raten muss.
+				"agentType"    => self::typeMatches($types, "CorporateBody") ? "CorporateBody"
+				                  : (self::typeMatches($types, "Person") ? "Person" : ""),
 				"description"  => self::gndDesc($m, $types),
 				"category"     => SchemaModel::resourceCategory("GNDResource"),
 				"resourceType" => "GNDResource",

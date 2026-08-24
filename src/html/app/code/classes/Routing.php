@@ -27,11 +27,11 @@ class Routing {
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/original$@', $path, $m))           { self::originalDownload($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/reconvert$@', $path, $m))          { self::reconvert($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/mapping$@', $path, $m))            { self::mappingEditor($m[1]); exit; }
-		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/mapping/(preview|save|adopt)$@', $path, $m)) { self::mappingAction($m[1], $m[2]); exit; }
+		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/mapping/(preview|save|adopt|candidates)$@', $path, $m)) { self::mappingAction($m[1], $m[2]); exit; }
 		if (preg_match('@^/mappings/(\d+)/export$@', $path, $m))                         { self::mappingExport((int)$m[1]); exit; }
 		if (preg_match('@^/mappings/(\d+)/edit$@', $path, $m))                           { self::profileEditor((int)$m[1]); exit; }
 		if (preg_match('@^/mappings/(\d+)/sample$@', $path, $m))                         { self::profileSample((int)$m[1]); exit; }
-		if (preg_match('@^/mappings/(\d+)/(preview|save)$@', $path, $m))                 { self::profileAction((int)$m[1], $m[2]); exit; }
+		if (preg_match('@^/mappings/(\d+)/(preview|save|candidates)$@', $path, $m))      { self::profileAction((int)$m[1], $m[2]); exit; }
 		if ($path === "/mappings/new")                                                   { self::profileFromSample(); exit; }
 		if (preg_match('@^/mappings/(\d+)$@', $path, $m))                                { self::mappingDetail((int)$m[1]); exit; }
 
@@ -75,6 +75,9 @@ class Routing {
 				self::profile();
 				exit;
 
+			case "/imports/status":
+				self::importStatus();
+				exit;
 			case "/mappings":
 				self::mappingsIndex();
 				exit;
@@ -617,6 +620,31 @@ class Routing {
 		}
 	}
 
+	/**
+	 * Kurzstatus aller Importe der eigenen Institution — die Liste aktualisiert sich
+	 * damit selbst, solange etwas in Arbeit ist. Vorher musste man die Seite neu laden
+	 * und wusste nicht, ob sich etwas getan hat.
+	 */
+	private static function importStatus() {
+		if (!MyUser::isLoggedIn()) return self::json(["ok" => false, "error" => "Nicht angemeldet."], 401);
+		$user = MyUser::current();
+		$out  = [];
+		$busy = false;
+		foreach (Import::forInstitution($user->institutionId()) as $imp) {
+			[$cls, $label] = $imp->statusBadge();
+			$status = $imp->status();
+			if (in_array($status, ["uploading", "queued", "converting"], true)) $busy = true;
+			$out[$imp->id()] = [
+				"status"   => $status,
+				"badge"    => $cls,
+				"label"    => $label,
+				"records"  => $imp->recordCount(),
+				"progress" => $imp->uploadProgress(),
+			];
+		}
+		return self::json(["ok" => true, "busy" => $busy, "imports" => $out]);
+	}
+
 	/* ==================== Mapping-Editor ==================== */
 
 	/** Liest Kopfzeile und Stichprobe der Originaldatei eines Imports. */
@@ -659,9 +687,22 @@ class Routing {
 			"transforms"  => Transform::catalog(),
 			"suggestions" => MappingSuggest::forColumns($head["columns"]),
 			"vocabulary"  => MappingSuggest::vocabularyCandidates($head["distinct"] ?? []),
+			// Verschiedene Werte je Spalte — Grundlage für das Bestätigen von Normdaten.
+			"values"      => self::distinctValues($head["distinct"] ?? []),
 			"foreign"     => MappingProfile::othersForHash($head["hash"], $instId),
 			"hints"       => MappingProfile::targetHints($head["columns"], $instId),
 		];
+	}
+
+	/** Verschiedene Werte je Spalte, gedeckelt — für die Normdaten-Zuordnung. */
+	private static function distinctValues(array $distinct, int $max = 50): array {
+		$out = [];
+		foreach ($distinct as $col => $values) {
+			if (!is_array($values)) continue;
+			arsort($values);
+			$out[(string)$col] = array_slice(array_keys($values), 0, $max);
+		}
+		return $out;
 	}
 
 	/** Mapping-Editor (Seite). */
@@ -706,9 +747,10 @@ class Routing {
 
 		try {
 			switch ($action) {
-				case "preview": return self::mappingPreview($body, $head);
-				case "adopt":   return self::mappingAdopt($body, $head);
-				case "save":    return self::mappingSave($body, $head, $import, $user);
+				case "preview":    return self::mappingPreview($body, $head);
+				case "adopt":      return self::mappingAdopt($body, $head);
+				case "candidates": return self::mappingCandidates($body);
+				case "save":       return self::mappingSave($body, $head, $import, $user);
 			}
 		} catch (\Throwable $e) {
 			error_log("[mapping/{$action}] " . $e->getMessage());
@@ -730,6 +772,24 @@ class Routing {
 		$res["ok"]       = true;
 		$res["coverage"] = self::coverage($mapping);
 		return self::json($res);
+	}
+
+	/**
+	 * Normdaten-Kandidaten zu einem Wert — Grundlage für die bestätigte Zuordnung.
+	 * Liefert bewusst auch die nicht eindeutigen Treffer: Der Mensch soll sehen,
+	 * was die Automatik gefunden und aus Vorsicht verworfen hat.
+	 */
+	private static function mappingCandidates(array $body) {
+		$value = trim((string)($body["value"] ?? ""));
+		$kind  = (string)($body["kind"] ?? "person");
+		$src   = is_array($body["sources"] ?? null) ? $body["sources"] : ["gnd", "wikidata", "viaf"];
+		if ($value === "") return self::json(["ok" => false, "error" => "Kein Wert angegeben."], 400);
+
+		return self::json([
+			"ok"         => true,
+			"value"      => $value,
+			"candidates" => AuthorityLookup::candidates($value, $kind, $src),
+		]);
 	}
 
 	/** Welche Ziele belegt das Profil? Grundlage für den Ergebnisbaum. */
@@ -875,7 +935,8 @@ class Routing {
 		$head = ["columns" => $sample["columns"], "rows" => $sample["rows"] ?? [], "distinct" => $sample["distinct"] ?? []];
 
 		try {
-			if ($action === "preview") return self::mappingPreview($body, $head);
+			if ($action === "candidates") return self::mappingCandidates($body);
+			if ($action === "preview")    return self::mappingPreview($body, $head);
 
 			$mapping = is_array($body["mapping"] ?? null) ? $body["mapping"] : [];
 			$runner  = new MappingRunner($mapping);

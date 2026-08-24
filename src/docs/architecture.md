@@ -120,3 +120,17 @@ Work            konzeptuelles Filmwerk   (Titel, Jahr, Werkart, Beteiligte, Iden
 
 > Vue-Oberflächen prüfen (Template-Übersetzung und Mount ohne Browser):
 > siehe [`frontend-pruefen.md`](frontend-pruefen.md).
+
+## Achtung beim Ändern von Worker-Code
+
+Der Worker hält Klassen im Speicher. `bots/worker` läuft als Dauerprozess und lädt eine
+Klasse wie `\worker\convert` genau einmal; danach bleibt die Definition im Prozess,
+auch wenn die Datei sich ändert. Änderungen an Worker-Code wirken deshalb erst nach
+
+```bash
+docker restart avefi_worker
+```
+
+Das ist beim Testen leicht zu übersehen: Die Weboberfläche zeigt sofort den neuen Stand,
+die Verarbeitung im Hintergrund noch den alten. Von selbst startet der Prozess erst nach
+sieben Tagen oder bei mehr als 1 GB Speicherverbrauch neu.

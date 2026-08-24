@@ -61,6 +61,11 @@ class Transform {
 			               "params" => [["name" => "unit", "label" => "Einheit der Quelle", "type" => "choice",
 			                             "choices" => ["minutes" => "Minuten", "seconds" => "Sekunden", "hours" => "Stunden", "auto" => "erkennen"]]]],
 
+			"country"  => ["label" => "Land normalisieren", "group" => "Typen", "in" => "any", "out" => "same",
+			               "params" => [["name" => "unbekannt", "label" => "Unbekannte Angabe", "type" => "choice",
+			                             "choices" => ["keep" => "unverändert übernehmen", "drop" => "verwerfen",
+			                                           "error" => "beanstanden"]]]],
+
 			/* --- Vokabular und Normdaten --- */
 			"valuemap" => ["label" => "Werteliste zuordnen", "group" => "Vokabular", "in" => "any", "out" => "same",
 			               "params" => [["name" => "map", "label" => "Zuordnung", "type" => "map"],
@@ -134,7 +139,7 @@ class Transform {
 	/** Wendet eine Operation an; Listen werden elementweise behandelt, wo sinnvoll. */
 	private static function apply(string $op, array $p, $value, array $ctx, array &$notes, array &$errors, array &$enrich = []) {
 		$elementwise = ["trim", "lowercase", "uppercase", "ucfirst", "replace", "substring",
-		                "template", "number", "year", "date", "duration", "valuemap", "authority"];
+		                "template", "number", "year", "date", "duration", "valuemap", "authority", "country"];
 
 		if (is_array($value) && in_array($op, $elementwise, true)) {
 			$out = [];
@@ -234,6 +239,27 @@ class Transform {
 			case "duration":
 				return self::toIsoDuration((string)$value, (string)($p["unit"] ?? "auto"), $errors);
 
+			case "country":
+				// „DE", „DEU", „D", „BRD" und „Deutschland" ergeben denselben Namen;
+				// die GND-ID des Landes wandert über den Anreicherungskanal mit.
+				$hit = CountryTable::lookup((string)$value);
+				if ($hit === null) {
+					switch ((string)($p["unbekannt"] ?? "keep")) {
+						case "drop":  return "";
+						case "error": $errors[] = "„{$value}“ ist keine bekannte Länderangabe"; return "";
+						default:      return $value;
+					}
+				}
+				if ($hit["gnd"] !== "") {
+					$enrich[] = [
+						"value"    => $hit["name"],
+						"category" => SchemaModel::resourceCategory("GNDResource"),
+						"id"       => $hit["gnd"],
+						"resource" => "GNDResource",
+					];
+				}
+				return $hit["name"];
+
 			case "valuemap":
 				return self::valuemap((string)$value, $p, $notes, $errors);
 
@@ -243,16 +269,37 @@ class Transform {
 				// an die erzeugte Entität gehängt. Vorher wurde der Name mit der ID
 				// überschrieben — bei einem Regie-Feld stand dann die GND-Nummer im Namen.
 				$source = (string)($p["source"] ?? "gnd");
-				$id = AuthorityLookup::resolveId((string)$value, $source,
-				                                 (string)($p["kind"] ?? "person"), $errors);
-				if ($id !== "") {
+				$kind = (string)($p["kind"] ?? "person");
+
+				// Vom Menschen bestätigte Zuordnung schlägt die Automatik.
+				$confirmed = $ctx["authorities"][$source][AuthorityLookup::compareForm((string)$value)] ?? null;
+				if (is_array($confirmed)) {
+					if (($confirmed["id"] ?? null) === null || $confirmed["id"] === "") return $value;  // bewusst offen
 					$resType = AuthorityLookup::resourceTypeFor($source);
 					if ($resType !== null) {
 						$enrich[] = [
 							"value"    => (string)$value,
 							"category" => SchemaModel::resourceCategory($resType),
-							"id"       => $id,
+							"id"       => (string)$confirmed["id"],
 							"resource" => $resType,
+							"note"     => (string)($confirmed["label"] ?? ""),
+							"origin"   => "bestaetigt",
+						];
+					}
+					return $value;
+				}
+
+				$hit = AuthorityLookup::resolveId((string)$value, $source, $kind, $errors);
+				if (($hit["id"] ?? "") !== "") {
+					$resType = AuthorityLookup::resourceTypeFor($source);
+					if ($resType !== null) {
+						$enrich[] = [
+							"value"    => (string)$value,
+							"category" => SchemaModel::resourceCategory($resType),
+							"id"       => (string)$hit["id"],
+							"resource" => $resType,
+							"note"     => trim(($hit["label"] ?? "") . (($hit["note"] ?? "") !== "" ? " · " . $hit["note"] : "")),
+							"origin"   => "automatisch",
 						];
 					}
 				}

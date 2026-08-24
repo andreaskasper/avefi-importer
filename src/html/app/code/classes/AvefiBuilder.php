@@ -116,8 +116,15 @@ class AvefiBuilder {
 
 			case "eventplace":
 				$ev =& $this->event($node, $w["category"], $w["type"] ?? null);
-				foreach (($ev["located_in"] ?? []) as $g) if (($g["has_name"] ?? null) === $v) return [];
-				$ev["located_in"][] = ["category" => "avefi:GeographicName", "has_name" => $v];
+				foreach (($ev["located_in"] ?? []) as $i => $g) {
+					if (($g["has_name"] ?? null) === $v) {
+						self::mergeSameAs($ev["located_in"][$i], $sameAs, SchemaModel::sameAsTypes("GeographicName"));
+						return [];
+					}
+				}
+				$place = ["category" => "avefi:GeographicName", "has_name" => $v];
+				self::mergeSameAs($place, $sameAs, SchemaModel::sameAsTypes("GeographicName"));
+				$ev["located_in"][] = $place;
 				break;
 
 			case "identifier":
@@ -249,7 +256,8 @@ class AvefiBuilder {
 
 	/** Kann dieses Ziel überhaupt Normdaten aufnehmen? */
 	public static function acceptsAuthority(array $target): bool {
-		return in_array($target["writer"]["kind"] ?? "", ["activity", "subject", "named", "sameas", "identifier"], true);
+		return in_array($target["writer"]["kind"] ?? "",
+			["activity", "subject", "named", "sameas", "identifier", "eventplace"], true);
 	}
 
 	/* ---------------- Interne Helfer ---------------- */

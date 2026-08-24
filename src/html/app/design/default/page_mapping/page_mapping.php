@@ -68,12 +68,48 @@ include __DIR__ . "/../layout/appheader.php";
         </span>
       </div>
 
-      <div class="alert" role="alert" v-if="blockers.length">
-        <b>Das lässt sich so nicht verarbeiten:</b>
-        <ul class="tight"><li v-for="(c,i) in blockers" :key="i">
-          <span v-if="c.column">Spalte „{{ c.column }}“: </span>{{ c.message }}
-          <button v-if="c.fix" type="button" class="linkbtn" @click="applyFix(c)">beheben</button>
-        </li></ul>
+      <div class="checkbar" v-if="allChecks.length">
+        <div class="checkbar-h">
+          <span v-if="blockers.length" class="badge b-danger"><span class="bd"></span>{{ blockers.length }} blockierend</span>
+          <span v-if="warnings.length" class="badge b-wait"><span class="bd"></span>{{ warnings.length }} Hinweis{{ warnings.length === 1 ? '' : 'e' }}</span>
+        </div>
+        <ul class="checklist">
+          <li v-for="(c,i) in allChecks" :key="i" :class="c.level === 'nogo' ? 'chk-nogo' : 'chk-warn'">
+            <i class="fa-solid" :class="c.level === 'nogo' ? 'fa-circle-exclamation' : 'fa-triangle-exclamation'" aria-hidden="true"></i>
+            <button v-if="c.column" type="button" class="linkbtn chk-col" @click="gotoColumn(c.column)">{{ c.column }}</button>
+            <span class="chk-msg">{{ c.message }}</span>
+            <button v-if="c.fix" type="button" class="btn btn-outline btn-sm" @click="applyFix(c)">Automatisch beheben</button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="modal-overlay" v-if="authOpen" @click.self="closeAuth()">
+        <div class="modal-box" role="dialog" aria-modal="true" aria-label="Normdaten zuordnen" style="max-width:720px">
+          <div class="modal-head">
+            <h3>„{{ authOpen.value }}“ zuordnen</h3>
+            <button type="button" class="modal-x" @click="closeAuth()" aria-label="Schließen">×</button>
+          </div>
+          <div class="modal-body">
+            <div v-if="authBusy" class="dim"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> sucht in {{ authOpen.source.toUpperCase() }} …</div>
+            <template v-else>
+              <p class="note" v-if="!authCands.length" style="margin:0">
+                Keine Treffer. Du kannst den Wert bewusst offen lassen — dann fragt der Editor nicht wieder danach.
+              </p>
+              <div class="candrow" v-for="(c,i) in authCands" :key="i">
+                <div>
+                  <div class="fn">{{ c.label }} <span class="dim small" v-if="c.exact">exakt</span></div>
+                  <div class="dim small">{{ c.id }}<span v-if="c.note"> · {{ c.note }}</span></div>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm"
+                        @click="setAuth({ id: c.id, label: c.label, note: c.note, art: c.type || '' })">Übernehmen</button>
+              </div>
+            </template>
+          </div>
+          <div class="modal-foot">
+            <button type="button" class="btn btn-outline btn-sm" @click="setAuth({ id: null })">Bewusst offen lassen</button>
+            <button type="button" class="btn btn-outline btn-sm" @click="closeAuth()">Abbrechen</button>
+          </div>
+        </div>
       </div>
 
       <div class="map-grid">
@@ -101,7 +137,7 @@ include __DIR__ . "/../layout/appheader.php";
               </tr></thead>
               <tbody>
                 <template v-for="col in columns" :key="col">
-                  <tr :class="{'row-open': !mapping.columns[col] || (!mapping.columns[col].ignore && !(mapping.columns[col].targets||[]).length),
+                  <tr :data-col="col" :class="{'row-open': !mapping.columns[col] || (!mapping.columns[col].ignore && !(mapping.columns[col].targets||[]).length),
                                'row-ignored': mapping.columns[col] && mapping.columns[col].ignore}">
                     <td>
                       <div class="fn">{{ col }}</div>
@@ -152,7 +188,10 @@ include __DIR__ . "/../layout/appheader.php";
                       <template v-if="examplesOf(col).length">
                         <div v-for="(e,i) in examplesOf(col)" :key="i" class="exline">
                           <span v-if="valuesOf(e).length" class="okval">
-                            <i class="fa-solid fa-check" aria-hidden="true"></i> {{ valuesOf(e).join(' · ') }}</span>
+                            <i class="fa-solid fa-check" aria-hidden="true"></i>{{ valuesOf(e).join(' · ') }}<template
+                              v-for="(o,k) in (e.outputs||[])" :key="'id'+k"><span v-if="o.ids" class="idchip"
+                                :title="o.ids.map(function(x){return x.note;}).join(' · ')">{{
+                                o.ids.map(function(x){return x.id;}).join(' · ') }}</span></template></span>
                           <span v-else-if="e.errors.length" class="errval" :title="e.errors.join(' · ')">
                             <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>{{ e.errors[0] }}</span>
                           <span v-else class="dim">kein Wert</span>
@@ -227,6 +266,32 @@ include __DIR__ . "/../layout/appheader.php";
                                 Diese Spalte ist in der Stichprobe leer — kein Beispiel möglich.
                               </div>
 
+                              <div class="authpanel" v-if="authStepOf(col,i)">
+                                <div class="authpanel-h">
+                                  <i class="fa-solid fa-id-card" aria-hidden="true"></i>
+                                  Normdaten aus {{ (authStepOf(col,i).source || 'gnd').toUpperCase() }}
+                                  <span class="dim small">— bestätigte Zuordnungen gelten vor der Automatik</span>
+                                </div>
+                                <div class="authrow" v-for="v in authValues(col)" :key="v">
+                                  <span class="authval" :title="v">{{ v }}</span>
+                                  <span class="authstate" :class="'st-' + authState(authStepOf(col,i).source || 'gnd', v)">
+                                    <template v-if="authState(authStepOf(col,i).source || 'gnd', v) === 'bestaetigt'">
+                                      {{ authEntry(authStepOf(col,i).source || 'gnd', v).id }}
+                                      <span class="dim">{{ authEntry(authStepOf(col,i).source || 'gnd', v).label }}</span>
+                                    </template>
+                                    <template v-else-if="authState(authStepOf(col,i).source || 'gnd', v) === 'verworfen'">
+                                      bewusst offen gelassen
+                                    </template>
+                                    <template v-else>automatisch</template>
+                                  </span>
+                                  <button type="button" class="btn btn-outline btn-sm"
+                                          @click="openAuth(col, authStepOf(col,i), v)">Zuordnen</button>
+                                  <button type="button" class="linkbtn"
+                                          v-if="authState(authStepOf(col,i).source || 'gnd', v) !== 'offen'"
+                                          @click="clearAuth(authStepOf(col,i).source || 'gnd', v)">zurücksetzen</button>
+                                </div>
+                              </div>
+
                               <div class="vocabhint" v-if="enumFor(col,i)">
                                 <span class="dim small">Zulässige Werte: {{ enumFor(col,i).join(', ') }}</span>
                                 <button type="button" class="btn btn-outline btn-sm" @click="prefillVocabulary(col,i)">
@@ -249,15 +314,7 @@ include __DIR__ . "/../layout/appheader.php";
             </table>
           </div>
 
-          <div class="card" style="margin-top:14px" v-if="warnings.length">
-            <h4 class="side-h">Hinweise</h4>
-            <ul class="tight">
-              <li v-for="(c,i) in warnings" :key="i">
-                <span v-if="c.column">Spalte „{{ c.column }}“: </span>{{ c.message }}
-                <button v-if="c.fix" type="button" class="linkbtn" @click="applyFix(c)">automatisch beheben</button>
-              </li>
-            </ul>
-          </div>
+
         </div>
 
         <!-- Ergebnis: die AVefi-Struktur, die entsteht -->
@@ -281,6 +338,11 @@ include __DIR__ . "/../layout/appheader.php";
               </ul>
               <div class="dim small" v-else>– nichts zugeordnet –</div>
             </div>
+            <details class="jsonbox" v-if="canonical">
+              <summary>Erzeugter AVefi-Datensatz (erste Zeile)</summary>
+              <pre class="mono">{{ canonicalJson }}</pre>
+            </details>
+
             <div class="alert" role="status" v-if="schemaIssues.length" style="margin-top:10px">
               <b>Schema-Beanstandungen</b>
               <span class="dim small">in {{ evaluatedRows }} geprüften Zeilen</span>

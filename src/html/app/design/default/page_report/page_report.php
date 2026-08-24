@@ -66,6 +66,63 @@ include __DIR__ . "/../layout/appheader.php";
       <div class="card kpi"><span class="v tnum" style="color:<?php echo $vbad ? "var(--danger,#dc2626)" : "inherit"; ?>"><?php echo $vbad; ?></span><span class="l">mit Beanstandung</span></div>
     </div>
 
+    <?php $core = $report["core_fields"] ?? null; if (is_array($core) && ($core["records"] ?? 0) > 0): ?>
+      <h3 class="side-h" style="margin:0 0 8px">Belegung der Kernfelder</h3>
+      <div class="card" style="margin-bottom:18px">
+        <p class="note" style="margin:0 0 12px">
+          Titel, Regie, Produktionsdatum und Produktionsland sind die Angaben, über die sich ein Werk
+          über Häuser hinweg wiedererkennen lässt. Datensätze mit allen vieren eignen sich für einen
+          Abgleich; bei zweien wird jede Zusammenführung zum Ratespiel.
+        </p>
+        <?php foreach (($core["labels"] ?? []) as $key => $label):
+          $n = (int)($core["fields"][$key] ?? 0); $pct = (int)($core["percent"][$key] ?? 0); ?>
+          <div class="frow" style="grid-template-columns:190px 1fr 92px;padding:7px 0;align-items:center">
+            <label><?php echo html($label); ?></label>
+            <div class="prog <?php echo $pct >= 80 ? "ok" : ($pct >= 40 ? "acc" : "warnbar"); ?>" role="progressbar"
+                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="<?php echo $pct; ?>"
+                 aria-label="<?php echo htmlattr($label); ?> in <?php echo $pct; ?> Prozent der Datensätze belegt">
+              <i style="width:<?php echo $pct; ?>%"></i></div>
+            <div class="dim small tnum" style="text-align:right"><?php echo $n; ?> · <?php echo $pct; ?> %</div>
+          </div>
+        <?php endforeach; ?>
+
+        <div class="frow" style="grid-template-columns:190px 1fr;padding:12px 0 0;border-bottom:0;align-items:baseline">
+          <label>Alle vier belegt</label>
+          <div class="fval">
+            <b class="tnum"><?php echo (int)($core["all_four"] ?? 0); ?></b>
+            <span class="dim">von <?php echo (int)$core["records"]; ?> Datensätzen
+              (<?php echo (int)($core["all_four_percent"] ?? 0); ?> %)</span>
+          </div>
+        </div>
+        <div class="dim small" style="margin-top:8px">
+          Verteilung:
+          <?php foreach (["4","3","2","1","0"] as $k):
+            $v = (int)(($core["complete"][$k] ?? 0)); if ($v === 0) continue; ?>
+            <span class="fmt" style="margin-right:5px"><?php echo $k; ?> von 4: <?php echo $v; ?></span>
+          <?php endforeach; ?>
+        </div>
+      </div>
+    <?php endif; ?>
+
+    <?php $mp = $report["mapping"] ?? null; if (is_array($mp)): ?>
+      <h3 class="side-h" style="margin:0 0 8px">Zuordnung</h3>
+      <div class="card" style="margin-bottom:18px">
+        <div class="frow" style="grid-template-columns:190px 1fr;padding:7px 0">
+          <label>Profil</label>
+          <div class="fval"><?php echo html($mp["profile"]["name"] ?? "–"); ?>
+            <span class="dim small">Fassung <?php echo (int)($mp["profile"]["version"] ?? 0); ?></span></div>
+        </div>
+        <div class="frow" style="grid-template-columns:190px 1fr;padding:7px 0">
+          <label>Werkbildung</label><div class="fval"><?php echo html($mp["grouping"] ?? "–"); ?></div>
+        </div>
+        <div class="frow" style="grid-template-columns:190px 1fr;padding:7px 0;border-bottom:0">
+          <label>Zeilen und Werke</label>
+          <div class="fval tnum"><?php echo (int)($mp["rows"] ?? 0); ?> Zeilen →
+            <?php echo (int)($mp["works"] ?? 0); ?> Werke</div>
+        </div>
+      </div>
+    <?php endif; ?>
+
     <?php if ($parse): ?>
       <h3 class="side-h" style="margin:0 0 8px">Parse-Hinweise<?php echo $rowErr ? " · " . $rowErr . " Zeile(n) nicht übernommen" : ""; ?></h3>
       <div class="tablewrap" style="margin-bottom:18px"><div style="padding:8px 12px" class="val-list">

@@ -40,6 +40,7 @@ class convert {
 		// 1) Interne Records erzeugen (für Editor/Records-Liste).
 		$count = 0; $rowErrors = 0; $idx = 0;
 		$parseErrors = [];
+		$core = \CoreFields::newTally();
 		$avefiOut = [];   // gesammeltes AVefi-Output (nur non-native)
 
 		try {
@@ -58,6 +59,7 @@ class convert {
 					continue;
 				}
 				if ($isCanonical) {
+					$core = \CoreFields::add($core, $rec["canonical"] ?? []);
 					foreach (\AvefiMapper::flatten($rec["canonical"] ?? []) as $node) $avefiOut[] = $node;
 				} elseif (!$isNative) {
 					// Anhängen statt array_merge im Schleifenrumpf: array_merge kopiert bei jedem
@@ -111,6 +113,7 @@ class convert {
 			"stage"           => "convert",
 			"converter"       => $key,
 			"mapping"         => $isCanonical && method_exists($converter, "report") ? $converter->report() : null,
+			"core_fields"     => $isCanonical ? \CoreFields::finish($core) : null,
 			"native"          => $isNative,
 			"schema"          => "av-efi-schema (WorkVariant/Manifestation/Item)",
 			"summary"         => [

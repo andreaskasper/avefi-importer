@@ -19,7 +19,8 @@ class MappingSuggest {
 	/** Ziel => Schlüsselwörter (normalisiert, ohne Umlautauflösung). */
 	private const KEYWORDS = [
 		"work.title.primary"      => ["titel", "haupttitel", "originaltitel", "filmtitel", "title", "werktitel"],
-		"work.title.alternative"  => ["alternativtitel", "nebentitel", "untertitel", "verleihtitel", "subtitle", "alttitel"],
+		"work.title.alternative"  => ["alternativtitel", "nebentitel", "untertitel", "verleihtitel", "subtitle",
+		                              "alttitel", "diverse", "weitere", "sonstige", "zusatztitel", "arbeitstitel"],
 		"work.title.series"       => ["reihe", "reihentitel", "serie", "serientitel", "series"],
 		"work.production.date"    => ["jahr", "year", "produktionsjahr", "entstehungsjahr", "entstehung",
 		                              "produktionsdatum", "datierung", "herstellungsjahr", "erscheinungsjahr"],
@@ -85,6 +86,13 @@ class MappingSuggest {
 			if ($best > 0) $scores[$target] = $best;
 		}
 		if (!$scores) return [];
+
+		// „Diverse Titel" und „Untertitel" sind keine Haupttitel. Ohne diese Regel
+		// gewinnt der Haupttitel überall, wo das Wort „Titel" vorkommt.
+		if (isset($scores["work.title.primary"]) && self::hasQualifier($tokens)) {
+			$scores["work.title.primary"] = 40;
+			$scores["work.title.alternative"] = max($scores["work.title.alternative"] ?? 0, 90);
+		}
 		arsort($scores);
 
 		$out = [];
@@ -106,6 +114,20 @@ class MappingSuggest {
 		if (str_starts_with($token, $keyword)) return 70;
 		if (str_starts_with($keyword, $token)) return 50;
 		return 0;
+	}
+
+	/** Wörter, die einen Titel als Nebenform kennzeichnen. */
+	private const TITLE_QUALIFIERS = ["diverse", "weitere", "sonstige", "neben", "alternativ", "alternative",
+	                                  "verleih", "zusatz", "unter", "arbeits", "serien", "reihen", "original"];
+
+	private static function hasQualifier(array $tokens): bool {
+		foreach ($tokens as $t) {
+			if ($t === "titel" || $t === "title") continue;
+			foreach (self::TITLE_QUALIFIERS as $q) {
+				if ($t === $q || str_starts_with($t, $q)) return $q !== "original";   // Originaltitel bleibt Haupttitel
+			}
+		}
+		return false;
 	}
 
 	/** Kopfzeile in Vergleichswörter zerlegen (Umlaute aufgelöst, Klammerzusätze weg). */

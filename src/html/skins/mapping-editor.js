@@ -39,6 +39,7 @@
       s.targets.forEach(function (t) { if (!Array.isArray(t.post)) t.post = []; });
     });
     if (!Array.isArray(m.defaults)) m.defaults = [];
+    if (!m.authorities || typeof m.authorities !== "object" || Array.isArray(m.authorities)) m.authorities = {};
     if (!m.row) m.row = { represents: "item" };
     if (!m.grouping) m.grouping = { work: { by: [] }, manifestation: { by: [] } };
     if (!m.grouping.work) m.grouping.work = { by: [] };
@@ -139,6 +140,19 @@
     props: ["chain", "columns", "label"],
     emits: ["change"],
     data: function () { return { picking: false }; },
+    mounted: function () {
+      var self = this;
+      // Das Menü blieb offen, bis man den Knopf erneut traf — mehrere konnten sich
+      // gleichzeitig überlappen.
+      this._away = function (e) { if (!self.$el.contains(e.target)) self.picking = false; };
+      this._esc  = function (e) { if (e.key === "Escape") self.picking = false; };
+      document.addEventListener("click", this._away);
+      document.addEventListener("keydown", this._esc);
+    },
+    unmounted: function () {
+      document.removeEventListener("click", this._away);
+      document.removeEventListener("keydown", this._esc);
+    },
     computed: {
       grouped: function () {
         var g = {};
@@ -207,6 +221,7 @@
         vocabulary: boot.vocabulary || {},
         open: {},            // aufgeklappte Spalten
         previewCols: {},     // Spalte => {examples:[…], filled:{n,of,total}}
+        canonical: null,     // erzeugter AVefi-Datensatz der ersten Zeile
         evaluatedRows: 0,
         merged: (function () { try { return localStorage.getItem("avefi-map-merged") === "1"; } catch (e) { return false; } })(),
         checks: [],
@@ -214,6 +229,10 @@
         coverage: {},
         canStart: !!boot.canStart,
         subject: boot.subject,
+        values: boot.values || {},
+        authOpen: null,        // {col, source, kind, value}
+        authCands: [],
+        authBusy: false,
         busy: false,
         saving: false,
         message: null,
@@ -246,6 +265,9 @@
       },
       blockers: function () { return this.checks.filter(function (c) { return c.level === "nogo"; }); },
       warnings: function () { return this.checks.filter(function (c) { return c.level === "warn"; }); },
+      /* Blockierendes und Hinweise in einer Liste: Vorher standen die einen über
+         der Tabelle und die anderen darunter, und man übersah die Hälfte. */
+      allChecks: function () { return this.blockers.concat(this.warnings); },
       /* Ergebnisbaum: belegte Ziele je Ebene. */
       tree: function () {
         var self = this, levels = { work: [], manifestation: [], item: [] };
@@ -258,6 +280,9 @@
           levels[l].sort(function (a, b) { return (a.group + a.label).localeCompare(b.group + b.label); });
         });
         return levels;
+      },
+      canonicalJson: function () {
+        try { return JSON.stringify(this.canonical, null, 2); } catch (e) { return ""; }
       },
       groupingBy: function () { return (this.mapping.grouping && this.mapping.grouping.work && this.mapping.grouping.work.by) || []; }
     },
@@ -295,6 +320,56 @@
       valuesOf: function (example) {
         return (example.outputs || []).map(function (o) { return o.value; });
       },
+      /* --- Normdaten: bestätigte Zuordnungen --- */
+      authStepOf: function (col, i) {
+        var s = this.spec(col), t = s.targets[i];
+        if (!t) return null;
+        var found = null;
+        (s.pre || []).concat(t.post || []).forEach(function (st) { if (st.op === "authority") found = st; });
+        return found;
+      },
+      /* Werte, die für diese Spalte zugeordnet werden können. */
+      authValues: function (col) {
+        var v = this.values[col];
+        if (v && v.length) return v;
+        return this.examplesOf(col).map(function (e) { return e.raw; });
+      },
+      authEntry: function (source, value) {
+        var t = this.mapping.authorities[source];
+        return t ? t[String(value).toLowerCase().trim()] : undefined;
+      },
+      authState: function (source, value) {
+        var e = this.authEntry(source, value);
+        if (e === undefined) return "offen";
+        return (e && e.id) ? "bestaetigt" : "verworfen";
+      },
+      openAuth: function (col, step, value) {
+        var self = this;
+        this.authOpen = { col: col, source: step.source || "gnd", kind: step.kind || "person", value: value };
+        this.authCands = [];
+        this.authBusy = true;
+        this.post("candidates", { value: value, kind: this.authOpen.kind, sources: [this.authOpen.source] })
+          .then(function (res) {
+            self.authBusy = false;
+            if (!res.ok) { self.error = res.error; return; }
+            self.authCands = res.candidates || [];
+          }).catch(function () { self.authBusy = false; self.error = "Kandidaten konnten nicht geladen werden."; });
+      },
+      closeAuth: function () { this.authOpen = null; this.authCands = []; },
+      setAuth: function (entry) {
+        var a = this.authOpen;
+        if (!a) return;
+        if (!this.mapping.authorities[a.source]) this.mapping.authorities[a.source] = {};
+        this.mapping.authorities[a.source][String(a.value).toLowerCase().trim()] = entry;
+        this.closeAuth();
+        this.refresh();
+      },
+      clearAuth: function (source, value) {
+        var t = this.mapping.authorities[source];
+        if (t) delete t[String(value).toLowerCase().trim()];
+        this.refresh();
+      },
+
       toggleMerged: function () {
         this.merged = !this.merged;
         try { localStorage.setItem("avefi-map-merged", this.merged ? "1" : "0"); } catch (e) {}
@@ -325,6 +400,15 @@
         return t ? t.path : key;
       },
       /* Autofix aus der statischen Prüfung: fehlenden Konverter einsetzen. */
+      gotoColumn: function (col) {
+        if (!col) return;
+        this.open[col] = true;
+        var self = this;
+        this.$nextTick(function () {
+          var row = document.querySelector('tr[data-col="' + (window.CSS && CSS.escape ? CSS.escape(col) : col) + '"]');
+          if (row && row.scrollIntoView) row.scrollIntoView({ block: "center", behavior: "smooth" });
+        });
+      },
       applyFix: function (check) {
         if (!check.fix || !check.column) return;
         var s = this.spec(check.column);
@@ -339,7 +423,7 @@
           if (t && t.enum && t.enum.length) step._enum = t.enum;
         }
         (s.targets[0] ? (s.targets[0].post = s.targets[0].post || []) : s.pre).push(step);
-        this.open[check.column] = true;
+        this.gotoColumn(check.column);   // ohne Sprung sah man nicht, was sich geändert hat
         this.refresh();
       },
       enumFor: function (col, i) {
@@ -414,6 +498,7 @@
           if (!res.ok) { self.error = res.error || "Vorschau fehlgeschlagen."; return; }
           self.error = null;
           self.previewCols = res.columns || {};
+          self.canonical = res.canonical || null;
           self.evaluatedRows = res.evaluatedRows || 0;
           self.checks = res.checks || [];
           self.schemaIssues = res.schema || [];

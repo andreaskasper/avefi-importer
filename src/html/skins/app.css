@@ -560,3 +560,40 @@ ul.tight li{margin-bottom:3px;font-size:13px}
 
 /* Die aufgeklappte Verzweigung nutzt die volle Breite und rollt nicht mit. */
 .chainrow td{overflow:visible}
+
+/* ------- Hinweisleiste: blockierendes und Hinweise an einem Ort ------- */
+.checkbar{border:1px solid var(--border);border-radius:12px;background:var(--surface);
+  padding:12px 14px;margin-bottom:14px}
+.checkbar-h{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.checklist{list-style:none;margin:0;padding:0}
+.checklist li{display:flex;gap:8px;align-items:baseline;padding:5px 0;font-size:13px;
+  border-top:1px solid var(--border)}
+.checklist li:first-child{border-top:0}
+.checklist li > i{flex:none;width:15px}
+.chk-nogo > i{color:var(--danger)}
+.chk-warn > i{color:var(--warn)}
+.chk-col{flex:none;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chk-msg{flex:1 1 auto;min-width:0}
+.checklist .btn{flex:none}
+
+/* ------- Normdaten zuordnen ------- */
+.authpanel{margin-top:9px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);padding:9px 11px}
+.authpanel-h{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:7px;display:flex;gap:6px;align-items:baseline}
+.authrow{display:flex;gap:8px;align-items:center;padding:4px 0;font-size:12.5px;border-top:1px dashed var(--border)}
+.authrow:first-of-type{border-top:0}
+.authval{flex:0 1 190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.authstate{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st-bestaetigt{color:var(--ok);font-weight:600}
+.st-verworfen{color:var(--muted)}
+.st-offen{color:var(--faint)}
+.candrow{display:flex;gap:12px;align-items:center;justify-content:space-between;
+  padding:8px 0;border-bottom:1px solid var(--border)}
+.candrow:last-child{border-bottom:0}
+.idchip{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--muted);
+  background:var(--surface-2);border:1px solid var(--border);border-radius:5px;padding:0 5px;margin-left:5px}
+
+/* ------- Erzeugter Datensatz als JSON ------- */
+.jsonbox{margin-top:10px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2)}
+.jsonbox summary{cursor:pointer;padding:8px 11px;font-size:12.5px;font-weight:600}
+.jsonbox pre{margin:0;padding:0 11px 11px;max-height:340px;overflow:auto;font-size:11.5px;line-height:1.45}
+.prog.warnbar i{background:var(--warn)}

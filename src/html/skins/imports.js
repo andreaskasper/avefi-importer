@@ -49,6 +49,54 @@
       function (msg) { if (row) row.style.opacity = ""; notify(msg); });
   }
 
+
+  /* ---- Selbstaktualisierung, solange etwas in Arbeit ist ----
+   * Vorher blieb „In Konvertierung" stehen, bis jemand die Seite neu lud — man
+   * wusste nicht, ob der Worker noch arbeitet oder längst fertig ist.
+   */
+  (function () {
+    var timer = null, misses = 0;
+
+    function apply(data) {
+      var changed = false;
+      Object.keys(data.imports || {}).forEach(function (id) {
+        var row = rowOf(id);
+        if (!row) return;
+        var info = data.imports[id];
+        var badge = row.querySelector(".badge");
+        if (badge && badge.textContent.trim() !== info.label) {
+          badge.className = "badge " + info.badge;
+          badge.innerHTML = '<span class="bd"></span>' + info.label;
+          changed = true;
+        }
+        var recs = row.querySelector("td.tnum");
+        if (recs && info.records > 0 && recs.textContent.trim() !== String(info.records)) {
+          recs.textContent = info.records;
+        }
+      });
+      // Ein abgeschlossener Lauf ändert auch die Knöpfe in der Zeile — dafür reicht
+      // die Teilaktualisierung nicht, also einmal sauber neu laden.
+      if (changed && !data.busy) window.location.reload();
+    }
+
+    function poll() {
+      fetch("/imports/status", { credentials: "same-origin" })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (!res || !res.ok) return stop();
+          apply(res);
+          if (!res.busy && ++misses > 2) stop();
+        })
+        .catch(stop);
+    }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+
+    if (document.querySelector("tr[data-import-id]")) {
+      timer = setInterval(poll, 5000);
+      document.addEventListener("visibilitychange", function () { if (document.hidden) stop(); });
+    }
+  })();
+
   document.addEventListener("click", function (e) {
     var el = e.target.closest ? e.target.closest("[data-action]") : null;
     if (!el) return;
