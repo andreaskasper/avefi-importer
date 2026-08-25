@@ -1,3 +1,7 @@
+> **Nicht Teil des Auftrags.** Die PID-Vergabe ist im Werkvertrag ausdruecklich
+> ausgenommen („direkte Speicherung oder Veroeffentlichung der Daten in AVefi").
+> Dieses Kapitel beschreibt einen Entwurf, keine vorhandene Funktion.
+
 # 6 · PID-Registrierung
 
 > **Status: vorbereitet, aber nicht freigeschaltet.** Die eigentliche PID-Vergabe
@@ -64,7 +68,7 @@ Vorgesehene Bausteine:
   Methode, die noch nicht implementiert ist und ohne Konfiguration `null` liefert.
 - **`bots/register_pid`** — Worker-Gerüst, das nichts tut, solange `PidService`
   deaktiviert ist.
-- **PID_\*-Umgebungsvariablen** sind in `src/docker-compose.yml` auskommentiert
+- **PID_\*-Umgebungsvariablen** gibt es nicht; die Datei `src/docker-compose.yml` existiert nicht mehr
   vorbereitet.
 - **Editor-Button „🔗 PID registrieren"** — zeigt aktuell nur ein Hinweis-Modal
   („Diese Funktion ist noch nicht freigeschaltet …"); es wird nichts registriert.

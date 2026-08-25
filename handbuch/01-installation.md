@@ -1,55 +1,30 @@
 # 1 · Installation & Start
 
-Der AVefi Importer läuft als Docker-Compose-Stack (Web + PostgreSQL + Adminer).
-Die Anwendung liegt im Verzeichnis `src/`.
+Dieses Kapitel beschrieb die PHP-Fassung und ist überholt. Es nannte drei
+Container statt fünf, rief `php app/bot.php -t seed` auf und verwies auf
+Port 8080.
 
-## Voraussetzungen
+Für die aktuelle Fassung gilt **[`src/docs/deployment.md`](../src/docs/deployment.md)**.
+Dort stehen Installation, Initialisierung, Start, Bau, Tests, alle
+Umgebungsvariablen und die fünf Container (`web`, `worker`, `efi-conv`, `db`,
+`adminer`).
 
-- Docker + Docker Compose
-
-## Lokal starten
+Kurzfassung für Ungeduldige:
 
 ```bash
 git clone https://github.com/andreaskasper/avefi-importer.git
 cd avefi-importer/src
-
-docker compose up -d --build            # web + PostgreSQL + Adminer
-docker compose exec web php app/bot.php -t seed   # Admin-Konto anlegen
-```
-
-Danach:
-
-| Dienst   | Adresse                | Hinweis |
-|----------|------------------------|---------|
-| App      | http://localhost:8080  | Login `admin@av-efi.net` / `changeme` |
-| Adminer  | http://localhost:8081  | PostgreSQL-Oberfläche, Server `db` |
-
-> ⚠️ **`changeme` vor dem ersten Login ändern.** Entweder vorab per Umgebungsvariablen
-> `SEED_EMAIL` / `SEED_PASSWORD` (z. B. in `.env`) setzen, oder nach dem Login unter
-> **Mein Profil** (Avatar-Menü oben rechts).
-
-## Server-Deployment (hinter Traefik)
-
-Für den Serverbetrieb gibt es `src/docker-compose.dev.yml` (Routing über die Domain
-`avefiimporter.goo1.de` bzw. später `import.av-efi.net`, HTTPS über einen bestehenden
-Traefik). Diese Datei ist bewusst **nicht** im Repository (Deployment-Spezifika).
-
-```bash
 docker compose -f docker-compose.dev.yml up -d --build
-docker compose -f docker-compose.dev.yml exec web php app/bot.php -t seed
+docker compose -f docker-compose.dev.yml exec web npm run migrate
+docker compose -f docker-compose.dev.yml exec web npm run seed
 ```
 
-## Konfiguration
+`seed` legt Institution und Verwaltungskonto an und gibt das Passwort einmalig
+aus. Mit `SEED_PASSWORD` lässt es sich vorgeben.
 
-Alles über Umgebungsvariablen (siehe `src/docker-compose.yml`): `DB_*`,
-`APP_ENV` (`dev` zeigt Fehler an), `APP_HOST`, `FILES_PATH` (Upload-Ablage,
-Standard `/mnt/files`), `SEED_EMAIL` / `SEED_PASSWORD`.
+Die Compose-Datei liegt bewusst nicht im Repository — sie enthält Domain,
+Traefik-Labels und Zugangsdaten. `src/.env.example` zeigt, welche Variablen
+gesetzt sein müssen.
 
-## Häufige Stolpersteine
-
-- **Upload schlägt fehl** („Verzeichnis konnte nicht angelegt werden"): Rechte am
-  Volume korrigieren — `docker compose exec web chown -R www-data:www-data /mnt/files`.
-- **Login geht nicht direkt nach `up`**: Der Admin existiert erst nach dem `seed`-Lauf.
-- **`relation "…" does not exist`** (z. B. `worker_jobs`): Das DB-Volume ist älter als eine
-  Schema-Erweiterung. Verlustfrei nachziehen: `docker compose exec web php app/bot.php -t migrate`.
-- Ausführliche Fehlerbehebung: [README → Troubleshooting](../README.md#-troubleshooting).
+Die Kapitel 2 bis 5 und 7 beschreiben die Bedienung, und die hat sich mit der
+Neufassung nicht geändert.

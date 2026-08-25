@@ -9,8 +9,8 @@ gespeichert. Beim naechsten Mal erkennt der Importer dieselbe Kopfzeile wieder
 und schlaegt das Profil vor. Geprueft wird mit dem echten `efi-conv` in einem
 eigenen Container, nicht mit einer nachgebauten Pruefung.
 
-Diese Fassung loest die PHP-Fassung ab (im Repository unter
-`avefi-importer-phpversion/`). Stack: Nuxt 4.5, Vue 3.5, TypeScript, Nitro,
+Diese Fassung loest die PHP-Fassung ab; deren letzter Stand liegt im Tag
+`php-final`. Stack: Nuxt 4.5, Vue 3.5, TypeScript, Nitro,
 PostgreSQL 16, Docker.
 
 **Die Anwendung liegt in [`src/`](src/). Alle Befehle laufen dort.**
@@ -276,17 +276,18 @@ samples/                 Beispieldateien (CSV, JSON, MARC-XML, EAD, AVefi nativ)
 src/                     die Anwendung  (siehe src/docs/architecture.md)
 ```
 
-Im Wurzelverzeichnis liegen ausserdem noch `codeception.yml`, `codecept.phar`
-und `codecept_test/`. Sie gehoeren zur PHP-Fassung und werden von dieser
-Anwendung nicht benutzt; ihre Tests sind durch `src/tests/` abgeloest.
+`handbuch/` beschreibt noch die PHP-Fassung: Es nennt drei Container statt
+fuenf, kennt weder den Worker noch den efi-conv-Dienst, nennt XLSX nicht unter
+den Formaten und fuehrt eine PID-Registrierung auf, die es nicht gibt. Kapitel 1
+(Installation) ist durchgehend ueberholt — es ruft `php app/bot.php` auf und
+nennt Port 8080. Fuer Betrieb und Technik gelten die Dateien unter `src/docs/`;
+die Kapitel 2 bis 5 und 7 beschreiben Ablaeufe, die sich in der Bedienung nicht
+geaendert haben.
 
-Auch `handbuch/` beschreibt noch die PHP-Fassung: Es nennt drei Container statt
-fuenf, kennt weder den Worker noch den efi-conv-Dienst und fuehrt eine
-PID-Registrierung auf, die es nicht gibt. Fuer die hier beschriebene Fassung
-gelten die Dateien unter `src/docs/`.
-
-Die PHP-Fassung selbst liegt unter `avefi-importer-phpversion/` und wird nicht
-mehr weiterentwickelt.
+Die PHP-Fassung ist im Tag `php-final` erhalten und wird nicht mehr
+weiterentwickelt. Ein `git switch -c php php-final` holt sie zurueck; die
+Startkonfiguration fehlt dabei, weil `docker-compose.dev.yml` nie im Repository
+lag.
 
 ## Lizenz
 

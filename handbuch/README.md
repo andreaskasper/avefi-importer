@@ -1,6 +1,13 @@
 # AVefi Importer — Handbuch
 
-Anleitungen für Betrieb und Nutzung des AVefi Importers.
+Anleitungen für die Nutzung des AVefi Importers.
+
+> **Stand:** Diese Handreichung stammt aus der PHP-Fassung. Die Bedienung hat
+> sich mit der Neufassung nicht geändert, die technischen Angaben schon.
+> **Kapitel 1 (Installation) ist überholt** — für Installation, Start, Bau,
+> Tests und Umgebungsvariablen gilt [`src/docs/deployment.md`](../src/docs/deployment.md).
+> Kapitel 6 beschreibt eine PID-Registrierung, die es nicht gibt und die nicht
+> zum Auftragsumfang gehört.
 
 ## Inhalt
 
@@ -14,10 +21,15 @@ Anleitungen für Betrieb und Nutzung des AVefi Importers.
 
 ## Kurzüberblick
 
-Der AVefi Importer nimmt Metadaten-Dateien entgegen (CSV, TSV, XML, EAD, MARC-XML, JSON),
-erkennt das Format, konvertiert die Datensätze ins AVefi-Schema (Werk → Manifestation →
-Exemplar), prüft sie gegen ein JSON-Schema und stellt einen Editor bereit. Anschließend
-kann für gültige Datensätze ein persistenter Identifier (PID) vergeben werden.
+Der AVefi Importer nimmt Metadaten-Dateien entgegen (**CSV, TSV, XLSX**, dazu XML,
+EAD, MARC-XML, JSON), erkennt das Format, konvertiert die Datensätze ins
+AVefi-Schema (Werk → Manifestation → Exemplar) und prüft sie mit dem echten
+`efi-conv` in einem eigenen Dienst — nicht mit einer nachgebauten Prüfung.
+Tabellen laufen dabei über ein **Mappingprofil**, das im Editor entsteht und
+beim nächsten Mal anhand der Kopfzeile wiedererkannt wird.
+
+Vertraglich geschuldet sind CSV und XLSX; die übrigen Formate sind Zugabe.
+`.xls` und `.ods` werden nicht gelesen.
 
 > Technische Architektur (Pipeline, Converter, Speicherung): siehe
 > [`src/docs/architecture.md`](../src/docs/architecture.md).

@@ -7,11 +7,17 @@ Auf der Startseite (Import-Übersicht):
 - **Drag & Drop** oder **„Dateien auswählen"** — mehrere Dateien gleichzeitig, max. 200 MB.
 - Der Fortschritt wird pro Datei angezeigt; danach erscheint der Import in der Liste.
 
-Unterstützte Formate: **CSV · TSV · JSON · MARC-XML · EAD · (weitere XML → Review)**.
+Unterstützte Formate: **CSV · TSV · XLSX · JSON · MARC-XML · EAD ·
+(weitere XML → Formatprüfung)**. Vertraglich geschuldet sind CSV und XLSX, der
+Rest ist Zugabe.
+
+**`.xls` und `.ods` werden nicht gelesen.** Die Datei in Excel oder LibreOffice
+unter *Speichern unter → Excel-Arbeitsmappe (.xlsx)* ablegen und diese hochladen;
+der Importer weist die alten Formate mit genau diesem Hinweis ab.
 
 Beispieldateien zum Ausprobieren liegen im Repository unter
-[`samples/`](../samples/) (`films.csv`, `films.tsv`, `films.json`, `films.marcxml`,
-`films.ead`, `avefi-native.json`).
+[`samples/`](../samples/) (`films.csv`, `films.tsv`, `films.xlsx`, `films.json`,
+`films.marcxml`, `films.ead`, `avefi-native.json`).
 
 ## Import via URL
 
@@ -31,8 +37,13 @@ pollt und die Schritte `download` → `detect` → `convert` abarbeitet.
 Zum manuellen Anstoßen (Debug):
 
 ```bash
-docker compose exec web php app/bot.php -t detect    # detect-Jobs einmal abarbeiten
-docker compose exec web php app/bot.php -t convert   # convert-Jobs einmal abarbeiten
+# Der Worker laeuft als eigener Container und arbeitet die Warteschlange von
+# selbst ab. Nachsehen, was er tut:
+docker logs avefi_worker --tail 40
+
+# Nach einer Codeaenderung am Worker: neu starten (er beendet sich sonst erst
+# nach WORKER_MAX_UPTIME von selbst).
+docker restart avefi_worker
 ```
 
 Ablauf je Import:
@@ -57,7 +68,11 @@ flowchart TD
     DET -->|"JSON/XML mit Syntaxfehler"| ERR["Status: Fehler"]
     DET -->|"gültig, aber unbekanntes Format"| REV["Format-Review"]
     DET -->|"bereits natives AVefi"| PASS["Passthrough (Original)"]
-    DET -->|"CSV/TSV/JSON/MARC-XML/EAD"| CONV["convert (AvefiMapper)"]
+    DET -->|"CSV/TSV/XLSX"| MAP{"Kopfzeile bekannt?"}
+    MAP -->|"nein"| ZUO["Zuordnung nötig:<br/>Mapping-Editor"]
+    MAP -->|"ja"| CONV["convert"]
+    ZUO --> CONV
+    DET -->|"JSON/MARC-XML/EAD"| CONV
     PASS --> OUT["avefi.v1.json + Prüfbericht"]
     CONV --> OUT
     ERR --> DETAILS["⚠ Details-Seite:<br/>Zeile · Position · Erklärung"]
@@ -70,13 +85,23 @@ Das erkannte Format/Schema erscheint als **Badge** in der Import-Übersicht — 
 als nur „JSON" (z. B. *AVefi (nativ)*, *Objektliste (JSON)*, *MARC-in-JSON*,
 *MARC-XML*, *EAD*, *JSON (fehlerhaft)*).
 
-- **CSV/TSV/JSON** mit erkennbarer Titel-Spalte → generischer Converter (deutsche und
-  englische Spaltennamen werden heuristisch zugeordnet: Titel, Jahr, Regie, Träger,
-  Signatur, Institution, …).
+- **CSV, TSV und XLSX** laufen über den **Kopfzeilen-Hash**: Der Importer bildet
+  eine Prüfsumme über die normalisierten, sortierten Spaltennamen und sucht das
+  dazu gespeicherte Mappingprofil. Gibt es keines, pausiert der Import mit
+  *Zuordnung nötig* und der Mapping-Editor öffnet sich über **Zuordnen**. Welche
+  Spalte welches AVefi-Feld füllt, entscheidet also ein Mensch, nicht eine
+  Heuristik — die schlägt nur vor. Siehe [Kapitel 7](07-zuordnungen.md).
+- **Bei Arbeitsmappen** gilt als Datenblatt, was mindestens zwei Spalten und eine
+  Datenzeile hat; Deckblätter fallen heraus. Bleibt genau ein Blatt übrig, wird es
+  ohne Rückfrage genommen, bei mehreren erscheint die Blattauswahl. Jedes gewählte
+  Blatt wird ein eigener Import.
 - **Bereits natives AVefi-JSON** wird erkannt und **unverändert durchgereicht**
   (kein erneutes Mapping).
-- **MARC-XML** und **EAD** werden am Wurzelelement/Namespace erkannt und mit einem
-  spezifischen Converter verarbeitet.
+- **MARC-XML** und **EAD** werden am Wurzelelement und Namensraum erkannt und mit
+  einem eigenen Konverter verarbeitet. Sie brauchen kein Mappingprofil, weil ihre
+  Struktur die Bedeutung mitbringt. Die Sprachangabe wird dabei nicht übernommen —
+  dafür gibt es keine gesicherte Abbildung auf das AVefi-Vokabular, und geraten
+  wird nicht. Der Prüfbericht weist es als Hinweis aus.
 - **Syntaktisch kaputtes JSON/XML** → Status **Fehler** mit
   [Fehlerdetails](03-bearbeiten-und-validieren.md#fehlerdetails-verarbeitungsfehler)
   (Zeile/Position, Code-Ausschnitt, Lösungshinweis).
