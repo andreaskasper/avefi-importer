@@ -1,0 +1,34 @@
+# AVefi Importer — Nuxt-4-Anwendung.
+#
+# Zwei Betriebsarten:
+#   Entwicklung  npm run dev     Code gemountet, Aenderungen sofort wirksam
+#   Auslieferung npm run build   erzeugt .output, Start mit npm start
+#
+# Der Vertrag verlangt, dass die Anwendung gebaut, gestartet und getestet werden
+# kann — deshalb ist der Build-Pfad hier enthalten, auch wenn der Testserver im
+# Entwicklungsmodus laeuft.
+
+FROM node:24-alpine AS base
+WORKDIR /app
+RUN apk add --no-cache tini curl
+ENV NODE_ENV=development
+COPY package.json package-lock.json .npmrc ./
+RUN npm ci --ignore-scripts && npm rebuild esbuild
+COPY . .
+EXPOSE 3000
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["npm", "run", "dev"]
+
+# --- Auslieferungsstufe -------------------------------------------------------
+FROM base AS build
+ENV NODE_ENV=production
+RUN npm run build
+
+FROM node:24-alpine AS production
+WORKDIR /app
+RUN apk add --no-cache tini
+ENV NODE_ENV=production
+COPY --from=build /app/.output /app/.output
+EXPOSE 3000
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["node", ".output/server/index.mjs"]

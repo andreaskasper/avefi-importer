@@ -144,6 +144,11 @@ ALTER TABLE imports ADD COLUMN IF NOT EXISTS header_hash        TEXT;
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS mapping_profile_id INTEGER REFERENCES mapping_profiles(id) ON DELETE SET NULL;
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS mapping_version    INTEGER;
 
+-- Bestandteile des Formathinweises (Format, Blattname, Spalten- bzw. Blattzahl).
+-- Der Satz wird erst in der Oberfläche gebildet, damit er übersetzbar ist;
+-- detected_format bleibt als fertiger deutscher Text der Rückfall für Altbestand.
+ALTER TABLE imports ADD COLUMN IF NOT EXISTS format_detail      JSONB;
+
 CREATE INDEX IF NOT EXISTS idx_mapping_profiles_hash ON mapping_profiles(header_hash);
 CREATE INDEX IF NOT EXISTS idx_imports_header_hash   ON imports(header_hash);
 

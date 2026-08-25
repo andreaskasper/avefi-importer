@@ -1,0 +1,46 @@
+{
+  "name": "avefi-importer",
+  "version": "2.0.0",
+  "description": "AVefi Importer — Filmmetadaten aus CSV/XLSX ins AVefi-Schema",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "dev": "nuxt dev --host 0.0.0.0 --port 3000",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "start": "node .output/server/index.mjs",
+    "worker": "tsx server/worker/main.ts",
+    "worker:dev": "tsx watch server/worker/main.ts",
+    "migrate": "tsx server/db/migrate.ts",
+    "seed": "tsx server/db/seed.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "nuxt typecheck"
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^2.1.0",
+    "@nuxtjs/i18n": "^10.6.0",
+    "bcryptjs": "^3.0.3",
+    "csv-parse": "^7.0.2",
+    "exceljs": "^4.4.0",
+    "fast-xml-parser": "^5.11.0",
+    "nuxt": "^4.5.2",
+    "postgres": "^3.4.9",
+    "tsx": "^4.23.12",
+    "vue": "^3.5.41",
+    "vue-router": "^5.2.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^26.3.0",
+    "@vue/test-utils": "^2.4.11",
+    "jsdom": "^30.0.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11"
+  }
+}

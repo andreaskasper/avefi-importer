@@ -1,0 +1,329 @@
+{
+  "imports": {
+    "format": {
+      "plain": "{format}",
+      "columns": "{format} · {count} Spalte | {format} · {count} Spalten",
+      "sheet": "{format} · Blatt „{sheet}“",
+      "sheetColumns": "{format} · Blatt „{sheet}“ · {count} Spalte | {format} · Blatt „{sheet}“ · {count} Spalten",
+      "sheets": "{format} · {count} Blatt | {format} · {count} Blätter"
+    },
+    "pageTitle": "Importe",
+    "heading": "Importe",
+    "kpi": {
+      "records": "Datensätze konvertiert",
+      "awaiting": "Wartet auf Zuordnung"
+    },
+    "upload": {
+      "legend": "Datei hochladen",
+      "dropHeading": "Dateien hier ablegen oder auswählen",
+      "dropHint": "Mehrere Dateien möglich · max. {max} MB · das Format wird automatisch erkannt",
+      "pick": "Dateien auswählen",
+      "fileLabel": "Metadaten-Dateien auswählen",
+      "sheetHint": "Enthält eine Arbeitsmappe mehrere Tabellenblätter, wird nach dem Hochladen gefragt, welches verarbeitet werden soll.",
+      "listLabel": "Fortschritt der Uploads",
+      "progress": "{percent} %",
+      "done": "Hochgeladen",
+      "failed": "Nicht hochgeladen",
+      "started": "{name}: Upload gestartet.",
+      "finished": "{name}: hochgeladen, die Verarbeitung läuft im Hintergrund.",
+      "rejected": "{name}: {reason}",
+      "clear": "Liste leeren"
+    },
+    "url": {
+      "label": "oder per Adresse (URL):",
+      "field": "Adresse der Metadaten-Datei",
+      "placeholder": "https://…/metadaten.csv",
+      "submit": "Von Adresse laden",
+      "submitting": "Wird übernommen …",
+      "added": "Der Import wurde angelegt. Die Datei wird im Hintergrund geladen und verarbeitet."
+    },
+    "table": {
+      "caption": "Importe der Institution mit Format, Fortschritt, Verarbeitungsstand und Aktionen",
+      "file": "Datei",
+      "format": "Format",
+      "upload": "Upload",
+      "processing": "Verarbeitung",
+      "records": "Datensätze",
+      "created": "Hochgeladen",
+      "actions": "Aktion",
+      "progressLabel": "Upload-Fortschritt {percent} Prozent",
+      "none": "–",
+      "megabytes": "{size} MB",
+      "updated": "{count} Import wurde aktualisiert. | {count} Importe wurden aktualisiert.",
+      "empty": {
+        "heading": "Noch keine Importe",
+        "text": "Lade oben eine Metadaten-Datei hoch, um zu beginnen."
+      },
+      "kilobytes": "{size} KB"
+    },
+    "status": {
+      "uploading": "Lädt hoch",
+      "queued": "Wartend",
+      "converting": "In Konvertierung",
+      "awaiting_format_review": "Zuordnung nötig",
+      "awaiting_sheet_choice": "Tabellenblatt wählen",
+      "converted": "Konvertiert",
+      "error": "Fehler",
+      "unknown": "Unbekannt"
+    },
+    "action": {
+      "details": "Details",
+      "chooseSheet": "Blatt wählen",
+      "map": "Zuordnen",
+      "edit": "Bearbeiten",
+      "overview": "Zur Übersicht",
+      "more": "Weitere Aktionen für {name}",
+      "menuLabel": "Aktionen für {name}"
+    },
+    "menu": {
+      "mapping": "Zuordnung ansehen",
+      "report": "Prüfbericht",
+      "reportIssues": "· Beanstandungen",
+      "original": "Original herunterladen",
+      "avefi": "AVefi-JSON herunterladen",
+      "avefiDraft": "Zwischenstand herunterladen (nicht validiert)",
+      "reconvert": "Neu konvertieren",
+      "delete": "Löschen",
+      "detail": "Details ansehen"
+    },
+    "confirm": {
+      "cancel": "Abbrechen",
+      "delete": {
+        "title": "Import löschen",
+        "text": "Diesen Import samt hochgeladener Datei und allen daraus erzeugten Datensätzen löschen? Das lässt sich nicht rückgängig machen.",
+        "ok": "Löschen"
+      },
+      "reconvert": {
+        "title": "Neu konvertieren",
+        "plain": "Der Import wird mit der hinterlegten Zuordnung erneut aus der Originaldatei erzeugt.",
+        "edited": "Dieser Import enthält {count} von Hand bearbeiteten Datensatz. Beim Neukonvertieren wird er durch den Wert aus der Originaldatei ersetzt; die Änderung geht verloren. | Dieser Import enthält {count} von Hand bearbeitete Datensätze. Beim Neukonvertieren werden sie durch die Werte aus der Originaldatei ersetzt; diese Änderungen gehen verloren.",
+        "ok": "Neu konvertieren",
+        "okEdited": "Trotzdem neu konvertieren"
+      }
+    },
+    "toast": {
+      "deleted": "Der Import wurde gelöscht.",
+      "reconverting": "Der Import wird neu konvertiert."
+    },
+    "detail": {
+      "crumb": "Details",
+      "heading": "Import",
+      "file": "Datei",
+      "size": "Größe",
+      "format": "Erkanntes Format",
+      "sheet": "Tabellenblatt",
+      "created": "Hochgeladen",
+      "recordCount": "Datensätze",
+      "rowErrors": "Zeilen mit Fehler",
+      "meta": "Eckdaten",
+      "downloads": "Herunterladen",
+      "next": "Was jetzt zu tun ist",
+      "openReport": "Prüfbericht öffnen",
+      "openRecords": "Datensätze bearbeiten",
+      "openMapping": "Zuordnung bearbeiten",
+      "openSheets": "Tabellenblatt wählen",
+      "draftWarning": "Dieser Zwischenstand ist nicht gegen das AVefi-Schema geprüft. Er dient allein der Fehlersuche und darf nicht weitergegeben werden.",
+      "workerMessage": "Meldung der Verarbeitung",
+      "stage": "Fehlgeschlagen bei: {stage}",
+      "stageUnknown": "Die Verarbeitung ist fehlgeschlagen.",
+      "attempts": "Versuche: {count}",
+      "diagnostics": "Zeilengenaue Diagnose",
+      "noDiagnostics": {
+        "heading": "Keine zeilengenauen Details vorhanden",
+        "text": "Zu dieser Datei liegt keine weitere Diagnose vor. Die Meldung der Verarbeitung oben ist alles, was bekannt ist."
+      },
+      "snippet": "Ausschnitt der Fehlerstelle",
+      "position": "Zeile {line}",
+      "positionCol": "Zeile {line}, Spalte {column}",
+      "hint": "Lösung",
+      "reupload": "Berichtigte Datei hochladen",
+      "reuploadHint": "Die Datei an den markierten Stellen berichtigen und hier erneut hochladen. Der fehlgeschlagene Import bleibt zum Nachsehen bestehen, bis du ihn löschst."
+    },
+    "stage": {
+      "worker/download": "Herunterladen der Datei",
+      "worker/detect": "Formaterkennung",
+      "worker/convert": "Konvertierung",
+      "download": "Herunterladen der Datei",
+      "detect": "Formaterkennung",
+      "convert": "Konvertierung"
+    },
+    "state": {
+      "uploading": {
+        "title": "Die Datei wird noch übertragen.",
+        "text": "Sobald die Übertragung fertig ist, geht der Import von selbst weiter. Diese Seite aktualisiert sich."
+      },
+      "queued": {
+        "title": "Der Import wartet auf die Verarbeitung.",
+        "text": "Ein Hintergrundprozess holt ihn ab, erkennt das Format und startet die Konvertierung. Du musst nichts tun."
+      },
+      "converting": {
+        "title": "Der Import wird gerade konvertiert.",
+        "text": "Das kann bei großen Dateien einige Minuten dauern. Diese Seite aktualisiert sich von selbst."
+      },
+      "awaiting_format_review": {
+        "titleTable": "Für diese Kopfzeile gibt es noch keine Zuordnung.",
+        "textTable": "Die hochgeladene Tabelle reicht dafür aus — du musst nichts erneut hochladen. Lege die Zuordnung einmal an; alle weiteren Dateien mit derselben Kopfzeile laufen danach ohne Rückfrage durch.",
+        "titleOther": "Das Format dieser Datei ist noch nicht bekannt.",
+        "textOther": "Die Datei ist lesbar, aber ihr Aufbau ist dem Importer neu. Eine Person mit Administrationsrechten ordnet ihr einen Konverter zu; danach läuft der Import weiter. Die Datei bleibt so lange unverändert liegen."
+      },
+      "awaiting_sheet_choice": {
+        "title": "Die Arbeitsmappe enthält mehrere Tabellenblätter.",
+        "text": "Wähle aus, welche Blätter verarbeitet werden sollen. Jedes gewählte Blatt wird ein eigener Import mit eigener Zuordnung."
+      },
+      "converted": {
+        "title": "Der Import ist konvertiert.",
+        "text": "Die Datensätze lassen sich bearbeiten, der Prüfbericht zeigt Beanstandungen, und die AVefi-JSON steht zum Herunterladen bereit."
+      },
+      "convertedIssues": {
+        "title": "Der Import ist konvertiert, aber es gibt Beanstandungen.",
+        "text": "{errors} Fehler und {warnings} Warnungen stehen im Prüfbericht — mit Zeile beziehungsweise Datensatz und betroffenem Feld."
+      },
+      "error": {
+        "title": "Die Verarbeitung ist fehlgeschlagen.",
+        "text": "Unten steht, woran es lag und was sich dagegen tun lässt."
+      }
+    },
+    "report": {
+      "crumb": "Prüfbericht",
+      "heading": "Prüfbericht",
+      "empty": {
+        "heading": "Noch kein Bericht",
+        "text": "Dieser Import wurde noch nicht verarbeitet. Der Bericht entsteht bei der Konvertierung."
+      },
+      "allGood": "Alles in Ordnung — {count} AVefi-Datensatz entspricht dem AVefi-Schema. | Alles in Ordnung — {count} AVefi-Datensätze entsprechen dem AVefi-Schema.",
+      "hasIssues": "Es gibt Beanstandungen: {invalid} von {total} geprüften AVefi-Datensätzen entsprechen noch nicht dem Schema.",
+      "hasIssuesNoCheck": "Es gibt Beanstandungen. Die Einzelheiten stehen unten.",
+      "kpi": {
+        "records": "Datensätze (Werke)",
+        "avefi": "AVefi-Datensätze geprüft",
+        "valid": "schemagültig",
+        "invalid": "mit Beanstandung"
+      },
+      "issues": {
+        "heading": "Fehler und Warnungen",
+        "lead": "Alle Beanstandungen dieses Imports an einer Stelle — Parsefehler, Zuordnungshinweise und Schemaprüfung.",
+        "none": "Keine Fehler und keine Warnungen.",
+        "filterLabel": "Nach Schweregrad filtern",
+        "all": "Alle ({count})",
+        "errors": "Fehler ({count})",
+        "warnings": "Warnungen ({count})",
+        "infos": "Hinweise ({count})",
+        "shown": "{shown} von {total} Meldungen angezeigt.",
+        "more": "Weitere {count} Meldungen anzeigen",
+        "capped": "Die Verarbeitung hat die Aufzeichnung nach dieser Menge beendet — die Datei kann weitere gleichartige Stellen enthalten."
+      },
+      "mapping": {
+        "heading": "Zuordnung",
+        "profile": "Profil",
+        "version": "Fassung {version}",
+        "grouping": "Werkbildung",
+        "rows": "Zeilen und Werke",
+        "rowsValue": "{rows} Zeilen → {works} Werke"
+      },
+      "meta": {
+        "heading": "Angaben zum Lauf",
+        "converter": "Konverter",
+        "schemaVersion": "AVefi-Schemaversion",
+        "efiConvVersion": "efi-conv",
+        "startedAt": "Beginn",
+        "finishedAt": "Ende",
+        "unknown": "unbekannt"
+      },
+      "coverage": {
+        "heading": "Belegung der Kernfelder",
+        "lead": "Titel, Regie, Produktionsdatum und Produktionsland sind die Angaben, über die sich ein Werk über Häuser hinweg wiedererkennen lässt. Datensätze mit allen vieren eignen sich für einen Abgleich.",
+        "value": "{filled} von {total} · {percent} %",
+        "bar": "{field} in {percent} Prozent der Datensätze belegt"
+      }
+    },
+    "issue": {
+      "severity": {
+        "error": "Fehler",
+        "warning": "Warnung",
+        "info": "Hinweis"
+      },
+      "row": "Zeile {row}",
+      "record": "Datensatz {record}",
+      "sourceField": "Quellfeld „{field}“",
+      "targetField": "Schemafeld {field}",
+      "value": "Wert: {value}",
+      "code": "Kennung: {code}",
+      "fix": "Vorschlag: Konverter „{op}“ einsetzen. Anwenden musst du ihn selbst — der Importer verändert keine Werte von sich aus.",
+      "noPosition": "ohne Zeilenbezug"
+    },
+    "sheets": {
+      "crumb": "Tabellenblätter",
+      "heading": "Tabellenblatt wählen",
+      "lead": "Die Datei enthält mehrere Tabellenblätter. Wähle aus, welche verarbeitet werden sollen — jedes gewählte Blatt wird ein eigener Import mit eigener Zuordnung. Deckblätter, Legenden und Auswertungen lässt du einfach weg.",
+      "caption": "Tabellenblätter der Arbeitsmappe mit Größe und Einschätzung",
+      "select": "Auswahl",
+      "name": "Tabellenblatt",
+      "rows": "Zeilen",
+      "cols": "Spalten",
+      "assessment": "Einschätzung",
+      "usable": "sieht nach einer Tabelle aus",
+      "unusable": "zu wenig Inhalt für eine Tabelle — vermutlich Deckblatt oder Legende",
+      "selectAll": "Alle brauchbaren auswählen",
+      "selectNone": "Auswahl aufheben",
+      "submit": "Ausgewählte Blätter verarbeiten",
+      "submitting": "Wird übernommen …",
+      "selected": "{count} Blatt ausgewählt | {count} Blätter ausgewählt",
+      "started": "{count} Import wurde angelegt. | {count} Importe wurden angelegt.",
+      "empty": {
+        "heading": "Keine Tabellenblätter zur Auswahl",
+        "text": "Zu diesem Import liegt keine Blattliste vor. Vermutlich ist er schon weiterverarbeitet worden."
+      }
+    },
+    "pipeline": {
+      "heading": "Ablauf der Verarbeitung",
+      "s1": "Upload",
+      "s2": "Wartend",
+      "s3": "Formaterkennung",
+      "s4": "Format unbekannt → Zuordnung",
+      "s5": "Konvertierung",
+      "s6": "Konvertiert · bearbeitbar",
+      "note": "Nach dem Upload steht der Import auf „Wartend“ — Formaterkennung und Konvertierung übernimmt ein Hintergrundprozess. Die Liste oben aktualisiert sich selbst, solange etwas in Arbeit ist."
+    },
+    "error": {
+      "no_institution": "Dein Konto ist keiner Institution zugeordnet. Ohne Institution lässt sich kein Import anlegen — bitte an die Administration wenden.",
+      "no_filename": "Die Datei hat keinen Namen. Bitte die Datei benennen und erneut hochladen.",
+      "no_extension": "Der Datei fehlt die Endung, deshalb lässt sich ihr Format nicht bestimmen. Bitte die passende Endung ergänzen (zum Beispiel .csv oder .xlsx) und erneut hochladen.",
+      "format_unsupported": "Dateien mit der Endung „.{ext}“ kann der Importer nicht lesen. Unterstützt werden CSV, TSV, XLSX, XML, EAD, MARC-XML und JSON.",
+      "workbook_unsupported_xls": "Die Datei liegt im alten Excel-Format (.xls) vor. Der Importer liest Arbeitsmappen nur als .xlsx. Öffne die Datei in Excel oder LibreOffice, wähle „Speichern unter“ und dort das Format „Excel-Arbeitsmappe (.xlsx)“ und lade sie erneut hoch. Alternativ lässt sich das gewünschte Tabellenblatt als CSV speichern.",
+      "workbook_unsupported_ods": "Die Datei liegt im OpenDocument-Format (.ods) vor. Der Importer liest Arbeitsmappen nur als .xlsx. Öffne die Datei in LibreOffice, wähle „Speichern unter“ und dort das Format „Excel 2007-365 (.xlsx)“ und lade sie erneut hoch. Alternativ lässt sich das gewünschte Tabellenblatt als CSV speichern.",
+      "too_large": "Die Datei ist größer als die zulässigen {max} MB. Größere Lieferungen bitte per Adresse (URL) einstellen oder in mehrere Dateien teilen.",
+      "empty_file": "Die Datei ist leer — es wurden null Byte übertragen.",
+      "store_failed": "Die Datei ließ sich nicht vollständig speichern. Bitte erneut versuchen; wenn es wieder scheitert, ist auf dem Server kein Platz mehr.",
+      "url_invalid": "Das ist keine gültige Adresse. Erwartet wird eine vollständige Adresse, die mit http:// oder https:// beginnt.",
+      "url_scheme": "Nur http und https sind zulässig. Adressen wie file:// oder ftp:// nimmt der Importer nicht an.",
+      "url_private": "Diese Adresse zeigt in ein privates Netz oder auf den Server selbst. Zulässig sind nur öffentlich erreichbare Adressen.",
+      "no_file": "Die Originaldatei ist nicht mehr vorhanden. Ohne sie lässt sich nicht neu konvertieren — bitte die Datei erneut hochladen.",
+      "no_converter": "Diesem Import ist noch keine Zuordnung zugewiesen. Lege zuerst die Zuordnung an, danach lässt sich konvertieren.",
+      "no_selection": "Bitte mindestens ein Tabellenblatt auswählen.",
+      "sheet_unknown": "Mindestens ein gewähltes Blatt kommt in der Datei nicht vor. Bitte die Seite neu laden und erneut wählen.",
+      "extract_failed": "Ein Tabellenblatt ließ sich nicht herauslösen. Steht in der Datei etwas Ungewöhnliches — verbundene Zellen, Formeln über mehrere Blätter?",
+      "no_sheets": "Zu diesem Import liegt keine Blattliste vor.",
+      "not_found": "Diesen Import gibt es nicht (mehr).",
+      "forbidden": "Auf diesen Import hast du keinen Zugriff.",
+      "unauthorized": "Die Sitzung ist abgelaufen. Bitte erneut anmelden.",
+      "network": "Keine Verbindung zum Server. Bitte die Netzwerkverbindung prüfen und erneut versuchen.",
+      "unexpected": "Die Aktion ist unerwartet fehlgeschlagen. Bitte erneut versuchen.",
+      "no_avefi": "Zu diesem Import gibt es noch keine AVefi-Datei. Sie entsteht bei der Konvertierung."
+    },
+    "page": {
+      "notFound": {
+        "title": "Nicht gefunden",
+        "text": "Diese Seite gibt es nicht.",
+        "home": "Zur Startseite"
+      },
+      "forbidden": {
+        "title": "Kein Zugriff",
+        "text": "Dieser Bereich ist Personen mit Administrationsrechten vorbehalten."
+      },
+      "generic": {
+        "title": "Da ist etwas schiefgelaufen",
+        "text": "Die Seite ließ sich nicht aufbauen. Der Fehler steht unten."
+      }
+    }
+  }
+}

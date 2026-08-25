@@ -1,0 +1,329 @@
+{
+  "imports": {
+    "format": {
+      "plain": "{format}",
+      "columns": "{format} · {count} column | {format} · {count} columns",
+      "sheet": "{format} · sheet “{sheet}”",
+      "sheetColumns": "{format} · sheet “{sheet}” · {count} column | {format} · sheet “{sheet}” · {count} columns",
+      "sheets": "{format} · {count} sheet | {format} · {count} sheets"
+    },
+    "pageTitle": "Imports",
+    "heading": "Imports",
+    "kpi": {
+      "records": "Records converted",
+      "awaiting": "Waiting for a mapping"
+    },
+    "upload": {
+      "legend": "Upload a file",
+      "dropHeading": "Drop files here or choose them",
+      "dropHint": "Several files at once · max. {max} MB · the format is detected automatically",
+      "pick": "Choose files",
+      "fileLabel": "Choose metadata files",
+      "sheetHint": "If a workbook holds several sheets, you will be asked after the upload which one to process.",
+      "listLabel": "Upload progress",
+      "progress": "{percent} %",
+      "done": "Uploaded",
+      "failed": "Not uploaded",
+      "started": "{name}: upload started.",
+      "finished": "{name}: uploaded, processing runs in the background.",
+      "rejected": "{name}: {reason}",
+      "clear": "Clear list"
+    },
+    "url": {
+      "label": "or by address (URL):",
+      "field": "Address of the metadata file",
+      "placeholder": "https://…/metadata.csv",
+      "submit": "Fetch from address",
+      "submitting": "Submitting …",
+      "added": "The import was created. The file is fetched and processed in the background."
+    },
+    "table": {
+      "caption": "Imports of your institution with format, progress, processing state and actions",
+      "file": "File",
+      "format": "Format",
+      "upload": "Upload",
+      "processing": "Processing",
+      "records": "Records",
+      "created": "Uploaded",
+      "actions": "Action",
+      "progressLabel": "Upload progress {percent} percent",
+      "none": "–",
+      "megabytes": "{size} MB",
+      "updated": "{count} import was updated. | {count} imports were updated.",
+      "empty": {
+        "heading": "No imports yet",
+        "text": "Upload a metadata file above to get started."
+      },
+      "kilobytes": "{size} KB"
+    },
+    "status": {
+      "uploading": "Uploading",
+      "queued": "Waiting",
+      "converting": "Converting",
+      "awaiting_format_review": "Mapping needed",
+      "awaiting_sheet_choice": "Choose a sheet",
+      "converted": "Converted",
+      "error": "Failed",
+      "unknown": "Unknown"
+    },
+    "action": {
+      "details": "Details",
+      "chooseSheet": "Choose sheet",
+      "map": "Map",
+      "edit": "Edit",
+      "overview": "Back to the list",
+      "more": "More actions for {name}",
+      "menuLabel": "Actions for {name}"
+    },
+    "menu": {
+      "mapping": "View mapping",
+      "report": "Validation report",
+      "reportIssues": "· findings",
+      "original": "Download original",
+      "avefi": "Download AVefi JSON",
+      "avefiDraft": "Download draft (not validated)",
+      "reconvert": "Convert again",
+      "delete": "Delete",
+      "detail": "View details"
+    },
+    "confirm": {
+      "cancel": "Cancel",
+      "delete": {
+        "title": "Delete import",
+        "text": "Delete this import together with the uploaded file and every record produced from it? This cannot be undone.",
+        "ok": "Delete"
+      },
+      "reconvert": {
+        "title": "Convert again",
+        "plain": "The import is produced again from the original file using the stored mapping.",
+        "edited": "This import holds {count} record that was edited by hand. Converting again replaces it with the value from the original file; that change is lost. | This import holds {count} records that were edited by hand. Converting again replaces them with the values from the original file; those changes are lost.",
+        "ok": "Convert again",
+        "okEdited": "Convert again anyway"
+      }
+    },
+    "toast": {
+      "deleted": "The import was deleted.",
+      "reconverting": "The import is being converted again."
+    },
+    "detail": {
+      "crumb": "Details",
+      "heading": "Import",
+      "file": "File",
+      "size": "Size",
+      "format": "Detected format",
+      "sheet": "Sheet",
+      "created": "Uploaded",
+      "recordCount": "Records",
+      "rowErrors": "Rows with an error",
+      "meta": "Key facts",
+      "downloads": "Downloads",
+      "next": "What to do next",
+      "openReport": "Open validation report",
+      "openRecords": "Edit records",
+      "openMapping": "Edit mapping",
+      "openSheets": "Choose a sheet",
+      "draftWarning": "This draft has not been validated against the AVefi schema. It exists for troubleshooting only and must not be passed on.",
+      "workerMessage": "Message from processing",
+      "stage": "Failed at: {stage}",
+      "stageUnknown": "Processing failed.",
+      "attempts": "Attempts: {count}",
+      "diagnostics": "Line-by-line diagnosis",
+      "noDiagnostics": {
+        "heading": "No line-by-line details available",
+        "text": "There is no further diagnosis for this file. The processing message above is all that is known."
+      },
+      "snippet": "Excerpt around the failing spot",
+      "position": "Line {line}",
+      "positionCol": "Line {line}, column {column}",
+      "hint": "Remedy",
+      "reupload": "Upload a corrected file",
+      "reuploadHint": "Correct the file at the marked spots and upload it again here. The failed import stays around for reference until you delete it."
+    },
+    "stage": {
+      "worker/download": "Fetching the file",
+      "worker/detect": "Format detection",
+      "worker/convert": "Conversion",
+      "download": "Fetching the file",
+      "detect": "Format detection",
+      "convert": "Conversion"
+    },
+    "state": {
+      "uploading": {
+        "title": "The file is still being transferred.",
+        "text": "As soon as the transfer completes, the import continues on its own. This page updates itself."
+      },
+      "queued": {
+        "title": "The import is waiting to be processed.",
+        "text": "A background process picks it up, detects the format and starts the conversion. There is nothing for you to do."
+      },
+      "converting": {
+        "title": "The import is being converted.",
+        "text": "With large files this can take a few minutes. This page updates itself."
+      },
+      "awaiting_format_review": {
+        "titleTable": "There is no mapping for this header row yet.",
+        "textTable": "The table you already uploaded is enough — you do not have to upload anything again. Create the mapping once; every further file with the same header row then goes through without a question.",
+        "titleOther": "The format of this file is not known yet.",
+        "textOther": "The file is readable, but its structure is new to the importer. Somebody with administration rights assigns a converter to it, after which the import continues. Until then the file stays untouched."
+      },
+      "awaiting_sheet_choice": {
+        "title": "The workbook holds several sheets.",
+        "text": "Choose which sheets to process. Each chosen sheet becomes its own import with its own mapping."
+      },
+      "converted": {
+        "title": "The import is converted.",
+        "text": "The records can be edited, the validation report shows findings, and the AVefi JSON is ready to download."
+      },
+      "convertedIssues": {
+        "title": "The import is converted, but there are findings.",
+        "text": "{errors} errors and {warnings} warnings are listed in the validation report — with row or record and the field affected."
+      },
+      "error": {
+        "title": "Processing failed.",
+        "text": "Below you find what went wrong and what can be done about it."
+      }
+    },
+    "report": {
+      "crumb": "Validation report",
+      "heading": "Validation report",
+      "empty": {
+        "heading": "No report yet",
+        "text": "This import has not been processed yet. The report is written during the conversion."
+      },
+      "allGood": "All good — {count} AVefi record matches the AVefi schema. | All good — {count} AVefi records match the AVefi schema.",
+      "hasIssues": "There are findings: {invalid} of {total} checked AVefi records do not match the schema yet.",
+      "hasIssuesNoCheck": "There are findings. The details are listed below.",
+      "kpi": {
+        "records": "Records (works)",
+        "avefi": "AVefi records checked",
+        "valid": "schema-valid",
+        "invalid": "with findings"
+      },
+      "issues": {
+        "heading": "Errors and warnings",
+        "lead": "Every finding of this import in one place — parse errors, mapping hints and schema validation.",
+        "none": "No errors and no warnings.",
+        "filterLabel": "Filter by severity",
+        "all": "All ({count})",
+        "errors": "Errors ({count})",
+        "warnings": "Warnings ({count})",
+        "infos": "Notes ({count})",
+        "shown": "Showing {shown} of {total} messages.",
+        "more": "Show {count} more messages",
+        "capped": "Processing stopped recording after this many — the file may hold further spots of the same kind."
+      },
+      "mapping": {
+        "heading": "Mapping",
+        "profile": "Profile",
+        "version": "Version {version}",
+        "grouping": "Work grouping",
+        "rows": "Rows and works",
+        "rowsValue": "{rows} rows → {works} works"
+      },
+      "meta": {
+        "heading": "About this run",
+        "converter": "Converter",
+        "schemaVersion": "AVefi schema version",
+        "efiConvVersion": "efi-conv",
+        "startedAt": "Started",
+        "finishedAt": "Finished",
+        "unknown": "unknown"
+      },
+      "coverage": {
+        "heading": "Coverage of the core fields",
+        "lead": "Title, director, production date and production country are what makes a work recognisable across institutions. Records carrying all four are fit for matching.",
+        "value": "{filled} of {total} · {percent} %",
+        "bar": "{field} filled in {percent} percent of the records"
+      }
+    },
+    "issue": {
+      "severity": {
+        "error": "Error",
+        "warning": "Warning",
+        "info": "Note"
+      },
+      "row": "Row {row}",
+      "record": "Record {record}",
+      "sourceField": "Source field “{field}”",
+      "targetField": "Schema field {field}",
+      "value": "Value: {value}",
+      "code": "Code: {code}",
+      "fix": "Suggestion: apply the converter “{op}”. You have to apply it yourself — the importer never changes values on its own.",
+      "noPosition": "no row reference"
+    },
+    "sheets": {
+      "crumb": "Sheets",
+      "heading": "Choose a sheet",
+      "lead": "The file holds several sheets. Choose which ones to process — each chosen sheet becomes its own import with its own mapping. Cover sheets, legends and summaries are simply left out.",
+      "caption": "Sheets of the workbook with size and assessment",
+      "select": "Selection",
+      "name": "Sheet",
+      "rows": "Rows",
+      "cols": "Columns",
+      "assessment": "Assessment",
+      "usable": "looks like a table",
+      "unusable": "too little content for a table — probably a cover sheet or a legend",
+      "selectAll": "Select all usable ones",
+      "selectNone": "Clear the selection",
+      "submit": "Process the selected sheets",
+      "submitting": "Submitting …",
+      "selected": "{count} sheet selected | {count} sheets selected",
+      "started": "{count} import was created. | {count} imports were created.",
+      "empty": {
+        "heading": "No sheets to choose from",
+        "text": "There is no sheet list for this import. It has most likely been processed already."
+      }
+    },
+    "pipeline": {
+      "heading": "How processing works",
+      "s1": "Upload",
+      "s2": "Waiting",
+      "s3": "Format detection",
+      "s4": "Format unknown → mapping",
+      "s5": "Conversion",
+      "s6": "Converted · editable",
+      "note": "After the upload the import sits at “Waiting” — format detection and conversion are done by a background process. The list above updates itself while anything is in progress."
+    },
+    "error": {
+      "no_institution": "Your account is not assigned to an institution. Without one no import can be created — please contact your administration.",
+      "no_filename": "The file has no name. Please name the file and upload it again.",
+      "no_extension": "The file has no extension, so its format cannot be determined. Please add the matching extension (for example .csv or .xlsx) and upload it again.",
+      "format_unsupported": "The importer cannot read files ending in “.{ext}”. Supported are CSV, TSV, XLSX, XML, EAD, MARC-XML and JSON.",
+      "workbook_unsupported_xls": "The file is in the old Excel format (.xls). The importer only reads workbooks as .xlsx. Open the file in Excel or LibreOffice, choose “Save as” and pick the format “Excel Workbook (.xlsx)”, then upload it again. Alternatively save the sheet you need as CSV.",
+      "workbook_unsupported_ods": "The file is in the OpenDocument format (.ods). The importer only reads workbooks as .xlsx. Open the file in LibreOffice, choose “Save as” and pick the format “Excel 2007-365 (.xlsx)”, then upload it again. Alternatively save the sheet you need as CSV.",
+      "too_large": "The file is larger than the permitted {max} MB. Please submit larger deliveries by address (URL) or split them into several files.",
+      "empty_file": "The file is empty — zero bytes were transferred.",
+      "store_failed": "The file could not be stored completely. Please try again; if it fails again, the server has run out of space.",
+      "url_invalid": "That is not a valid address. A full address starting with http:// or https:// is expected.",
+      "url_scheme": "Only http and https are accepted. The importer does not take addresses such as file:// or ftp://.",
+      "url_private": "This address points into a private network or at the server itself. Only publicly reachable addresses are accepted.",
+      "no_file": "The original file is gone. Without it there is nothing to convert again — please upload the file once more.",
+      "no_converter": "No mapping has been assigned to this import yet. Create the mapping first, then it can be converted.",
+      "no_selection": "Please select at least one sheet.",
+      "sheet_unknown": "At least one of the selected sheets does not exist in the file. Please reload the page and choose again.",
+      "extract_failed": "A sheet could not be extracted. Is there anything unusual in the file — merged cells, formulas across sheets?",
+      "no_sheets": "There is no sheet list for this import.",
+      "not_found": "This import does not exist (any more).",
+      "forbidden": "You have no access to this import.",
+      "unauthorized": "Your session has expired. Please sign in again.",
+      "network": "No connection to the server. Please check your network and try again.",
+      "unexpected": "The action failed unexpectedly. Please try again.",
+      "no_avefi": "There is no AVefi file for this import yet. It is written during the conversion."
+    },
+    "page": {
+      "notFound": {
+        "title": "Not found",
+        "text": "This page does not exist.",
+        "home": "Go to the start page"
+      },
+      "forbidden": {
+        "title": "No access",
+        "text": "This area is reserved for people with administration rights."
+      },
+      "generic": {
+        "title": "Something went wrong",
+        "text": "The page could not be built. The error is shown below."
+      }
+    }
+  }
+}

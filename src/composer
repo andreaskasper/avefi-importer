@@ -1,4 +1,0 @@
-#!/bin/bash
-# AVefi Importer — run Composer against html/app/code (official composer image).
-DIR="$(cd "$(dirname "$0")" && pwd)"
-exec docker run --rm -it -v "$DIR/html/app/code":/app -w /app composer:2 "$@"

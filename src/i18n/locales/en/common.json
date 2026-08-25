@@ -1,0 +1,11 @@
+{
+  "skipToContent": "Skip to content",
+  "toStart": "To the start page",
+  "mainNav": "Main navigation",
+  "userMenu": "User menu: {name}",
+  "nav": { "imports": "Imports", "mappings": "Mappings", "reviews": "Format review" },
+  "menu": { "profile": "My profile", "users": "Manage users", "logout": "Sign out" },
+  "theme": { "switch": "Switch theme", "label": "Theme" },
+  "action": { "save": "Save", "cancel": "Cancel", "delete": "Delete", "back": "Back", "close": "Close", "download": "Download", "retry": "Try again" },
+  "state": { "loading": "Loading …", "empty": "Nothing here.", "error": "That did not work." }
+}

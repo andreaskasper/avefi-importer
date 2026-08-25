@@ -1,0 +1,673 @@
+{
+  "mapping": {
+    "crumb": "Zuordnung",
+    "nav": {
+      "imports": "Importe",
+      "mappings": "Zuordnungen"
+    },
+    "level": {
+      "work": "Werk",
+      "manifestation": "Fassung",
+      "item": "Exemplar"
+    },
+    "head": {
+      "columns": "keine Spalte | eine Spalte | {n} Spalten",
+      "mapped": "{n} zugeordnet",
+      "ignored": "{n} ignoriert",
+      "open": "nichts offen | eine Spalte offen | {n} Spalten offen",
+      "rows": "{n} Zeilen in der Quelle",
+      "nameLabel": "Name des Profils",
+      "merge": "Beispiel und Ergebnis zusammen",
+      "split": "Beispiel und Ergebnis getrennt",
+      "save": "Speichern",
+      "saveAndConvert": "Speichern und konvertieren"
+    },
+    "state": {
+      "calculating": "Vorschau wird gerechnet …",
+      "ready": "Vorschau fertig, {n} Zeilen gerechnet.",
+      "mapped": "zugeordnet",
+      "ignored": "ignoriert",
+      "untouched": "noch offen"
+    },
+    "filter": {
+      "label": "Anzeigen",
+      "all": "Alle Spalten ({n})",
+      "untouched": "Nur offene ({n})",
+      "mapped": "Nur zugeordnete ({n})",
+      "ignored": "Nur ignorierte ({n})",
+      "none": "Keine Spalte in dieser Auswahl."
+    },
+    "table": {
+      "caption": "Zuordnung der Quellspalten auf das AVefi-Schema",
+      "column": "Quellspalte",
+      "example": "Beispielwerte",
+      "exampleResult": "Beispiel → Ergebnis",
+      "target": "Ziel",
+      "result": "Ergebnis",
+      "actions": "Aktionen",
+      "filled": "gefüllt in {n} von {of} Zeilen",
+      "filledSample": "gefüllt in {n} von {of} Zeilen der Stichprobe ({total} Zeilen insgesamt)",
+      "allEmpty": "in der Stichprobe durchgehend leer",
+      "noTargetYet": "Ziel fehlt",
+      "branches": "kein Zweig | ein Zweig | {n} Zweige",
+      "suggestionHint": "Vorschlag ({score} %) — {path}",
+      "hintHint": "Von {n} anderen Profilen so zugeordnet — {path}",
+      "chooseTarget": "Ziel wählen",
+      "editChain": "Konverter und Zweige für „{column}“ bearbeiten",
+      "ignore": "Spalte „{column}“ ignorieren",
+      "reset": "Spalte „{column}“ zurücksetzen"
+    },
+    "branch": {
+      "preLabel": "Konverter für alle Ziele dieser Spalte",
+      "postLabel": "Weitere Konverter nur für dieses Ziel",
+      "number": "Zweig {n}",
+      "remove": "Zweig {n} von „{column}“ entfernen",
+      "targetLabel": "Ziel im AVefi-Schema für Zweig {n}",
+      "enumHint": "Dieses Feld hat eine feste Werteliste.",
+      "addValuemap": "Werteliste anlegen",
+      "noValue": "kein Wert",
+      "noExample": "Diese Spalte ist in der Stichprobe leer — kein Beispiel möglich.",
+      "add": "weiteres Ziel für diese Spalte",
+      "addHint": "Eine Spalte darf mehrfach landen: gemeinsame Kette oben, je Zweig eigene Kette und eigenes Ziel.",
+      "unknownTarget": "Ziel unbekannt"
+    },
+    "chain": {
+      "slow": "langsam",
+      "slowHint": "Fragt einen externen Dienst ab.",
+      "unknownOp": "unbekannter Konverter",
+      "removeStep": "Konverter „{name}“ entfernen",
+      "mapPlaceholder": "Quellwert = Zielwert (eine Zuordnung je Zeile)",
+      "emptyHint": "Noch kein Konverter — der Wert geht unverändert weiter.",
+      "addStep": "Konverter",
+      "pickerTitle": "Konverter hinzufügen",
+      "closePicker": "Auswahl schließen",
+      "moveUp": "Konverter {n} nach vorn",
+      "moveDown": "Konverter {n} nach hinten"
+    },
+    "target": {
+      "search": "Feld suchen — Name, Bezeichnung oder Schemapfad",
+      "noMatch": "Kein Feld gefunden.",
+      "multi": "nimmt mehrere Werte auf",
+      "single": "nimmt genau einen Wert auf",
+      "enumCount": "{n} zulässige Werte",
+      "authority": "kann Normdaten tragen",
+      "clear": "Ziel entfernen",
+      "none": "Noch kein Ziel gewählt."
+    },
+    "check": {
+      "heading": "Prüfung",
+      "blocking": "{n} blockierend",
+      "hints": "kein Hinweis | ein Hinweis | {n} Hinweise",
+      "srBlocking": "Blockierend:",
+      "srHint": "Hinweis:",
+      "goto": "Zu Spalte „{column}“ springen",
+      "applyFix": "Vorschlag „{op}“ übernehmen",
+      "policy": "Blockiert wird nur, was strukturell nicht geht. Vorschläge werden angeboten und nie von selbst angewendet."
+    },
+    "columns": {
+      "heading": "Kopfzeile und Profil weichen ab.",
+      "missing": "Im Profil beschrieben, in der Datei nicht vorhanden ({n}):",
+      "extra": "In der Datei vorhanden, im Profil nicht beschrieben ({n}):",
+      "renamed": "„{from}“ heißt jetzt vermutlich „{to}“ ({percent} % Ähnlichkeit).",
+      "summaryMatched": "{matched} von {total} Spalten passen",
+      "summaryMissing": "{n} im Profil beschriebene Spalte fehlt in der Datei | {n} im Profil beschriebene Spalten fehlen in der Datei",
+      "summaryExtra": "{n} Spalte der Datei ist im Profil nicht beschrieben | {n} Spalten der Datei sind im Profil nicht beschrieben",
+      "summaryRenamed": "{n} davon sieht nach einer Umbenennung aus | {n} davon sehen nach einer Umbenennung aus"
+    },
+    "issues": {
+      "heading": "Beim Einlesen des Profils angepasst"
+    },
+    "vocab": {
+      "heading": "Werteliste",
+      "caption": "Zuordnung der Quellwerte auf AVefi-Werte",
+      "sourceValue": "Wert in der Datei",
+      "count": "Anzahl",
+      "avefiValue": "AVefi-Wert",
+      "unmapped": "– nicht zugeordnet –",
+      "notInSchema": "nicht im Schema",
+      "selectFor": "AVefi-Wert für „{value}“",
+      "open": "{n} nicht zugeordnet",
+      "allMapped": "alle zugeordnet",
+      "invalid": "{n} ungültig",
+      "empty": "In der Stichprobe kommen keine Werte vor.",
+      "prefill": "Werte aus der Datei übernehmen",
+      "addLabel": "Weiteren Quellwert eintragen",
+      "add": "Hinzufügen"
+    },
+    "authority": {
+      "heading": "Normdaten aus {source}",
+      "note": "Bestätigte Zuordnungen gelten vor der Automatik.",
+      "assign": "Zuordnen",
+      "reset": "zurücksetzen",
+      "left": "bewusst offen gelassen",
+      "auto": "automatisch",
+      "dialogTitle": "„{value}“ zuordnen",
+      "searching": "Sucht in {source} …",
+      "noHits": "Keine Treffer. Der Wert kann bewusst offen bleiben — dann fragt der Editor nicht wieder danach.",
+      "exact": "exakt",
+      "take": "Übernehmen",
+      "leaveOpen": "Bewusst offen lassen",
+      "cancel": "Abbrechen",
+      "close": "Schließen"
+    },
+    "tree": {
+      "heading": "Ergebnis je Datensatz",
+      "empty": "– nichts zugeordnet –",
+      "default": "Festwert",
+      "json": "Erzeugter AVefi-Datensatz (erste Zeile)"
+    },
+    "schema": {
+      "run": "Gegen das AVefi-Schema prüfen",
+      "running": "Prüft …",
+      "ok": "{n} Knoten geprüft, keine Beanstandung.",
+      "issues": "{n} Beanstandungen der Schemaprüfung",
+      "previewIssues": "Beanstandungen aus der Vorschau",
+      "unavailable": "Die Schemaprüfung ist gerade nicht erreichbar: {detail}"
+    },
+    "defaults": {
+      "heading": "Festwerte",
+      "hint": "Füllt Felder, die die Datei nicht liefert — etwa die ISIL der eigenen Einrichtung.",
+      "targetLabel": "Ziel des Festwerts {n}",
+      "valueLabel": "Wert des Festwerts {n}",
+      "remove": "Festwert {n} entfernen",
+      "add": "Festwert"
+    },
+    "grouping": {
+      "heading": "Werkbildung",
+      "hint": "Standardmäßig wird jede Zeile ein eigenes Werk. Wähle Merkmale, über die Zeilen zu einem gemeinsamen Werk zusammengefasst werden. Die verwendete Regel steht später im Prüfbericht.",
+      "column": "Spalte „{column}“",
+      "active": "Zeilen mit gleichem Wert in allen gewählten Merkmalen teilen sich ein Werk."
+    },
+    "adopt": {
+      "offer": "Für diese Kopfzeile gibt es bereits Profile: | Für diese Kopfzeile gibt es bereits ein Profil: | Für diese Kopfzeile gibt es bereits {n} Profile:",
+      "copyHint": "Fremde Profile werden beim Übernehmen kopiert. Änderungen wirken sich nicht auf fremde Importe aus.",
+      "title": "Profil übernehmen",
+      "confirm": "Die Zuordnung von „{institution}“ wird als Kopie übernommen. Änderungen wirken sich nicht auf das ursprüngliche Profil aus.",
+      "ok": "Übernehmen",
+      "cancel": "Abbrechen",
+      "done": "Übernommen von „{name}“: {matched} Spalten zugeordnet, {missing} offen, {extra} im Quellprofil ohne Entsprechung."
+    },
+    "save": {
+      "done": "Profil „{name}“ gespeichert (Fassung {version}).",
+      "incomplete": "Es ist noch eine Spalte unbeantwortet: {columns}. Ordne sie zu oder markiere sie als „ignorieren“. | Es sind noch {n} Spalten unbeantwortet: {columns}. Ordne sie zu oder markiere sie als „ignorieren“."
+    },
+    "list": {
+      "title": "Zuordnungen",
+      "heading": "Zuordnungen",
+      "count": "kein Profil | ein Profil | {n} Profile",
+      "caption": "Gespeicherte Mappingprofile",
+      "name": "Name",
+      "institution": "Einrichtung",
+      "base": "Basis",
+      "state": "Zustand",
+      "used": "Verwendet",
+      "changed": "Geändert",
+      "action": "Aktion",
+      "own": "eigene",
+      "version": "Fassung {n}",
+      "by": "angelegt von {name}",
+      "complete": "vollständig",
+      "incomplete": "unvollständig",
+      "noSample": "ohne Beispieldaten",
+      "imports": "{n} Importe",
+      "edit": "Bearbeiten",
+      "view": "Ansehen",
+      "export": "Als JSON exportieren",
+      "newHeading": "Neue Zuordnung anlegen",
+      "newHint": "Wähle eine Beispieldatei mit der Kopfzeile, für die die Zuordnung gelten soll. Der Editor öffnet sich mit deinen echten Spalten und Werten.",
+      "newAction": "Zuordnung beginnen",
+      "importSummary": "Stattdessen ein exportiertes Profil einlesen",
+      "importHint": "Erwartet wird ein Export aus diesem Importer. Enthält er keine Stichprobe, lässt sich das Profil erst nach dem Nachreichen einer passenden Tabelle bearbeiten.",
+      "importLabel": "Profil-Datei auswählen",
+      "imported": "Profil „{name}“ aus der Datei angelegt.",
+      "updated": "Vorhandenes Profil „{name}“ aus der Datei aktualisiert.",
+      "importedNoSample": "Profil „{name}“ angelegt. Die Datei enthielt keine Stichprobe — reiche eine passende Tabelle nach, dann lässt sich die Zuordnung bearbeiten.",
+      "emptyHeading": "Noch keine Zuordnungen",
+      "emptyText": "Lade eine Beispieldatei hoch, um die erste anzulegen.",
+      "footer": "Profile sind für alle Einrichtungen sichtbar. Wird eine Datei mit bekannter Kopfzeile hochgeladen, greift zuerst das eigene Profil; fremde werden zur Übernahme angeboten und dabei kopiert, damit Änderungen keine fremden Importe verändern."
+    },
+    "new": {
+      "title": "Neue Zuordnung",
+      "heading": "Zuordnung aus einer Beispieldatei anlegen",
+      "lead": "Die Datei wird nur gelesen, nicht gespeichert. Abgelegt werden die Spaltennamen und einige Beispielzeilen — genug, damit die Vorschau auf echten Werten rechnet.",
+      "dropHeading": "Beispieldatei wählen",
+      "dropText": "Datei hierher ziehen oder klicken",
+      "chooseLabel": "Beispieldatei auswählen",
+      "submit": "Zuordnung beginnen",
+      "working": "Datei wird gelesen …",
+      "cancel": "Abbrechen",
+      "footer": "Ist die Kopfzeile schon bekannt, entsteht kein zweites Profil: Der Weg führt zum vorhandenen, dessen Beispieldaten dabei aufgefrischt werden."
+    },
+    "detail": {
+      "columnsHeading": "Zuordnungen",
+      "noColumns": "Keine Spalten hinterlegt.",
+      "chain": "Kette",
+      "openColumns": "nichts offen | eine Spalte offen | {n} Spalten offen",
+      "usedBy": "von {n} Importen verwendet",
+      "defaults": "{n} Festwerte hinterlegt.",
+      "grouping": "Werkbildung über: {rule}",
+      "versions": "Profilformat-Version {profile} · AVefi-Schema {schema}",
+      "unknownSchema": "nicht vermerkt",
+      "sampleHeading": "Beispieldaten fehlen",
+      "sampleHint": "Der Editor rechnet die Vorschau auf echten Zeilen. Für dieses Profil sind keine hinterlegt — das passiert bei Profilen aus einem Export ohne Stichprobe. Lade die Tabelle hoch, für die das Profil gilt; gespeichert werden daraus nur Spaltennamen und einige Beispielzeilen.",
+      "sampleLabel": "Passende Tabelle auswählen",
+      "addSample": "Beispieldaten nachreichen",
+      "manageHeading": "Verwaltung",
+      "nameLabel": "Name",
+      "rename": "Umbenennen",
+      "renamed": "Profil umbenannt.",
+      "edit": "Zuordnung bearbeiten",
+      "delete": "Löschen",
+      "deleteTitle": "Profil löschen",
+      "deleteText": "Dieses Profil wirklich löschen? Die {n} bereits konvertierten Importe bleiben erhalten; künftige Uploads mit dieser Kopfzeile brauchen wieder eine Zuordnung.",
+      "deleted": "Profil gelöscht.",
+      "cancel": "Abbrechen",
+      "foreignHint": "Dieses Profil gehört einer anderen Einrichtung. Beim Zuordnen einer eigenen Datei kannst du es übernehmen — es wird dabei kopiert.",
+      "historyHeading": "Verlauf",
+      "noHistory": "Kein Verlauf vorhanden.",
+      "active": "aktiv",
+      "restore": "Wiederherstellen",
+      "restoreTitle": "Fassung wiederherstellen",
+      "restoreText": "Fassung {n} wieder aktivieren? Der aktuelle Stand bleibt als frühere Fassung im Verlauf. Bereits konvertierte Importe werden dadurch nicht nachgezogen.",
+      "restored": "Fassung {n} wiederhergestellt."
+    },
+    "error": {
+      "unauthorized": "Nicht angemeldet. Bitte neu anmelden.",
+      "forbidden": "Dafür fehlt die Berechtigung.",
+      "not_found": "Nicht gefunden.",
+      "network": "Keine Verbindung zum Server.",
+      "unexpected": "Unerwarteter Fehler.",
+      "no_institution": "Das Konto ist keiner Einrichtung zugeordnet. Ohne Einrichtung gibt es keine Profile.",
+      "not_tabular": "Für dieses Format ({format}) gibt es keine Spaltenzuordnung — es wird von einem eigenen Konverter gelesen.",
+      "no_file": "Die Originaldatei des Imports fehlt. Ohne sie kann keine Vorschau gerechnet werden.",
+      "table_unreadable": "Die Tabelle ließ sich nicht lesen: {detail}",
+      "no_header": "Aus der Datei ließ sich keine Kopfzeile mit mehreren Spalten lesen. Erwartet wird eine Tabelle mit Spaltennamen in der ersten Zeile.",
+      "profile_not_found": "Dieses Profil gibt es nicht mehr.",
+      "profile_foreign": "Das Profil „{name}“ gehört einer anderen Einrichtung und kann hier nicht geändert werden.",
+      "no_sample": "Für dieses Profil sind keine Beispieldaten hinterlegt. Der Editor rechnet die Vorschau auf echten Zeilen — lade die Tabelle hoch, für die das Profil gilt, dann geht es weiter.",
+      "mapping_blocked": "Das Profil enthält Fehler, die so nicht verarbeitet werden können. Sie stehen oben in der Prüfung.",
+      "not_complete": "Vor dem Konvertieren muss jede Spalte beantwortet sein. Offen: {open}",
+      "no_value": "Kein Wert angegeben.",
+      "no_profile": "Kein Profil angegeben.",
+      "no_name": "Bitte einen Namen eingeben.",
+      "name_too_long": "Der Name darf höchstens {max} Zeichen lang sein.",
+      "no_version": "Keine Fassung angegeben.",
+      "version_not_found": "Fassung {version} gibt es in diesem Profil nicht.",
+      "export_unreadable": "Die Datei enthält kein lesbares Profil. Erwartet wird ein JSON-Export aus diesem Importer.",
+      "export_no_hash": "Dem Profil fehlt der Kopfzeilen-Hash. Ohne ihn lässt sich nicht feststellen, für welche Tabelle es gilt.",
+      "json_here": "Das ist eine JSON-Datei. Hier gehört die Tabelle hin, für die das Profil gelten soll — ein exportiertes Profil liest du über „Stattdessen ein exportiertes Profil einlesen“ ein.",
+      "sample_format": "Dateien mit der Endung .{ext} taugen nicht als Beispieltabelle. Erwartet werden CSV, TSV oder XLSX.",
+      "too_large": "Die Datei ist zu groß (höchstens {max} MB).",
+      "empty_file": "Die Datei ist leer.",
+      "no_filename": "Kein Dateiname übermittelt.",
+      "no_file_chosen": "Bitte zuerst eine Datei auswählen.",
+      "no_sheet": "Die Arbeitsmappe enthält kein lesbares Tabellenblatt.",
+      "hash_mismatch": "Die Kopfzeile dieser Datei passt nicht zum Profil. {summary} Fehlend: {missing} · Zusätzlich: {extra}",
+      "profile_create_failed": "Das Profil konnte nicht angelegt werden."
+    },
+    "targets": {
+      "work": {
+        "title": {
+          "primary": "Haupttitel",
+          "alternative": "Weiterer Titel",
+          "series": "Reihentitel"
+        },
+        "type": "Werkart",
+        "variant_type": "Fassungsart",
+        "form": "Form",
+        "genre": "Genre",
+        "production": {
+          "date": "Produktionsjahr",
+          "place": "Produktionsland"
+        },
+        "activity": {
+          "directing": "Regie",
+          "writing": "Drehbuch",
+          "cinematography": "Kamera",
+          "editing": "Schnitt",
+          "music": "Musik",
+          "sound": "Ton",
+          "producing": "Produktion",
+          "company": "Produktionsfirma",
+          "cast": "Darstellung",
+          "design": "Ausstattung",
+          "animation": "Animation"
+        },
+        "subject": {
+          "topic": "Schlagwort",
+          "person": "Person (Thema)",
+          "corporate": "Körperschaft (Thema)",
+          "place": "Ort (Thema)"
+        },
+        "identifier": {
+          "local": "Lokale Werk-ID",
+          "avefi": "AVefi-PID des Werks"
+        },
+        "same_as": {
+          "gnd": "Verknüpfung GND",
+          "wikidata": "Verknüpfung Wikidata",
+          "viaf": "Verknüpfung VIAF",
+          "filmportal": "Verknüpfung filmportal.de",
+          "eidr": "Verknüpfung EIDR"
+        }
+      },
+      "manifestation": {
+        "title": {
+          "primary": "Titel der Fassung"
+        },
+        "publication": {
+          "date": "Veröffentlichungsdatum"
+        },
+        "note": "Anmerkung zur Fassung",
+        "webresource": "Weblink zur Fassung",
+        "identifier": {
+          "local": "Lokale Fassungs-ID"
+        }
+      },
+      "item": {
+        "title": {
+          "primary": "Titel des Exemplars"
+        },
+        "identifier": {
+          "local": "Signatur",
+          "avefi": "AVefi-PID des Exemplars"
+        },
+        "element_type": "Elementart",
+        "colour_type": "Farbe",
+        "sound_type": "Ton",
+        "frame_rate": "Bildfrequenz",
+        "access_status": "Zugangsstatus",
+        "duration": "Laufzeit",
+        "extent": {
+          "metre": "Länge in Metern",
+          "feet": "Länge in Fuß"
+        },
+        "language": {
+          "spoken": "Sprache (gesprochen)",
+          "subtitles": "Sprache (Untertitel)",
+          "intertitles": "Sprache (Zwischentitel)"
+        },
+        "note": "Anmerkung zum Exemplar",
+        "webresource": "Weblink zum Exemplar",
+        "preservation": {
+          "date": "Datum der Erhaltungsmaßnahme"
+        },
+        "manufacture": {
+          "date": "Herstellungsdatum der Kopie"
+        }
+      }
+    },
+    "targetDescs": {
+      "work": {
+        "title": {
+          "primary": "Bevorzugter Titel des Werks.",
+          "alternative": "Neben-, Verleih- oder Untertitel.",
+          "series": "Titel der Reihe, zu der das Werk gehört."
+        },
+        "type": "Monografisch, Sammlung, Serie oder Teil.",
+        "variant_type": "Art der Fassung, etwa gekürzt oder koloriert.",
+        "form": "Dokumentarfilm, Kurzfilm, Werbefilm und Ähnliches.",
+        "genre": "Genre als freier Begriff, Normdaten möglich.",
+        "production": {
+          "date": "Jahr oder Datum der Herstellung.",
+          "place": "Land oder Ort der Herstellung."
+        },
+        "activity": {
+          "directing": "Regieführende Person.",
+          "writing": "Verfasser des Drehbuchs.",
+          "cinematography": "Bildgestaltung, Kameraführung.",
+          "editing": "Montage, Filmschnitt.",
+          "music": "Komposition der Filmmusik.",
+          "sound": "Tongestaltung.",
+          "producing": "Produzierende Person.",
+          "company": "Herstellende Körperschaft.",
+          "cast": "Mitwirkende vor der Kamera.",
+          "design": "Szenenbild und Ausstattung.",
+          "animation": "Animierende Person."
+        },
+        "subject": {
+          "topic": "Sachbegriff zur inhaltlichen Erschließung.",
+          "person": "Person, über die das Werk handelt.",
+          "corporate": "Körperschaft, über die das Werk handelt.",
+          "place": "Geografischer Schauplatz."
+        },
+        "identifier": {
+          "local": "Kennung des Werks im eigenen Haus.",
+          "avefi": "Bereits vergebene AVefi-Kennung."
+        },
+        "same_as": {
+          "gnd": "GND-Nummer des Werks.",
+          "wikidata": "Wikidata-Q-Nummer des Werks.",
+          "viaf": "VIAF-Kennung des Werks.",
+          "filmportal": "Kennung auf filmportal.de.",
+          "eidr": "EIDR-Kennung des Werks."
+        }
+      },
+      "manifestation": {
+        "title": {
+          "primary": "Titel dieser Fassung."
+        },
+        "publication": {
+          "date": "Datum der Veröffentlichung oder Erstaufführung."
+        },
+        "note": "Freitext zur Fassung.",
+        "webresource": "Adresse einer Online-Ressource.",
+        "identifier": {
+          "local": "Kennung der Fassung im eigenen Haus."
+        }
+      },
+      "item": {
+        "title": {
+          "primary": "Titel dieses Exemplars."
+        },
+        "identifier": {
+          "local": "Signatur oder Inventarnummer des Exemplars.",
+          "avefi": "Bereits vergebene AVefi-Kennung."
+        },
+        "element_type": "Negativ, Positiv, DCP und Ähnliches.",
+        "colour_type": "Farbig, schwarzweiß, viragiert.",
+        "sound_type": "Stumm, Lichtton, Magnetton.",
+        "frame_rate": "Bilder je Sekunde.",
+        "access_status": "Master, Benutzung, Verleih, Archiv.",
+        "duration": "Laufzeit im ISO-Format PT01H30M00S.",
+        "extent": {
+          "metre": "Filmlänge in Metern.",
+          "feet": "Filmlänge in Fuß."
+        },
+        "language": {
+          "spoken": "Gesprochene Sprache als ISO-639-2-Code.",
+          "subtitles": "Sprache der Untertitel.",
+          "intertitles": "Sprache der Zwischentitel."
+        },
+        "note": "Freitext zum Exemplar.",
+        "webresource": "Adresse eines Digitalisats.",
+        "preservation": {
+          "date": "Wann wurde restauriert oder umkopiert."
+        },
+        "manufacture": {
+          "date": "Wann wurde diese Kopie hergestellt."
+        }
+      }
+    },
+    "op": {
+      "trim": "Leerraum entfernen",
+      "lowercase": "Kleinschreibung",
+      "uppercase": "GROSSSCHREIBUNG",
+      "titlecase": "Anfangsbuchstaben groß",
+      "replace": "Ersetzen",
+      "regex": "Regulärer Ausdruck",
+      "prefix": "Davorsetzen",
+      "suffix": "Anhängen",
+      "default": "Standardwert bei leer",
+      "split": "Aufteilen",
+      "join": "Zusammenfügen",
+      "take": "Element auswählen",
+      "number": "Zahl",
+      "boolean": "Ja/Nein",
+      "date": "Datum nach ISO",
+      "duration": "Laufzeit nach ISO 8601",
+      "country": "Land normalisieren",
+      "language": "Sprache nach ISO 639-2",
+      "map": "Werteliste zuordnen",
+      "authority": "Normdaten nachschlagen",
+      "substring": "Ausschnitt",
+      "template": "In Muster einsetzen",
+      "year": "Jahreszahl herauslösen",
+      "concat": "Spalten verbinden",
+      "valuemap": "Werteliste zuordnen",
+      "ucfirst": "Anfangsbuchstaben groß"
+    },
+    "param": {
+      "trim": {
+        "chars": "Zusätzliche Zeichen"
+      },
+      "titlecase": {
+        "words": "Jedes Wort"
+      },
+      "replace": {
+        "search": "Suchen",
+        "with": "Ersetzen durch"
+      },
+      "regex": {
+        "pattern": "Muster",
+        "with": "Ersetzen durch",
+        "capture": "Nur diese Gruppe übernehmen",
+        "flags": "Zusatzangaben (i, g)"
+      },
+      "prefix": {
+        "value": "Text"
+      },
+      "suffix": {
+        "value": "Text"
+      },
+      "default": {
+        "value": "Wert"
+      },
+      "split": {
+        "sep": "Trennzeichen",
+        "unique": "Doppelte entfernen"
+      },
+      "join": {
+        "sep": "Trennzeichen"
+      },
+      "take": {
+        "index": "Position (1 = erstes, -1 = letztes)"
+      },
+      "number": {
+        "decimal": "Dezimalzeichen"
+      },
+      "boolean": {
+        "whenTrue": "Ausgabe bei Ja",
+        "whenFalse": "Ausgabe bei Nein"
+      },
+      "date": {
+        "from": "Quellformat (z. B. d.m.Y)"
+      },
+      "duration": {
+        "unit": "Einheit der Quelle"
+      },
+      "country": {
+        "unknown": "Unbekannte Angabe"
+      },
+      "language": {
+        "unknown": "Unbekannte Angabe"
+      },
+      "map": {
+        "map": "Zuordnung",
+        "ci": "Groß/Klein egal",
+        "fallback": "Unbekannter Wert"
+      },
+      "authority": {
+        "source": "Quelle",
+        "kind": "Art"
+      },
+      "substring": {
+        "start": "Ab Position",
+        "length": "Länge"
+      },
+      "template": {
+        "pattern": "Muster (mit {'{'}value{'}'})"
+      },
+      "concat": {
+        "columns": "Weitere Spalten",
+        "sep": "Trennzeichen"
+      }
+    },
+    "choice": {
+      "duration": {
+        "unit": {
+          "minutes": "Minuten",
+          "seconds": "Sekunden",
+          "hours": "Stunden",
+          "auto": "erkennen"
+        }
+      },
+      "country": {
+        "unknown": {
+          "keep": "unverändert übernehmen",
+          "drop": "verwerfen",
+          "error": "beanstanden"
+        }
+      },
+      "language": {
+        "unknown": {
+          "keep": "unverändert übernehmen",
+          "drop": "verwerfen",
+          "error": "beanstanden"
+        }
+      },
+      "map": {
+        "fallback": {
+          "keep_note": "als Notiz behalten",
+          "drop": "verwerfen",
+          "keep": "unverändert übernehmen",
+          "error": "beanstanden"
+        }
+      },
+      "authority": {
+        "source": {
+          "gnd": "GND",
+          "wikidata": "Wikidata",
+          "viaf": "VIAF"
+        },
+        "kind": {
+          "person": "Person",
+          "corporate": "Körperschaft",
+          "place": "Ort",
+          "subject": "Schlagwort"
+        }
+      }
+    },
+    "group": {
+      "Text": "Text",
+      "Struktur": "Struktur",
+      "Typen": "Typen",
+      "Vokabular": "Vokabular",
+      "Titel": "Titel",
+      "Werk": "Werk",
+      "Produktion": "Produktion",
+      "Beteiligte": "Beteiligte",
+      "Technik": "Technik",
+      "Exemplar": "Exemplar",
+      "Fassung": "Fassung",
+      "Sprache": "Sprache"
+    },
+    "checkMsg": {
+      "target_unknown": "Das Ziel „{field}“ gibt es im Katalog nicht (mehr).",
+      "chain_list_in_single": "„{field}“ nimmt nur einen Wert auf, die Kette liefert aber eine Liste. Ergänze „Element auswählen“ oder „Zusammenfügen“.",
+      "chain_number": "„{field}“ erwartet eine Zahl.",
+      "chain_duration": "„{field}“ erwartet das ISO-Format PT01H30M00S. Konverter „Laufzeit nach ISO 8601“ einfügen?",
+      "chain_date": "„{field}“ erwartet ein Datum im ISO-Format. Konverter „Datum nach ISO“ einfügen?",
+      "chain_language": "„{field}“ erwartet einen ISO-639-2-Code. Konverter „Sprache nach ISO 639-2“ einfügen?",
+      "authority_unsupported": "„Normdaten nachschlagen“ wirkt bei „{field}“ nicht — gefundene Kennungen lassen sich nur an Personen, Schlagwörtern, Orten, Genres und Kennungs-Zielen hinterlegen.",
+      "enum_no_valuemap": "„{field}“ hat eine feste Werteliste — ohne Zuordnung werden abweichende Schreibweisen beanstandet.",
+      "enum_empty_valuemap": "Die Werteliste für „{field}“ ist noch leer. Solange kein Zielwert eingetragen ist, kommt für diese Spalte nichts an.",
+      "default_unknown_target": "Ein Festwert zeigt auf ein Ziel, das es nicht gibt.",
+      "work_no_title": "Keine Spalte führt auf „Werk › Titel › Haupttitel“. Ersatzweise wird der Titel der Fassung oder des Exemplars übernommen.",
+      "data_separator": "Die Werte enthalten ein Trennzeichen. „{field}“ nimmt mehrere Werte auf — mit „Aufteilen“ wird daraus je Wert ein eigener Eintrag statt einer langen Zeichenkette.",
+      "value_truncated": "„{field}“ nimmt nur einen Wert auf; weitere Werte dieser Zelle bleiben unberücksichtigt.",
+      "chain_shorthand": "Ein Konverter lag als reine Zeichenkette vor und wurde in ein Objekt umgewandelt.",
+      "chain_unknown_op": "Ein unbekannter Konverter wurde entfernt."
+    }
+  }
+}

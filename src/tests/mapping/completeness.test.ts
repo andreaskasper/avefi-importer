@@ -1,0 +1,75 @@
+/* Vollstaendigkeit und Kernfelder. */
+
+import { describe, expect, it } from 'vitest'
+import type { AvefiRecord } from '../../server/lib/mapping/builder.js'
+import {
+  addToCoreTally, completeness, completenessIssues, coreCoverage,
+  corePresence, finishCoreTally, newCoreTally, ringClass
+} from '../../server/lib/mapping/completeness.js'
+
+const leer: AvefiRecord = { work: {}, manifestations: [], items: [] }
+
+const voll: AvefiRecord = {
+  work: {
+    has_primary_title: { has_name: 'Der Film' },
+    type: 'Monographic',
+    has_subject: [{ has_name: 'Thema' }],
+    has_genre: [{ has_name: 'Dokumentation' }],
+    has_event: [{
+      category: 'avefi:ProductionEvent',
+      has_date: '1953',
+      located_in: [{ has_name: 'Deutschland' }],
+      has_activity: [{ category: 'avefi:DirectingActivity', has_agent: [{ has_name: 'A' }] }]
+    }]
+  },
+  manifestations: [{}],
+  items: [{}]
+}
+
+describe('Vollstaendigkeit', () => {
+  it('rechnet zwischen null und hundert', () => {
+    expect(completeness(leer)).toBe(0)
+    expect(completeness(voll)).toBe(100)
+  })
+
+  it('benennt, was fehlt', () => {
+    const issues = completenessIssues(leer)
+    expect(issues.some((i) => i.level === 'error' && i.text.includes('Haupttitel'))).toBe(true)
+    expect(completenessIssues(voll)).toEqual([{ level: 'ok', text: 'Grunddaten vollstaendig' }])
+  })
+
+  it('stuft den Fortschrittsring ein', () => {
+    expect(ringClass(30)).toBe('low')
+    expect(ringClass(60)).toBe('mid')
+    expect(ringClass(90)).toBe('')
+  })
+})
+
+describe('Kernfelder', () => {
+  it('erkennt Titel, Regie, Datum und Land', () => {
+    expect(corePresence(voll)).toEqual({
+      titel: true, regie: true, produktionsdatum: true, produktionsland: true
+    })
+    expect(corePresence(leer)).toEqual({
+      titel: false, regie: false, produktionsdatum: false, produktionsland: false
+    })
+  })
+
+  it('zaehlt "4 von 4" ueber mehrere Datensaetze', () => {
+    const tally = newCoreTally()
+    addToCoreTally(tally, voll)
+    addToCoreTally(tally, leer)
+    const s = finishCoreTally(tally)
+    expect(s.records).toBe(2)
+    expect(s.allFour).toBe(1)
+    expect(s.allFourPercent).toBe(50)
+    expect(s.percent.titel).toBe(50)
+    expect(s.complete['0']).toBe(1)
+  })
+
+  it('liefert die Belegung im Format des Importberichts', () => {
+    const tally = newCoreTally()
+    addToCoreTally(tally, voll)
+    expect(coreCoverage(tally)['regie']).toEqual({ filled: 1, total: 1 })
+  })
+})
