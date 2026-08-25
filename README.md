@@ -1,6 +1,6 @@
 # 🎞️ AVefi Importer
 
-**Turn any film-metadata file into clean [AVefi](https://av-efi.net) records.**
+**Turn any film-metadata file into clean [AVefi](https://www.av-efi.net) records.**
 
 Archives and institutions upload their metadata exports — the importer detects the
 format, converts it into the **AVefi schema** (Work → Manifestation → Item),
