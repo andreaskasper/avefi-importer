@@ -132,5 +132,9 @@ docker restart avefi_worker
 ```
 
 Das ist beim Testen leicht zu übersehen: Die Weboberfläche zeigt sofort den neuen Stand,
-die Verarbeitung im Hintergrund noch den alten. Von selbst startet der Prozess erst nach
-sieben Tagen oder bei mehr als 1 GB Speicherverbrauch neu.
+die Verarbeitung im Hintergrund noch den alten.
+
+Deshalb beendet sich der Prozess seit dem 25.08.2026 **alle zehn Minuten** von selbst und
+wird von `restart: always` neu gestartet; geänderter Worker-Code kommt damit ohne Zutun an.
+Die Laufzeit lässt sich über `WORKER_MAX_UPTIME` (Sekunden) ändern. Wer sofort testen will,
+startet weiterhin von Hand neu.

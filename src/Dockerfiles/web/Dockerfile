@@ -18,6 +18,12 @@ RUN a2enmod headers rewrite \
     && docker-php-ext-configure gd --with-webp --with-jpeg \
     && docker-php-ext-install pdo_pgsql pgsql bcmath gd zip intl mbstring
 
+# Composer-Abhängigkeiten (PhpSpreadsheet für Excel) liegen unter
+# app/code/vendor und sind NICHT im Git. Der Code kommt zur Laufzeit per Volume,
+# ein Build-Schritt hilft hier also nicht — einmalig nach dem Hochfahren:
+#   docker compose exec web sh -c "cd app/code && php composer install"
+# Fehlt vendor/, lehnt der Importer Excel-Uploads mit klarem Hinweis ab.
+
 # Upload-Ablage (siehe FILES_PATH). Das Named-Volume /mnt/files erbt beim ersten
 # Anlegen diese Rechte, sodass Apache (www-data) hineinschreiben darf.
 RUN mkdir -p /mnt/files && chown -R www-data:www-data /mnt/files

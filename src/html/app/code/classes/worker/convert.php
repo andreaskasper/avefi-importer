@@ -26,7 +26,7 @@ class convert {
 		$converter = \ConverterFactory::make($key, $import->baseFormat());
 		if ($converter === null) throw new \RuntimeException("Kein Converter für {$key}.");
 
-		$path = \Storage::firstOrgFile($import->id());
+		$path = \Storage::tableFile($import->id());
 		if ($path === null) throw new \RuntimeException("Originaldatei fehlt.");
 
 		$isNative = ($key === "avefi_json_v1");

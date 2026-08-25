@@ -28,14 +28,16 @@ include __DIR__ . "/../layout/appheader.php";
        data-csrf="<?php echo htmlattr($csrf); ?>"
        data-maxbytes="209715200">
     <input type="file" id="fileInput" multiple hidden aria-label="Metadaten-Dateien auswählen"
-           accept=".csv,.tsv,.xml,.ead,.marcxml,.marc,.json">
+           accept=".csv,.tsv,.xlsx,.xlsm,.xls,.ods,.xml,.ead,.marcxml,.marc,.json">
     <div class="ic" aria-hidden="true">⬆</div>
     <h3>Dateien hier ablegen oder auswählen</h3>
     <p>Mehrere Dateien möglich · max. 200 MB · Format wird automatisch erkannt</p>
     <div class="formats">
-      <span class="fmt">CSV</span><span class="fmt">TSV</span><span class="fmt">XML</span>
-      <span class="fmt">EAD</span><span class="fmt">MARC-XML</span><span class="fmt">JSON</span>
+      <span class="fmt">CSV</span><span class="fmt">TSV</span><span class="fmt">Excel</span>
+      <span class="fmt">XML</span><span class="fmt">EAD</span><span class="fmt">MARC-XML</span><span class="fmt">JSON</span>
     </div>
+    <p class="dim small" style="margin-top:6px">Bei Arbeitsmappen mit mehreren Tabellenblättern
+      wird nach dem Hochladen gefragt, welche verarbeitet werden sollen.</p>
     <button type="button" class="btn btn-outline btn-sm" id="pickBtn" style="margin-top:14px">Dateien auswählen</button>
   </div>
 
@@ -108,6 +110,8 @@ include __DIR__ . "/../layout/appheader.php";
                      href="/imports/<?php echo htmlattr($imp->id()); ?>/details"
                      style="color:var(--danger);border-color:var(--danger)"
                      title="Fehlerdetails ansehen"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Details</a>
+                <?php elseif ($imp->status() === "awaiting_sheet_choice"): ?>
+                  <a class="btn btn-primary btn-sm" href="/imports/<?php echo htmlattr($imp->id()); ?>/sheets"><i class="fa-solid fa-table-list" aria-hidden="true"></i> Blatt wählen</a>
                 <?php elseif ($imp->status() === "awaiting_format_review" && $imp->usesMapping()): ?>
                   <a class="btn btn-primary btn-sm" href="/imports/<?php echo htmlattr($imp->id()); ?>/mapping"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Zuordnen</a>
                 <?php elseif ($isConverted): ?>

@@ -13,6 +13,6 @@
         "ext-pdo": "*",
         "ext-pgsql": "*",
         "opis/json-schema": "*",
-        "phpoffice/phpspreadsheet": "*"
+        "phpoffice/phpspreadsheet": "^5.9"
     }
 }

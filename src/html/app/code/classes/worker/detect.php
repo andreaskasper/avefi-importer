@@ -14,10 +14,21 @@ class detect {
 		$import   = $importId !== "" ? \Import::byId($importId) : null;
 		if ($import === null) throw new \RuntimeException("Import nicht gefunden.");
 
-		$path = \Storage::firstOrgFile($import->id());
+		$path = \Storage::tableFile($import->id());
 		if ($path === null) throw new \RuntimeException("Originaldatei fehlt.");
 
-		$base     = $import->baseFormat();
+		$base = $import->baseFormat();
+
+		// Arbeitsmappen zuerst: Ein Blatt muss herausgelöst sein, bevor irgendetwas
+		// von einer Tabelle sprechen kann.
+		if (\Spreadsheet::isSpreadsheet($base)) {
+			// Bei Kopien weiterer Blätter steht schon fest, welches gemeint ist.
+			$wanted = trim((string)($payload["sheet"] ?? ""));
+			if ($wanted !== "") self::useSheet($import, $path, $wanted);
+			else                self::routeWorkbook($import, $path, $base);
+			return;
+		}
+
 		$analysis = \Fingerprint::analyze($path, $base);
 		$fp       = (string)$analysis["fingerprint"];
 		$import->setFingerprint($fp);
@@ -72,6 +83,64 @@ class detect {
 	}
 
 	/**
+	 * Arbeitsmappe: Blätter auflisten. Genau ein brauchbares Blatt wird sofort
+	 * herausgelöst; bei mehreren entscheidet der Mensch, denn Arbeitsmappen enthalten
+	 * regelmäßig Deckblätter, Legenden und Auswertungen, die niemand importieren will.
+	 */
+	private static function routeWorkbook(\Import $import, string $path, ?string $base): void {
+		if (!\Spreadsheet::available()) {
+			$import->setReport(["stage" => "detect", "parse_errors" => [\Spreadsheet::missingHint()],
+				"summary" => ["records" => 0, "avefi_records" => 0, "valid" => 0, "invalid" => 0, "row_errors" => 0]]);
+			$import->setStatus("error");
+			return;
+		}
+
+		try {
+			$sheets = \Spreadsheet::sheets($path);
+		} catch (\Throwable $e) {
+			$import->setReport(["stage" => "detect", "parse_errors" => ["Die Arbeitsmappe konnte nicht gelesen werden: " . $e->getMessage()],
+				"summary" => ["records" => 0, "avefi_records" => 0, "valid" => 0, "invalid" => 0, "row_errors" => 0]]);
+			$import->setStatus("error");
+			echo "[detect] {$import->filename()} → Fehler (Arbeitsmappe nicht lesbar)\n";
+			return;
+		}
+
+		$usable = array_values(array_filter($sheets, fn($s) => $s["usable"]));
+		$import->setDetectedFormat("Excel · " . count($sheets) . " " . (count($sheets) === 1 ? "Blatt" : "Blätter"));
+
+		if (!$usable) {
+			$import->setReport(["stage" => "detect", "sheets" => $sheets,
+				"parse_errors" => ["Kein Tabellenblatt enthält eine Kopfzeile mit mindestens zwei Spalten und einer Datenzeile."],
+				"summary" => ["records" => 0, "avefi_records" => 0, "valid" => 0, "invalid" => 0, "row_errors" => 0]]);
+			$import->setStatus("error");
+			echo "[detect] {$import->filename()} → Fehler (kein brauchbares Blatt)\n";
+			return;
+		}
+
+		if (count($usable) === 1) {
+			self::useSheet($import, $path, $usable[0]["name"]);
+			return;
+		}
+
+		$import->setReport(["stage" => "detect", "sheets" => $sheets,
+			"summary" => ["records" => 0, "avefi_records" => 0, "valid" => 0, "invalid" => 0, "row_errors" => 0]]);
+		$import->setStatus("awaiting_sheet_choice");
+		echo "[detect] {$import->filename()} → " . count($usable) . " Blätter zur Auswahl\n";
+	}
+
+	/** Löst ein Blatt heraus und schickt den Import zurück in die Tabellen-Erkennung. */
+	public static function useSheet(\Import $import, string $path, string $sheetName): void {
+		$dest = \Storage::prepareWork($import->id(), \Spreadsheet::sheetFilename($import->filename(), $sheetName));
+		$info = \Spreadsheet::extract($path, $sheetName, $dest);
+
+		$import->setSheet($sheetName);
+		$import->setDetectedFormat("Excel · Blatt „{$sheetName}“ · {$info['cols']} Spalten");
+		echo "[detect] {$import->filename()} → Blatt „{$sheetName}“ ({$info['rows']} Zeilen)\n";
+
+		self::routeTable($import, $dest, "csv");
+	}
+
+	/**
 	 * CSV/TSV: Kopfzeilen-Hash bilden und ein Mapping-Profil suchen. Vorhanden und
 	 * vollständig → konvertieren. Sonst pausiert der Import, bis jemand die Zuordnung
 	 * gebaut hat; das ist keine Fehlersituation, sondern der vorgesehene Weg.
@@ -80,7 +149,12 @@ class detect {
 		$head = \TableHeader::read($path, $base, 5);
 		$hash = $head["hash"];
 		$import->setHeaderHash($hash);
-		$import->setDetectedFormat(strtoupper((string)$base) . " · " . count($head["columns"]) . " Spalten");
+		// Stammt die Tabelle aus einer Arbeitsmappe, soll das im Badge stehen bleiben —
+		// „CSV" wäre irreführend, hochgeladen wurde eine Excel-Datei.
+		$sheet = $import->sheet();
+		$import->setDetectedFormat($sheet !== null
+			? "Excel · Blatt „{$sheet}“ · " . count($head["columns"]) . " Spalten"
+			: strtoupper((string)$base) . " · " . count($head["columns"]) . " Spalten");
 
 		if (!$head["columns"]) {
 			$import->setReport([
@@ -100,7 +174,7 @@ class detect {
 			\WorkerJob::enqueue("convert",
 				["import_id" => $import->id(), "converter_key" => "mapping_profile:" . $profile->id()],
 				$import->id());
-			echo "[detect] {$import->filename()} → Profil „{$profile->name()}\" (v{$profile->version()})\n";
+			echo "[detect] {$import->filename()} → Profil „{$profile->name()}“ (v{$profile->version()})\n";
 			return;
 		}
 

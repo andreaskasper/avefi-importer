@@ -82,3 +82,27 @@ als nur „JSON" (z. B. *AVefi (nativ)*, *Objektliste (JSON)*, *MARC-in-JSON*,
   (Zeile/Position, Code-Ausschnitt, Lösungshinweis).
 - Alles andere (gültiges, aber unbekanntes XML/JSON, CSV ohne Titel-Spalte) landet im
   **Format-Review**.
+
+## Excel-Arbeitsmappen
+
+`.xlsx`, `.xls` und `.ods` lassen sich hochladen wie eine CSV. Eine Arbeitsmappe ist
+aber keine Tabelle, sondern mehrere — deshalb fragt der Importer, welche Tabellenblätter
+verarbeitet werden sollen, sobald mehr als eines Daten enthält.
+
+Die Liste zeigt je Blatt die Zahl der Zeilen und Spalten und eine Einschätzung.
+Vorausgewählt sind die Blätter, die nach einer Tabelle aussehen: mindestens zwei Spalten
+und eine Datenzeile unter der Kopfzeile. Deckblätter, Legenden und Auswertungen bleiben
+außen vor, lassen sich aber ankreuzen, falls die Einschätzung danebenliegt.
+
+**Jedes gewählte Blatt wird ein eigener Import** mit eigener Kopfzeile, eigener Zuordnung
+und eigenem Prüfbericht. Das ist Absicht: Zwei Blätter mit verschiedenen Spalten brauchen
+verschiedene Zuordnungen. Enthält eine Mappe nur ein brauchbares Blatt, entfällt die
+Frage und es geht direkt weiter.
+
+Aus dem gewählten Blatt wird intern eine Tabelle herausgelöst; ab da unterscheidet sich
+nichts mehr von einer hochgeladenen CSV. Die Originaldatei bleibt erhalten und lässt sich
+über das „…"-Menü weiterhin herunterladen.
+
+Zahlen- und Datumsformate werden so gelesen, wie sie in Excel angezeigt werden. Ein
+Drehdatum kommt also als `12.03.1961` an und nicht als `22351` — Excel speichert Daten
+intern als Zahl.

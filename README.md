@@ -67,6 +67,7 @@ git clone https://github.com/andreaskasper/avefi-importer.git
 cd avefi-importer/src                              # the application lives in src/
 
 docker compose up -d --build                       # web + PostgreSQL + Adminer
+docker compose exec web sh -c "cd app/code && php composer install"   # Excel-Unterstützung
 docker compose exec web php app/bot.php -t seed     # create the admin user
 ```
 
@@ -184,7 +185,7 @@ docker run --rm -it -v "$PWD/html/app/code":/app -w /app composer:2 install
 docker compose exec web php -l app/code/classes/Routing.php
 ```
 
-Supported source formats: `CSV` · `TSV` · `XML` · `EAD` · `MARC-XML` · `JSON`.
+Supported source formats: `CSV` · `TSV` · `XLSX`/`XLS`/`ODS` · `XML` · `EAD` · `MARC-XML` · `JSON`.
 
 ### Tests
 

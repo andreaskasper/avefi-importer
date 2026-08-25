@@ -35,6 +35,10 @@ DO $$ BEGIN
         ('uploading','queued','awaiting_format_review','converting','converted','error');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
+-- Nachgereicht: Arbeitsmappen mit mehreren Tabellenblättern warten auf die Auswahl,
+-- welches Blatt verarbeitet werden soll.
+ALTER TYPE import_status ADD VALUE IF NOT EXISTS 'awaiting_sheet_choice';
+
 CREATE TABLE IF NOT EXISTS imports (
     id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),  -- benennt /mnt/files/<id>/
     institution_id     INTEGER NOT NULL REFERENCES institutions(id) ON DELETE CASCADE,
@@ -135,6 +139,7 @@ CREATE TABLE IF NOT EXISTS authority_cache (
 -- Profil auch ohne den zugehörigen Import bearbeiten und die Vorschau bleibt echt.
 ALTER TABLE mapping_profiles ADD COLUMN IF NOT EXISTS sample_json JSONB;
 
+ALTER TABLE imports ADD COLUMN IF NOT EXISTS sheet_name         TEXT;   -- gewähltes Tabellenblatt
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS header_hash        TEXT;
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS mapping_profile_id INTEGER REFERENCES mapping_profiles(id) ON DELETE SET NULL;
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS mapping_version    INTEGER;

@@ -27,6 +27,7 @@ class Routing {
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/original$@', $path, $m))           { self::originalDownload($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/reconvert$@', $path, $m))          { self::reconvert($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/mapping$@', $path, $m))            { self::mappingEditor($m[1]); exit; }
+		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/sheets$@', $path, $m))             { self::sheetChoice($m[1]); exit; }
 		if (preg_match('@^/imports/([0-9a-fA-F-]{36})/mapping/(preview|save|adopt|candidates)$@', $path, $m)) { self::mappingAction($m[1], $m[2]); exit; }
 		if (preg_match('@^/mappings/(\d+)/export$@', $path, $m))                         { self::mappingExport((int)$m[1]); exit; }
 		if (preg_match('@^/mappings/(\d+)/edit$@', $path, $m))                           { self::profileEditor((int)$m[1]); exit; }
@@ -140,7 +141,9 @@ class Routing {
 			$ext        = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
 			$baseFormat = self::baseFormatForExt($ext);
 			if ($baseFormat === null)
-				return self::json(["ok" => false, "error" => "Format „." . $ext . "“ wird nicht unterstützt (CSV, TSV, XML, EAD, MARC-XML, JSON)."], 415);
+				return self::json(["ok" => false, "error" => "Format „." . $ext . "“ wird nicht unterstützt (CSV, TSV, Excel, XML, EAD, MARC-XML, JSON)."], 415);
+			if (Spreadsheet::isSpreadsheet($baseFormat) && !Spreadsheet::available())
+				return self::json(["ok" => false, "error" => Spreadsheet::missingHint()], 501);
 
 			$import = Import::create($instId, $user->id(), Storage::sanitizeFilename($origName), $size, $baseFormat);
 			try {
@@ -239,7 +242,8 @@ class Routing {
 	}
 
 	private static function baseFormatForExt(string $ext): ?string {
-		$map = ["csv" => "csv", "tsv" => "tsv", "xml" => "xml", "ead" => "ead", "marcxml" => "marcxml", "marc" => "marc", "json" => "json"];
+		$map = ["csv" => "csv", "tsv" => "tsv", "xml" => "xml", "ead" => "ead", "marcxml" => "marcxml",
+		        "marc" => "marc", "json" => "json", "xlsx" => "xlsx", "xlsm" => "xlsx", "xls" => "xls", "ods" => "ods"];
 		return $map[$ext] ?? null;
 	}
 
@@ -604,7 +608,7 @@ class Routing {
 			if ($import === null || (!$user->isAdmin() && $import->institutionId() !== $user->institutionId()))
 				return self::json(["ok" => false, "error" => "Import nicht gefunden."], 404);
 
-			if (Storage::firstOrgFile($importId) === null)
+			if (Storage::tableFile($importId) === null)
 				return self::json(["ok" => false, "error" => "Die Originaldatei ist nicht mehr vorhanden."], 409);
 
 			$key = $import->converterKey();
@@ -645,11 +649,63 @@ class Routing {
 		return self::json(["ok" => true, "busy" => $busy, "imports" => $out]);
 	}
 
+	/**
+	 * Auswahl der Tabellenblätter einer Arbeitsmappe. Jedes gewählte Blatt wird ein
+	 * eigener Import mit eigener Zuordnung — das erste übernimmt diesen Import, für
+	 * weitere entstehen neue.
+	 */
+	private static function sheetChoice(string $importId): void {
+		$import = self::ownedImportOr404($importId);
+		$path   = Storage::firstOrgFile($importId);
+		$sheets = $import->sheets();
+
+		if ($path === null || !$sheets) { self::redirect("/"); exit; }
+
+		if (($_SERVER["REQUEST_METHOD"] ?? "GET") !== "POST") {
+			self::view("page_sheets/page_sheets", ["active" => "imports", "import" => $import,
+				"sheets" => $sheets, "error" => $_GET["error"] ?? null]);
+			exit;
+		}
+
+		if (!Csrf::check($_POST["_csrf"] ?? null)) { self::redirect("/imports/{$importId}/sheets?error=csrf"); exit; }
+
+		$wanted = array_values(array_filter(
+			is_array($_POST["sheets"] ?? null) ? $_POST["sheets"] : [],
+			fn($n) => in_array((string)$n, array_column($sheets, "name"), true)
+		));
+		if (!$wanted) { self::redirect("/imports/{$importId}/sheets?error=leer"); exit; }
+
+		$user = MyUser::current();
+		try {
+			// Erstes Blatt übernimmt diesen Import.
+			\worker\detect::useSheet($import, $path, (string)$wanted[0]);
+
+			// Weitere Blätter bekommen einen eigenen Import samt Kopie der Arbeitsmappe,
+			// damit jeder für sich vollständig bleibt (auch der Download des Originals).
+			foreach (array_slice($wanted, 1) as $name) {
+				$copy = Import::create($import->institutionId(), $user->id(),
+					$import->filename(), $import->filesize(), $import->baseFormat());
+				if (Storage::copyOriginal($importId, $copy->id()) === null) {
+					$copy->setStatus("error");
+					continue;
+				}
+				$copy->setStatus("queued");
+				WorkerJob::enqueue("detect", ["import_id" => $copy->id(), "sheet" => (string)$name], $copy->id());
+			}
+		} catch (\Throwable $e) {
+			error_log("[sheets] " . $e->getMessage());
+			self::redirect("/imports/{$importId}/sheets?error=lesen"); exit;
+		}
+
+		self::redirect("/?added=1");
+		exit;
+	}
+
 	/* ==================== Mapping-Editor ==================== */
 
-	/** Liest Kopfzeile und Stichprobe der Originaldatei eines Imports. */
+	/** Liest Kopfzeile und Stichprobe der Tabelle eines Imports (Blatt oder Originaldatei). */
 	private static function tableOf(Import $import): ?array {
-		$path = Storage::firstOrgFile($import->id());
+		$path = Storage::tableFile($import->id());
 		if ($path === null || !is_file($path)) return null;
 		return TableHeader::read($path, $import->baseFormat());
 	}

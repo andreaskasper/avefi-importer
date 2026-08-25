@@ -12,7 +12,7 @@
   var URL_UPLOAD = dz.getAttribute("data-upload-url") || "/upload";
   var CSRF       = dz.getAttribute("data-csrf") || "";
   var MAXBYTES   = parseInt(dz.getAttribute("data-maxbytes") || "209715200", 10);
-  var ALLOWED    = ["csv", "tsv", "xml", "ead", "marcxml", "marc", "json"];
+  var ALLOWED    = ["csv", "tsv", "xlsx", "xlsm", "xls", "ods", "xml", "ead", "marcxml", "marc", "json"];
 
   /* ---- Dateiauswahl ---- */
   pickBtn && pickBtn.addEventListener("click", function () { fileInput.click(); });

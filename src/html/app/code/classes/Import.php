@@ -89,6 +89,23 @@ class Import {
 		$this->row["mapping_version"]    = $version;
 	}
 
+	/** Gewähltes Tabellenblatt (nur bei Arbeitsmappen). */
+	public function sheet(): ?string {
+		$v = $this->row["sheet_name"] ?? null;
+		return ($v !== null && $v !== "") ? (string)$v : null;
+	}
+
+	public function setSheet(string $name): void {
+		self::tolerant("UPDATE imports SET sheet_name = :s WHERE id = :id", [":s" => $name, ":id" => $this->id()]);
+		$this->row["sheet_name"] = $name;
+	}
+
+	/** Blätter einer Arbeitsmappe, die zur Auswahl stehen. */
+	public function sheets(): array {
+		$r = $this->report();
+		return is_array($r["sheets"] ?? null) ? $r["sheets"] : [];
+	}
+
 	public function headerHash(): ?string {
 		$v = $this->row["header_hash"] ?? null;
 		return ($v !== null && $v !== "") ? (string)$v : null;
@@ -176,6 +193,7 @@ class Import {
 			case "uploading":              return ["b-neutral", "Lädt hoch"];
 			case "queued":                 return ["b-neutral", "Wartend"];
 			case "awaiting_format_review": return ["b-wait",    "Neues Format – Review nötig"];
+			case "awaiting_sheet_choice":  return ["b-wait",    "Tabellenblatt wählen"];
 			case "converting":             return ["b-info",    "In Konvertierung"];
 			case "converted":              return ["b-ok",      "Konvertiert"];
 			case "error":                  return ["b-danger",  "Fehler"];
