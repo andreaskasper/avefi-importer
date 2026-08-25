@@ -610,6 +610,13 @@ ul.tight li{margin-bottom:3px;font-size:13px}
 
 #importsTable table{table-layout:fixed}
 #importsTable td,#importsTable th{overflow:hidden}
+/* Die Aktionsspalte darf nicht abgeschnitten werden: „Bearbeiten" plus „…" brauchen
+   rund 151 px, dazu 24 px Zellenpolsterung — bei 154 px Spaltenbreite ragte der
+   Menüknopf heraus und wurde vom overflow:hidden gekappt. Jetzt 200 px, und die
+   Zelle schneidet grundsätzlich nicht ab. */
+#importsTable td:last-child,#importsTable th:last-child{overflow:visible}
+#importsTable .rowactions{white-space:nowrap;flex-wrap:nowrap}
+#importsTable .rowactions > *{flex:none}
 #importsTable .fn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #importsTable .fmt{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;
   vertical-align:bottom}

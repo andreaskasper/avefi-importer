@@ -69,9 +69,9 @@ include __DIR__ . "/../layout/appheader.php";
         <!-- Feste Breiten: lange Dateinamen sollen die Tabelle nicht über den Rand
              hinaus dehnen, sondern gekürzt werden (voller Name im Tooltip). -->
         <colgroup>
-          <col style="width:27%"><col style="width:13%"><col style="width:12%">
+          <col style="width:26%"><col style="width:12%"><col style="width:12%">
           <col style="width:17%"><col style="width:9%"><col style="width:12%">
-          <col style="width:154px">
+          <col style="width:200px">
         </colgroup>
         <thead><tr>
           <th scope="col">Datei</th><th scope="col">Format</th><th scope="col">Upload</th><th scope="col">Verarbeitung</th>
