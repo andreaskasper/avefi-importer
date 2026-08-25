@@ -107,7 +107,10 @@ thead th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(
   font-weight:700;padding:9px 12px;border-bottom:1px solid var(--border)}
 tbody td{padding:12px;border-bottom:1px solid var(--border);font-size:13.5px;vertical-align:middle}
 tbody tr:hover{background:var(--surface-2)}
-.tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
+/* Nur waagerecht rollen. Steht overflow-x auf auto und overflow-y auf visible,
+   rechnet der Browser die zweite Achse ebenfalls zu auto — und der waagerechte
+   Balken verkleinert den Inhaltsbereich gerade so, dass ein senkrechter dazukommt. */
+.tablewrap{overflow-x:auto;overflow-y:hidden;border:1px solid var(--border);border-radius:12px}
 
 /* cards / kpi */
 .card{border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:16px}
@@ -597,3 +600,16 @@ ul.tight li{margin-bottom:3px;font-size:13px}
 .jsonbox summary{cursor:pointer;padding:8px 11px;font-size:12.5px;font-weight:600}
 .jsonbox pre{margin:0;padding:0 11px 11px;max-height:340px;overflow:auto;font-size:11.5px;line-height:1.45}
 .prog.warnbar i{background:var(--warn)}
+
+
+/* ------- Feste Breiten, damit gar nicht erst gerollt wird -------
+   Tabellen mit fester Breite laufen nie über ihren Container hinaus. Für sie darf
+   der Rahmen deshalb sichtbar überstehen — sonst würde overflow:hidden aufklappende
+   Menüs wie die Konverter-Auswahl an der Tabellenkante abschneiden. */
+#importsTable,#mappingApp .tablewrap{overflow:visible}
+
+#importsTable table{table-layout:fixed}
+#importsTable td,#importsTable th{overflow:hidden}
+#importsTable .fn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#importsTable .fmt{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;
+  vertical-align:bottom}

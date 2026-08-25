@@ -66,6 +66,13 @@ include __DIR__ . "/../layout/appheader.php";
     <div class="tablewrap" id="importsTable" data-import-actions data-csrf="<?php echo htmlattr($csrf); ?>">
       <table>
         <caption class="sr-only">Ihre Importe mit Format, Fortschritt, Verarbeitungsstatus und Aktionen</caption>
+        <!-- Feste Breiten: lange Dateinamen sollen die Tabelle nicht über den Rand
+             hinaus dehnen, sondern gekürzt werden (voller Name im Tooltip). -->
+        <colgroup>
+          <col style="width:27%"><col style="width:13%"><col style="width:12%">
+          <col style="width:17%"><col style="width:9%"><col style="width:12%">
+          <col style="width:154px">
+        </colgroup>
         <thead><tr>
           <th scope="col">Datei</th><th scope="col">Format</th><th scope="col">Upload</th><th scope="col">Verarbeitung</th>
           <th scope="col">Datensätze</th><th scope="col">Hochgeladen</th><th scope="col" style="text-align:right">Aktion</th>
@@ -80,7 +87,7 @@ include __DIR__ . "/../layout/appheader.php";
         ?>
           <tr data-import-id="<?php echo htmlattr($imp->id()); ?>">
             <td>
-              <div class="fn"><?php echo html($imp->filename()); ?></div>
+              <div class="fn" title="<?php echo htmlattr($imp->filename()); ?>"><?php echo html($imp->filename()); ?></div>
               <?php if ($sizeMb !== ""): ?><div class="dim small"><?php echo html($sizeMb); ?></div><?php endif; ?>
             </td>
             <?php $fmtLabel = $imp->detectedFormat() ?: ($imp->baseFormat() ? strtoupper($imp->baseFormat()) : null); ?>
