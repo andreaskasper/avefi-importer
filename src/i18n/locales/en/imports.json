@@ -11,7 +11,7 @@
     "heading": "Imports",
     "kpi": {
       "records": "Records converted",
-      "awaiting": "Waiting for a mapping"
+      "awaiting": "files awaiting mapping"
     },
     "upload": {
       "legend": "Upload a file",
@@ -54,7 +54,8 @@
         "heading": "No imports yet",
         "text": "Upload a metadata file above to get started."
       },
-      "kilobytes": "{size} KB"
+      "kilobytes": "{size} KB",
+      "uploadDone": "Uploaded"
     },
     "status": {
       "uploading": "Uploading",

@@ -85,6 +85,18 @@ function sizeOf(bytes: number) {
 function progressOf(item: ImportListItem): number {
   return Math.max(0, Math.min(100, item.upload_progress))
 }
+
+/**
+ * Der Fortschrittsbalken gilt nur, solange wirklich hochgeladen wird.
+ *
+ * Importe, die aus der Blattauswahl einer Arbeitsmappe entstehen, haben nie
+ * einen eigenen Upload und behalten upload_progress = 0. Ohne diese
+ * Unterscheidung behauptet die Liste bei einer laengst verarbeiteten Datei
+ * „0 %", der Upload laufe noch.
+ */
+function isUploading(item: ImportListItem): boolean {
+  return item.status === 'uploading'
+}
 </script>
 
 <template>
@@ -131,12 +143,15 @@ function progressOf(item: ImportListItem): number {
               <span v-else class="dim">{{ t('imports.table.none') }}</span>
             </td>
             <td style="min-width:110px">
-              <div class="prog" :class="progressOf(item) >= 100 ? 'ok' : 'acc'" role="progressbar"
-                   aria-valuemin="0" aria-valuemax="100" :aria-valuenow="progressOf(item)"
-                   :aria-label="t('imports.table.progressLabel', { percent: progressOf(item) })">
-                <i :style="{ width: progressOf(item) + '%' }" />
-              </div>
-              <div class="dim small tnum" aria-hidden="true">{{ progressOf(item) }} %</div>
+              <template v-if="isUploading(item)">
+                <div class="prog acc" role="progressbar"
+                     aria-valuemin="0" aria-valuemax="100" :aria-valuenow="progressOf(item)"
+                     :aria-label="t('imports.table.progressLabel', { percent: progressOf(item) })">
+                  <i :style="{ width: progressOf(item) + '%' }" />
+                </div>
+                <div class="dim small tnum" aria-hidden="true">{{ progressOf(item) }} %</div>
+              </template>
+              <span v-else class="dim small">{{ t('imports.table.uploadDone') }}</span>
             </td>
             <td><ImportsStatusBadge :status="item.status" /></td>
             <td class="tnum">

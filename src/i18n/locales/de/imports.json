@@ -11,7 +11,7 @@
     "heading": "Importe",
     "kpi": {
       "records": "Datensätze konvertiert",
-      "awaiting": "Wartet auf Zuordnung"
+      "awaiting": "Dateien warten auf Zuordnung"
     },
     "upload": {
       "legend": "Datei hochladen",
@@ -54,7 +54,8 @@
         "heading": "Noch keine Importe",
         "text": "Lade oben eine Metadaten-Datei hoch, um zu beginnen."
       },
-      "kilobytes": "{size} KB"
+      "kilobytes": "{size} KB",
+      "uploadDone": "Hochgeladen"
     },
     "status": {
       "uploading": "Lädt hoch",

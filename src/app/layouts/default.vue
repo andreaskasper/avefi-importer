@@ -65,7 +65,11 @@ function toggleTheme() {
                   :aria-current="active === 'imports' ? 'page' : undefined">{{ t('nav.imports') }}</NuxtLink>
         <NuxtLink to="/mappings" :class="active === 'mappings' ? 'on' : ''"
                   :aria-current="active === 'mappings' ? 'page' : undefined">{{ t('nav.mappings') }}</NuxtLink>
-        <NuxtLink v-if="user?.is_admin" to="/reviews" :class="active === 'reviews' ? 'on' : ''">
+        <!-- Das Abzeichen zaehlt Zuordnungs-AUFGABEN (je Institution und Kopfzeile),
+             die Kachel auf der Startseite zaehlt wartende DATEIEN. Beide Zahlen sind
+             richtig und meinen Verschiedenes; der Titel sagt, welche hier steht. -->
+        <NuxtLink v-if="user?.is_admin" to="/reviews" :class="active === 'reviews' ? 'on' : ''"
+                  :title="reviewCount ? t('nav.reviewsTitle', { count: reviewCount.open }) : undefined">
           {{ t('nav.reviews') }}
           <span v-if="reviewCount && reviewCount.open > 0" class="badge b-wait"
                 style="padding:1px 6px;margin-left:2px">{{ reviewCount.open }}</span>

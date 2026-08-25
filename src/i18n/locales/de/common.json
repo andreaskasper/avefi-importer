@@ -3,9 +3,33 @@
   "toStart": "Zur Startseite",
   "mainNav": "Hauptnavigation",
   "userMenu": "Benutzermenü: {name}",
-  "nav": { "imports": "Importe", "mappings": "Zuordnungen", "reviews": "Format-Review" },
-  "menu": { "profile": "Mein Profil", "users": "Nutzer verwalten", "logout": "Abmelden" },
-  "theme": { "switch": "Design wechseln", "label": "Theme" },
-  "action": { "save": "Speichern", "cancel": "Abbrechen", "delete": "Löschen", "back": "Zurück", "close": "Schließen", "download": "Herunterladen", "retry": "Erneut versuchen" },
-  "state": { "loading": "Wird geladen …", "empty": "Nichts vorhanden.", "error": "Das hat nicht geklappt." }
+  "nav": {
+    "imports": "Importe",
+    "mappings": "Zuordnungen",
+    "reviews": "Format-Review",
+    "reviewsTitle": "Offene Zuordnungsaufgaben: {count}"
+  },
+  "menu": {
+    "profile": "Mein Profil",
+    "users": "Nutzer verwalten",
+    "logout": "Abmelden"
+  },
+  "theme": {
+    "switch": "Design wechseln",
+    "label": "Theme"
+  },
+  "action": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "back": "Zurück",
+    "close": "Schließen",
+    "download": "Herunterladen",
+    "retry": "Erneut versuchen"
+  },
+  "state": {
+    "loading": "Wird geladen …",
+    "empty": "Nichts vorhanden.",
+    "error": "Das hat nicht geklappt."
+  }
 }
