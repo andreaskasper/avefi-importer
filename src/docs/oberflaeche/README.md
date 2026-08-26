@@ -4,7 +4,7 @@ Diese Sammlung beschreibt jede Seite des AVefi Importers so, dass man sie ohne B
 
 Die Beschreibungen sind aus der laufenden Anwendung ausgelesen, nicht aus dem Quelltext abgeschrieben. Was hier steht, ist also der Stand, den ein Browser tatsaechlich aufbaut.
 
-**Stand:** 2026-08-26, Commit `51cecf8`. Erzeugt gegen `https://avefiimporter.goo1.de`, gemessen in einem Fenster von 1500 mal 1100 Pixeln.
+**Stand:** 2026-08-26, Commit `cc7ca3f`. Erzeugt gegen `https://avefiimporter.goo1.de`, gemessen in einem Fenster von 1500 mal 1100 Pixeln.
 
 Zu jeder Beschreibung liegt ein Bildschirmabzug mit demselben Dateinamen und der Endung `.png` im selben Verzeichnis. Der ist nicht Teil der Beschreibung, sondern dafuer da, dass Sehende in einer Runde denselben Stand vor Augen haben.
 

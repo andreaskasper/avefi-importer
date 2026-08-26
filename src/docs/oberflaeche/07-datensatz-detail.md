@@ -58,11 +58,11 @@ So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die
 21. „Ort hinzufügen" — Schaltflaeche, im main
 22. „Haupttitel" — Eingabefeld, im main
 23. „Titelart" — Auswahlfeld, im main
-24. „Titel entfernen" — Schaltflaeche, im main
+24. „Titel 1 entfernen" — Schaltflaeche, im main
 25. „Weiterer Titel" — Eingabefeld, im main
 26. „Titelart" — Auswahlfeld, im main
-27. „Zum Haupttitel machen" — Schaltflaeche, im main
-28. „Titel entfernen" — Schaltflaeche, im main
+27. „Titel 2: Zum Haupttitel machen" — Schaltflaeche, im main
+28. „Titel 2 entfernen" — Schaltflaeche, im main
 29. „Weiteren Titel hinzufügen" — Schaltflaeche, im main
 30. „Alle offenen Einträge abgleichen" — Schaltflaeche, im main
 31. „Eintrag hinzufügen" — Schaltflaeche, im main
@@ -72,9 +72,9 @@ So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die
 35. „Form hinzufügen" — Schaltflaeche, im main
 36. „Kennungstyp" — Auswahlfeld, im main
 37. „Kennung" — Eingabefeld, im main
-38. „Kennung entfernen" — Schaltflaeche, im main
-39. „Kennung hinzufügen" — Schaltflaeche, im main
-40. „Notiz hinzufügen" — Schaltflaeche, im main
+38. „Werk: Kennung 1 entfernen" — Schaltflaeche, im main
+39. „Werk: Kennung hinzufügen" — Schaltflaeche, im main
+40. „Werk: Notiz hinzufügen" — Schaltflaeche, im main
 41. „← Zurück zur Liste" — Schaltflaeche, im main
 
 ### Formularfelder
@@ -129,13 +129,11 @@ Mit Alternativtext:
 
 ### Auffaelligkeiten
 
-Was beim Bedienen stoert. Das ist eine Beschreibung, keine Wertung nach WCAG — die maschinelle Pruefung steht in `tests/a11y/axe.mjs`.
-
-- 2 mal derselbe Name „Titel entfernen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+Nichts, was beim Bedienen im Weg steht.
 
 ## Teil 2 — Wie es raeumlich angeordnet ist
 
-Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1904 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Der Bereich „Prüfung gegen das AVefi-Schema" liegt oben mittig und ist 1084 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungen", „Importe". Die breiten Schaltflaechen im Inhalt sind „Ort hinzufügen" (unten links), „Zum Haupttitel machen" (unten rechts), „Weiteren Titel hinzufügen" (unten links), „Alle offenen Einträge abgleichen" (unten rechts).
+Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1904 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Der Bereich „Prüfung gegen das AVefi-Schema" liegt oben mittig und ist 1084 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungen", „Importe". Die breiten Schaltflaechen im Inhalt sind „Ort hinzufügen" (unten links), „Titel 2: Zum Haupttitel machen" (unten rechts), „Weiteren Titel hinzufügen" (unten links), „Alle offenen Einträge abgleichen" (unten rechts).
 
 Der Bildschirmabzug `07-datensatz-detail.png` im selben Verzeichnis zeigt denselben Stand fuer alle, die in einer Besprechung auf denselben Bildschirm schauen wollen.
 

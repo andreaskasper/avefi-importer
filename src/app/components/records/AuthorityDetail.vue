@@ -68,7 +68,8 @@ onBeforeUnmount(() => {
             <h3 id="authority-detail-title">
               {{ data && data.detail.title ? data.detail.title : t('records.editor.authority.detailHeading') }}
             </h3>
-            <button ref="closeButton" type="button" class="modal-x" :aria-label="t('records.editor.close')"
+            <button ref="closeButton" type="button" class="modal-x"
+                    :aria-label="t('records.editor.authority.detailClose')"
                     @click="emit('close')">×</button>
           </div>
           <div class="modal-body">

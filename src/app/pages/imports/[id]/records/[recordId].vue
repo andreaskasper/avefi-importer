@@ -260,6 +260,25 @@ function addValue(list: UiValue[]) {
   list.push(emptyValue())
 }
 
+/*
+ * Zugaenglicher Name mit der Ebene davor.
+ *
+ * Kennungen, Notizen und Sprachen gibt es auf mehreren Ebenen. Ohne den Bezug
+ * hiesse jeder dieser Knoepfe gleich, und wer die Bedienelemente der Reihe nach
+ * durchgeht, koennte sie nicht auseinanderhalten.
+ */
+function inWork(text: string) {
+  return t('records.editor.aria.inScope', { scope: t('records.editor.tabs.work'), text })
+}
+function inManifestation(index: number, text: string) {
+  const scope = t('records.editor.manifestation.heading', { index: index + 1 })
+  return t('records.editor.aria.inScope', { scope, text })
+}
+function inItem(index: number, text: string) {
+  const scope = t('records.editor.item.heading', { index: index + 1 })
+  return t('records.editor.aria.inScope', { scope, text })
+}
+
 const tabs = ['work', 'manifestations', 'items'] as const
 function onTabKey(e: KeyboardEvent, index: number) {
   if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
@@ -429,7 +448,7 @@ function backToList() {
               <input v-model="place.has_name" class="input" type="text"
                      :aria-label="t('records.editor.work.productionPlace')">
               <button type="button" class="iconbtn-del"
-                      :aria-label="t('records.editor.work.removeProductionPlace')"
+                      :aria-label="t('records.editor.work.removeProductionPlace', { index: i + 1 })"
                       @click="removeAt(ui.work.productionPlaces, i)"><span aria-hidden="true">🗑</span></button>
             </div>
             <button type="button" class="btn btn-outline btn-sm"
@@ -449,10 +468,16 @@ function backToList() {
                                :label="t('records.editor.work.titleType')" />
             <span v-if="i === 0" class="ed-primary-badge">{{ t('records.editor.work.primaryBadge') }}</span>
             <button v-else type="button" class="btn btn-outline btn-xs"
-                    :title="t('records.editor.work.makePrimaryHint')" @click="makePrimary(i)">
+                    :title="t('records.editor.work.makePrimaryHint')"
+                    :aria-label="t('records.editor.aria.inScope', {
+                      scope: t('records.editor.work.titleNumber', { index: i + 1 }),
+                      text: t('records.editor.work.makePrimary')
+                    })"
+                    @click="makePrimary(i)">
               {{ t('records.editor.work.makePrimary') }}
             </button>
-            <button type="button" class="iconbtn-del" :aria-label="t('records.editor.work.removeTitle')"
+            <button type="button" class="iconbtn-del"
+                    :aria-label="t('records.editor.work.removeTitle', { index: i + 1 })"
                     @click="removeTitle(i)"><span aria-hidden="true">🗑</span></button>
           </div>
           <button type="button" class="btn btn-outline btn-sm" @click="addTitle">
@@ -471,6 +496,7 @@ function backToList() {
           <p v-if="matchMessage !== ''" class="okval" role="status">{{ matchMessage }}</p>
           <RecordsEntityRow v-for="(entity, i) in ui.work.subjects" :key="entity.key" :entity="entity"
                             :kinds="subjectKinds" :id-prefix="`subject-${entity.key}`"
+                            :index="i + 1" :remove-label="t('records.editor.removeEntry', { index: i + 1 })"
                             @remove="removeAt(ui.work.subjects, i)" @detail="openDetail" />
           <button type="button" class="btn btn-outline btn-sm" @click="ui.work.subjects.push(emptyEntity('subject'))">
             <span aria-hidden="true">+</span> {{ t('records.editor.work.addSubject') }}
@@ -482,6 +508,8 @@ function backToList() {
           <p class="note" style="margin-top:0">{{ t('records.editor.work.activitiesHint') }}</p>
           <RecordsActivityRow v-for="(act, i) in ui.work.activities" :key="act.key" :act="act"
                               :categories="activityCategories" :config="config" :id-prefix="`act-${act.key}`"
+                              :index="i + 1"
+                              :remove-label="t('records.editor.activity.remove', { index: i + 1 })"
                               @remove="removeAt(ui.work.activities, i)" @detail="openDetail" />
           <button type="button" class="btn btn-outline btn-sm"
                   @click="ui.work.activities.push(emptyActivity('avefi:DirectingActivity'))">
@@ -504,7 +532,7 @@ function backToList() {
             <input v-model="event.has_date" class="input" type="text"
                    :aria-label="t('records.editor.work.eventDate')"
                    :placeholder="t('records.editor.work.eventDate')">
-            <button type="button" class="iconbtn-del" :aria-label="t('records.editor.work.removeEvent')"
+            <button type="button" class="iconbtn-del" :aria-label="t('records.editor.work.removeEvent', { index: i + 1 })"
                     @click="removeAt(ui.work.events, i)"><span aria-hidden="true">🗑</span></button>
           </div>
           <button type="button" class="btn btn-outline btn-sm"
@@ -517,6 +545,7 @@ function backToList() {
           <h2>{{ t('records.editor.work.genres') }}</h2>
           <RecordsEntityRow v-for="(genre, i) in ui.work.genres" :key="genre.key" :entity="genre"
                             :kinds="subjectKinds" fixed-kind :id-prefix="`genre-${genre.key}`"
+                            :index="i + 1" :remove-label="t('records.editor.work.removeGenre', { index: i + 1 })"
                             @remove="removeAt(ui.work.genres, i)" @detail="openDetail" />
           <button type="button" class="btn btn-outline btn-sm" @click="ui.work.genres.push(emptyEntity('genre'))">
             <span aria-hidden="true">+</span> {{ t('records.editor.work.addGenre') }}
@@ -527,7 +556,7 @@ function backToList() {
               <RecordsEnumSelect :id="`form-${form.key}`" v-model="form.value" :values="enums('WorkFormEnum')"
                                  :label="t('records.editor.work.form')"
                                  :placeholder="t('records.editor.work.form')" />
-              <button type="button" class="iconbtn-del" :aria-label="t('records.editor.work.removeForm')"
+              <button type="button" class="iconbtn-del" :aria-label="t('records.editor.work.removeForm', { index: i + 1 })"
                       @click="removeAt(ui.work.forms, i)"><span aria-hidden="true">🗑</span></button>
             </div>
             <button type="button" class="btn btn-outline btn-sm" @click="addValue(ui.work.forms)">
@@ -546,10 +575,13 @@ function backToList() {
             </select>
             <input v-model="id.id" class="input" type="text" :aria-label="t('records.editor.work.identifier')"
                    :placeholder="t('records.editor.work.identifier')">
-            <button type="button" class="iconbtn-del" :aria-label="t('records.editor.work.removeIdentifier')"
+            <button type="button" class="iconbtn-del"
+                    :aria-label="inWork(t('records.editor.work.removeIdentifier', { index: i + 1 }))"
                     @click="removeAt(ui.work.identifiers, i)"><span aria-hidden="true">🗑</span></button>
           </div>
-          <button type="button" class="btn btn-outline btn-sm" @click="addIdentifier(ui.work.identifiers)">
+          <button type="button" class="btn btn-outline btn-sm"
+                  :aria-label="inWork(t('records.editor.work.addIdentifier'))"
+                  @click="addIdentifier(ui.work.identifiers)">
             <span aria-hidden="true">+</span> {{ t('records.editor.work.addIdentifier') }}
           </button>
 
@@ -557,10 +589,13 @@ function backToList() {
             <div v-for="(note, i) in ui.work.notes" :key="note.key" class="ed-title-row">
               <input v-model="note.value" class="input" type="text" :aria-label="t('records.editor.work.note')"
                      :placeholder="t('records.editor.work.note')">
-              <button type="button" class="iconbtn-del" :aria-label="t('records.editor.work.removeNote')"
+              <button type="button" class="iconbtn-del"
+                      :aria-label="inWork(t('records.editor.work.removeNote', { index: i + 1 }))"
                       @click="removeAt(ui.work.notes, i)"><span aria-hidden="true">🗑</span></button>
             </div>
-            <button type="button" class="btn btn-outline btn-sm" @click="addValue(ui.work.notes)">
+            <button type="button" class="btn btn-outline btn-sm"
+                    :aria-label="inWork(t('records.editor.work.addNote'))"
+                    @click="addValue(ui.work.notes)">
               <span aria-hidden="true">+</span> {{ t('records.editor.work.addNote') }}
             </button>
           </div>
@@ -574,7 +609,8 @@ function backToList() {
         <div v-for="(m, i) in ui.manifestations" :key="m.key" class="ed-card">
           <div class="ed-card-head">
             <h2>{{ t('records.editor.manifestation.heading', { index: i + 1 }) }}</h2>
-            <button type="button" class="iconbtn-del" :aria-label="t('records.editor.manifestation.remove')"
+            <button type="button" class="iconbtn-del"
+                    :aria-label="t('records.editor.manifestation.remove', { index: i + 1 })"
                     @click="removeAt(ui.manifestations, i)"><span aria-hidden="true">🗑</span></button>
           </div>
           <div class="ed-title-row">
@@ -591,18 +627,24 @@ function backToList() {
               </option>
             </select>
             <input v-model="id.id" class="input" type="text" :aria-label="t('records.editor.work.identifier')">
-            <button type="button" class="iconbtn-del" :aria-label="t('records.editor.work.removeIdentifier')"
+            <button type="button" class="iconbtn-del"
+                    :aria-label="inManifestation(i, t('records.editor.work.removeIdentifier', { index: j + 1 }))"
                     @click="removeAt(m.identifiers, j)"><span aria-hidden="true">🗑</span></button>
           </div>
-          <button type="button" class="btn btn-outline btn-sm" @click="addIdentifier(m.identifiers)">
+          <button type="button" class="btn btn-outline btn-sm"
+                  :aria-label="inManifestation(i, t('records.editor.work.addIdentifier'))"
+                  @click="addIdentifier(m.identifiers)">
             <span aria-hidden="true">+</span> {{ t('records.editor.work.addIdentifier') }}
           </button>
           <div v-for="(note, j) in m.notes" :key="note.key" class="ed-title-row" style="margin-top:8px">
             <input v-model="note.value" class="input" type="text" :aria-label="t('records.editor.work.note')">
-            <button type="button" class="iconbtn-del" :aria-label="t('records.editor.work.removeNote')"
+            <button type="button" class="iconbtn-del"
+                    :aria-label="inManifestation(i, t('records.editor.work.removeNote', { index: j + 1 }))"
                     @click="removeAt(m.notes, j)"><span aria-hidden="true">🗑</span></button>
           </div>
-          <button type="button" class="btn btn-outline btn-sm" @click="addValue(m.notes)">
+          <button type="button" class="btn btn-outline btn-sm"
+                  :aria-label="inManifestation(i, t('records.editor.work.addNote'))"
+                  @click="addValue(m.notes)">
             <span aria-hidden="true">+</span> {{ t('records.editor.work.addNote') }}
           </button>
           <p class="note">{{ t('records.editor.manifestation.kept') }}</p>
@@ -620,7 +662,8 @@ function backToList() {
         <div v-for="(it, i) in ui.items" :key="it.key" class="ed-card">
           <div class="ed-card-head">
             <h2>{{ t('records.editor.item.heading', { index: i + 1 }) }}</h2>
-            <button type="button" class="iconbtn-del" :aria-label="t('records.editor.item.remove')"
+            <button type="button" class="iconbtn-del"
+                    :aria-label="t('records.editor.item.remove', { index: i + 1 })"
                     @click="removeAt(ui.items, i)"><span aria-hidden="true">🗑</span></button>
           </div>
           <div class="ed-title-row">
@@ -673,10 +716,13 @@ function backToList() {
                                  :values="enums('LanguageUsageEnum')"
                                  :label="t('records.editor.item.languageUsage')"
                                  :placeholder="t('records.editor.item.languageUsage')" />
-              <button type="button" class="iconbtn-del" :aria-label="t('records.editor.item.removeLanguage')"
+              <button type="button" class="iconbtn-del"
+                      :aria-label="inItem(i, t('records.editor.item.removeLanguage', { index: j + 1 }))"
                       @click="removeAt(it.languages, j)"><span aria-hidden="true">🗑</span></button>
             </div>
-            <button type="button" class="btn btn-outline btn-sm" @click="it.languages.push(emptyLanguage())">
+            <button type="button" class="btn btn-outline btn-sm"
+                    :aria-label="inItem(i, t('records.editor.item.addLanguage'))"
+                    @click="it.languages.push(emptyLanguage())">
               <span aria-hidden="true">+</span> {{ t('records.editor.item.addLanguage') }}
             </button>
           </div>
@@ -688,19 +734,25 @@ function backToList() {
               </option>
             </select>
             <input v-model="id.id" class="input" type="text" :aria-label="t('records.editor.work.identifier')">
-            <button type="button" class="iconbtn-del" :aria-label="t('records.editor.work.removeIdentifier')"
+            <button type="button" class="iconbtn-del"
+                    :aria-label="inItem(i, t('records.editor.work.removeIdentifier', { index: j + 1 }))"
                     @click="removeAt(it.identifiers, j)"><span aria-hidden="true">🗑</span></button>
           </div>
-          <button type="button" class="btn btn-outline btn-sm" @click="addIdentifier(it.identifiers)">
+          <button type="button" class="btn btn-outline btn-sm"
+                  :aria-label="inItem(i, t('records.editor.work.addIdentifier'))"
+                  @click="addIdentifier(it.identifiers)">
             <span aria-hidden="true">+</span> {{ t('records.editor.work.addIdentifier') }}
           </button>
 
           <div v-for="(note, j) in it.notes" :key="note.key" class="ed-title-row" style="margin-top:8px">
             <input v-model="note.value" class="input" type="text" :aria-label="t('records.editor.work.note')">
-            <button type="button" class="iconbtn-del" :aria-label="t('records.editor.work.removeNote')"
+            <button type="button" class="iconbtn-del"
+                    :aria-label="inItem(i, t('records.editor.work.removeNote', { index: j + 1 }))"
                     @click="removeAt(it.notes, j)"><span aria-hidden="true">🗑</span></button>
           </div>
-          <button type="button" class="btn btn-outline btn-sm" @click="addValue(it.notes)">
+          <button type="button" class="btn btn-outline btn-sm"
+                  :aria-label="inItem(i, t('records.editor.work.addNote'))"
+                  @click="addValue(it.notes)">
             <span aria-hidden="true">+</span> {{ t('records.editor.work.addNote') }}
           </button>
         </div>

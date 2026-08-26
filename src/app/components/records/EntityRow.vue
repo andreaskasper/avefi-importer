@@ -16,6 +16,15 @@ const props = defineProps<{
   /** Feste Art (Genre); dann entfaellt die Auswahl. */
   fixedKind?: boolean
   idPrefix: string
+  /** Laufende Nummer der Zeile, ab 1. Sie steht in jedem Namen dieser Zeile. */
+  index: number
+  /**
+   * Zugaenglicher Name des Loeschknopfs.
+   *
+   * Die Zeile weiss nicht, ob sie unter „Erschliessung" oder unter „Genre"
+   * steht. Das gehoert in den Namen, sonst heissen alle Loeschknoepfe gleich.
+   */
+  removeLabel: string
 }>()
 
 const emit = defineEmits<{ remove: []; detail: [string, string]; change: [] }>()
@@ -102,6 +111,21 @@ function removeRef(index: number) {
   props.entity.same_as.splice(index, 1)
   emit('change')
 }
+
+/*
+ * Bezug auf diese Zeile: Name und laufende Nummer.
+ *
+ * Der Name allein genuegt nicht — zwei Zeilen duerfen denselben Namen tragen,
+ * und dann hiessen auch ihre Vorschlagsknoepfe gleich.
+ */
+const rowScope = computed(() => t('records.editor.aria.rowName', {
+  name: props.entity.has_name.trim() === '' ? kindLabel.value : props.entity.has_name.trim(),
+  index: props.index
+}))
+
+function scoped(text: string) {
+  return t('records.editor.aria.inScope', { scope: rowScope.value, text })
+}
 </script>
 
 <template>
@@ -123,21 +147,24 @@ function removeRef(index: number) {
         :placeholder="t('records.editor.authority.search', { kind: kindLabel })"
         @pick="take" />
 
-      <RecordsSameAsChips :list="entity.same_as" @remove="removeRef" @detail="(s, i) => emit('detail', s, i)" />
+      <RecordsSameAsChips :list="entity.same_as" :scope="rowScope" @remove="removeRef"
+                          @detail="(s, i) => emit('detail', s, i)" />
 
       <div v-if="!hasId && entity.suggest.length > 0" class="ed-suggest">
         <span class="ed-suggest-lbl">{{ t('records.editor.authority.suggestion') }}</span>
         <button v-for="hit in entity.suggest" :key="`${hit.source}-${hit.id}`" type="button"
                 class="idbadge idbadge-info" :title="hit.description"
                 @click="emit('detail', hit.source, hit.id)">
+          <span class="sr-only">{{ rowScope }}</span>
           <span class="idbadge-src" :class="`src-${hit.source}`">{{ hit.source }}</span>
           <span class="idbadge-lab">{{ hit.label }}</span>
           <span class="idbadge-id">{{ hit.id }}</span>
         </button>
-        <button type="button" class="btn btn-outline btn-xs" @click="acceptAll">
+        <button type="button" class="btn btn-outline btn-xs"
+                :aria-label="scoped(t('records.editor.authority.accept'))" @click="acceptAll">
           {{ t('records.editor.authority.accept') }}
         </button>
-        <button type="button" class="linkbtn" :aria-label="t('records.editor.authority.dismiss')"
+        <button type="button" class="linkbtn" :aria-label="scoped(t('records.editor.authority.dismiss'))"
                 @click="dismiss">×</button>
       </div>
 
@@ -146,17 +173,18 @@ function removeRef(index: number) {
         <button v-for="hit in entity.ambiguous" :key="`${hit.source}-${hit.id}`" type="button"
                 class="idbadge idbadge-info" :title="t('records.editor.authority.choose')"
                 @click="take(hit)">
+          <span class="sr-only">{{ rowScope }}</span>
           <span class="idbadge-src" :class="`src-${hit.source}`">{{ hit.source }}</span>
           <span class="idbadge-lab">{{ hit.label }}</span>
           <span v-if="hit.description" class="idbadge-desc">{{ hit.description }}</span>
           <span class="idbadge-id">{{ hit.id }}</span>
         </button>
-        <button type="button" class="linkbtn" :aria-label="t('records.editor.authority.dismiss')"
+        <button type="button" class="linkbtn" :aria-label="scoped(t('records.editor.authority.dismiss'))"
                 @click="dismiss">×</button>
       </div>
     </div>
 
-    <button type="button" class="iconbtn-del" :aria-label="t('records.editor.removeEntry')"
+    <button type="button" class="iconbtn-del" :aria-label="removeLabel"
             @click="emit('remove')"><span aria-hidden="true">🗑</span></button>
   </div>
 </template>

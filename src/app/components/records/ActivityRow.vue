@@ -13,6 +13,10 @@ const props = defineProps<{
   categories: ActivityCategory[]
   config: EditorConfig
   idPrefix: string
+  /** Laufende Nummer der Zeile, ab 1. Sie steht in jedem Namen dieser Zeile. */
+  index: number
+  /** Zugaenglicher Name des Loeschknopfs, samt laufender Nummer. */
+  removeLabel: string
 }>()
 
 const emit = defineEmits<{ remove: []; detail: [string, string]; change: [] }>()
@@ -24,6 +28,12 @@ const roleValues = computed(() => {
 })
 
 const kind = computed(() => (props.act.agentType === 'CorporateBody' ? 'corporate' : 'person'))
+
+/** Bezug auf diese Zeile: Name und laufende Nummer. */
+const rowScope = computed(() => t('records.editor.aria.rowName', {
+  name: props.act.name.trim() === '' ? t('records.editor.activity.person') : props.act.name.trim(),
+  index: props.index
+}))
 
 function take(hit: AuthorityHit) {
   addSameAs(props.act.same_as, hit)
@@ -60,10 +70,11 @@ function removeRef(index: number) {
         :label="t('records.editor.activity.person')"
         :placeholder="t('records.editor.authority.search', { kind: t('records.editor.activity.person') })"
         @pick="take" />
-      <RecordsSameAsChips :list="act.same_as" @remove="removeRef" @detail="(s, i) => emit('detail', s, i)" />
+      <RecordsSameAsChips :list="act.same_as" :scope="rowScope" @remove="removeRef"
+                          @detail="(s, i) => emit('detail', s, i)" />
     </div>
 
-    <button type="button" class="iconbtn-del" :aria-label="t('records.editor.activity.remove')"
+    <button type="button" class="iconbtn-del" :aria-label="removeLabel"
             @click="emit('remove')"><span aria-hidden="true">🗑</span></button>
   </div>
 </template>
