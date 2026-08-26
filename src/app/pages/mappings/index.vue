@@ -153,14 +153,24 @@ function formatDate(value: string): string {
             <td class="tnum">{{ t('mapping.list.imports', { n: profile.use_count }) }}</td>
             <td class="dim small tnum">{{ formatDate(profile.updated_at) }}</td>
             <td style="text-align:right">
+              <!--
+                Sichtbar bleibt das kurze Wort beziehungsweise das Sinnbild.
+                Vorgelesen wird die Handlung samt Profilnamen; das Sinnbild
+                selbst ist ausgeblendet und gehoert nicht in den Namen.
+              -->
               <div class="rowactions">
                 <NuxtLink v-if="profile.own && profile.has_sample" class="btn btn-primary btn-sm"
-                          :to="`/mappings/${profile.id}/edit`">{{ t('mapping.list.edit') }}</NuxtLink>
-                <NuxtLink class="btn btn-outline btn-sm" :to="`/mappings/${profile.id}`">
+                          :to="`/mappings/${profile.id}/edit`"
+                          :aria-label="t('mapping.list.editFor', { name: profile.name })">
+                  {{ t('mapping.list.edit') }}</NuxtLink>
+                <NuxtLink class="btn btn-outline btn-sm" :to="`/mappings/${profile.id}`"
+                          :aria-label="t('mapping.list.viewFor', { name: profile.name })">
                   {{ t('mapping.list.view') }}
                 </NuxtLink>
                 <a class="btn btn-outline btn-sm" :href="`/api/mappings/${profile.id}/export`"
-                   :title="t('mapping.list.export')">⭳<span class="sr-only"> {{ t('mapping.list.export') }}</span></a>
+                   :title="t('mapping.list.exportFor', { name: profile.name })"
+                   :aria-label="t('mapping.list.exportFor', { name: profile.name })"><span
+                     aria-hidden="true">⭳</span></a>
               </div>
             </td>
           </tr>

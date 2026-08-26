@@ -267,7 +267,13 @@ function formatDateTime(value: string): string {
               <span v-if="entry.version === profile.version" class="badge b-ok">
                 <span class="bd" />{{ t('mapping.detail.active') }}
               </span>
+              <!--
+                Der Verlauf hat je Fassung einen Knopf. Ohne die Fassungsnummer
+                im Namen steht im Vorlesewerkzeug eine lange Reihe gleich
+                lautender Eintraege, die nichts unterscheidet.
+              -->
               <button v-else-if="data.own" type="button" class="btn btn-outline btn-sm" :disabled="busy"
+                      :aria-label="t('mapping.detail.restoreVersion', { n: entry.version })"
                       @click="restoring = entry.version">{{ t('mapping.detail.restore') }}</button>
             </div>
           </section>

@@ -35,7 +35,7 @@ So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die
 2. „Zur Startseite" — Link, im banner
 3. „Importe" — Link, im navigation „Hauptnavigation"
 4. „Zuordnungen" — Link, im navigation „Hauptnavigation"
-5. „Format-Review 4 offene Aufgaben" — Link, im navigation „Hauptnavigation"
+5. „Format-Review 9 offene Aufgaben" — Link, im navigation „Hauptnavigation"
 6. „Design wechseln" — Schaltflaeche, im banner
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 8. „Formatprüfung" — Link, im navigation „Formatprüfung"

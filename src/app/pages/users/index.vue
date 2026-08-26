@@ -144,14 +144,23 @@ async function remove(user: UserWithInstitution) {
               <option v-for="inst in institutions" :key="inst.id" :value="String(inst.id)">{{ inst.name }}</option>
             </select>
           </div>
-          <div class="field">
-            <label for="nu-pw">{{ t('admin.users.create.password') }}</label>
+          <!--
+            Die Ueberschrift der Gruppe ist bewusst kein label: Das Eingabefeld
+            entsteht erst mit der Auswahl, ein label wuerde bis dahin ins Leere
+            verweisen. Den Namen traegt die Gruppe, das Feld bekommt beim
+            Erscheinen ein eigenes, nur vorgelesenes label.
+          -->
+          <div class="field" role="group" aria-labelledby="nu-pw-group">
+            <span id="nu-pw-group" class="fieldhead">{{ t('admin.users.create.password') }}</span>
             <label class="checkline">
               <input v-model="form.ownPassword" type="checkbox">
               {{ form.ownPassword ? t('admin.users.detail.passwordOwn') : t('admin.users.create.passwordAuto') }}
             </label>
-            <input v-if="form.ownPassword" id="nu-pw" v-model="form.password" class="input" type="text"
-                   :minlength="minLength" required autocomplete="new-password" aria-describedby="nu-pw-hint">
+            <template v-if="form.ownPassword">
+              <label class="sr-only" for="nu-pw">{{ t('admin.users.create.password') }}</label>
+              <input id="nu-pw" v-model="form.password" class="input" type="text"
+                     :minlength="minLength" required autocomplete="new-password" aria-describedby="nu-pw-hint">
+            </template>
             <span id="nu-pw-hint" class="note">{{ t('admin.users.create.passwordHint', { min: minLength }) }}</span>
           </div>
           <label class="checkline">

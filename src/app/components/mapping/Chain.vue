@@ -128,8 +128,9 @@ onBeforeUnmount(() => {
 
     <div class="chain-add">
       <button ref="addButton" type="button" class="btn btn-outline btn-sm"
-              aria-haspopup="dialog" :aria-expanded="picking ? 'true' : 'false'" @click="togglePicker">
-        + {{ t('mapping.chain.addStep') }}
+              aria-haspopup="dialog" :aria-expanded="picking ? 'true' : 'false'"
+              :aria-label="t('mapping.chain.addStepLabel')" @click="togglePicker">
+        <span aria-hidden="true">+</span> {{ t('mapping.chain.addStep') }}
       </button>
 
       <div v-if="picking" class="chain-picker" role="dialog" :aria-label="t('mapping.chain.pickerTitle')">

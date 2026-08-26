@@ -306,9 +306,11 @@ function backToList() {
         </div>
         <div class="ed-actions">
           <NuxtLink v-if="detail.prev !== null" class="btn btn-outline btn-sm"
-                    :to="`/imports/${importId}/records/${detail.prev}`">← {{ t('records.editor.prev') }}</NuxtLink>
+                    :to="`/imports/${importId}/records/${detail.prev}`"><span
+                      aria-hidden="true">←</span> {{ t('records.editor.prev') }}</NuxtLink>
           <NuxtLink v-if="detail.next !== null" class="btn btn-outline btn-sm"
-                    :to="`/imports/${importId}/records/${detail.next}`">{{ t('records.editor.next') }} →</NuxtLink>
+                    :to="`/imports/${importId}/records/${detail.next}`">{{ t('records.editor.next') }} <span
+                      aria-hidden="true">→</span></NuxtLink>
           <button type="button" class="btn btn-outline btn-sm" :aria-expanded="showJson"
                   aria-controls="record-json" @click="showJson = !showJson">
             <span aria-hidden="true">{ }</span> {{ t('records.editor.json') }}
@@ -432,7 +434,7 @@ function backToList() {
             </div>
             <button type="button" class="btn btn-outline btn-sm"
                     @click="ui.work.productionPlaces.push({ key: nextKey(), has_name: '', raw: {} })">
-              + {{ t('records.editor.work.addProductionPlace') }}
+              <span aria-hidden="true">+</span> {{ t('records.editor.work.addProductionPlace') }}
             </button>
           </div>
         </div>
@@ -454,7 +456,7 @@ function backToList() {
                     @click="removeTitle(i)"><span aria-hidden="true">🗑</span></button>
           </div>
           <button type="button" class="btn btn-outline btn-sm" @click="addTitle">
-            + {{ t('records.editor.work.addTitle') }}
+            <span aria-hidden="true">+</span> {{ t('records.editor.work.addTitle') }}
           </button>
         </div>
 
@@ -471,7 +473,7 @@ function backToList() {
                             :kinds="subjectKinds" :id-prefix="`subject-${entity.key}`"
                             @remove="removeAt(ui.work.subjects, i)" @detail="openDetail" />
           <button type="button" class="btn btn-outline btn-sm" @click="ui.work.subjects.push(emptyEntity('subject'))">
-            + {{ t('records.editor.work.addSubject') }}
+            <span aria-hidden="true">+</span> {{ t('records.editor.work.addSubject') }}
           </button>
         </div>
 
@@ -483,7 +485,7 @@ function backToList() {
                               @remove="removeAt(ui.work.activities, i)" @detail="openDetail" />
           <button type="button" class="btn btn-outline btn-sm"
                   @click="ui.work.activities.push(emptyActivity('avefi:DirectingActivity'))">
-            + {{ t('records.editor.work.addActivity') }}
+            <span aria-hidden="true">+</span> {{ t('records.editor.work.addActivity') }}
           </button>
         </div>
 
@@ -507,7 +509,7 @@ function backToList() {
           </div>
           <button type="button" class="btn btn-outline btn-sm"
                   @click="ui.work.events.push(emptyEvent('avefi:PublicationEvent'))">
-            + {{ t('records.editor.work.addEvent') }}
+            <span aria-hidden="true">+</span> {{ t('records.editor.work.addEvent') }}
           </button>
         </div>
 
@@ -517,7 +519,7 @@ function backToList() {
                             :kinds="subjectKinds" fixed-kind :id-prefix="`genre-${genre.key}`"
                             @remove="removeAt(ui.work.genres, i)" @detail="openDetail" />
           <button type="button" class="btn btn-outline btn-sm" @click="ui.work.genres.push(emptyEntity('genre'))">
-            + {{ t('records.editor.work.addGenre') }}
+            <span aria-hidden="true">+</span> {{ t('records.editor.work.addGenre') }}
           </button>
 
           <div class="ed-forms">
@@ -529,7 +531,7 @@ function backToList() {
                       @click="removeAt(ui.work.forms, i)"><span aria-hidden="true">🗑</span></button>
             </div>
             <button type="button" class="btn btn-outline btn-sm" @click="addValue(ui.work.forms)">
-              + {{ t('records.editor.work.addForm') }}
+              <span aria-hidden="true">+</span> {{ t('records.editor.work.addForm') }}
             </button>
           </div>
         </div>
@@ -548,7 +550,7 @@ function backToList() {
                     @click="removeAt(ui.work.identifiers, i)"><span aria-hidden="true">🗑</span></button>
           </div>
           <button type="button" class="btn btn-outline btn-sm" @click="addIdentifier(ui.work.identifiers)">
-            + {{ t('records.editor.work.addIdentifier') }}
+            <span aria-hidden="true">+</span> {{ t('records.editor.work.addIdentifier') }}
           </button>
 
           <div class="ed-forms">
@@ -559,7 +561,7 @@ function backToList() {
                       @click="removeAt(ui.work.notes, i)"><span aria-hidden="true">🗑</span></button>
             </div>
             <button type="button" class="btn btn-outline btn-sm" @click="addValue(ui.work.notes)">
-              + {{ t('records.editor.work.addNote') }}
+              <span aria-hidden="true">+</span> {{ t('records.editor.work.addNote') }}
             </button>
           </div>
         </div>
@@ -593,7 +595,7 @@ function backToList() {
                     @click="removeAt(m.identifiers, j)"><span aria-hidden="true">🗑</span></button>
           </div>
           <button type="button" class="btn btn-outline btn-sm" @click="addIdentifier(m.identifiers)">
-            + {{ t('records.editor.work.addIdentifier') }}
+            <span aria-hidden="true">+</span> {{ t('records.editor.work.addIdentifier') }}
           </button>
           <div v-for="(note, j) in m.notes" :key="note.key" class="ed-title-row" style="margin-top:8px">
             <input v-model="note.value" class="input" type="text" :aria-label="t('records.editor.work.note')">
@@ -601,13 +603,13 @@ function backToList() {
                     @click="removeAt(m.notes, j)"><span aria-hidden="true">🗑</span></button>
           </div>
           <button type="button" class="btn btn-outline btn-sm" @click="addValue(m.notes)">
-            + {{ t('records.editor.work.addNote') }}
+            <span aria-hidden="true">+</span> {{ t('records.editor.work.addNote') }}
           </button>
           <p class="note">{{ t('records.editor.manifestation.kept') }}</p>
         </div>
         <button type="button" class="btn btn-outline"
                 @click="ui.manifestations.push(emptyManifestation(ui.work.titles[0]?.has_name ?? ''))">
-          + {{ t('records.editor.manifestation.add') }}
+          <span aria-hidden="true">+</span> {{ t('records.editor.manifestation.add') }}
         </button>
       </section>
 
@@ -675,7 +677,7 @@ function backToList() {
                       @click="removeAt(it.languages, j)"><span aria-hidden="true">🗑</span></button>
             </div>
             <button type="button" class="btn btn-outline btn-sm" @click="it.languages.push(emptyLanguage())">
-              + {{ t('records.editor.item.addLanguage') }}
+              <span aria-hidden="true">+</span> {{ t('records.editor.item.addLanguage') }}
             </button>
           </div>
 
@@ -690,7 +692,7 @@ function backToList() {
                     @click="removeAt(it.identifiers, j)"><span aria-hidden="true">🗑</span></button>
           </div>
           <button type="button" class="btn btn-outline btn-sm" @click="addIdentifier(it.identifiers)">
-            + {{ t('records.editor.work.addIdentifier') }}
+            <span aria-hidden="true">+</span> {{ t('records.editor.work.addIdentifier') }}
           </button>
 
           <div v-for="(note, j) in it.notes" :key="note.key" class="ed-title-row" style="margin-top:8px">
@@ -699,12 +701,12 @@ function backToList() {
                     @click="removeAt(it.notes, j)"><span aria-hidden="true">🗑</span></button>
           </div>
           <button type="button" class="btn btn-outline btn-sm" @click="addValue(it.notes)">
-            + {{ t('records.editor.work.addNote') }}
+            <span aria-hidden="true">+</span> {{ t('records.editor.work.addNote') }}
           </button>
         </div>
         <button type="button" class="btn btn-outline"
                 @click="ui.items.push(emptyItem(ui.work.titles[0]?.has_name ?? ''))">
-          + {{ t('records.editor.item.add') }}
+          <span aria-hidden="true">+</span> {{ t('records.editor.item.add') }}
         </button>
       </section>
 

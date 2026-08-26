@@ -55,7 +55,13 @@
       "chooseTarget": "Choose target",
       "editChain": "Edit converters and branches for “{column}”",
       "ignore": "Ignore column “{column}”",
-      "reset": "Reset column “{column}”"
+      "reset": "Reset column “{column}”",
+      "targetOfColumn": "{path} — edit column “{column}”",
+      "suggestionFor": "Apply suggested target {target} to column “{column}”",
+      "hintFor": "Apply target {target} known from other profiles to column “{column}”",
+      "chooseTargetFor": "Choose a target for column “{column}”",
+      "skip": "Skip the mapping table (no rows) | Skip the mapping table (one row) | Skip the mapping table ({n} rows)",
+      "sideLabel": "Result and settings"
     },
     "branch": {
       "preLabel": "Converters for every target of this column",
@@ -69,7 +75,8 @@
       "noExample": "This column is empty in the sample — no example available.",
       "add": "another target for this column",
       "addHint": "A column may end up in several places: shared chain above, own chain and own target per branch.",
-      "unknownTarget": "unknown target"
+      "unknownTarget": "unknown target",
+      "addLabel": "Add another target for this column"
     },
     "chain": {
       "slow": "slow",
@@ -82,7 +89,8 @@
       "pickerTitle": "Add converter",
       "closePicker": "Close the list",
       "moveUp": "Move converter {n} earlier",
-      "moveDown": "Move converter {n} later"
+      "moveDown": "Move converter {n} later",
+      "addStepLabel": "Add converter"
     },
     "target": {
       "search": "Search a field — name, label or schema path",
@@ -170,7 +178,8 @@
       "targetLabel": "Target of fixed value {n}",
       "valueLabel": "Value of fixed value {n}",
       "remove": "Remove fixed value {n}",
-      "add": "Fixed value"
+      "add": "Fixed value",
+      "addLabel": "Add fixed value"
     },
     "grouping": {
       "heading": "Work grouping",
@@ -224,7 +233,10 @@
       "importedNoSample": "Profile “{name}” created. The file carried no sample — supply a matching table and the mapping becomes editable.",
       "emptyHeading": "No mappings yet",
       "emptyText": "Upload a sample file to create the first one.",
-      "footer": "Profiles are visible to every institution. When a file with a known header is uploaded, your own profile wins; foreign ones are offered for adoption and copied in the process, so changes never alter anyone else's imports."
+      "footer": "Profiles are visible to every institution. When a file with a known header is uploaded, your own profile wins; foreign ones are offered for adoption and copied in the process, so changes never alter anyone else's imports.",
+      "editFor": "Edit mapping “{name}”",
+      "viewFor": "View mapping “{name}”",
+      "exportFor": "Export mapping “{name}” as JSON"
     },
     "new": {
       "title": "New mapping",
@@ -269,7 +281,8 @@
       "restore": "Restore",
       "restoreTitle": "Restore version",
       "restoreText": "Activate version {n} again? The current state stays in the history as an earlier version. Imports already converted are not re-run.",
-      "restored": "Version {n} restored."
+      "restored": "Version {n} restored.",
+      "restoreVersion": "Restore version {n}"
     },
     "error": {
       "unauthorized": "Not signed in. Please sign in again.",

@@ -75,7 +75,11 @@
       "edit": "Bearbeiten",
       "overview": "Zur Übersicht",
       "more": "Weitere Aktionen für {name}",
-      "menuLabel": "Aktionen für {name}"
+      "menuLabel": "Aktionen für {name}",
+      "detailsFor": "Details zu {name}",
+      "chooseSheetFor": "Blatt wählen für {name}",
+      "mapFor": "Zuordnen: {name}",
+      "editFor": "Datensätze von {name} bearbeiten"
     },
     "menu": {
       "mapping": "Zuordnung ansehen",

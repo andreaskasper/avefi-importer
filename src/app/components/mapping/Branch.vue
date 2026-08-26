@@ -259,8 +259,9 @@ const authorityValues = computed(() => {
 
       <div class="branch-item branch-add-item">
         <div class="branch-connector" aria-hidden="true" />
-        <button type="button" class="btn btn-outline btn-sm" @click="addTarget">
-          + {{ t('mapping.branch.add') }}
+        <button type="button" class="btn btn-outline btn-sm"
+                :aria-label="t('mapping.branch.addLabel')" @click="addTarget">
+          <span aria-hidden="true">+</span> {{ t('mapping.branch.add') }}
         </button>
         <p class="note" style="margin-top:6px">{{ t('mapping.branch.addHint') }}</p>
       </div>

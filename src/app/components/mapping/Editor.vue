@@ -539,6 +539,15 @@ const canonicalJson = computed(() => {
           </select>
         </div>
 
+        <!--
+          Die Tabelle hat je Quellspalte eine Zeile und damit mehrere hundert
+          Tabstopps. Der Sprung fuehrt daran vorbei, ohne die Reihenfolge zu
+          veraendern: Alles bleibt erreichbar, es kommt nur ein Weg hinzu.
+        -->
+        <a v-if="shownColumns.length > 0" class="skip-inline" href="#mapside">
+          {{ t('mapping.table.skip', { n: shownColumns.length }, shownColumns.length) }}
+        </a>
+
         <div class="tablewrap">
           <table class="maptable">
             <caption class="sr-only">{{ t('mapping.table.caption') }}</caption>
@@ -602,9 +611,19 @@ const canonicalJson = computed(() => {
                   </td>
 
                   <td>
+                    <!--
+                      Sichtbar bleibt der Zielpfad. Vorgelesen wird er zusammen
+                      mit der Quellspalte: Dasselbe Ziel kommt in mehreren
+                      Zeilen vor und waere sonst nicht zuzuordnen.
+                    -->
                     <div v-if="(spec(column).targets ?? []).length" class="tchips">
                       <button v-for="(binding, i) in spec(column).targets" :key="i" type="button" class="chip"
-                              :title="targetPath(binding.target)" @click="opened[column] = true">
+                              :title="targetPath(binding.target)"
+                              :aria-label="t('mapping.table.targetOfColumn', {
+                                path: binding.target ? targetPath(binding.target) : t('mapping.table.noTargetYet'),
+                                column
+                              })"
+                              @click="opened[column] = true">
                         <span v-if="binding.target">{{ targetPath(binding.target) }}</span>
                         <span v-else class="warnhint">{{ t('mapping.table.noTargetYet') }}</span>
                       </button>
@@ -614,19 +633,28 @@ const canonicalJson = computed(() => {
                     </div>
 
                     <div v-else-if="stateOf(column) !== 'ignored'" class="tsugg">
+                      <!--
+                        Das Sinnbild vor der Beschriftung ist Schmuck. Es bleibt
+                        sichtbar, wird aber ausgeblendet, damit es nicht vor dem
+                        Namen mitgelesen wird.
+                      -->
                       <button v-for="s in (payload.suggestions[column] ?? [])" :key="s.target" type="button"
                               class="chip chip-sugg"
                               :title="t('mapping.table.suggestionHint', { score: s.score, path: targetPath(s.target) })"
+                              :aria-label="t('mapping.table.suggestionFor', { target: targetPath(s.target), column })"
                               @click="addTarget(column, s.target)">
-                        ✨ {{ targetLabel(s.target) }}
+                        <span aria-hidden="true">✨</span> {{ targetLabel(s.target) }}
                       </button>
                       <button v-for="h in (payload.hints[column] ?? [])" :key="`h${h.target}`" type="button"
                               class="chip chip-sugg"
                               :title="t('mapping.table.hintHint', { n: h.count, path: targetPath(h.target) })"
+                              :aria-label="t('mapping.table.hintFor', { target: targetPath(h.target), column })"
                               @click="addTarget(column, h.target)">
-                        👥 {{ targetLabel(h.target) }}
+                        <span aria-hidden="true">👥</span> {{ targetLabel(h.target) }}
                       </button>
-                      <button type="button" class="btn btn-outline btn-sm" @click="addTarget(column)">
+                      <button type="button" class="btn btn-outline btn-sm"
+                              :aria-label="t('mapping.table.chooseTargetFor', { column })"
+                              @click="addTarget(column)">
                         {{ t('mapping.table.chooseTarget') }}
                       </button>
                     </div>
@@ -687,7 +715,7 @@ const canonicalJson = computed(() => {
         </div>
       </div>
 
-      <aside class="mapside">
+      <aside id="mapside" class="mapside" tabindex="-1" :aria-label="t('mapping.table.sideLabel')">
         <section class="card">
           <h2 class="side-h">{{ t('mapping.tree.heading') }}</h2>
           <MappingResultTree :targets="targets" :target-use="preview?.targetUse ?? {}" />
@@ -741,8 +769,9 @@ const canonicalJson = computed(() => {
             <button type="button" class="iconbtn-del" :aria-label="t('mapping.defaults.remove', { n: i + 1 })"
                     @click="removeDefault(i)">✕</button>
           </div>
-          <button type="button" class="btn btn-outline btn-sm" @click="addDefault">
-            + {{ t('mapping.defaults.add') }}
+          <button type="button" class="btn btn-outline btn-sm"
+                  :aria-label="t('mapping.defaults.addLabel')" @click="addDefault">
+            <span aria-hidden="true">+</span> {{ t('mapping.defaults.add') }}
           </button>
         </section>
 

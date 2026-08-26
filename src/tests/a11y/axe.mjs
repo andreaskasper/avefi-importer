@@ -13,6 +13,11 @@
  * Die Seitenkennungen werden aus der laufenden Anwendung gelesen. Damit taugt
  * das Skript auf jedem Bestand und muss nicht gepflegt werden, wenn ein
  * Testimport wegfaellt.
+ *
+ * Stirbt der Browser unterwegs weg — auf den grossen Zuordnungsseiten kommt
+ * das bei langen Durchgaengen vor —, wird er neu gestartet und der Abschnitt
+ * wiederholt. Sonst blieben die Staende danach ungeprueft, ohne dass es
+ * jemandem auffiele.
  */
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
@@ -78,9 +83,57 @@ async function ersteAdresse(seite, muster) {
   }, muster)
 }
 
-const browser = await chromium.launch({ args: ['--ignore-certificate-errors'] })
-const kontext = await browser.newContext({ viewport: { width: 1500, height: 1100 }, locale: 'de-DE', ignoreHTTPSErrors: true })
-const seite = await kontext.newPage()
+let browser = null
+let kontext = null
+let seite = null
+
+async function browserStarten() {
+  browser = await chromium.launch({ args: ['--ignore-certificate-errors', '--disable-dev-shm-usage'] })
+  kontext = await browser.newContext({ viewport: { width: 1500, height: 1100 }, locale: 'de-DE', ignoreHTTPSErrors: true })
+  seite = await kontext.newPage()
+}
+
+/**
+ * Nach einem Absturz von vorn: neuer Browser, neue Anmeldung.
+ *
+ * Auf den grossen Zuordnungsseiten verabschiedet sich der Browser im Laufe
+ * eines langen Durchgangs gelegentlich. Ohne diesen Rueckfall endet die
+ * Pruefung dort mitten im Lauf, und die restlichen Staende bleiben ungeprueft
+ * — das saehe aus wie „nichts gefunden", waere aber „nicht nachgesehen".
+ */
+async function browserSichern() {
+  if (browser !== null && browser.isConnected() && seite !== null && !seite.isClosed()) return
+  if (browser !== null) {
+    console.log('  Browser war weg — neu gestartet und neu angemeldet.')
+    try { await browser.close() } catch { /* schon tot */ }
+  }
+  await browserStarten()
+  await anmelden(seite)
+}
+
+/**
+ * Ein Abschnitt der Pruefung, der einen Browserabsturz uebersteht.
+ *
+ * Faellt der Browser mitten im Abschnitt aus, beginnt der Abschnitt von vorn.
+ * Bereits gemeldete Staende stehen dann zweimal im Protokoll; das ist der
+ * Preis dafuer, dass keiner ungeprueft bleibt.
+ */
+async function abschnitt(name, arbeit) {
+  for (let versuch = 1; versuch <= 3; versuch++) {
+    await browserSichern()
+    try {
+      await arbeit()
+      return
+    } catch (fehler) {
+      const lebt = browser.isConnected() && !seite.isClosed()
+      if (lebt) throw fehler
+      console.log(`  ${name}: Browser weg — Anlauf ${versuch} von 3.`)
+    }
+  }
+  throw new Error(`${name}: auch nach drei Anlaeufen kein Durchkommen.`)
+}
+
+await browserStarten()
 
 try {
   /* -------------------------------------------------- Kennungen einsammeln */
@@ -139,44 +192,48 @@ try {
 
   /* ------------------------------------------------------ Seiten im Ruhezustand */
   for (const pfad of seiten) {
-    await seite.goto(BASIS + pfad, { waitUntil: 'networkidle' })
-    if (pfad === zurZuordnung) await seite.waitForSelector('table.maptable', { timeout: 30000 })
-    await seite.waitForTimeout(2500)
-    for (const schema of SCHEMATA) {
-      await seite.evaluate((s) => document.documentElement.setAttribute('data-theme', s), schema)
-      await seite.waitForTimeout(400)
-      await pruefe(seite, `${pfad} [${schema}]`)
-    }
+    await abschnitt(pfad, async () => {
+      await seite.goto(BASIS + pfad, { waitUntil: 'networkidle' })
+      if (pfad === zurZuordnung) await seite.waitForSelector('table.maptable', { timeout: 30000 })
+      await seite.waitForTimeout(2500)
+      for (const schema of SCHEMATA) {
+        await seite.evaluate((s) => document.documentElement.setAttribute('data-theme', s), schema)
+        await seite.waitForTimeout(400)
+        await pruefe(seite, `${pfad} [${schema}]`)
+      }
+    })
   }
 
   /* ------------------------------------------------------ Geoeffnete Zustaende */
-  await seite.goto(`${BASIS}/`, { waitUntil: 'networkidle' })
-  await seite.waitForTimeout(2000)
+  await abschnitt('Menues der Importliste', async () => {
+    await seite.goto(`${BASIS}/`, { waitUntil: 'networkidle' })
+    await seite.waitForTimeout(2000)
 
-  const nutzermenue = seite.locator('.usermenu button').first()
-  if (await nutzermenue.count()) {
-    await nutzermenue.click()
-    await seite.waitForTimeout(400)
-    await pruefe(seite, '/ · Nutzermenue offen')
-    await seite.keyboard.press('Escape')
-  }
-
-  const zeilenmenue = seite.locator('table tbody tr button[aria-haspopup=menu]').first()
-  if (await zeilenmenue.count()) {
-    await zeilenmenue.click()
-    await seite.waitForTimeout(500)
-    await pruefe(seite, '/ · Zeilenmenue offen')
-    const loeschen = seite.locator('[role=menu] button.menu-item.danger').first()
-    if (await loeschen.count()) {
-      await loeschen.click()
-      await seite.waitForTimeout(600)
-      await pruefe(seite, '/ · Rueckfrage offen')
+    const nutzermenue = seite.locator('.usermenu button').first()
+    if (await nutzermenue.count()) {
+      await nutzermenue.click()
+      await seite.waitForTimeout(400)
+      await pruefe(seite, '/ · Nutzermenue offen')
       await seite.keyboard.press('Escape')
-      await seite.waitForTimeout(300)
     }
-  }
 
-  if (zurZuordnung !== null) {
+    const zeilenmenue = seite.locator('table tbody tr button[aria-haspopup=menu]').first()
+    if (await zeilenmenue.count()) {
+      await zeilenmenue.click()
+      await seite.waitForTimeout(500)
+      await pruefe(seite, '/ · Zeilenmenue offen')
+      const loeschen = seite.locator('[role=menu] button.menu-item.danger').first()
+      if (await loeschen.count()) {
+        await loeschen.click()
+        await seite.waitForTimeout(600)
+        await pruefe(seite, '/ · Rueckfrage offen')
+        await seite.keyboard.press('Escape')
+        await seite.waitForTimeout(300)
+      }
+    }
+  })
+
+  if (zurZuordnung !== null) await abschnitt(zurZuordnung + ' (geoeffnet)', async () => {
     await seite.goto(BASIS + zurZuordnung, { waitUntil: 'networkidle' })
     await seite.waitForSelector('table.maptable', { timeout: 30000 })
     await seite.waitForTimeout(3500)
@@ -217,9 +274,9 @@ try {
       await pruefe(seite, `${zurZuordnung} · Konverterauswahl offen`)
       await seite.keyboard.press('Escape')
     }
-  }
+  })
 
-  if (zumDatensatz !== null) {
+  if (zumDatensatz !== null) await abschnitt(zumDatensatz + ' (geoeffnet)', async () => {
     await seite.goto(BASIS + zumDatensatz, { waitUntil: 'networkidle' })
     await seite.waitForTimeout(3000)
     const jsonKnopf = seite.locator('button[aria-controls="record-json"]').first()
@@ -235,9 +292,9 @@ try {
         await pruefe(seite, `${zumDatensatz} · Reiter ${reiter}`)
       }
     }
-  }
+  })
 } finally {
-  await browser.close()
+  if (browser !== null) await browser.close()
 }
 
 console.log(`\n${geprueft} Staende geprueft.`)

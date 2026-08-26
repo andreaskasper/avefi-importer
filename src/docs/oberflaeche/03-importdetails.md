@@ -1,6 +1,6 @@
 # Importdetails
 
-Adresse: `/imports/35d78d77-6eb1-400f-8e1f-0e4ff27072ec`  
+Adresse: `/imports/3add506d-a500-4607-9f11-7e39714fffce`  
 Seitentitel im Browser: „neu_UPB_Archiv_Test_Kopie.csv · Details · AVefi Importer"  
 Sprache des Dokuments: `de`
 
@@ -32,7 +32,7 @@ So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die
 2. „Zur Startseite" — Link, im banner
 3. „Importe" — Link, im navigation „Hauptnavigation". als aktuell ausgezeichnet
 4. „Zuordnungen" — Link, im navigation „Hauptnavigation"
-5. „Format-Review 4 offene Aufgaben" — Link, im navigation „Hauptnavigation"
+5. „Format-Review 9 offene Aufgaben" — Link, im navigation „Hauptnavigation"
 6. „Design wechseln" — Schaltflaeche, im banner
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 8. „Importe" — Link, im navigation „Details"

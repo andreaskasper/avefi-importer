@@ -75,7 +75,11 @@
       "edit": "Edit",
       "overview": "Back to the list",
       "more": "More actions for {name}",
-      "menuLabel": "Actions for {name}"
+      "menuLabel": "Actions for {name}",
+      "detailsFor": "Details of {name}",
+      "chooseSheetFor": "Choose sheet for {name}",
+      "mapFor": "Map {name}",
+      "editFor": "Edit records of {name}"
     },
     "menu": {
       "mapping": "View mapping",

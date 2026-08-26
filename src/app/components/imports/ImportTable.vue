@@ -160,15 +160,27 @@ function isUploading(item: ImportListItem): boolean {
             </td>
             <td class="dim small tnum"><ImportsTimeStamp :value="item.created_at" /></td>
             <td style="text-align:right">
+              <!--
+                Sichtbar bleibt das kurze Wort. Vorgelesen wird die Zeile samt
+                Dateiname — sonst stehen in der Liste ein Dutzend gleich
+                lautender Links nebeneinander, wie beim „…"-Menue schon laenger
+                geloest.
+              -->
               <div class="rowactions">
                 <NuxtLink v-if="item.status === 'awaiting_sheet_choice'" class="btn btn-primary btn-sm"
-                          :to="`/imports/${item.id}/sheets`">{{ t('imports.action.chooseSheet') }}</NuxtLink>
+                          :to="`/imports/${item.id}/sheets`"
+                          :aria-label="t('imports.action.chooseSheetFor', { name: item.filename })">
+                  {{ t('imports.action.chooseSheet') }}</NuxtLink>
                 <NuxtLink v-else-if="item.status === 'awaiting_format_review' && item.tabular"
-                          class="btn btn-primary btn-sm" :to="`/imports/${item.id}/mapping`">
+                          class="btn btn-primary btn-sm" :to="`/imports/${item.id}/mapping`"
+                          :aria-label="t('imports.action.mapFor', { name: item.filename })">
                   {{ t('imports.action.map') }}</NuxtLink>
                 <NuxtLink v-else-if="item.status === 'converted'" class="btn btn-primary btn-sm"
-                          :to="`/imports/${item.id}/records`">{{ t('imports.action.edit') }}</NuxtLink>
+                          :to="`/imports/${item.id}/records`"
+                          :aria-label="t('imports.action.editFor', { name: item.filename })">
+                  {{ t('imports.action.edit') }}</NuxtLink>
                 <NuxtLink v-else class="btn btn-outline btn-sm" :to="`/imports/${item.id}`"
+                          :aria-label="t('imports.action.detailsFor', { name: item.filename })"
                           :style="item.status === 'error' ? 'color:var(--danger);border-color:var(--danger)' : undefined">
                   {{ t('imports.action.details') }}</NuxtLink>
 

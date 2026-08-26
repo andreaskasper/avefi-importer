@@ -55,7 +55,13 @@
       "chooseTarget": "Ziel wählen",
       "editChain": "Konverter und Zweige für „{column}“ bearbeiten",
       "ignore": "Spalte „{column}“ ignorieren",
-      "reset": "Spalte „{column}“ zurücksetzen"
+      "reset": "Spalte „{column}“ zurücksetzen",
+      "targetOfColumn": "{path} — Spalte „{column}“ bearbeiten",
+      "suggestionFor": "Vorschlag {target} für Spalte „{column}“ übernehmen",
+      "hintFor": "Aus anderen Profilen bekanntes Ziel {target} für Spalte „{column}“ übernehmen",
+      "chooseTargetFor": "Ziel für Spalte „{column}“ wählen",
+      "skip": "Zuordnungstabelle überspringen (keine Zeile) | Zuordnungstabelle überspringen (eine Zeile) | Zuordnungstabelle überspringen ({n} Zeilen)",
+      "sideLabel": "Ergebnis und Einstellungen"
     },
     "branch": {
       "preLabel": "Konverter für alle Ziele dieser Spalte",
@@ -69,7 +75,8 @@
       "noExample": "Diese Spalte ist in der Stichprobe leer — kein Beispiel möglich.",
       "add": "weiteres Ziel für diese Spalte",
       "addHint": "Eine Spalte darf mehrfach landen: gemeinsame Kette oben, je Zweig eigene Kette und eigenes Ziel.",
-      "unknownTarget": "Ziel unbekannt"
+      "unknownTarget": "Ziel unbekannt",
+      "addLabel": "Weiteres Ziel für diese Spalte hinzufügen"
     },
     "chain": {
       "slow": "langsam",
@@ -82,7 +89,8 @@
       "pickerTitle": "Konverter hinzufügen",
       "closePicker": "Auswahl schließen",
       "moveUp": "Konverter {n} nach vorn",
-      "moveDown": "Konverter {n} nach hinten"
+      "moveDown": "Konverter {n} nach hinten",
+      "addStepLabel": "Konverter hinzufügen"
     },
     "target": {
       "search": "Feld suchen — Name, Bezeichnung oder Schemapfad",
@@ -170,7 +178,8 @@
       "targetLabel": "Ziel des Festwerts {n}",
       "valueLabel": "Wert des Festwerts {n}",
       "remove": "Festwert {n} entfernen",
-      "add": "Festwert"
+      "add": "Festwert",
+      "addLabel": "Festwert hinzufügen"
     },
     "grouping": {
       "heading": "Werkbildung",
@@ -224,7 +233,10 @@
       "importedNoSample": "Profil „{name}“ angelegt. Die Datei enthielt keine Stichprobe — reiche eine passende Tabelle nach, dann lässt sich die Zuordnung bearbeiten.",
       "emptyHeading": "Noch keine Zuordnungen",
       "emptyText": "Lade eine Beispieldatei hoch, um die erste anzulegen.",
-      "footer": "Profile sind für alle Einrichtungen sichtbar. Wird eine Datei mit bekannter Kopfzeile hochgeladen, greift zuerst das eigene Profil; fremde werden zur Übernahme angeboten und dabei kopiert, damit Änderungen keine fremden Importe verändern."
+      "footer": "Profile sind für alle Einrichtungen sichtbar. Wird eine Datei mit bekannter Kopfzeile hochgeladen, greift zuerst das eigene Profil; fremde werden zur Übernahme angeboten und dabei kopiert, damit Änderungen keine fremden Importe verändern.",
+      "editFor": "Zuordnung „{name}“ bearbeiten",
+      "viewFor": "Zuordnung „{name}“ ansehen",
+      "exportFor": "Zuordnung „{name}“ als JSON exportieren"
     },
     "new": {
       "title": "Neue Zuordnung",
@@ -269,7 +281,8 @@
       "restore": "Wiederherstellen",
       "restoreTitle": "Fassung wiederherstellen",
       "restoreText": "Fassung {n} wieder aktivieren? Der aktuelle Stand bleibt als frühere Fassung im Verlauf. Bereits konvertierte Importe werden dadurch nicht nachgezogen.",
-      "restored": "Fassung {n} wiederhergestellt."
+      "restored": "Fassung {n} wiederhergestellt.",
+      "restoreVersion": "Fassung {n} wiederherstellen"
     },
     "error": {
       "unauthorized": "Nicht angemeldet. Bitte neu anmelden.",

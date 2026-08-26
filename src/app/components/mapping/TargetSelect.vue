@@ -92,6 +92,20 @@ function optionId(index: number): string {
   return `${props.inputId}-opt-${index}`
 }
 
+/**
+ * Der Erlaeuterungsabsatz unter dem Feld gehoert zum Feld.
+ *
+ * Schemapfad, Beschreibung und die Angabe, wie viele Werte das Ziel aufnimmt,
+ * sind genau das, was beim Betreten der Combobox gebraucht wird. Ohne
+ * aria-describedby steht der Absatz zwar da, wird aber nur gefunden, wer die
+ * Seite ohnehin Zeile fuer Zeile durchgeht. Ein von aussen gereichter Verweis
+ * bleibt daneben bestehen.
+ */
+const infoId = computed(() => `${props.inputId}-info`)
+const describedIds = computed(() =>
+  [props.describedBy, infoId.value].filter((x): x is string => typeof x === 'string' && x !== '').join(' ')
+)
+
 function choose(target: EditorTarget) {
   emit('update:modelValue', target.key)
   query.value = ''
@@ -177,7 +191,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
              aria-autocomplete="list"
              :aria-expanded="openList ? 'true' : 'false'" :aria-controls="`${inputId}-list`"
              :aria-activedescendant="openList && activeIndex >= 0 ? optionId(activeIndex) : undefined"
-             :aria-describedby="describedBy"
+             :aria-describedby="describedIds"
              :value="openList ? query : (selected ? pathOf(selected) : '')"
              :placeholder="t('mapping.target.search')"
              @focus="onFocus"
@@ -200,18 +214,24 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
       </ul>
     </div>
 
+    <!--
+      Der Knopf am Ende steht ausserhalb der Kennung: Er ist eine Handlung und
+      gehoert nicht in die Beschreibung des Feldes.
+    -->
     <p v-if="selected" class="note" style="margin-top:4px">
-      <span class="mono">{{ selected.schemaPath }}</span>
-      <template v-if="describe(selected)"> — {{ describe(selected) }}</template>
-      <br>
-      <span class="dim">{{ selected.multi ? t('mapping.target.multi') : t('mapping.target.single') }}</span>
-      <template v-if="selected.enumValues && selected.enumValues.length">
-        · {{ t('mapping.target.enumCount', { n: selected.enumValues.length }) }}
-      </template>
-      <template v-if="selected.acceptsAuthority"> · {{ t('mapping.target.authority') }}</template>
+      <span :id="infoId">
+        <span class="mono">{{ selected.schemaPath }}</span>
+        <template v-if="describe(selected)"> — {{ describe(selected) }}</template>
+        <br>
+        <span class="dim">{{ selected.multi ? t('mapping.target.multi') : t('mapping.target.single') }}</span>
+        <template v-if="selected.enumValues && selected.enumValues.length">
+          · {{ t('mapping.target.enumCount', { n: selected.enumValues.length }) }}
+        </template>
+        <template v-if="selected.acceptsAuthority"> · {{ t('mapping.target.authority') }}</template>
+      </span>
       <button type="button" class="linkbtn" style="margin-left:8px" @click="clear">{{ t('mapping.target.clear') }}</button>
     </p>
-    <p v-else class="note" style="margin-top:4px">{{ t('mapping.target.none') }}</p>
+    <p v-else :id="infoId" class="note" style="margin-top:4px">{{ t('mapping.target.none') }}</p>
   </div>
 </template>
 
