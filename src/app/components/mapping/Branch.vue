@@ -139,10 +139,34 @@ function authorityState(value: string): 'bestaetigt' | 'verworfen' | 'offen' {
   return entry.id !== '' ? 'bestaetigt' : 'verworfen'
 }
 
-/** Werte, fuer die sich eine Zuordnung lohnt: was in der Datei vorkommt. */
+/**
+ * Werte, fuer die sich eine Zuordnung lohnt.
+ *
+ * Entscheidend ist der Wert **nach** der Konverterkette, nicht der Rohwert der
+ * Spalte. Steht in der Datei „DE" und normalisiert die Kette das zu
+ * „Deutschland", muss die Normdatensuche „Deutschland" fragen — sonst findet die
+ * Oberflaeche nichts, waehrend die automatische Konvertierung sauber zuordnet,
+ * und die manuelle Bestaetigung laesst sich nie erteilen.
+ *
+ * Der Rohwert dient nur als Rueckfall, wenn die Kette fuer dieses Ziel nichts
+ * ausgibt (etwa weil die Vorschau noch nicht gerechnet hat).
+ */
 const authorityValues = computed(() => {
-  if (props.values.length > 0) return props.values.slice(0, 25).map((v) => v.value)
-  return props.examples.map((e) => e.raw)
+  const ziel = props.spec.targets?.[props.index]?.target
+  const gesehen = new Set<string>()
+  for (const e of props.examples) {
+    const treffer = (e.outputs ?? []).filter((o) => ziel === undefined || o.target === ziel)
+    const werte = treffer.map((o) => o.value).filter((v) => v !== '')
+    for (const w of werte.length > 0 ? werte : [e.raw]) {
+      if (w !== '') gesehen.add(w)
+    }
+    if (gesehen.size >= 25) break
+  }
+  // Rueckfall auf die erkannte Werteliste, wenn die Vorschau noch nichts
+  // gerechnet hat. Sie fuehrt Rohwerte, taugt fuer den Abgleich also nur
+  // solange, wie keine Kette dazwischensteht.
+  if (gesehen.size === 0) return props.values.slice(0, 25).map((v) => v.value)
+  return [...gesehen].slice(0, 25)
 })
 </script>
 
