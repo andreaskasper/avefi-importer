@@ -29,6 +29,9 @@ WORKDIR /app
 RUN apk add --no-cache tini
 ENV NODE_ENV=production
 COPY --from=build /app/.output /app/.output
+# Die Oberflaechenbeschreibungen werden zur Laufzeit von der Platte gelesen
+# (/dokumentation/oberflaeche). Ohne sie bliebe die Seite leer.
+COPY --from=build /app/docs/oberflaeche /app/docs/oberflaeche
 EXPOSE 3000
 ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["node", ".output/server/index.mjs"]

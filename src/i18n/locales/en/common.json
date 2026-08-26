@@ -13,6 +13,7 @@
   "menu": {
     "profile": "My profile",
     "users": "Manage users",
+    "doku": "The interface in words",
     "logout": "Sign out"
   },
   "theme": {

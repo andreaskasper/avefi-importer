@@ -1,0 +1,32 @@
+{
+  "doku": {
+    "crumb": "Oberfläche in Worten",
+    "overview": {
+      "pageTitle": "Oberfläche in Worten",
+      "heading": "Die Oberfläche in Worten",
+      "lead": "Jede Seite der Anwendung, beschrieben zum Lesen ohne Bildschirm.",
+      "languageNote": "Die Beschreibungen selbst sind auf Deutsch verfasst und werden nicht übersetzt; übersetzt ist nur der Rahmen dieser Seite."
+    },
+    "page": {
+      "pageTitle": "{name} – Oberfläche in Worten"
+    },
+    "shot": {
+      "heading": "Bildschirmabzug",
+      "note": "Beiwerk, nicht Teil der Beschreibung. Der Abzug ist dafür da, dass Sehende in einer Besprechung denselben Stand vor Augen haben.",
+      "alt": "Bildschirmabzug der Seite {name}",
+      "open": "Bildschirmabzug in voller Größe öffnen",
+      "none": "Zu dieser Beschreibung liegt kein Bildschirmabzug vor.",
+      "newWindow": "Öffnet in einem neuen Tab"
+    },
+    "nav": {
+      "label": "Blättern in den Beschreibungen",
+      "prev": "Vorige Beschreibung: {name}",
+      "next": "Nächste Beschreibung: {name}",
+      "overview": "Zur Übersicht"
+    },
+    "error": {
+      "load": "Die Beschreibungen konnten nicht geladen werden.",
+      "missing": "Diese Beschreibung gibt es nicht."
+    }
+  }
+}

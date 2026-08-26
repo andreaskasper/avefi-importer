@@ -13,6 +13,7 @@
   "menu": {
     "profile": "Mein Profil",
     "users": "Nutzer verwalten",
+    "doku": "Oberfläche in Worten",
     "logout": "Abmelden"
   },
   "theme": {

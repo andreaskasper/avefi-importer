@@ -49,12 +49,12 @@ export default defineNuxtConfig({
       {
         code: 'de',
         name: 'Deutsch',
-        files: ['de/common.json', 'de/auth.json', 'de/imports.json', 'de/mapping.json', 'de/records.json', 'de/admin.json']
+        files: ['de/common.json', 'de/auth.json', 'de/imports.json', 'de/mapping.json', 'de/records.json', 'de/admin.json', 'de/doku.json']
       },
       {
         code: 'en',
         name: 'English',
-        files: ['en/common.json', 'en/auth.json', 'en/imports.json', 'en/mapping.json', 'en/records.json', 'en/admin.json']
+        files: ['en/common.json', 'en/auth.json', 'en/imports.json', 'en/mapping.json', 'en/records.json', 'en/admin.json', 'en/doku.json']
       }
     ],
     detectBrowserLanguage: {

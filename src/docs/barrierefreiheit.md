@@ -12,6 +12,9 @@ sie zu sehen.
 sich an und laesst auf jedem Stand [axe-core](https://github.com/dequelabs/axe-core)
 laufen — gegen `wcag2a`, `wcag2aa`, `wcag21a` und `wcag21aa`.
 
+Seit die Oberflaechenbeschreibungen in der Anwendung lesbar sind, gehoeren auch
+`/dokumentation/oberflaeche` und die 16 Einzelseiten dazu.
+
 Geprueft wird nicht nur der Ruhezustand. Zusaetzlich werden die Zustaende
 geoeffnet, in denen die Fehler sitzen: Nutzermenue, Zeilenmenue, Rueckfrage,
 aufgeklappte Zuordnungszeile, Zielliste der Combobox, Konverterauswahl und die
@@ -131,6 +134,20 @@ Angabe fehlt in der Uebersicht nur der Commit.
 
 Voraussetzung ist dieselbe wie bei `axe.mjs`: `playwright-core` in der Fassung
 `1.50.0` aus `npm install`, der Browser kommt aus dem Abbild.
+
+### In der Anwendung lesbar
+
+Die Beschreibungen sind zusaetzlich in der laufenden Anwendung abrufbar, unter
+`/dokumentation/oberflaeche` (Uebersicht) und `/dokumentation/oberflaeche/:seite`
+(die einzelnen Beschreibungen), erreichbar ueber das Nutzermenue. Das Markdown
+wird dafuer serverseitig in HTML uebersetzt (`server/lib/doku/markdown.ts`), denn
+im Rohtext liest ein Vorlesewerkzeug Rauten und Sternchen mit; als `h2`, `ol` und
+`table` sind sie das, wofuer sie gedacht sind. Der Bildschirmabzug steht am Ende
+jeder Seite in einem eigenen Bereich, ausdruecklich als Beiwerk.
+
+Die Seiten sind nur fuer Angemeldete erreichbar, auch die Bildschirmabzuege
+(`/api/doku/oberflaeche/bild/:seite`). `axe.mjs` prueft sie mit; die Kapitel liest
+es aus der Uebersicht, damit die Liste nicht gepflegt werden muss.
 
 Stellschrauben:
 

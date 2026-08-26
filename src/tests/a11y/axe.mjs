@@ -5,7 +5,9 @@
  * zusaetzlich die Zustaende, die eine Pruefung im Ruhezustand nicht sieht
  * (Zeilenmenue, Rueckfrage, Nutzermenue, aufgeklappte Zuordnungszeile,
  * Konverterauswahl, Zielliste, Reiter des Schema-Editors) und laesst auf
- * jedem Stand axe-core laufen.
+ * jedem Stand axe-core laufen. Dazu kommen die Oberflaechenbeschreibungen
+ * unter /dokumentation/oberflaeche, deren Kapitel aus der Uebersicht gelesen
+ * werden.
  *
  * Der Aufruf steht in docs/barrierefreiheit.md. Beendet sich mit 1, sobald ein
  * Befund der Schwere „serious" oder „critical" auftritt.
@@ -196,6 +198,37 @@ try {
       await seite.goto(BASIS + pfad, { waitUntil: 'networkidle' })
       if (pfad === zurZuordnung) await seite.waitForSelector('table.maptable', { timeout: 30000 })
       await seite.waitForTimeout(2500)
+      for (const schema of SCHEMATA) {
+        await seite.evaluate((s) => document.documentElement.setAttribute('data-theme', s), schema)
+        await seite.waitForTimeout(400)
+        await pruefe(seite, `${pfad} [${schema}]`)
+      }
+    })
+  }
+
+  /* ------------------------------------------ Oberflaechenbeschreibungen */
+  // Die Kapitel werden aus der Uebersicht gelesen, nicht hier aufgezaehlt: so
+  // bleibt die Pruefung richtig, wenn eine Beschreibung dazukommt oder wegfaellt.
+  let kapitel = []
+  await abschnitt('/dokumentation/oberflaeche', async () => {
+    await seite.goto(`${BASIS}/dokumentation/oberflaeche`, { waitUntil: 'networkidle' })
+    await seite.waitForTimeout(1500)
+    kapitel = await seite.evaluate(() =>
+      Array.from(
+        document.querySelectorAll('.doku-body a[href^="/dokumentation/oberflaeche/"]'),
+        (a) => a.getAttribute('href') ?? ''
+      ).filter((h) => h !== ''))
+    for (const schema of SCHEMATA) {
+      await seite.evaluate((s) => document.documentElement.setAttribute('data-theme', s), schema)
+      await seite.waitForTimeout(400)
+      await pruefe(seite, `/dokumentation/oberflaeche [${schema}]`)
+    }
+  })
+
+  for (const pfad of kapitel) {
+    await abschnitt(pfad, async () => {
+      await seite.goto(BASIS + pfad, { waitUntil: 'networkidle' })
+      await seite.waitForTimeout(1200)
       for (const schema of SCHEMATA) {
         await seite.evaluate((s) => document.documentElement.setAttribute('data-theme', s), schema)
         await seite.waitForTimeout(400)

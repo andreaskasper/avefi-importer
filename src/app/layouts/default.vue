@@ -141,6 +141,8 @@ function toggleTheme() {
             <NuxtLink class="menu-item" role="menuitem" to="/profile" @click="closeMenu()">{{ t('menu.profile') }}</NuxtLink>
             <NuxtLink v-if="user.is_admin" class="menu-item" role="menuitem" to="/users"
                       @click="closeMenu()">{{ t('menu.users') }}</NuxtLink>
+            <NuxtLink class="menu-item" role="menuitem" to="/dokumentation/oberflaeche"
+                      @click="closeMenu()">{{ t('menu.doku') }}</NuxtLink>
             <button class="menu-item" role="menuitem" type="button" @click="logout()">{{ t('menu.logout') }}</button>
           </div>
         </div>

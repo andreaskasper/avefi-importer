@@ -656,3 +656,35 @@ ul.tight li{margin-bottom:3px;font-size:13px}
 #importsTable .fn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #importsTable .fmt{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;
   vertical-align:bottom}
+
+/* ------- Oberflaechenbeschreibungen -------
+   Lesetext, keine Datenmaske: schmale Spalte, ruhige Stufen, sichtbare
+   Trennung zwischen Beschreibung, Bildschirmabzug und Blaetterleiste. */
+.doku{max-width:840px}
+.doku h1{font-size:22px;margin-bottom:8px}
+.doku-lead{color:var(--muted);margin:0}
+.doku-body{margin-top:22px;overflow-wrap:anywhere}
+.doku-body h2{font-size:18px;margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.doku-body h3{font-size:15px;margin:22px 0 8px}
+.doku-body h4,.doku-body h5,.doku-body h6{font-size:13.5px;margin:18px 0 6px}
+.doku-body p{margin:0 0 12px}
+.doku-body ul,.doku-body ol{margin:0 0 14px;padding-left:28px}
+.doku-body li{margin:3px 0}
+.doku-body li > ul,.doku-body li > ol{margin:3px 0}
+.doku-body a{color:var(--primary);font-weight:600}
+.doku-body code{font-family:var(--mono);font-size:.92em;background:var(--surface-2);
+  border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+.doku-body pre{overflow-x:auto;background:var(--surface-2);border:1px solid var(--border);
+  border-radius:8px;padding:12px;margin:0 0 14px}
+.doku-body pre code{border:0;background:none;padding:0}
+.doku-body table{margin:0 0 14px}
+.doku-body th,.doku-body td{border:1px solid var(--border);padding:6px 9px;text-align:left;vertical-align:top}
+.doku-body hr{border:0;border-top:1px solid var(--border);margin:22px 0}
+.doku-shot{margin-top:30px}
+.doku-shot h2{font-size:15px;margin-bottom:6px}
+.doku-shot-note{color:var(--muted);font-size:12.5px;margin:0 0 10px}
+.doku-shot a{color:var(--primary);font-weight:600}
+.doku-shot img{display:block;max-width:100%;height:auto;border:1px solid var(--border);border-radius:8px}
+.doku-nav{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:26px;padding-top:16px;
+  border-top:1px solid var(--border);font-size:13.5px}
+.doku-nav a{color:var(--primary);font-weight:600}

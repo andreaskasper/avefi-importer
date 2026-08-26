@@ -1,0 +1,32 @@
+{
+  "doku": {
+    "crumb": "The interface in words",
+    "overview": {
+      "pageTitle": "The interface in words",
+      "heading": "The interface in words",
+      "lead": "Every page of the application, described for reading without a screen.",
+      "languageNote": "The descriptions themselves are written in German and are not translated; only the frame of this page is."
+    },
+    "page": {
+      "pageTitle": "{name} – The interface in words"
+    },
+    "shot": {
+      "heading": "Screenshot",
+      "note": "An aside, not part of the description. The screenshot is there so that sighted colleagues in a meeting have the same state in view.",
+      "alt": "Screenshot of the page {name}",
+      "open": "Open the screenshot at full size",
+      "none": "There is no screenshot for this description.",
+      "newWindow": "Opens in a new tab"
+    },
+    "nav": {
+      "label": "Browse the descriptions",
+      "prev": "Previous description: {name}",
+      "next": "Next description: {name}",
+      "overview": "To the overview"
+    },
+    "error": {
+      "load": "The descriptions could not be loaded.",
+      "missing": "This description does not exist."
+    }
+  }
+}
