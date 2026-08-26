@@ -27,7 +27,8 @@
       "started": "{name}: Upload gestartet.",
       "finished": "{name}: hochgeladen, die Verarbeitung läuft im Hintergrund.",
       "rejected": "{name}: {reason}",
-      "clear": "Liste leeren"
+      "clear": "Liste leeren",
+      "zoneLabel": "Dateien ablegen oder auswählen"
     },
     "url": {
       "label": "oder per Adresse (URL):",

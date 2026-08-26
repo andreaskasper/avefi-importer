@@ -35,6 +35,20 @@ const jobs = ref<Job[]>([])
 const dragging = ref(false)
 const fileField = ref<HTMLInputElement | null>(null)
 
+/**
+ * Klick irgendwo auf die Ablageflaeche oeffnet die Dateiauswahl.
+ *
+ * app.css setzt fuer .dropzone cursor:pointer — ohne diesen Handler verspricht
+ * der Mauszeiger etwas, das nicht passiert. Klicks auf echte Bedienelemente
+ * innerhalb der Flaeche (Knopf, Label, Eingabefeld, Verweis) bleiben unberuehrt,
+ * sonst wuerde der Dialog doppelt aufgehen.
+ */
+function onZoneClick(e: MouseEvent) {
+  const ziel = e.target as HTMLElement | null
+  if (ziel?.closest('label, button, input, a, select, textarea')) return
+  fileField.value?.click()
+}
+
 /** Meldung des Uploads fuer Vorlesewerkzeuge — sonst bleibt der Fortschritt stumm. */
 const announcement = ref('')
 
@@ -175,7 +189,9 @@ function clearJobs() {
 
 <template>
   <section :aria-label="t('imports.upload.legend')">
-    <div class="dropzone" :class="{ dragover: dragging }"
+    <div class="dropzone" :class="{ dragover: dragging }" role="group"
+         :aria-label="t('imports.upload.zoneLabel')"
+         @click="onZoneClick"
          @dragenter.prevent="dragging = true" @dragover.prevent="dragging = true"
          @dragleave.prevent="dragging = false" @drop.prevent="onDrop">
       <div class="ic" aria-hidden="true">⬆</div>
@@ -187,10 +203,12 @@ function clearJobs() {
         <span class="fmt">XML</span><span class="fmt">EAD</span><span class="fmt">MARC-XML</span><span class="fmt">JSON</span>
       </div>
 
-      <div class="field" style="max-width:440px;margin:16px auto 0">
-        <label for="import-file">{{ t('imports.upload.fileLabel') }}</label>
-        <input id="import-file" ref="fileField" class="input" type="file" multiple :accept="ACCEPT_ATTR"
-               @change="onPick">
+      <!-- Der Eingabeknopf traegt den Tastaturfokus, das Label ist seine sichtbare
+           Gestalt. Ein Tab-Stopp statt zwei, Fokusring sitzt am Knopf. -->
+      <div class="pickwrap">
+        <input id="import-file" ref="fileField" class="sr-only" type="file" multiple
+               :accept="ACCEPT_ATTR" @change="onPick">
+        <label for="import-file" class="btn btn-outline btn-sm">{{ t('imports.upload.fileLabel') }}</label>
       </div>
 
       <p class="dim small" style="margin-top:10px">{{ t('imports.upload.sheetHint') }}</p>

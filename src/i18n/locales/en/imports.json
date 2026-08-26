@@ -27,7 +27,8 @@
       "started": "{name}: upload started.",
       "finished": "{name}: uploaded, processing runs in the background.",
       "rejected": "{name}: {reason}",
-      "clear": "Clear list"
+      "clear": "Clear list",
+      "zoneLabel": "Drop files or choose them"
     },
     "url": {
       "label": "or by address (URL):",

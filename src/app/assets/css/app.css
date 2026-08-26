@@ -129,6 +129,12 @@ tbody tr:hover{background:var(--surface-2)}
 .dropzone .formats{margin-top:14px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
 .dropzone{cursor:pointer}
 .dropzone.dragover{border-color:var(--primary);background:var(--primary-100)}
+/* Dateiauswahl: das Eingabefeld ist unsichtbar, aber fokussierbar; sichtbar ist
+   sein Label als Knopf. Damit der Tastaturfokus nicht verlorengeht, wandert der
+   Fokusring auf das Label. */
+.pickwrap{margin-top:14px}
+.pickwrap label{display:inline-block}
+.pickwrap input:focus-visible + label{outline:2px solid var(--primary);outline-offset:2px}
 .urlform{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
 .urlform .input{flex:1;min-width:220px}
 
