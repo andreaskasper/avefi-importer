@@ -237,4 +237,6 @@ export interface ExtendedImportReport extends ImportReport {
   }
   mapping?: Record<string, unknown> | null
   parseDetail?: unknown
+  /** Zaehlwerte der Normdaten-Aufloesung samt der geltenden Einstellungen. */
+  authority?: Record<string, unknown>
 }

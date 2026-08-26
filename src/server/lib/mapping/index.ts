@@ -148,7 +148,9 @@ export {
   MAX_PREVIEW_ROWS,
   MAX_SCHEMA_ISSUES,
   pickExamples,
-  previewChain
+  previewChain,
+  previewRowIndices,
+  previewRows
 } from './preview.js'
 export type {
   ColumnExample,

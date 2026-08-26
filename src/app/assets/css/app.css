@@ -582,8 +582,20 @@ ul.tight li{margin-bottom:3px;font-size:13px}
 .tchips .chip,.tsugg .chip{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   display:inline-flex;align-items:center;gap:5px}
 .tchips .chip span,.tsugg .chip span{overflow:hidden;text-overflow:ellipsis}
+/* Die Aktionsspalte schneidet nicht ab: Ihre Breite steht in der colgroup und
+   ist an den gemessenen 108 px des Knopfstreifens ausgerichtet. flex:none
+   verhindert, dass ein Knopf schrumpft, wenn doch einmal ein vierter dazukommt —
+   dann rutscht der Streifen sichtbar aus der Zelle, statt still zu verkuemmern. */
 .maprowbtns{white-space:nowrap}
 .maprowbtns .rowbtns{display:flex;gap:5px}
+.maprowbtns .rowbtns > *{flex:none}
+
+/* Herkunft einer Normdaten-ID: Die GND-Nummer eines Landes kommt aus der
+   Laendertabelle, nicht aus einem Nachschlagevorgang. Der gestrichelte Rahmen
+   unterscheidet sie; der Klartext steht im title und im aria-label, damit die
+   Unterscheidung nicht allein an der Form haengt. */
+.idchip + .idchip{margin-left:4px}
+.idchip-land{border-style:dashed}
 
 /* Die aufgeklappte Verzweigung nutzt die volle Breite und rollt nicht mit. */
 .chainrow td{overflow:visible}

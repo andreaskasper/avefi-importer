@@ -28,6 +28,10 @@ export default defineNuxtConfig({
     sessionSecret: process.env.SESSION_SECRET || 'entwicklung-nur-lokal-aendern',
     // Einfacher Demo-Zugriffsschutz (Vertrag Paragraf 3: keine Benutzerverwaltung gefordert)
     demoPassword: process.env.DEMO_PASSWORD || '',
+    // Normdaten. authorityEnabledFromEnv() und authorityLimitFromEnv() lesen
+    // direkt aus process.env — beide Namen stehen trotzdem hier, damit die
+    // runtimeConfig vollstaendig zeigt, woran sich die Anwendung bedient.
+    authorityEnabled: process.env.AUTHORITY_ENABLED || '',
     authorityLimit: process.env.AUTHORITY_LIMIT || '500',
     public: {
       // Vertrag: konfigurierbare API-Basis-URL, keine Domainabhaengigkeit

@@ -58,8 +58,10 @@ src/
                         header, preview, suggest, completeness, schema-model
       converters/       Formaterkennung und Konverter (csv, spreadsheet, xml,
                         marcXml, ead, genericJson, avefiJson, fingerprint …)
-      authority/        Normdaten (GND, Wikidata, VIAF) mit Zwischenspeicher
-      imports.ts records.ts users.ts storage.ts
+      authority/        Normdaten (GND, Wikidata, VIAF) mit Zwischenspeicher;
+                        pipeline.ts ist der EINE Weg, den Vorschau und
+                        Konvertierung zum Aufloesen nehmen
+      imports.ts records.ts users.ts storage.ts schema.ts
     worker/
       main.ts           Daemon
       queue.ts          SELECT … FOR UPDATE SKIP LOCKED
@@ -69,12 +71,19 @@ src/
     utils/session.ts
 
   shared/types/domain.ts   einzige Wahrheit fuer Backend und Oberflaeche
-  tests/                   24 Dateien, 332 Tests
+  tests/                   26 Dateien, 348 Tests
 ```
 
 `shared/types/domain.ts` liegt bewusst in `shared/`, damit ein Feldname nicht an
 zwei Stellen gepflegt wird. In der PHP-Fassung ist genau daran der Profil-Export
 ohne Stichprobe gescheitert.
+
+Aus demselben Grund gibt es `server/lib/authority/pipeline.ts` und
+`server/lib/schema.ts`: Vorschau und Konvertierung holen sich ihre
+Nachschlagedienste und ihr Schemamodell an derselben Stelle. Vorher tat das die
+Vorschau auf eigene Faust und der Konvertierungsweg gar nicht — der Editor
+zeigte normalisierte Laendernamen und Normdaten-IDs, die erzeugte Datei
+enthielt weder das eine noch das andere.
 
 ## Ablauf eines Imports
 

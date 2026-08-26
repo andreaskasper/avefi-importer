@@ -67,7 +67,15 @@ export interface EnrichHit {
   /** Resource-Typ, z. B. "GNDResource". */
   resource: string
   note?: string
-  origin?: 'bestaetigt' | 'automatisch'
+  /**
+   * Woher der Treffer stammt. "land" ist dabei kein Nachschlagevorgang: Die
+   * GND-Nummer eines Staates steht in der mitgelieferten Laendertabelle und
+   * kommt auch dann mit, wenn kein authority-Schritt in der Kette steht. Ohne
+   * diese Unterscheidung sieht im Editor jede ID gleich aus — und wer den
+   * Konverter "Normdaten nachschlagen" entfernt, glaubt, das habe nicht
+   * gewirkt, weil beim Land weiter eine Nummer steht.
+   */
+  origin?: 'bestaetigt' | 'automatisch' | 'land'
 }
 
 export interface AuthorityHit {
@@ -610,7 +618,8 @@ function apply(
           value: hit.name,
           category: ctx.schema?.resourceCategory('GNDResource') ?? 'avefi:GNDResource',
           id: hit.gnd,
-          resource: 'GNDResource'
+          resource: 'GNDResource',
+          origin: 'land'
         })
       }
       return hit.name

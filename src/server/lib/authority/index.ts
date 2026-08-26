@@ -21,12 +21,11 @@
  *
  * Laender und Sprachen brauchen kein Netz; authorityServices() haengt sie
  * ohnehin mit ein.
+ *
+ * Wer nicht selbst ueber Schalter, Obergrenze und Zwischenspeicher entscheiden
+ * will, nimmt resolveForMapping() aus pipeline.ts. Vorschau und Konvertierung
+ * tun genau das — damit beide dasselbe rechnen.
  */
-
-import type { MappingServices } from '../mapping/runner.js'
-import type { ResolvedAuthorities } from './resolve.js'
-import { lookupCountry } from './countries.js'
-import { lookupLanguage } from './languages.js'
 
 /* ------------------------------------------------------------------ Typen */
 export type {
@@ -85,17 +84,9 @@ export {
   languageLabel, languageTableSize, lookupLanguage
 } from './languages.js'
 
-/**
- * Die Nachschlagedienste in der Form, die runRow() erwartet.
- *
- * Ohne Argument sind nur Laender und Sprachen dabei — die brauchen kein Netz und
- * koennen immer eingehaengt werden. Normdaten kommen nur mit, wenn vorher
- * aufgeloest wurde.
- */
-export function authorityServices(resolved?: ResolvedAuthorities): MappingServices {
-  return {
-    lookupCountry,
-    lookupLanguage,
-    ...(resolved !== undefined ? { resolveAuthority: resolved.resolve } : {})
-  }
-}
+/* ------------------------------------------------------------- Einhaengen */
+export { authorityServices } from './services.js'
+
+/* -------------------------------------------------- Vorab-Aufloesung */
+export type { AuthorityRunOptions } from './pipeline.js'
+export { PREVIEW_AUTHORITY_LIMIT, mappingServicesFor, resolveForMapping } from './pipeline.js'

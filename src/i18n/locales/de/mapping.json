@@ -158,6 +158,13 @@
       "cancel": "Abbrechen",
       "close": "Schließen"
     },
+    "idorigin": {
+      "label": "Normdaten-ID {id}",
+      "bestaetigt": "{id} — von Hand bestätigte Zuordnung",
+      "automatisch": "{id} — automatisch über den Konverter „Normdaten nachschlagen“ gefunden",
+      "land": "{id} — GND-Nummer des Landes aus dem Konverter „Land normalisieren“, nicht aus „Normdaten nachschlagen“",
+      "unbekannt": "{id} — Normdaten-ID"
+    },
     "tree": {
       "heading": "Ergebnis je Datensatz",
       "empty": "– nichts zugeordnet –",

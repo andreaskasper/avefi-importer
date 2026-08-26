@@ -246,8 +246,8 @@ werden: `DB_*` und `SESSION_SECRET`. Alles andere liest der Code direkt aus
 | `FILES_PATH` | nein | `/mnt/files` | Ablage der Uploads und Ergebnisdateien. Muss beschreibbar sein. |
 | `EFI_CONV_URL` | nein | `http://efi-conv:8000` | Adresse des Validierungsdienstes. Ist er nicht erreichbar, wird die Datei erzeugt, der Bericht vermerkt aber ausdruecklich, dass nicht geprueft wurde. |
 | `WORKER_MAX_UPTIME` | nein | `600` | Sekunden bis zur Selbstbeendigung des Workers. Nur im `worker`-Container sinnvoll. |
-| `AUTHORITY_ENABLED` | nein | aus | Normdatenanreicherung. Wahr bei `1`, `true`, `ja`, `on`. Vertraglich nicht geschuldet. |
-| `AUTHORITY_LIMIT` | nein | `500` | Obergrenze der Nachschlagevorgaenge je Konvertierung. Unbrauchbare Angaben fallen auf 500 zurueck. |
+| `AUTHORITY_ENABLED` | nein | aus | Normdatenanreicherung. Wahr bei `1`, `true`, `ja`, `on`. Vertraglich nicht geschuldet. **In `web` UND `worker` gleich setzen** — siehe unten. |
+| `AUTHORITY_LIMIT` | nein | `500` | Obergrenze der frischen Nachschlagevorgaenge je Konvertierung. Unbrauchbare Angaben fallen auf 500 zurueck. Ebenfalls in beiden Containern gleich setzen. |
 | `EFI_CONV_REPO` | nein (Bauzeit) | `github.com/AV-EFI/efi-conv.git` | Herkunft von efi-conv beim Bauen des Sidecars. |
 | `EFI_CONV_REF` | nein (Bauzeit) | `main` | Zweig oder Commit von efi-conv. Fuer reproduzierbare Ergebnisse einen Commit eintragen. |
 | `APP_DOMAIN` | nein | `avefiimporter.goo1.de` | Nur fuer die Traefik-Regel in `docker-compose.dev.yml`. Die Anwendung selbst kennt keine feste Domain. |
@@ -262,6 +262,30 @@ von keiner Stelle im Code gelesen. Sie zu setzen hat keine Wirkung:
 
 Ebenfalls ohne Wirkung im Code: `APP_HOST` aus `docker-compose.dev.yml` und
 `NODE_ENV` ausserhalb dessen, was Nuxt und Nitro selbst daraus machen.
+
+### Normdaten in beiden Containern
+
+`AUTHORITY_ENABLED` und `AUTHORITY_LIMIT` werden an zwei Stellen gelesen:
+
+* im `worker`, wenn ein Import konvertiert wird,
+* im `web`, wenn der Editor seine Vorschau rechnet.
+
+Beide gehen denselben Weg (`resolveForMapping()` in
+`server/lib/authority/pipeline.ts`), benutzen denselben Zwischenspeicher
+(Tabelle `authority_cache`) und rechnen mit denselben Nachschlagediensten. Steht
+der Schalter nur in einem der beiden Container, zeigt der Editor etwas anderes
+als der Export — im ausgelieferten Stand war das der Fall, und der Anwender hat
+es gemeldet: Der Editor loeste Laendernamen auf, die erzeugte Datei nicht.
+
+Ein Unterschied bleibt und ist gewollt: Die Vorschau holt hoechstens
+`PREVIEW_AUTHORITY_LIMIT` (25) Werte frisch aus dem Netz, weil sie nach jeder
+Aenderung im Editor neu rechnet. Was sie deshalb liegen laesst, steht als
+Hinweis in der Pruefleiste; beim naechsten Durchlauf ist es aus dem
+Zwischenspeicher da, denn auch Nicht-Treffer werden dort abgelegt.
+
+Ist die Anreicherung aus, laeuft alles unveraendert durch — nur ohne
+Normdaten-IDs. Laender- und Sprachtabellen liegen im Programm und brauchen kein
+Netz; sie wirken immer.
 
 ## Zwischenspeicherung
 

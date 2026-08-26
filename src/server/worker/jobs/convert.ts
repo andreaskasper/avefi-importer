@@ -11,6 +11,11 @@
  */
 import type { Sql } from 'postgres'
 import type { ValidationIssue } from '#shared/types/domain'
+import type { ResolvedAuthorities } from '../../lib/authority/index'
+import {
+  authorityEnabledFromEnv, authorityLimitFromEnv, authorityServices, resolveForMapping
+} from '../../lib/authority/index'
+import { loadSchemaModel } from '../../lib/schema'
 import { AvefiWriter, copyAsAvefi, tableFile } from '../../lib/storage'
 import { findImport, findMappingProfileById, setCounts, setReport, setStatus, type ExtendedImportReport } from '../../lib/imports'
 import { deleteRecordsOfImport, insertRecords, type NewRecord } from '../../lib/records'
@@ -24,6 +29,13 @@ import { checkRecords } from '../validate'
 
 /** So viele Datensaetze gehen in einem Rutsch in die Datenbank. */
 const INSERT_BATCH = 200
+
+/**
+ * Nach dieser Zeit bricht das Nachschlagen ab. Ein haengender Normdatendienst
+ * darf keinen Import blockieren; was fehlt, wird gemeldet und der Import laeuft
+ * ohne die betroffenen IDs weiter.
+ */
+const AUTHORITY_TIMEOUT_MS = 15 * 60 * 1000
 
 export async function run(sql: Sql, payload: Record<string, unknown>): Promise<void> {
   const startedAt = new Date().toISOString()
@@ -40,7 +52,29 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
     throw new Error(`Das Mappingprofil #${profileId} ist nicht mehr vorhanden.`)
   }
 
-  const converter = makeConverter(key, { baseFormat: record.base_format, profile })
+  // Dasselbe Schema, mit dem der Editor rechnet. Ohne es sind Wertelisten leer
+  // und die Pruefung der Normdatenquellen greift nicht — der Export saehe dann
+  // anders aus als die Vorschau.
+  const schema = await loadSchemaModel()
+
+  // Normdaten und Laenderabgleich haengen HIER ein. Vorher rechnete der
+  // Konvertierungsweg ohne Nachschlagedienste: Der country-Konverter liess
+  // "DE" stehen, und keine einzige gefundene ID kam im Export an.
+  let authority: ResolvedAuthorities | null = null
+  const converter = makeConverter(key, {
+    baseFormat: record.base_format,
+    profile,
+    services: { schema, ...authorityServices() },
+    prepareAuthorities: async (requests) => {
+      authority = await resolveForMapping(requests, {
+        sql,
+        schema,
+        signal: AbortSignal.timeout(AUTHORITY_TIMEOUT_MS),
+        onWarn: (m) => console.warn(`[convert] Normdaten: ${m}`)
+      })
+      return { schema, ...authorityServices(authority) }
+    }
+  })
   if (converter === null) throw new Error(`Fuer „${key}“ gibt es keinen Konverter.`)
 
   const path = await tableFile(record.id)
@@ -183,6 +217,11 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
     for (const issue of diagnosticsToIssues(diagnostics)) issues.add(issue)
   }
 
+  // Was beim Nachschlagen auffiel, gehoert in den Bericht: mehrdeutige Namen,
+  // nicht erreichbare Dienste, erreichte Obergrenze.
+  const resolvedAuthority: ResolvedAuthorities | null = authority
+  if (resolvedAuthority !== null) issues.addAll(resolvedAuthority.issues)
+
   const invalid = Math.max(0, checked - valid)
   const report: ExtendedImportReport = {
     stage: 'convert',
@@ -201,15 +240,26 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
     }
   }
   if (parseDetail !== null) report.parseDetail = parseDetail
+  if (resolvedAuthority !== null) {
+    report.authority = {
+      enabled: authorityEnabledFromEnv(),
+      limit: authorityLimitFromEnv(),
+      ...resolvedAuthority.stats
+    }
+  }
 
   await setReport(sql, record.id, report)
   await setCounts(sql, record.id, recordCount, rowErrors)
   await setStatus(sql, record.id, recordCount > 0 ? 'converted' : 'error')
 
   const validationNote = validationUnavailable === null ? '' : ' · Pruefung nicht moeglich'
+  const authorityNote = resolvedAuthority === null
+    ? ''
+    : ` · Normdaten ${resolvedAuthority.stats.resolved}/${resolvedAuthority.stats.requested}`
+      + ` (${resolvedAuthority.stats.fromCache} aus dem Zwischenspeicher)`
   console.log(
     `[convert] ${record.filename}: ${recordCount} Datensatz/-saetze, ${nodeCount} AVefi-Knoten, ` +
-      `${invalid} mit Befund${validationNote} → avefi.v1.json (${outputSize} Byte)`
+      `${invalid} mit Befund${validationNote}${authorityNote} → avefi.v1.json (${outputSize} Byte)`
   )
 }
 

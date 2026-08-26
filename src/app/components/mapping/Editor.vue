@@ -148,10 +148,27 @@ function valuesOf(example: PreviewExample): string[] {
   return (example.outputs ?? []).map((o) => o.value)
 }
 
-function idsOf(example: PreviewExample): string[] {
-  const out: string[] = []
-  for (const output of example.outputs ?? []) for (const id of output.ids ?? []) out.push(id.id)
+/**
+ * Die gefundenen Normdaten-IDs einer Beispielzeile, jede mit ihrer Herkunft.
+ *
+ * Die Herkunft steht daneben, weil sie sonst niemand kennt: Der Konverter „Land
+ * normalisieren" liefert die GND-Nummer des Staates aus der mitgelieferten
+ * Tabelle mit, ganz ohne „Normdaten nachschlagen". Wer den Nachschlage-Konverter
+ * entfernt und beim Land weiter eine Nummer sieht, haelt das sonst fuer eine
+ * Wirkungslosigkeit — genau so gemeldet worden.
+ */
+function idsOf(example: PreviewExample): Array<{ id: string; origin: string }> {
+  const out: Array<{ id: string; origin: string }> = []
+  for (const output of example.outputs ?? []) {
+    for (const id of output.ids ?? []) out.push({ id: id.id, origin: id.origin })
+  }
   return out
+}
+
+/** Klartext zur Herkunft einer ID — als Tooltip und fuer Vorlesegeraete. */
+function idTitle(entry: { id: string; origin: string }): string {
+  const key = `mapping.idorigin.${entry.origin === '' ? 'unbekannt' : entry.origin}`
+  return te(key) ? t(key, { id: entry.id }) : t('mapping.idorigin.unbekannt', { id: entry.id })
 }
 
 function sourceValues(column: string) {
@@ -551,12 +568,23 @@ const canonicalJson = computed(() => {
         <div class="tablewrap">
           <table class="maptable">
             <caption class="sr-only">{{ t('mapping.table.caption') }}</caption>
+            <!--
+              Feste Spaltenbreiten, damit die Tabelle nie ueber ihren Platz
+              hinauslaeuft (ein waagerechter Rollbalken hat hier schon einmal
+              gestoert). Die Aktionsspalte ist dabei nicht verhandelbar: Die drei
+              Knoepfe brauchen gemessene 108 px, dazu 2 x 12 px Zellenpolsterung.
+              Mit den frueheren 96 px ragte der aeusserste Knopf ueber die
+              Tabellenkante hinaus, wurde von overflow:hidden abgeschnitten und
+              im schmalen Fenster zusaetzlich von der Spalte „Ergebnis je
+              Datensatz" verdeckt. Die Prozentwerte darueber summieren sich
+              deshalb auf 82 statt 90 — sonst waere fuer die 136 px kein Platz.
+            -->
             <colgroup>
-              <col style="width:18%">
-              <col :style="{ width: merged ? '44%' : '24%' }">
-              <col :style="{ width: merged ? '28%' : '25%' }">
-              <col v-if="!merged" style="width:23%">
-              <col style="width:96px">
+              <col style="width:16%">
+              <col :style="{ width: merged ? '40%' : '22%' }">
+              <col :style="{ width: merged ? '26%' : '23%' }">
+              <col v-if="!merged" style="width:21%">
+              <col style="width:136px">
             </colgroup>
             <thead>
               <tr>
@@ -665,7 +693,9 @@ const canonicalJson = computed(() => {
                       <div v-for="(example, i) in examplesOf(column)" :key="i" class="exline">
                         <span v-if="valuesOf(example).length" class="okval">
                           <i aria-hidden="true">✓</i>{{ valuesOf(example).join(' · ') }}
-                          <span v-if="idsOf(example).length" class="idchip">{{ idsOf(example).join(' · ') }}</span>
+                          <span v-for="entry in idsOf(example)" :key="entry.id" class="idchip"
+                                :class="entry.origin === 'land' ? 'idchip-land' : ''"
+                                :title="idTitle(entry)" :aria-label="idTitle(entry)">{{ entry.id }}</span>
                         </span>
                         <span v-else-if="example.errors.length" class="errval" :title="example.errors.join(' · ')">
                           <i aria-hidden="true">⚠</i>{{ example.errors[0] }}

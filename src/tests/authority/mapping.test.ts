@@ -160,3 +160,53 @@ describe('eventplace nimmt Normdaten auf', () => {
     expect(ort[0]?.['same_as']).toEqual([{ category: 'avefi:GNDResource', id: '4005728-8' }])
   })
 })
+
+describe('Herkunft einer gefundenen ID', () => {
+  // Gemeldet: Beim Feld "Land" stand weiter eine Normdaten-ID, obwohl der
+  // Konverter "Normdaten nachschlagen" aus dem Profil entfernt worden war. Der
+  // Grund ist nicht ein Rest im Profil, sondern der country-Konverter selbst:
+  // Die GND-Nummer eines Staates steht in der mitgelieferten Laendertabelle.
+  // Damit das im Editor unterscheidbar bleibt, traegt der Treffer seine
+  // Herkunft mit.
+  it('der country-Konverter meldet seinen Treffer als Herkunft "land"', () => {
+    const m = emptyMapping(['Land'], '1.2.3')
+    m.columns['Land'] = {
+      pre: [step({ op: 'country', unknown: 'keep' })],
+      targets: [{ target: 'work.production.place', post: [] }]
+    }
+    const r = runRow(m, { Land: 'DE' }, 'x', { schema: testSchema, ...authorityServices() })
+
+    expect(r.cells['Land']?.outputs[0]?.ids).toEqual([{ id: '4011882-4', note: '', origin: 'land' }])
+    // Er zaehlt nicht als Nachschlagevorgang.
+    expect(r.idOrigins).toEqual({ bestaetigt: 0, automatisch: 0 })
+  })
+
+  it('ohne country-Konverter bleibt der Rohwert stehen und es kommt keine ID mit', () => {
+    const m = emptyMapping(['Land'], '1.2.3')
+    m.columns['Land'] = { pre: [], targets: [{ target: 'work.production.place', post: [] }] }
+    const r = runRow(m, { Land: 'DE' }, 'x', { schema: testSchema, ...authorityServices() })
+
+    expect(r.cells['Land']?.outputs[0]?.value).toBe('DE')
+    expect(r.cells['Land']?.outputs[0]?.ids).toBeUndefined()
+  })
+
+  it('eine bestaetigte Zuordnung wirkt nur mit dem authority-Konverter', () => {
+    const m = emptyMapping(['Land'], '1.2.3')
+    // Bestaetigte Zuordnung im Profil, aber kein authority-Schritt in der Kette.
+    m.columns['Land'] = {
+      pre: [],
+      targets: [{ target: 'work.production.place', post: [] }],
+      authorities: { DE: { id: '4011882-4', type: 'GNDResource', label: 'Deutschland' } }
+    }
+    const ohne = runRow(m, { Land: 'DE' }, 'x', { schema: testSchema, ...authorityServices() })
+    expect(ohne.cells['Land']?.outputs[0]?.ids).toBeUndefined()
+
+    // Mit dem Konverter schlaegt sie die Automatik und wird als "bestaetigt" gemeldet.
+    m.columns['Land'] = {
+      ...m.columns['Land'],
+      targets: [{ target: 'work.production.place', post: [step({ op: 'authority', source: 'gnd', kind: 'place' })] }]
+    }
+    const mit = runRow(m, { Land: 'DE' }, 'x', { schema: testSchema, ...authorityServices() })
+    expect(mit.cells['Land']?.outputs[0]?.ids?.[0]?.origin).toBe('bestaetigt')
+  })
+})

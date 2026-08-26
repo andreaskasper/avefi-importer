@@ -161,6 +161,44 @@ export interface PreviewOptions extends MappingServices {
   validateRecord?: (record: AvefiRecord) => string[]
 }
 
+/**
+ * Welche Zeilen die Vorschau rechnet.
+ *
+ * Eigene Funktion, weil der Aufrufer sie braucht: Der Normdatenbedarf muss VOR
+ * dem Rechnen aufgeloest werden, und zwar fuer GENAU diese Zeilen. Wuerde die
+ * Auswahlregel an zwei Orten stehen, waeren es zwei Orte, an denen sie
+ * auseinanderlaufen kann — und die Vorschau zeigte Normdaten zu Zeilen, die sie
+ * gar nicht rechnet.
+ */
+export function previewRowIndices(
+  input: PreviewInput,
+  options: { maxRows?: number; perColumn?: number } = {}
+): number[] {
+  const maxRows = options.maxRows ?? MAX_PREVIEW_ROWS
+  const perColumn = options.perColumn ?? EXAMPLES_PER_COLUMN
+  const picked = pickExamples([...input.columns], [...input.rows], perColumn)
+
+  // Zeile 0 ist immer dabei: Sie liefert die Strukturvorschau — der AVefi-Baum
+  // soll einen vollstaendigen Datensatz zeigen, nicht einen aus Bruchstuecken.
+  const needed = new Set<number>()
+  if (input.rows.length > 0) needed.add(0)
+  for (const info of Object.values(picked)) {
+    for (const e of info.examples) needed.add(e.row)
+  }
+  return [...needed].slice(0, maxRows).sort((a, b) => a - b)
+}
+
+/** Dieselben Zeilen, gleich als Zeilen statt als Nummern. */
+export function previewRows(
+  input: PreviewInput,
+  options: { maxRows?: number; perColumn?: number } = {}
+): SourceRow[] {
+  const rows = [...input.rows]
+  return previewRowIndices(input, options)
+    .map((i) => rows[i])
+    .filter((r): r is SourceRow => r !== undefined)
+}
+
 /** Baut die Vorschau: Beispiele, gerechnete Ergebnisse, Hinweise. */
 export function buildPreview(
   input: PreviewInput,
@@ -170,19 +208,13 @@ export function buildPreview(
   const columns = [...input.columns]
   const rows = [...input.rows]
   const total = input.rowCount ?? rows.length
-  const maxRows = options.maxRows ?? MAX_PREVIEW_ROWS
   const perColumn = options.perColumn ?? EXAMPLES_PER_COLUMN
 
   const picked = pickExamples(columns, rows, perColumn)
-
-  // Zeile 0 ist immer dabei: Sie liefert die Strukturvorschau — der AVefi-Baum
-  // soll einen vollstaendigen Datensatz zeigen, nicht einen aus Bruchstuecken.
-  const needed = new Set<number>()
-  if (rows.length > 0) needed.add(0)
-  for (const info of Object.values(picked)) {
-    for (const e of info.examples) needed.add(e.row)
-  }
-  const indices = [...needed].slice(0, maxRows).sort((a, b) => a - b)
+  const indices = previewRowIndices(input, {
+    ...(options.maxRows !== undefined ? { maxRows: options.maxRows } : {}),
+    perColumn
+  })
 
   const services: MappingServices = {
     ...(options.schema !== undefined ? { schema: options.schema } : {}),

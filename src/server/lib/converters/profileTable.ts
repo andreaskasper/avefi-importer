@@ -8,9 +8,11 @@
  */
 import { basename } from 'node:path'
 import type { BaseFormat, MappingJson, MappingProfileRow, ValidationIssue } from '#shared/types/domain'
+import type { AuthorityRequest, MappingServices } from '../mapping/runner'
+import type { SourceRow } from '../mapping/header'
 import type { CanonicalRecord, Converter, ConvertedRecord } from './types'
 import { streamTableRows } from './table'
-import { ProfileRun } from './mappingBridge'
+import { AuthorityNeeds, ProfileRun } from './mappingBridge'
 
 export const PROFILE_KEY_PREFIX = 'mapping_profile:'
 
@@ -28,23 +30,57 @@ export type ProfileForRun = Pick<MappingProfileRow, 'id' | 'name' | 'version' | 
   mapping_json: MappingJson
 }
 
+/** So viele Zeilen werden auf einmal nach Normdatenbedarf durchgesehen. */
+const NEEDS_CHUNK = 500
+
+export interface ProfileConverterOptions {
+  /**
+   * Nachschlagedienste ohne Netz — Laender und Sprachen. Fehlen sie, laesst der
+   * country-Konverter den Rohwert stehen ("DE" statt "Deutschland"), und zwar
+   * wortlos.
+   */
+  services?: MappingServices
+  /**
+   * Loest den Normdatenbedarf auf, BEVOR die erste Zeile konvertiert wird.
+   *
+   * Bekommt den ueber die ganze Datei gesammelten Bedarf und liefert die
+   * Dienste, mit denen anschliessend gerechnet wird. Ohne diese Zusage laeuft
+   * der Konverter ohne Normdaten durch — der Ablauf bleibt derselbe, nur die
+   * IDs fehlen.
+   */
+  prepareAuthorities?: (requests: readonly AuthorityRequest[]) => Promise<MappingServices>
+}
+
 export class ProfileTableConverter implements Converter {
   readonly key: string
   private rows = 0
   private works = 0
   private run: ProfileRun
 
+  private authorityValues = 0
+  private authorityDropped = 0
+
   constructor(
     private readonly profile: ProfileForRun,
-    private readonly baseFormat: BaseFormat | null
+    private readonly baseFormat: BaseFormat | null,
+    private readonly options: ProfileConverterOptions = {}
   ) {
     this.key = profileKey(profile.id)
-    this.run = new ProfileRun(profile.mapping_json)
+    this.run = new ProfileRun(profile.mapping_json, options.services ?? {})
   }
 
   async *convert(path: string): AsyncGenerator<ConvertedRecord> {
     const file = basename(path)
     const format = this.baseFormat ?? (this.profile.base_format as BaseFormat | null)
+
+    // Erst den Bedarf der GANZEN Datei sammeln, dann in einem Schwung
+    // aufloesen, dann konvertieren. Die Datei wird dafuer ein zweites Mal
+    // gelesen — das kostet eine Umdrehung der Platte und spart je Zeile eine
+    // HTTP-Anfrage.
+    if (this.options.prepareAuthorities !== undefined) {
+      this.run.useServices(await this.options.prepareAuthorities(await this.collectNeeds(path, format)))
+    }
+
     const grouping = this.run.groupsWorks
 
     const bucket: Array<{ canonical: CanonicalRecord; rows: number[]; issues: ValidationIssue[] }> = []
@@ -117,6 +153,29 @@ export class ProfileTableConverter implements Converter {
     }
   }
 
+  /**
+   * Ein erster Durchlauf ueber die Datei, nur um zu sammeln, was nachzuschlagen
+   * ist. Gerechnet wird buendelweise, damit nicht die ganze Datei im Speicher
+   * stehen muss.
+   */
+  private async collectNeeds(path: string, format: BaseFormat | null): Promise<AuthorityRequest[]> {
+    const needs = new AuthorityNeeds()
+    let chunk: SourceRow[] = []
+
+    for await (const { row } of streamTableRows(path, format)) {
+      chunk.push(row)
+      if (chunk.length >= NEEDS_CHUNK) {
+        needs.add(this.run.collectAuthorities(chunk))
+        chunk = []
+      }
+    }
+    if (chunk.length > 0) needs.add(this.run.collectAuthorities(chunk))
+
+    this.authorityValues = needs.size
+    this.authorityDropped = needs.dropped
+    return needs.all()
+  }
+
   report(): Record<string, unknown> {
     const tally = this.run.report()
     return {
@@ -126,7 +185,9 @@ export class ProfileTableConverter implements Converter {
       works: this.works,
       valueErrors: tally.valueErrors,
       columnIssues: tally.columnIssues,
-      idOrigins: tally.idOrigins
+      idOrigins: tally.idOrigins,
+      authorityValues: this.authorityValues,
+      authorityValuesDropped: this.authorityDropped
     }
   }
 }

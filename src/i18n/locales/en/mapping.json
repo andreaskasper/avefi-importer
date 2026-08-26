@@ -158,6 +158,13 @@
       "cancel": "Cancel",
       "close": "Close"
     },
+    "idorigin": {
+      "label": "Authority ID {id}",
+      "bestaetigt": "{id} — assignment confirmed by hand",
+      "automatisch": "{id} — found automatically by the “look up authority data” converter",
+      "land": "{id} — GND number of the country, contributed by the “normalise country” converter, not by “look up authority data”",
+      "unbekannt": "{id} — authority ID"
+    },
     "tree": {
       "heading": "Result per record",
       "empty": "– nothing mapped –",

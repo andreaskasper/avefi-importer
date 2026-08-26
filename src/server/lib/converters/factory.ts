@@ -11,7 +11,9 @@ import { AvefiJsonConverter, AVEFI_JSON_KEY } from './avefiJson'
 import { GenericJsonConverter, GENERIC_JSON_KEY } from './genericJson'
 import { MarcXmlConverter, MARCXML_KEY } from './marcXml'
 import { EadConverter, EAD_KEY } from './ead'
-import { ProfileTableConverter, profileIdFromKey, type ProfileForRun } from './profileTable'
+import {
+  ProfileTableConverter, profileIdFromKey, type ProfileConverterOptions, type ProfileForRun
+} from './profileTable'
 
 /** Direkt vorhandene Konverter mit ihrer Bezeichnung. */
 export const CONVERTER_LABELS: Record<string, string> = {
@@ -29,7 +31,7 @@ export function converterLabel(key: string, profileName?: string): string {
 
 export type ProfileForConverter = ProfileForRun
 
-export interface MakeOptions {
+export interface MakeOptions extends ProfileConverterOptions {
   baseFormat?: BaseFormat | null
   /** Wird gebraucht, sobald der Schluessel auf ein Mappingprofil zeigt. */
   profile?: ProfileForConverter | null
@@ -39,7 +41,10 @@ export function makeConverter(key: string, opts: MakeOptions = {}): Converter | 
   const profileId = profileIdFromKey(key)
   if (profileId !== null) {
     if (!opts.profile || opts.profile.id !== profileId) return null
-    return new ProfileTableConverter(opts.profile, opts.baseFormat ?? null)
+    return new ProfileTableConverter(opts.profile, opts.baseFormat ?? null, {
+      ...(opts.services !== undefined ? { services: opts.services } : {}),
+      ...(opts.prepareAuthorities !== undefined ? { prepareAuthorities: opts.prepareAuthorities } : {})
+    })
   }
   switch (key) {
     case AVEFI_JSON_KEY:

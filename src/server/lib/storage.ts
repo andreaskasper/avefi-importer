@@ -184,6 +184,13 @@ export async function deleteImportFiles(id: string): Promise<void> {
  * Bei einer Lieferung mit dreihunderttausend Zeilen darf die Ausgabedatei nicht
  * erst vollstaendig im Speicher entstehen. Am Ende wird die Groesse geprueft —
  * aus demselben Grund wie bei writeAvefi().
+ *
+ * Eingerueckt wird mit zwei Leerzeichen, wie writeAvefi() es tut. Die
+ * datenstromfaehige Fassung schrieb jeden Knoten in eine einzige Zeile; die
+ * Datei war damit maschinell gleichwertig, aber von Hand kaum noch zu lesen.
+ * Die Ausgabe bleibt dabei zeichengenau wiederholbar: JSON.stringify behaelt
+ * die Reihenfolge, in der der Builder die Felder gesetzt hat, und die haengt
+ * nur an Profil und Quelldatei.
  */
 export class AvefiWriter {
   private readonly stream: ReturnType<typeof createWriteStream>
@@ -202,7 +209,10 @@ export class AvefiWriter {
 
   async write(nodes: readonly unknown[]): Promise<void> {
     for (const node of nodes) {
-      const text = (this.count === 0 ? '\n  ' : ',\n  ') + JSON.stringify(node)
+      // JSON.stringify rueckt relativ zum Knoten ein; der Knoten selbst sitzt
+      // eine Stufe tief im Feld, also wandert jede Folgezeile um zwei weiter.
+      const body = JSON.stringify(node, null, 2).split('\n').join('\n  ')
+      const text = (this.count === 0 ? '\n  ' : ',\n  ') + body
       if (!this.stream.write(text)) {
         await new Promise<void>((resolve) => this.stream.once('drain', () => resolve()))
       }

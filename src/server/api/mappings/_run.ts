@@ -11,11 +11,15 @@
  */
 import type { AvefiRecord, MappingJson, ProfileSample } from '#shared/types/domain'
 import {
-  buildPreview, buildProfileSample, columnStates, computeComplete, getTarget, hasBlocker,
-  normalizeMapping, openColumns, staticCheck,
-  type MappingCheck, type PreviewResult
+  buildPreview, buildProfileSample, collectAuthorityLookups, columnStates, computeComplete, getTarget,
+  hasBlocker, normalizeMapping, openColumns, previewRows, staticCheck,
+  type MappingCheck, type MappingServices, type PreviewInput, type PreviewResult, type SchemaModel
 } from '../../lib/mapping/index'
-import { authorityCandidates, authorityServices, sourcesForKind } from '../../lib/authority/index'
+import {
+  PREVIEW_AUTHORITY_LIMIT, authorityCandidates, mappingServicesFor, sourcesForKind,
+  type ResolvedAuthorities
+} from '../../lib/authority/index'
+import { db } from '../../db'
 import { checkRecords } from '../../worker/validate'
 import { avefiSchemaVersion, fail, schemaModel, type TableSource } from './_lib'
 
@@ -52,8 +56,28 @@ export interface PreviewPayload extends PreviewResult {
 }
 
 /**
+ * Die Nachschlagedienste der Vorschau — dieselben, mit denen spaeter
+ * konvertiert wird.
+ *
+ * Aufgeloest wird der Bedarf GENAU der Zeilen, die die Vorschau rechnet
+ * (previewRows), und zwar ueber dieselbe Funktion und denselben
+ * Zwischenspeicher wie der Hintergrundprozess. Nur die Zahl der frischen
+ * Abfragen ist kleiner: Der Editor rechnet nach jeder Aenderung neu und darf
+ * dabei nicht minutenlang am Netz haengen. Was deshalb liegen bleibt, steht als
+ * Meldung in den Hinweisen — und beim naechsten Durchlauf im Zwischenspeicher.
+ */
+async function previewServices(
+  input: PreviewInput,
+  mapping: MappingJson,
+  schema: SchemaModel
+): Promise<{ services: MappingServices; resolved: ResolvedAuthorities }> {
+  const requests = collectAuthorityLookups(mapping, previewRows(input))
+  return mappingServicesFor(requests, { sql: db(), schema, limit: PREVIEW_AUTHORITY_LIMIT })
+}
+
+/**
  * Rechnet den Entwurf auf echten Zeilen. Welche Zeilen das sind, entscheidet
- * buildPreview: je Spalte werden die ersten drei VERSCHIEDENEN gefuellten
+ * previewRows: je Spalte werden die ersten drei VERSCHIEDENEN gefuellten
  * Werte gesucht, statt stur bei Zeile 1 zu bleiben. Beispielwerte und
  * Ergebnisse stammen damit aus derselben Rechnung und meinen dieselben Zeilen.
  */
@@ -62,19 +86,20 @@ export async function previewFor(source: TableSource, raw: unknown): Promise<Pre
   const version = await avefiSchemaVersion()
   const { mapping } = normalizeMapping(raw, { columns: source.columns, avefiSchemaVersion: version })
 
-  const result = buildPreview(
-    { columns: source.columns, rows: source.rows, rowCount: source.rowCount },
-    mapping,
-    { schema, ...authorityServices() }
-  )
+  const input: PreviewInput = { columns: source.columns, rows: source.rows, rowCount: source.rowCount }
+  const { services, resolved } = await previewServices(input, mapping, schema)
+
+  const result = buildPreview(input, mapping, { schema, ...services })
+  const checks = [...result.checks, ...resolved.issues]
 
   return {
     ...result,
+    checks,
     targetUse: targetUse(mapping),
     states: columnStates(mapping),
     complete: computeComplete(mapping),
     open: openColumns(mapping),
-    blocking: hasBlocker(result.checks)
+    blocking: hasBlocker(checks)
   }
 }
 
@@ -98,11 +123,10 @@ export async function schemaCheck(source: TableSource, raw: unknown): Promise<{
   const version = await avefiSchemaVersion()
   const { mapping } = normalizeMapping(raw, { columns: source.columns, avefiSchemaVersion: version })
 
-  const preview = buildPreview(
-    { columns: source.columns, rows: source.rows, rowCount: source.rowCount },
-    mapping,
-    { schema, ...authorityServices() }
-  )
+  const input: PreviewInput = { columns: source.columns, rows: source.rows, rowCount: source.rowCount }
+  const { services } = await previewServices(input, mapping, schema)
+
+  const preview = buildPreview(input, mapping, { schema, ...services })
   const canonical: AvefiRecord | null = preview.canonical
   if (canonical === null) return { checked: 0, valid: 0, issues: [], unavailable: null }
 
