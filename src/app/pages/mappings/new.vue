@@ -21,6 +21,17 @@ const dragover = ref(false)
 const errorText = computed(() => failureText(t, te, failure.value))
 const input = ref<HTMLInputElement | null>(null)
 
+/**
+ * Ein Klick auf die freie Flaeche oeffnet die Dateiauswahl. Klicks auf das
+ * Label oder das Feld selbst bleiben unberuehrt, sonst ginge der Dialog
+ * zweimal auf.
+ */
+function onZoneClick(e: MouseEvent) {
+  const ziel = e.target as HTMLElement | null
+  if (ziel?.closest('label, button, input, a')) return
+  input.value?.click()
+}
+
 function pick(event: Event) {
   const list = (event.target as HTMLInputElement).files
   file.value = list !== null && list.length > 0 ? list[0]! : null
@@ -81,9 +92,12 @@ async function submit() {
     <div v-if="errorText" class="alert" role="alert" style="margin-bottom:14px">{{ errorText }}</div>
 
     <form @submit.prevent="submit">
-      <div class="dropzone" :class="dragover ? 'dragover' : ''" tabindex="0" role="button"
+      <!-- Kein role="button" auf dem Kasten: Er enthaelt eine Ueberschrift und
+           Fliesstext, und der Tastaturweg fuehrt ueber das Dateifeld. Zwei
+           Tabstopps fuer dieselbe Handlung waeren einer zu viel. -->
+      <div class="dropzone" :class="dragover ? 'dragover' : ''" role="group"
            :aria-label="t('mapping.new.chooseLabel')"
-           @click="input?.click()" @keydown.enter.prevent="input?.click()" @keydown.space.prevent="input?.click()"
+           @click="onZoneClick"
            @dragover.prevent="dragover = true" @dragleave="dragover = false" @drop.prevent="drop">
         <p class="ic" aria-hidden="true">📊</p>
         <h2 style="font-size:16px;margin-bottom:5px">{{ t('mapping.new.dropHeading') }}</h2>
@@ -91,11 +105,12 @@ async function submit() {
         <p class="formats">
           <span class="fmt">CSV</span><span class="fmt">TSV</span><span class="fmt">XLSX</span>
         </p>
+        <div class="pickwrap">
+          <input id="samplefile" ref="input" class="sr-only" type="file"
+                 accept=".csv,.tsv,.tab,.txt,.xlsx,.xlsm,.xltx,text/csv" @change="pick">
+          <label for="samplefile" class="btn btn-outline btn-sm">{{ t('mapping.new.chooseLabel') }}</label>
+        </div>
       </div>
-
-      <label class="sr-only" for="samplefile">{{ t('mapping.new.chooseLabel') }}</label>
-      <input id="samplefile" ref="input" class="sr-only" type="file"
-             accept=".csv,.tsv,.tab,.txt,.xlsx,.xlsm,.xltx,text/csv" @change="pick">
 
       <p style="display:flex;gap:8px;align-items:center;margin-top:14px">
         <button class="btn btn-primary" type="submit" :disabled="busy || file === null">

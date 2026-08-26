@@ -4,6 +4,33 @@
 // Aussprache vor. nuxt.config setzt nur den Anfangswert.
 const { locale } = useI18n()
 
+/**
+ * Seitenwechsel hoerbar machen.
+ *
+ * Eine Einzelseitenanwendung tauscht nur den Inhalt aus. Ohne Zutun bleibt der
+ * Fokus dabei am Dokumentanfang und niemand erfaehrt, dass sich etwas geaendert
+ * hat. Nach jedem Wechsel wandert der Fokus deshalb an den Anfang des
+ * Inhaltsbereichs und der neue Seitentitel wird angesagt.
+ */
+const seitenwechsel = ref('')
+const router = useRouter()
+
+if (import.meta.client) {
+  router.afterEach((nach, von) => {
+    if (nach.path === von.path) return
+    void nextTick(() => {
+      window.setTimeout(() => {
+        const ziel = document.getElementById('main')
+        if (ziel !== null) {
+          ziel.setAttribute('tabindex', '-1')
+          ziel.focus({ preventScroll: false })
+        }
+        seitenwechsel.value = document.title
+      }, 180)
+    })
+  })
+}
+
 useHead({
   htmlAttrs: { lang: locale },
   titleTemplate: (t?: string) => (t ? `${t} · AVefi Importer` : 'AVefi Importer'),
@@ -20,4 +47,5 @@ useHead({
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+  <p class="sr-only" role="status" aria-live="polite">{{ seitenwechsel }}</p>
 </template>

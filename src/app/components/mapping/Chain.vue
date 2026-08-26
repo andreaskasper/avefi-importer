@@ -63,6 +63,9 @@ function add(meta: TransformOpMeta) {
 
 function remove(index: number) {
   props.chain.splice(index, 1)
+  // Der Knopf des geloeschten Schritts ist weg; der Fokus geht auf „Schritt
+  // hinzufuegen" statt auf <body>.
+  void nextTick(() => addButton.value?.focus())
   emit('change')
 }
 
@@ -77,6 +80,16 @@ function move(index: number, delta: number) {
 function close() {
   picking.value = false
   nextTick(() => addButton.value?.focus())
+}
+
+/**
+ * Beim Oeffnen wandert der Fokus in die Auswahl. Sonst muesste man sich vom
+ * Knopf aus blind weitertabben und wuesste nicht, dass sich etwas geoeffnet hat.
+ */
+function togglePicker() {
+  picking.value = !picking.value
+  if (!picking.value) return
+  void nextTick(() => root.value?.querySelector<HTMLElement>('.chain-pitem')?.focus())
 }
 
 function onDocClick(e: MouseEvent) {
@@ -115,7 +128,7 @@ onBeforeUnmount(() => {
 
     <div class="chain-add">
       <button ref="addButton" type="button" class="btn btn-outline btn-sm"
-              :aria-expanded="picking ? 'true' : 'false'" @click="picking = !picking">
+              aria-haspopup="dialog" :aria-expanded="picking ? 'true' : 'false'" @click="togglePicker">
         + {{ t('mapping.chain.addStep') }}
       </button>
 

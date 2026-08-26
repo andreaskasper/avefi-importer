@@ -6,6 +6,8 @@ const { t } = useI18n()
 
 const menuOpen = ref(false)
 const menuRoot = ref<HTMLElement | null>(null)
+const menuButton = ref<HTMLButtonElement | null>(null)
+const menuBox = ref<HTMLElement | null>(null)
 
 const active = computed(() => {
   const p = route.path
@@ -30,7 +32,50 @@ function onDocClick(e: MouseEvent) {
   if (menuOpen.value && menuRoot.value && !menuRoot.value.contains(e.target as Node)) menuOpen.value = false
 }
 function onKey(e: KeyboardEvent) {
-  if (e.key === 'Escape') menuOpen.value = false
+  if (e.key === 'Escape' && menuOpen.value) closeMenu(true)
+}
+
+/** Eintraege des Menues in Reihenfolge — Grundlage der Pfeiltastenbedienung. */
+function menuItems(): HTMLElement[] {
+  return Array.from(menuBox.value?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])
+}
+
+function closeMenu(focusButton = false) {
+  menuOpen.value = false
+  if (focusButton) menuButton.value?.focus()
+}
+
+/**
+ * Menue oeffnen und den Fokus mitnehmen. Ohne das Nachfuehren bleibt der Fokus
+ * auf dem Knopf, und mit einem Vorlesewerkzeug bemerkt niemand, dass sich
+ * ueberhaupt etwas geoeffnet hat.
+ */
+async function toggleMenu() {
+  menuOpen.value = !menuOpen.value
+  if (!menuOpen.value) return
+  await nextTick()
+  menuItems()[0]?.focus()
+}
+
+function onMenuKey(e: KeyboardEvent) {
+  const list = menuItems()
+  if (list.length === 0) return
+  const at = list.indexOf(document.activeElement as HTMLElement)
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    list[(at + 1) % list.length]?.focus()
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    list[(at - 1 + list.length) % list.length]?.focus()
+  } else if (e.key === 'Home') {
+    e.preventDefault()
+    list[0]?.focus()
+  } else if (e.key === 'End') {
+    e.preventDefault()
+    list[list.length - 1]?.focus()
+  } else if (e.key === 'Tab') {
+    closeMenu()
+  }
 }
 onMounted(() => {
   document.addEventListener('click', onDocClick)
@@ -72,7 +117,8 @@ function toggleTheme() {
                   :title="reviewCount ? t('nav.reviewsTitle', { count: reviewCount.open }) : undefined">
           {{ t('nav.reviews') }}
           <span v-if="reviewCount && reviewCount.open > 0" class="badge b-wait"
-                style="padding:1px 6px;margin-left:2px">{{ reviewCount.open }}</span>
+                style="padding:1px 6px;margin-left:2px">{{ reviewCount.open }}<span class="sr-only">
+            {{ t('nav.reviewsBadge') }}</span></span>
         </NuxtLink>
       </nav>
 
@@ -81,18 +127,20 @@ function toggleTheme() {
         <button class="ghost" :title="t('theme.switch')" :aria-label="t('theme.switch')" @click="toggleTheme">◐</button>
 
         <div v-if="user" ref="menuRoot" class="usermenu">
-          <button class="avatar-btn" type="button" aria-haspopup="true" :aria-expanded="menuOpen"
+          <button ref="menuButton" class="avatar-btn" type="button" aria-haspopup="menu" :aria-expanded="menuOpen"
                   :aria-label="t('userMenu', { name: user.name })" :title="user.name"
-                  @click.stop="menuOpen = !menuOpen">
+                  @click.stop="toggleMenu">
             <span class="avatar" aria-hidden="true">{{ initials }}</span>
           </button>
-          <div class="menu" role="menu" :hidden="!menuOpen">
+          <div ref="menuBox" class="menu" role="menu" :aria-label="t('userMenu', { name: user.name })"
+               :hidden="!menuOpen" @keydown="onMenuKey">
             <div class="menu-head">
               <div class="fn">{{ user.name }}</div>
               <div class="dim small">{{ user.email }}</div>
             </div>
-            <NuxtLink class="menu-item" role="menuitem" to="/profile">{{ t('menu.profile') }}</NuxtLink>
-            <NuxtLink v-if="user.is_admin" class="menu-item" role="menuitem" to="/users">{{ t('menu.users') }}</NuxtLink>
+            <NuxtLink class="menu-item" role="menuitem" to="/profile" @click="closeMenu()">{{ t('menu.profile') }}</NuxtLink>
+            <NuxtLink v-if="user.is_admin" class="menu-item" role="menuitem" to="/users"
+                      @click="closeMenu()">{{ t('menu.users') }}</NuxtLink>
             <button class="menu-item" role="menuitem" type="button" @click="logout()">{{ t('menu.logout') }}</button>
           </div>
         </div>

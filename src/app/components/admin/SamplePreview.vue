@@ -33,7 +33,10 @@ const { t } = useI18n()
     </div>
   </div>
 
-  <div v-else-if="columns.length > 0" class="tablewrap">
+  <!-- Der Bereich rollt waagerecht und enthaelt selbst kein Bedienelement.
+       Ohne tabindex kaeme man mit der Tastatur nicht an die rechten Spalten. -->
+  <div v-else-if="columns.length > 0" class="tablewrap" role="region" tabindex="0"
+       :aria-label="t('admin.reviews.detail.preview')">
     <table>
       <caption class="sr-only">{{ t('admin.reviews.detail.preview') }}</caption>
       <thead>

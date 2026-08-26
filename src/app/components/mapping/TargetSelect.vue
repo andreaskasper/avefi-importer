@@ -53,8 +53,18 @@ function pathOf(target: EditorTarget): string {
   return `${levelLabel(target.level)} › ${groupLabel(target.group)} › ${labelOf(target)}`
 }
 
+/**
+ * Im Feld steht beim Fokussieren das gewaehlte Ziel, damit ein Vorlesewerkzeug
+ * den aktuellen Wert nennt. Dieser Text ist aber keine Suchanfrage — sonst
+ * fiele die Liste beim blossen Hineinspringen auf den einen Treffer zusammen.
+ */
+const suchtext = computed(() => {
+  const sel = selected.value
+  return sel !== null && query.value === pathOf(sel) ? '' : query.value
+})
+
 const words = computed(() =>
-  query.value.trim().toLowerCase().split(/[^\p{L}\p{N}_.]+/u).filter((w) => w !== '')
+  suchtext.value.trim().toLowerCase().split(/[^\p{L}\p{N}_.]+/u).filter((w) => w !== '')
 )
 
 const matches = computed(() => {
@@ -69,7 +79,13 @@ const matches = computed(() => {
 })
 
 watch(matches, () => {
-  activeIndex.value = matches.value.length > 0 ? 0 : -1
+  if (matches.value.length === 0) {
+    activeIndex.value = -1
+    return
+  }
+  // Steht schon ein Ziel fest, beginnt die Pfeiltastenbedienung dort.
+  const at = matches.value.findIndex((x) => x.key === props.modelValue)
+  activeIndex.value = at >= 0 ? at : 0
 })
 
 function optionId(index: number): string {
@@ -88,11 +104,37 @@ function clear() {
   query.value = ''
 }
 
+/** Suche schliessen und die Anzeige wieder auf das gewaehlte Ziel stellen. */
+function closeList() {
+  openList.value = false
+  query.value = ''
+}
+
+/**
+ * Beim Hineinspringen zeigt das Feld das gewaehlte Ziel. Ohne das meldet ein
+ * Vorlesewerkzeug ein leeres Feld, obwohl ein Ziel gesetzt ist.
+ */
+function onFocus() {
+  const sel = selected.value
+  query.value = sel !== null ? pathOf(sel) : ''
+  openList.value = true
+}
+
 function onKeydown(e: KeyboardEvent) {
+  // Das erste getippte Zeichen ersetzt die Anzeige des gewaehlten Ziels,
+  // statt sich dahinterzuhaengen.
+  if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    const sel = selected.value
+    const field = e.target as HTMLInputElement
+    if (sel !== null && field.value === pathOf(sel)) {
+      field.value = ''
+      query.value = ''
+    }
+  }
   if (e.key === 'Escape') {
     if (openList.value) {
       e.stopPropagation()
-      openList.value = false
+      closeList()
     }
     return
   }
@@ -120,7 +162,7 @@ function onKeydown(e: KeyboardEvent) {
 }
 
 function onDocClick(e: MouseEvent) {
-  if (openList.value && root.value !== null && !root.value.contains(e.target as Node)) openList.value = false
+  if (openList.value && root.value !== null && !root.value.contains(e.target as Node)) closeList()
 }
 onMounted(() => document.addEventListener('click', onDocClick))
 onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
@@ -132,12 +174,13 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
 
     <div class="ac-wrap">
       <input :id="inputId" class="input" type="text" role="combobox" autocomplete="off" spellcheck="false"
+             aria-autocomplete="list"
              :aria-expanded="openList ? 'true' : 'false'" :aria-controls="`${inputId}-list`"
              :aria-activedescendant="openList && activeIndex >= 0 ? optionId(activeIndex) : undefined"
              :aria-describedby="describedBy"
              :value="openList ? query : (selected ? pathOf(selected) : '')"
              :placeholder="t('mapping.target.search')"
-             @focus="openList = true"
+             @focus="onFocus"
              @input="query = ($event.target as HTMLInputElement).value; openList = true"
              @keydown="onKeydown">
 

@@ -15,6 +15,7 @@ import { apiFailure, failureText, type ApiFailure } from './errors'
 
 const emit = defineEmits<{ uploaded: []; queued: [] }>()
 const { t, te } = useI18n()
+const keepFocus = useKeepFocus()
 
 const MAX_BYTES = 250 * 1024 * 1024
 const MAX_MB = Math.round(MAX_BYTES / 1048576)
@@ -160,6 +161,10 @@ function onDrop(e: DragEvent) {
 }
 
 async function submitUrl() {
+  return keepFocus(() => submitUrlInner())
+}
+
+async function submitUrlInner() {
   urlFailure.value = null
   urlDone.value = false
   const url = urlValue.value.trim()

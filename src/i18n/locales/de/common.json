@@ -7,7 +7,8 @@
     "imports": "Importe",
     "mappings": "Zuordnungen",
     "reviews": "Format-Review",
-    "reviewsTitle": "Offene Zuordnungsaufgaben: {count}"
+    "reviewsTitle": "Offene Zuordnungsaufgaben: {count}",
+    "reviewsBadge": "offene Aufgaben"
   },
   "menu": {
     "profile": "Mein Profil",

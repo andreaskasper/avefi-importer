@@ -61,7 +61,9 @@ function snippetRows(entry: DiagnosticEntry): SnippetRow[] {
         </span>
       </div>
 
-      <div v-if="entry.snippet" class="jsonprev" style="margin:10px 0 0" role="group"
+      <!-- Der Kasten rollt und enthaelt kein Bedienelement; ohne tabindex kaeme
+           man mit der Tastatur nicht an den unteren Teil des Ausschnitts. -->
+      <div v-if="entry.snippet" class="jsonprev" style="margin:10px 0 0" role="group" tabindex="0"
            :aria-label="t('imports.detail.snippet')">
         <span v-for="row in snippetRows(entry)" :key="row.key" style="display:block"
               :style="row.mark ? 'background:var(--danger-bg);color:var(--danger)' : undefined">{{ row.text }}</span>

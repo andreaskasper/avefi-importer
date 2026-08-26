@@ -34,6 +34,19 @@ const emit = defineEmits<{
 }>()
 
 const { t, te } = useI18n()
+const root = ref<HTMLElement | null>(null)
+
+/**
+ * Fokus in das Element setzen, das nach einer Aenderung neu entsteht.
+ * Ohne das faellt der Fokus auf <body>, sobald der ausloesende Knopf aus dem
+ * Baum verschwindet — und der Weg zurueck beginnt am Seitenanfang.
+ */
+function focusInBranch(index: number, auswahl: string) {
+  void nextTick(() => {
+    const zweig = root.value?.querySelectorAll<HTMLElement>('.branch-item')[index]
+    zweig?.querySelector<HTMLElement>(auswahl)?.focus()
+  })
+}
 
 const idBase = computed(() => `col${props.index}`)
 const byKey = computed(() => new Map(props.targets.map((x) => [x.key, x])))
@@ -85,11 +98,15 @@ function addTarget() {
   props.spec.ignore = false
   if (!Array.isArray(props.spec.targets)) props.spec.targets = []
   props.spec.targets.push({ target: '', post: [] })
+  focusInBranch(props.spec.targets.length - 1, 'input[role="combobox"]')
   emit('change')
 }
 
 function removeTarget(index: number) {
   props.spec.targets?.splice(index, 1)
+  // Der geloeschte Zweig nimmt seinen Knopf mit; der Fokus geht auf „Zweig
+  // hinzufuegen", das einzige Element, das sicher stehen bleibt.
+  void nextTick(() => root.value?.querySelector<HTMLElement>('.branch-add-item button')?.focus())
   emit('change')
 }
 
@@ -106,6 +123,7 @@ function addValuemap(index: number) {
   if (binding === undefined) return
   if (!Array.isArray(binding.post)) binding.post = []
   binding.post.push({ op: 'map', map: {}, fallback: 'keep_note' } as TransformStep)
+  focusInBranch(index, '.authpanel select, .authpanel input')
   emit('change')
 }
 
@@ -129,7 +147,7 @@ const authorityValues = computed(() => {
 </script>
 
 <template>
-  <div class="branch">
+  <div ref="root" class="branch">
     <div class="branch-src">
       <span class="branch-col"><i aria-hidden="true">▤</i>{{ column }}</span>
       <span v-if="fillLabel" class="dim small">{{ fillLabel }}</span>

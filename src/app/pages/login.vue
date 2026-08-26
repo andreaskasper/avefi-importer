@@ -11,6 +11,7 @@ definePageMeta({ layout: 'auth' })
 
 const { t } = useI18n()
 const { login } = useAuth()
+const keepFocus = useKeepFocus()
 const route = useRoute()
 
 useHead({ title: () => t('auth.pageTitle') })
@@ -22,6 +23,10 @@ const errorKey = ref<string | null>(null)
 const errorText = computed(() => (errorKey.value === null ? '' : t(`auth.error.${errorKey.value}`)))
 
 async function submit() {
+  return keepFocus(() => submitInner())
+}
+
+async function submitInner() {
   errorKey.value = null
   if (email.value.trim() === '' || password.value === '') {
     errorKey.value = 'empty'

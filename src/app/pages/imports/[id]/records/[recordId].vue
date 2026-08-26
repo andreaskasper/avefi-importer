@@ -28,6 +28,7 @@ import type {
 const route = useRoute()
 const router = useRouter()
 const { t, te, locale } = useI18n()
+const keepFocus = useKeepFocus()
 
 const importId = computed(() => String(route.params.id ?? ''))
 const recordId = computed(() => String(route.params.recordId ?? ''))
@@ -98,6 +99,10 @@ watch(detail, (d) => {
 
 async function runCheck() {
   if (output.value === null || checking.value) return
+  return keepFocus(() => runCheckInner())
+}
+
+async function runCheckInner() {
   checking.value = true
   actionError.value = ''
   try {
@@ -116,6 +121,10 @@ async function runCheck() {
 
 async function save() {
   if (output.value === null || saving.value) return
+  return keepFocus(() => saveInner())
+}
+
+async function saveInner() {
   saving.value = true
   saved.value = false
   actionError.value = ''
@@ -201,6 +210,10 @@ const matching = ref(false)
 const matchMessage = ref('')
 
 async function matchAll() {
+  return keepFocus(() => matchAllInner())
+}
+
+async function matchAllInner() {
   const work = ui.value?.work
   if (work === undefined || matching.value) return
   const open = work.subjects.filter((s) => s.has_name.trim().length >= 3 && s.same_as.length === 0)
@@ -366,7 +379,10 @@ function backToList() {
         </div>
       </section>
 
-      <pre v-if="showJson" id="record-json" class="jsonprev" :aria-label="t('records.editor.jsonLabel')">{{ jsonText }}</pre>
+      <!-- Der Kasten rollt und enthaelt kein Bedienelement: ohne tabindex kaeme
+           man mit der Tastatur nicht an den unteren Teil des JSON. -->
+      <pre v-if="showJson" id="record-json" class="jsonprev" tabindex="0" role="region"
+           :aria-label="t('records.editor.jsonLabel')">{{ jsonText }}</pre>
       <p v-if="showJson" class="note">{{ t('records.editor.jsonHint') }}</p>
 
       <!-- Reiter -->

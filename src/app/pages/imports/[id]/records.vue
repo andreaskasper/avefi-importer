@@ -62,8 +62,24 @@ function clearSearch() {
   submitSearch()
 }
 
+const prevButton = ref<HTMLButtonElement | null>(null)
+const nextButton = ref<HTMLButtonElement | null>(null)
+
+/**
+ * Blaettern und den Fokus behalten.
+ *
+ * Am Rand des Bereichs wird der gedrueckte Knopf gesperrt und verliert dabei
+ * den Fokus an <body>. Der Fokus geht dann auf den Knopf der Gegenrichtung,
+ * damit man nicht wieder von vorn tabben muss.
+ */
 function page(delta: number) {
   offset.value = Math.max(0, offset.value + delta * limit)
+  void nextTick(() => {
+    const gedrueckt = delta < 0 ? prevButton.value : nextButton.value
+    const andere = delta < 0 ? nextButton.value : prevButton.value
+    if (gedrueckt !== null && !gedrueckt.disabled) gedrueckt.focus()
+    else andere?.focus()
+  })
 }
 
 /** Nach dem Speichern im Editor soll die Liste den neuen Stand zeigen. */
@@ -143,13 +159,15 @@ watch(isChild, (child) => {
         <RecordsRecordTable :records="records" :import-id="importId" />
 
         <div v-if="filtered > limit" style="display:flex;align-items:center;gap:12px;margin-top:12px">
-          <button class="btn btn-outline btn-sm" type="button" :disabled="!canPrev" @click="page(-1)">
+          <button ref="prevButton" class="btn btn-outline btn-sm" type="button" :disabled="!canPrev"
+                  @click="page(-1)">
             {{ t('records.paging.prev') }}
           </button>
           <span class="dim small tnum" role="status">
             {{ t('records.paging.showing', { from, to, total: formatNumber(filtered, locale) }) }}
           </span>
-          <button class="btn btn-outline btn-sm" type="button" :disabled="!canNext" @click="page(1)">
+          <button ref="nextButton" class="btn btn-outline btn-sm" type="button" :disabled="!canNext"
+                  @click="page(1)">
             {{ t('records.paging.next') }}
           </button>
         </div>

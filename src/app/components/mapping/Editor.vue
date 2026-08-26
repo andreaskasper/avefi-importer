@@ -35,6 +35,7 @@ const props = defineProps<{
 }>()
 
 const { t, te } = useI18n()
+const keepFocus = useKeepFocus()
 
 /* ---------------------------------------------------------------- Zustand */
 
@@ -199,6 +200,7 @@ async function runPreview() {
 }
 
 async function runSchemaCheck() {
+  return keepFocus(async () => {
   schemaBusy.value = true
   try {
     schemaResult.value = await post<SchemaCheckResponse>('schema', { mapping: mapping.value })
@@ -207,6 +209,7 @@ async function runSchemaCheck() {
   } finally {
     schemaBusy.value = false
   }
+  })
 }
 
 function toggleOpen(column: string) {
@@ -227,15 +230,33 @@ function reset(column: string) {
   s.ignore = false
   s.targets = []
   s.pre = []
+  // Der Zuruecksetzen-Knopf faellt mit dem Zustand weg; der Fokus wandert
+  // deshalb auf den ersten Knopf derselben Zeile.
+  const index = columns.value.indexOf(column)
+  void nextTick(() => {
+    document.querySelector<HTMLButtonElement>(`#maprow-${index} .rowbtns button`)?.focus()
+  })
   refresh()
 }
 
+/**
+ * Neues Ziel anlegen und den Fokus mitnehmen.
+ *
+ * Der Vorschlagsknopf, den man dafuer druckt, verschwindet dabei aus dem
+ * Baum. Ohne das Nachfuehren faellt der Fokus auf <body>, und der Weg zurueck
+ * in die eben geoeffnete Zeile beginnt wieder am Seitenanfang.
+ */
 function addTarget(column: string, key = '') {
   const s = spec(column)
   s.ignore = false
   if (!Array.isArray(s.targets)) s.targets = []
   s.targets.push({ target: key, post: [] })
   opened.value[column] = true
+  const index = columns.value.indexOf(column)
+  const branch = (s.targets.length) - 1
+  void nextTick(() => {
+    document.getElementById(`col${index}-b${branch}-target`)?.focus()
+  })
   refresh()
 }
 
@@ -390,6 +411,10 @@ async function confirmAdopt() {
 const incompleteWarning = ref('')
 
 async function save(start: boolean) {
+  return keepFocus(() => saveInner(start))
+}
+
+async function saveInner(start: boolean) {
   incompleteWarning.value = ''
   message.value = ''
   blockedChecks.value = []
@@ -669,7 +694,7 @@ const canonicalJson = computed(() => {
 
           <details v-if="preview?.canonical" class="jsonbox">
             <summary>{{ t('mapping.tree.json') }}</summary>
-            <pre class="mono">{{ canonicalJson }}</pre>
+            <pre class="mono" tabindex="0" role="region" :aria-label="t('mapping.tree.json')">{{ canonicalJson }}</pre>
           </details>
 
           <div style="margin-top:10px">
@@ -739,23 +764,12 @@ const canonicalJson = computed(() => {
     <MappingAuthorityDialog :request="authorityRequest" :candidates="authorityCandidates" :busy="authorityBusy"
                             :error="authorityError" @close="authorityRequest = null" @choose="chooseAuthority" />
 
-    <ClientOnly>
-      <Teleport to="body">
-        <div v-if="adoptTarget" class="modal-overlay" @click.self="adoptTarget = null">
-          <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="adopt-title">
-            <div class="modal-head">
-              <h2 id="adopt-title" style="font-size:15px;flex:1">{{ t('mapping.adopt.title') }}</h2>
-              <button class="modal-x" type="button" :aria-label="t('mapping.adopt.cancel')"
-                      @click="adoptTarget = null">×</button>
-            </div>
-            <div class="modal-body">{{ t('mapping.adopt.confirm', { institution: adoptTarget.institution_name }) }}</div>
-            <div class="modal-foot">
-              <button type="button" class="btn btn-outline" @click="adoptTarget = null">{{ t('mapping.adopt.cancel') }}</button>
-              <button type="button" class="btn btn-primary" @click="confirmAdopt">{{ t('mapping.adopt.ok') }}</button>
-            </div>
-          </div>
-        </div>
-      </Teleport>
-    </ClientOnly>
+    <!-- Die Rueckfrage nutzt denselben Dialog wie die Importliste: Fokusfalle,
+         Escape und Fokusrueckgabe an die ausloesende Stelle sind dort geloest. -->
+    <ImportsConfirmDialog :open="adoptTarget !== null" :title="t('mapping.adopt.title')"
+                          :message="adoptTarget === null ? ''
+                            : t('mapping.adopt.confirm', { institution: adoptTarget.institution_name })"
+                          :ok-text="t('mapping.adopt.ok')"
+                          @cancel="adoptTarget = null" @confirm="confirmAdopt" />
   </div>
 </template>
