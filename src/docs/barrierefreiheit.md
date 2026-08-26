@@ -1,8 +1,10 @@
 # Barrierefreiheit pruefen
 
 Die Oberflaeche muss ohne Maus und mit einem Vorlesewerkzeug bedienbar sein.
-Zwei Dinge sichern das ab: eine maschinelle Pruefung, die sich wiederholen
-laesst, und ein Durchgang von Hand, den die Maschine nicht ersetzen kann.
+Drei Dinge sichern das ab: eine maschinelle Pruefung, die sich wiederholen
+laesst, ein Durchgang von Hand, den die Maschine nicht ersetzen kann, und eine
+Beschreibung der Oberflaeche in Worten, damit man ueber sie reden kann, ohne
+sie zu sehen.
 
 ## 1. Maschinelle Pruefung
 
@@ -86,7 +88,77 @@ Worauf dabei zu achten ist:
 - **Zustandsaenderungen ohne Seitenwechsel** muessen in einem `aria-live`- oder
   `role="status"`-Bereich stehen, sonst bleiben sie stumm.
 
-## 3. Kontraste
+## 3. Die Oberflaeche in Worten
+
+`tests/a11y/oberflaeche.mjs` beschreibt dieselben Seiten, die `axe.mjs` prueft,
+und benutzt dasselbe Anmeldemuster. Es prueft nichts, es schreibt auf: je Seite
+eine Datei in Markdown unter `docs/oberflaeche/`, dazu einen Bildschirmabzug.
+
+Gedacht ist das fuer alle, die die Anwendung besprechen, ohne sie zu sehen. Je
+Seite stehen zwei Teile drin. Zuerst, was ein Vorlesewerkzeug vorfindet:
+Landmarken in Dokumentreihenfolge, die Ueberschriftenhierarchie samt
+uebersprungener Stufen, die durchnummerierte Tab-Reihenfolge mit Name und Rolle
+jedes Ziels, die Formularfelder mit Beschriftung, Pflichtangabe und verknuepftem
+Hinweis, die Tabellen mit Spalten und Ueberschriften, die Live-Bereiche mit
+ihrem aktuellen Inhalt, die Bilder mit Alternativtext, und was beim Bedienen
+stoert. Danach ein kurzer Absatz zur raeumlichen Anordnung, damit „der Knopf
+oben rechts" in einer Besprechung eindeutig ist.
+
+Beim Mapping-Editor kommt die aufgeklappte Zuordnungszeile mit ihren Zweigen
+dazu. Das Skript sucht sich dafuer die Zuordnung mit den meisten belegten Zielen
+und darin die Zeile mit den meisten Zweigen — an einer leeren Zeile gibt es
+nichts zu beschreiben. Geaendert wird dabei nichts: die Zeile wird wieder
+zugeklappt, gespeichert wird nirgends.
+
+### Aufruf
+
+```bash
+docker run -d --name oberflaeche --ipc=host --shm-size=1g --network host \
+  -v /var/www/avefi-importer/src:/app -w /app \
+  -e OBF_BASE=https://avefiimporter.goo1.de \
+  -e OBF_USER=admin@av-efi.net -e OBF_PASS=changeme \
+  -e OBF_COMMIT=$(git -C /var/www/avefi-importer rev-parse --short HEAD) \
+  mcr.microsoft.com/playwright:v1.50.0-noble node tests/a11y/oberflaeche.mjs
+docker logs -f oberflaeche
+```
+
+Der Durchlauf dauert rund vier Minuten. `--ipc=host` und `--shm-size=1g` sind
+nicht schmueckendes Beiwerk: ohne sie beendet sich der Browser mitten im Lauf.
+Der Container laeuft im Hintergrund, weil er sonst mit der Sitzung endet, aus
+der er gestartet wurde. `OBF_COMMIT` wird von aussen gesetzt, weil `.git` eine
+Ebene oberhalb von `src/` liegt und im Container nicht sichtbar ist; ohne die
+Angabe fehlt in der Uebersicht nur der Commit.
+
+Voraussetzung ist dieselbe wie bei `axe.mjs`: `playwright-core` in der Fassung
+`1.50.0` aus `npm install`, der Browser kommt aus dem Abbild.
+
+Stellschrauben:
+
+| Umgebungsvariable | Vorgabe | Wirkung |
+| --- | --- | --- |
+| `OBF_BASE` | `http://localhost:3000` | Adresse der Anwendung. Ueber HTTPS aufrufen, sonst greift das Sitzungscookie nicht. |
+| `OBF_USER` / `OBF_PASS` | `admin@av-efi.net` / `changeme` | Anmeldung. |
+| `OBF_OUT` | `docs/oberflaeche` | Ablage der Beschreibungen und Abzuege. |
+| `OBF_WIDTH` / `OBF_HEIGHT` | `1500` / `1100` | Fenstergroesse. Steht in jeder Beschreibung, weil der raeumliche Teil davon abhaengt. |
+| `OBF_MAXTABS` | `400` | Obergrenze fuer die Tab-Reihenfolge je Seite. Wird sie erreicht, sagt die Beschreibung das. |
+
+### Ergebnis
+
+`docs/oberflaeche/README.md` verweist auf die einzelnen Seiten und nennt Datum
+und Commit des Standes. Alle Dateien werden bei jedem Lauf neu geschrieben; von
+Hand geaenderte Stellen gehen dabei verloren.
+
+Die Beschreibungen sind selbst zum Vorlesen gedacht: echte Ueberschriften, kurze
+Absaetze, Listen. Keine breiten Tabellen, keine Kaesten aus Sonderzeichen, keine
+Zeichnungen aus Bindestrichen — die sind mit einem Vorlesewerkzeug unlesbar.
+
+Was dem Skript beim Beschreiben auffaellt — fehlende Beschriftungen, ins Leere
+zeigende `aria-describedby`-Verweise, Namen aus einem einzigen Sonderzeichen,
+mehrfach vergebene Namen im selben Bereich — steht je Seite unter
+„Auffaelligkeiten". Das ist eine Beschreibung, keine Wertung nach WCAG; die
+kommt aus `axe.mjs`.
+
+## 4. Kontraste
 
 Beide Farbschemata muessen WCAG AA erfuellen: 4,5:1 fuer Text, 3:1 fuer grosse
 Schrift und Bedienelemente. Die Farbwerte stehen ausschliesslich in
