@@ -1,7 +1,7 @@
 # Datensatz im Einzelnen
 
-Adresse: `/imports/3add506d-a500-4607-9f11-7e39714fffce/records/10277`  
-Seitentitel im Browser: „Sicherheit im Haushalt · Editor · AVefi Importer"  
+Adresse: `/imports/3688f8d9-7ad2-4b27-abf0-04cd17740fea/records/13569`  
+Seitentitel im Browser: „3 MINUTEN FÜR DIE HAUSFRAU · Editor · AVefi Importer"  
 Sprache des Dokuments: `de`
 
 Ein einzelner Datensatz mit Werk, Manifestationen und Exemplaren.
@@ -20,7 +20,7 @@ In Dokumentreihenfolge, also so, wie sie beim Wandern ueber die Bereiche kommen:
 
 ### Ueberschriften
 
-- Stufe 1: „Sicherheit im Haushalt"
+- Stufe 1: „3 MINUTEN FÜR DIE HAUSFRAU"
 - Stufe 2: „Prüfung gegen das AVefi-Schema"
 - Stufe 3: „Empfehlungen zur Vollständigkeit"
 - Stufe 2: „Grunddaten"
@@ -39,11 +39,11 @@ So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die
 2. „Zur Startseite" — Link, im banner
 3. „Importe" — Link, im navigation „Hauptnavigation". als aktuell ausgezeichnet
 4. „Zuordnungen" — Link, im navigation „Hauptnavigation"
-5. „Format-Review 9 offene Aufgaben" — Link, im navigation „Hauptnavigation"
+5. „Format-Review 10 offene Aufgaben" — Link, im navigation „Hauptnavigation"
 6. „Design wechseln" — Schaltflaeche, im banner
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 8. „Importe" — Link, im navigation „Bearbeiten"
-9. „neu_UPB_Archiv_Test_Kopie.csv" — Link, im navigation „Bearbeiten"
+9. „20240829_ItemExport_1_utf8.csv" — Link, im navigation „Bearbeiten"
 10. „Datensätze" — Link, im navigation „Bearbeiten"
 11. „Nächster Datensatz" — Link, im main
 12. „JSON" — Schaltflaeche, im main. aufklappbar, derzeit zu
@@ -55,27 +55,31 @@ So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die
 18. „Werkart" — Auswahlfeld, im main
 19. „Fassungsart" — Auswahlfeld, im main
 20. „Produktionsjahr oder -datum" — Eingabefeld, im main. Hinweis: „EDTF, zum Beispiel 1966, 1966-05 oder 1966-05-21~"
-21. „Ort hinzufügen" — Schaltflaeche, im main
-22. „Haupttitel" — Eingabefeld, im main
-23. „Titelart" — Auswahlfeld, im main
-24. „Titel 1 entfernen" — Schaltflaeche, im main
-25. „Weiterer Titel" — Eingabefeld, im main
-26. „Titelart" — Auswahlfeld, im main
-27. „Titel 2: Zum Haupttitel machen" — Schaltflaeche, im main
-28. „Titel 2 entfernen" — Schaltflaeche, im main
-29. „Weiteren Titel hinzufügen" — Schaltflaeche, im main
-30. „Alle offenen Einträge abgleichen" — Schaltflaeche, im main
-31. „Eintrag hinzufügen" — Schaltflaeche, im main
-32. „Beteiligte Person hinzufügen" — Schaltflaeche, im main
-33. „Ereignis hinzufügen" — Schaltflaeche, im main
-34. „Genre hinzufügen" — Schaltflaeche, im main
-35. „Form hinzufügen" — Schaltflaeche, im main
-36. „Kennungstyp" — Auswahlfeld, im main
-37. „Kennung" — Eingabefeld, im main
-38. „Werk: Kennung 1 entfernen" — Schaltflaeche, im main
-39. „Werk: Kennung hinzufügen" — Schaltflaeche, im main
-40. „Werk: Notiz hinzufügen" — Schaltflaeche, im main
-41. „← Zurück zur Liste" — Schaltflaeche, im main
+21. „Produktionsland oder -ort" — Eingabefeld, im main
+22. „Ort 1 entfernen" — Schaltflaeche, im main
+23. „Ort hinzufügen" — Schaltflaeche, im main
+24. „Haupttitel" — Eingabefeld, im main
+25. „Titelart" — Auswahlfeld, im main
+26. „Titel 1 entfernen" — Schaltflaeche, im main
+27. „Weiteren Titel hinzufügen" — Schaltflaeche, im main
+28. „Alle offenen Einträge abgleichen" — Schaltflaeche, im main
+29. „Eintrag hinzufügen" — Schaltflaeche, im main
+30. „Tätigkeit" — Auswahlfeld, im main
+31. „Rolle" — Auswahlfeld, im main
+32. „Person oder Körperschaft" — Auswahlfeld, im main. aufklappbar, derzeit zu
+33. „Unbekannt (1) gnd 1152216147" — Schaltflaeche, im main
+34. „Unbekannt (1): Verknüpfung gnd 1152216147 entfernen" — Schaltflaeche, im main
+35. „Beteiligte Person 1 entfernen" — Schaltflaeche, im main
+36. „Beteiligte Person hinzufügen" — Schaltflaeche, im main
+37. „Ereignis hinzufügen" — Schaltflaeche, im main
+38. „Genre hinzufügen" — Schaltflaeche, im main
+39. „Form hinzufügen" — Schaltflaeche, im main
+40. „Kennungstyp" — Auswahlfeld, im main
+41. „Kennung" — Eingabefeld, im main
+42. „Werk: Kennung 1 entfernen" — Schaltflaeche, im main
+43. „Werk: Kennung hinzufügen" — Schaltflaeche, im main
+44. „Werk: Notiz hinzufügen" — Schaltflaeche, im main
+45. „← Zurück zur Liste" — Schaltflaeche, im main
 
 ### Formularfelder
 
@@ -88,16 +92,22 @@ So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die
 - „Produktionsjahr oder -datum" — Eingabefeld, Typ text, kein Pflichtfeld.
   Beschriftung kommt aus: label.
   Verknuepfter Hinweis (aria-describedby, Kennung w-year-hint): „EDTF, zum Beispiel 1966, 1966-05 oder 1966-05-21~".
+- „Produktionsland oder -ort" — Eingabefeld, Typ text, kein Pflichtfeld.
+  Beschriftung kommt aus: aria-label.
+  Kein verknuepfter Hinweis und keine verknuepfte Fehlermeldung.
 - „Haupttitel" — Eingabefeld, Typ text, kein Pflichtfeld.
   Beschriftung kommt aus: aria-label.
   Kein verknuepfter Hinweis und keine verknuepfte Fehlermeldung.
 - „Titelart" — Auswahlfeld, Typ select, kein Pflichtfeld.
   Beschriftung kommt aus: aria-label.
   Kein verknuepfter Hinweis und keine verknuepfte Fehlermeldung.
-- „Weiterer Titel" — Eingabefeld, Typ text, kein Pflichtfeld.
+- „Tätigkeit" — Auswahlfeld, Typ select, kein Pflichtfeld.
   Beschriftung kommt aus: aria-label.
   Kein verknuepfter Hinweis und keine verknuepfte Fehlermeldung.
-- „Titelart" — Auswahlfeld, Typ select, kein Pflichtfeld.
+- „Rolle" — Auswahlfeld, Typ select, kein Pflichtfeld.
+  Beschriftung kommt aus: aria-label.
+  Kein verknuepfter Hinweis und keine verknuepfte Fehlermeldung.
+- „Person oder Körperschaft" — Auswahlfeld, Typ text, kein Pflichtfeld, autocomplete off.
   Beschriftung kommt aus: aria-label.
   Kein verknuepfter Hinweis und keine verknuepfte Fehlermeldung.
 - „Kennungstyp" — Auswahlfeld, Typ select, kein Pflichtfeld.
@@ -125,7 +135,7 @@ Das wird angesagt, ohne dass die Seite wechselt:
 Mit Alternativtext:
 
 - Bild (av-efi-logo.svg): „AV-EFI" (aus alt).
-- Bild: „Vollständigkeit 80 Prozent" (aus aria-label).
+- Bild: „Vollständigkeit 100 Prozent" (aus aria-label).
 
 ### Auffaelligkeiten
 
@@ -133,7 +143,7 @@ Nichts, was beim Bedienen im Weg steht.
 
 ## Teil 2 — Wie es raeumlich angeordnet ist
 
-Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1904 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Der Bereich „Prüfung gegen das AVefi-Schema" liegt oben mittig und ist 1084 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungen", „Importe". Die breiten Schaltflaechen im Inhalt sind „Ort hinzufügen" (unten links), „Titel 2: Zum Haupttitel machen" (unten rechts), „Weiteren Titel hinzufügen" (unten links), „Alle offenen Einträge abgleichen" (unten rechts).
+Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1848 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Der Bereich „Prüfung gegen das AVefi-Schema" liegt oben mittig und ist 1084 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungen", „Importe". Die breiten Schaltflaechen im Inhalt sind „Jetzt prüfen" (oben rechts), „Ort hinzufügen" (auf halber Hoehe links), „Weiteren Titel hinzufügen" (unten links), „Alle offenen Einträge abgleichen" (unten rechts).
 
 Der Bildschirmabzug `07-datensatz-detail.png` im selben Verzeichnis zeigt denselben Stand fuer alle, die in einer Besprechung auf denselben Bildschirm schauen wollen.
 

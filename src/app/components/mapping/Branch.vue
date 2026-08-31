@@ -11,7 +11,9 @@
  * Beispielzeilen wie in der Tabelle daneben.
  */
 import type { ColumnMapping } from '#shared/types/domain'
-import type { AuthorityRequest, EditorTarget, PreviewExample, TransformOpMeta, TransformStep } from './types'
+import type {
+  AuthorityRequest, AuthorityValue, EditorTarget, MappingCheck, PreviewExample, TransformOpMeta, TransformStep
+} from './types'
 import MappingChain from './Chain.vue'
 import MappingTargetSelect from './TargetSelect.vue'
 
@@ -25,12 +27,19 @@ const props = defineProps<{
   values: Array<{ value: string; count: number }>
   fillLabel: string
   index: number
+  /** Der volle Wertevorrat je Zweig und Quelle — nicht nur die drei Beispiele. */
+  authorityValues: (column: string, branch: number, source: string) => AuthorityValue[]
+  /** Profil-ID, falls vorhanden: dann gibt es die eigene Normdatenseite. */
+  mappingId: number | null
+  /** Beanstandungen dieser Spalte — angezeigt dort, wo sie entstehen. */
+  checks: MappingCheck[]
 }>()
 
 const emit = defineEmits<{
   change: []
   authority: [request: AuthorityRequest]
-  clearAuthority: [value: string]
+  clearAuthority: [entry: { value: string; source: string }]
+  fix: [check: MappingCheck]
 }>()
 
 const { t, te } = useI18n()
@@ -60,6 +69,11 @@ function labelOf(key: string): string {
 
 function enumValuesFor(key: string): string[] {
   return byKey.value.get(key)?.enumValues ?? []
+}
+
+/** Name des Vokabulars hinter einem Ziel — Grundlage der lesbaren Beschriftung. */
+function enumNameFor(key: string | undefined): string {
+  return enumNameOf(key === undefined ? undefined : byKey.value.get(key)?.type)
 }
 
 /** Kette eines Zweigs = gemeinsame Vorkette plus eigene Nachkette. */
@@ -129,12 +143,13 @@ function addValuemap(index: number) {
 
 /* --------------------------------------------------------------- Normdaten */
 
-function authorityEntry(value: string) {
-  return props.spec.authorities?.[value]
-}
-
-function authorityState(value: string): 'bestaetigt' | 'verworfen' | 'offen' {
-  const entry = authorityEntry(value)
+/**
+ * Der Stand einer Zuordnung — je Quelle getrennt. Frueher lag je Wert genau
+ * ein Eintrag: Wer GND und danach VIAF bestaetigte, ueberschrieb damit die
+ * erste Entscheidung, ohne dass etwas darauf hinwies.
+ */
+function authorityState(value: string, source = 'gnd'): 'bestaetigt' | 'verworfen' | 'offen' {
+  const entry = confirmedFor(props.spec, value, source)
   if (entry === undefined) return 'offen'
   return entry.id !== '' ? 'bestaetigt' : 'verworfen'
 }
@@ -151,8 +166,25 @@ function authorityState(value: string): 'bestaetigt' | 'verworfen' | 'offen' {
  * Der Rohwert dient nur als Rueckfall, wenn die Kette fuer dieses Ziel nichts
  * ausgibt (etwa weil die Vorschau noch nicht gerechnet hat).
  */
-const authorityValues = computed(() => {
-  const ziel = props.spec.targets?.[props.index]?.target
+/**
+ * Die Werte eines Zweigs, zu denen Normdaten gesucht werden — alle, nicht die
+ * ersten drei.
+ *
+ * Vorher speiste sich diese Liste aus den drei Beispielwerten der Vorschau.
+ * Damit war ein Wert, der eine Entscheidung braucht, aber weiter unten in der
+ * Datei steht, schlicht nicht erreichbar — Lucas Befund vom 31.08. mit dem
+ * Wert "USA". Die Liste kommt jetzt aus dem Wertevorrat, den der Server ueber
+ * die ganze Datei rechnet, und sie rollt.
+ *
+ * Rueckfall bleibt der alte Weg: Solange der Vorrat nicht geladen ist, sind
+ * die Beispielwerte besser als eine leere Liste.
+ */
+function authorityValuesOf(i: number): AuthorityValue[] {
+  const quelle = String(authorityStep(i)?.source ?? 'gnd')
+  const vorrat = props.authorityValues(props.column, i, quelle)
+  if (vorrat.length > 0) return vorrat
+
+  const ziel = props.spec.targets?.[i]?.target
   const gesehen = new Set<string>()
   for (const e of props.examples) {
     const treffer = (e.outputs ?? []).filter((o) => ziel === undefined || o.target === ziel)
@@ -160,14 +192,48 @@ const authorityValues = computed(() => {
     for (const w of werte.length > 0 ? werte : [e.raw]) {
       if (w !== '') gesehen.add(w)
     }
-    if (gesehen.size >= 25) break
   }
-  // Rueckfall auf die erkannte Werteliste, wenn die Vorschau noch nichts
-  // gerechnet hat. Sie fuehrt Rohwerte, taugt fuer den Abgleich also nur
-  // solange, wie keine Kette dazwischensteht.
-  if (gesehen.size === 0) return props.values.slice(0, 25).map((v) => v.value)
-  return [...gesehen].slice(0, 25)
-})
+  const roh = gesehen.size === 0 ? props.values.slice(0, 25).map((v) => v.value) : [...gesehen]
+  return roh.map((value) => ({ value, count: 0, state: authorityState(value, quelle) }))
+}
+
+/**
+ * Lohnt es, die Zwischenstufe zu zeigen?
+ *
+ * Nur wenn die gemeinsame Kette den Wert tatsaechlich veraendert hat und das
+ * Ergebnis danach noch einmal ein anderes ist. Sonst stuende dreimal dasselbe
+ * nebeneinander und die Zeile waere schwerer zu lesen statt aufschlussreicher.
+ */
+function showsPre(example: PreviewExample, target?: string): boolean {
+  const pre = example.pre ?? ''
+  if (pre === '' || pre === example.raw) return false
+  const werte = outputsFor(example, target).map((o) => o.value)
+  return werte.length === 0 || !werte.includes(pre)
+}
+
+/**
+ * Die Beanstandungen eines Zweigs, dort angezeigt, wo sie entstehen.
+ *
+ * Die Uebersicht oben bleibt — sie zeigt die Lage der ganzen Spalte. Aber wer
+ * an einem Zweig arbeitet, soll nicht erst hochscrollen und die Meldung dem
+ * richtigen Ziel zuordnen muessen. Jede Meldung nennt hier ausserdem das
+ * AVefi-Schemafeld, um das es geht.
+ */
+function checksFor(target: string | undefined): MappingCheck[] {
+  if (target === undefined || target === '') return props.checks.filter((c) => c.targetField === undefined)
+  return props.checks.filter((c) => c.targetField === target)
+}
+
+/** Der Schemapfad eines Ziels — der Vertrag verlangt seine Anzeige. */
+function schemaPathOf(key: string | undefined): string {
+  if (key === undefined) return ''
+  return byKey.value.get(key)?.path ?? key
+}
+
+/** Wie viele Werte dieses Zweigs warten noch auf eine Entscheidung? */
+function authorityOpen(i: number): number {
+  return authorityValuesOf(i).filter((v) => v.state === 'offen').length
+}
 </script>
 
 <template>
@@ -179,7 +245,7 @@ const authorityValues = computed(() => {
 
     <div class="branch-global">
       <MappingChain :chain="preChain()" :columns="columns" :transforms="transforms"
-                    :label="t('mapping.branch.preLabel')" :enum-values="[]" :source-values="values"
+                    :label="t('mapping.branch.preLabel')" :enum-values="[]" :enum-name="''" :source-values="values"
                     :id-base="`${idBase}-pre`" @change="emit('change')" />
     </div>
 
@@ -198,6 +264,7 @@ const authorityValues = computed(() => {
 
           <MappingChain :chain="postChain(i)" :columns="columns" :transforms="transforms"
                         :label="t('mapping.branch.postLabel')" :enum-values="enumValuesFor(binding.target)"
+                        :enum-name="enumNameFor(binding.target)"
                         :source-values="values" :id-base="`${idBase}-b${i}`" @change="emit('change')" />
 
           <MappingTargetSelect :model-value="binding.target" :targets="targets"
@@ -216,6 +283,10 @@ const authorityValues = computed(() => {
             <div v-for="(example, j) in examples" :key="j" class="exline">
               <span class="exraw" :title="example.raw">{{ example.raw }}</span>
               <i class="exarrow" aria-hidden="true">→</i>
+              <template v-if="showsPre(example, binding.target)">
+                <span class="exmid" :title="t('mapping.branch.preValue')">{{ example.pre }}</span>
+                <i class="exarrow" aria-hidden="true">→</i>
+              </template>
               <span v-if="outputsFor(example, binding.target).length" class="okval">
                 <i aria-hidden="true">✓</i>{{ outputsFor(example, binding.target).map((o) => o.value).join(' · ') }}
               </span>
@@ -227,32 +298,62 @@ const authorityValues = computed(() => {
           </div>
           <p v-else class="branch-result dim small">{{ t('mapping.branch.noExample') }}</p>
 
+          <ul v-if="checksFor(binding.target).length" class="branchchecks">
+            <li v-for="(check, ci) in checksFor(binding.target)" :key="ci"
+                :class="check.severity === 'error' ? 'chk-nogo' : 'chk-warn'">
+              <i aria-hidden="true">{{ check.severity === 'error' ? '⛔' : '⚠' }}</i>
+              <span class="sr-only">{{ check.severity === 'error'
+                ? t('mapping.check.srBlocking') : t('mapping.check.srHint') }}</span>
+              <span class="chk-msg">{{ check.message }}</span>
+              <span v-if="check.targetField" class="dim small chk-path">{{ schemaPathOf(check.targetField) }}</span>
+              <button v-if="check.fix" type="button" class="btn btn-outline btn-sm"
+                      @click="emit('fix', check)">{{ t('mapping.check.applyFixShort') }}</button>
+            </li>
+          </ul>
+
           <div v-if="authorityStep(i)" class="authpanel">
             <div class="authpanel-h">
               <span>{{ t('mapping.authority.heading', {
                 source: String(authorityStep(i)?.source ?? 'gnd').toUpperCase() }) }}</span>
               <span class="dim small">{{ t('mapping.authority.note') }}</span>
             </div>
-            <div v-for="value in authorityValues" :key="value" class="authrow">
-              <span class="authval" :title="value">{{ value }}</span>
-              <span class="authstate" :class="`st-${authorityState(value)}`">
-                <template v-if="authorityState(value) === 'bestaetigt'">
-                  {{ authorityEntry(value)?.id }}
-                  <span class="dim">{{ authorityEntry(value)?.label }}</span>
-                </template>
-                <template v-else-if="authorityState(value) === 'verworfen'">{{ t('mapping.authority.left') }}</template>
-                <template v-else>{{ t('mapping.authority.auto') }}</template>
-              </span>
-              <button type="button" class="btn btn-outline btn-sm"
-                      @click="emit('authority', {
-                        column,
-                        value,
-                        source: String(authorityStep(i)?.source ?? 'gnd'),
-                        kind: String(authorityStep(i)?.kind ?? 'person')
-                      })">{{ t('mapping.authority.assign') }}</button>
-              <button v-if="authorityState(value) !== 'offen'" type="button" class="linkbtn"
-                      @click="emit('clearAuthority', value)">{{ t('mapping.authority.reset') }}</button>
+            <div class="authlist" role="group"
+                 :aria-label="t('mapping.authority.listLabel', {
+                   column, source: String(authorityStep(i)?.source ?? 'gnd').toUpperCase() })" tabindex="0">
+              <div v-for="entry in authorityValuesOf(i)" :key="entry.value" class="authrow">
+                <span class="authval" :title="entry.value">{{ entry.value }}</span>
+                <span v-if="entry.count > 0" class="dim small authcount">{{
+                  t('mapping.authority.count', { n: entry.count }) }}</span>
+                <span class="authstate" :class="`st-${entry.state}`">
+                  <template v-if="entry.state === 'bestaetigt'">
+                    {{ entry.id }}
+                    <span class="dim">{{ entry.label }}</span>
+                  </template>
+                  <template v-else-if="entry.state === 'verworfen'">{{ t('mapping.authority.left') }}</template>
+                  <template v-else>{{ t('mapping.authority.auto') }}</template>
+                </span>
+                <button type="button" class="btn btn-outline btn-sm"
+                        :aria-label="t('mapping.authority.assignFor', { value: entry.value })"
+                        @click="emit('authority', {
+                          column,
+                          value: entry.value,
+                          source: String(authorityStep(i)?.source ?? 'gnd'),
+                          kind: String(authorityStep(i)?.kind ?? 'person')
+                        })">{{ t('mapping.authority.assign') }}</button>
+                <button v-if="entry.state !== 'offen'" type="button" class="linkbtn"
+                        :aria-label="t('mapping.authority.resetFor', { value: entry.value })"
+                        @click="emit('clearAuthority', {
+                          value: entry.value,
+                          source: String(authorityStep(i)?.source ?? 'gnd')
+                        })">{{ t('mapping.authority.reset') }}</button>
+              </div>
             </div>
+            <p class="authfoot dim small">
+              {{ t('mapping.authority.openCount', { n: authorityOpen(i), all: authorityValuesOf(i).length }) }}
+              <NuxtLink v-if="mappingId !== null" :to="`/mappings/${mappingId}/normdaten`" class="linkbtn">
+                {{ t('mapping.authority.pageLink') }}
+              </NuxtLink>
+            </p>
           </div>
         </div>
       </div>

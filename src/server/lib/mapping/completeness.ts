@@ -56,11 +56,35 @@ export function completenessChecks(record: AvefiRecord): Array<{ key: string; la
   ]
 }
 
-/** Vollstaendigkeit in Prozent (0–100). */
+/**
+ * Vollstaendigkeit in Prozent (0–100).
+ *
+ * Bleibt als gespeicherter Wert erhalten (Spalte records.completeness, danach
+ * wird sortiert), wird aber nicht mehr als Bewertung angezeigt. Was die Liste
+ * zeigt, ist coreScore: benannte Angaben statt eines Anteils.
+ */
 export function completeness(record: AvefiRecord): number {
   const checks = completenessChecks(record)
   const filled = checks.filter((c) => c.filled).length
   return Math.round((filled / checks.length) * 100)
+}
+
+/**
+ * Wie viele der vier Kernfelder belegt sind, und welche fehlen.
+ *
+ * Titel, Regie, Produktionsdatum und Produktionsland sind die Angaben, an denen
+ * der Abgleich mit den Bestaenden anderer Haeuser haengt. Deshalb "3 von 4" und
+ * nicht "75 Prozent": Der Anteil sagt nicht, WELCHE Angabe fehlt, und bewertet
+ * die Daten eines Hauses, statt sie zu beschreiben.
+ *
+ * Gerechnet wird ueber corePresence — dieselbe Stelle, die auch die
+ * Belegungsstatistik des Prüfberichts speist.
+ */
+export function coreScore(record: AvefiRecord): { filled: number; total: number; missing: CoreFieldKey[] } {
+  const presence = corePresence(record)
+  const keys = Object.keys(CORE_FIELDS) as CoreFieldKey[]
+  const missing = keys.filter((k) => !presence[k])
+  return { filled: keys.length - missing.length, total: keys.length, missing }
 }
 
 /** Hinweise fuer den Datensatz-Editor. */

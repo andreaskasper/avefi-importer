@@ -18,8 +18,9 @@
 import type { ColumnMapping, MappingJson, TransformStep } from '#shared/types/domain'
 import { failureText, mappingFailure, type MappingFailure } from './errors'
 import type {
-  AuthorityCandidate, AuthorityRequest, CandidateResponse, EditorPayload, EditorTarget, ForeignProfile,
-  MappingCheck, PreviewExample, PreviewPayload, SaveResponse, SchemaCheckResponse
+  AuthorityCandidate, AuthorityGroup, AuthorityRequest, AuthorityValue, AuthorityValuesResponse,
+  CandidateResponse, EditorPayload, EditorTarget, ForeignProfile, MappingCheck, PreviewExample,
+  PreviewPayload, SaveResponse, SchemaCheckResponse
 } from './types'
 import MappingBranch from './Branch.vue'
 import MappingChecks from './Checks.vue'
@@ -209,6 +210,7 @@ async function runPreview() {
   try {
     preview.value = await post<PreviewPayload>('preview', { mapping: mapping.value })
     failure.value = null
+    void loadAuthorityValues()
   } catch (e) {
     failure.value = mappingFailure(e)
   } finally {
@@ -358,6 +360,49 @@ const authorityCandidates = ref<AuthorityCandidate[]>([])
 const authorityBusy = ref(false)
 const authorityError = ref('')
 
+/**
+ * Der vollstaendige Wertevorrat, nicht die drei Beispielwerte der Vorschau.
+ *
+ * Die Vorschau zeigt je Spalte drei verschiedene Werte, weil sie nach jeder
+ * Aenderung neu rechnet. Fuer die Zuordnung von Hand ist das zu wenig: Ein
+ * Wert, der eine Entscheidung braucht, aber erst weiter unten in der Datei
+ * steht, war damit unerreichbar. Deshalb ein eigener Aufruf — er geht nicht
+ * ins Netz, er rechnet nur die Ketten.
+ */
+const authorityValues = ref<AuthorityGroup[]>([])
+
+function hasAuthorityStep(): boolean {
+  for (const spec of Object.values(mapping.value.columns ?? {})) {
+    if (typeof spec !== 'object' || spec === null) continue
+    const chains = [spec.pre ?? [], ...(spec.targets ?? []).map((b) => b.post ?? [])]
+    if (chains.some((c) => c.some((s) => String((s as { op?: unknown }).op ?? '') === 'authority'))) return true
+  }
+  return false
+}
+
+async function loadAuthorityValues() {
+  if (!hasAuthorityStep()) {
+    authorityValues.value = []
+    return
+  }
+  try {
+    const res = await post<AuthorityValuesResponse>('authority-values', { mapping: mapping.value })
+    authorityValues.value = res.groups
+  } catch {
+    // Der Wertevorrat ist Komfort, kein Kern: Faellt er aus, bleibt der Editor
+    // mit den Beispielwerten bedienbar.
+    authorityValues.value = []
+  }
+}
+
+/** Werte fuer einen Zweig — die gemeinsame Kette (-1) gilt fuer jeden Zweig. */
+function authorityValuesFor(column: string, branch: number, source: string): AuthorityValue[] {
+  const hit = authorityValues.value.find(
+    (g) => g.column === column && g.source === source && (g.branch === branch || g.branch === -1)
+  )
+  return hit?.values ?? []
+}
+
 async function openAuthority(request: AuthorityRequest) {
   authorityRequest.value = request
   authorityCandidates.value = []
@@ -380,16 +425,14 @@ async function openAuthority(request: AuthorityRequest) {
 function chooseAuthority(entry: { id: string; type: string; label?: string }) {
   const request = authorityRequest.value
   if (request === null) return
-  const s = spec(request.column)
-  s.authorities ??= {}
-  s.authorities[request.value] = entry
+  // Setzt die Entscheidung zu DIESER Quelle und laesst die anderen stehen.
+  setConfirmed(spec(request.column), request.value, entry)
   authorityRequest.value = null
   refresh()
 }
 
-function clearAuthority(column: string, value: string) {
-  const s = spec(column)
-  if (s.authorities !== undefined) delete s.authorities[value]
+function clearAuthority(column: string, value: string, source?: string) {
+  clearConfirmed(spec(column), value, source)
   refresh()
 }
 
@@ -468,6 +511,17 @@ async function saveInner(start: boolean) {
 const allChecks = computed<MappingCheck[]>(() =>
   blockedChecks.value.length > 0 ? blockedChecks.value : (preview.value?.checks ?? [])
 )
+
+/**
+ * Die Beanstandungen einer Spalte — fuer die Anzeige direkt am Zweig.
+ *
+ * Der Vertrag verlangt einen strukturierten Bezug auf Datensatz, Quellfeld und
+ * AVefi-Schemafeld. Den Bezug fuehren die Meldungen laengst mit; gezeigt wurde
+ * er bisher nur in der Uebersicht am Seitenanfang.
+ */
+function checksOfColumn(column: string): MappingCheck[] {
+  return allChecks.value.filter((c) => c.sourceField === column)
+}
 
 const canonicalJson = computed(() => {
   try {
@@ -731,8 +785,11 @@ const canonicalJson = computed(() => {
                                    :transforms="payload.transforms" :examples="examplesOf(column)"
                                    :values="sourceValues(column)" :fill-label="fillLabel(column)"
                                    :index="columns.indexOf(column)"
-                                   @change="refresh" @authority="openAuthority"
-                                   @clear-authority="clearAuthority(column, $event)" />
+                                   :authority-values="authorityValuesFor"
+                                   :mapping-id="payload.profile?.id ?? null"
+                                   :checks="checksOfColumn(column)"
+                                   @change="refresh" @authority="openAuthority" @fix="applyFix"
+                                   @clear-authority="clearAuthority(column, $event.value, $event.source)" />
                   </td>
                 </tr>
               </template>

@@ -43,9 +43,14 @@ export interface TableInfo {
 export async function readTable(
   path: string,
   baseFormat: BaseFormat | null,
-  maxRows = SAMPLE_ROWS
+  maxRows = SAMPLE_ROWS,
+  fixedDelimiter?: Delimiter | null
 ): Promise<TableInfo> {
-  const delimiter = await delimiterFor(path, baseFormat)
+  // Ein festgelegtes Trennzeichen schlaegt das Erraten. Ohne diesen Weg wird
+  // bei jedem Lesen neu geraten, und dieselbe Datei kann nach einer Aenderung
+  // an der Heuristik anders zerfallen — dasselbe Ergebnis waere dann nicht
+  // mehr reproduzierbar, obwohl sich weder Datei noch Profil geaendert haben.
+  const delimiter = fixedDelimiter ?? await delimiterFor(path, baseFormat)
 
   let columns: string[] = []
   let rawColumns: string[] = []
@@ -120,9 +125,10 @@ export function toProfileSample(info: TableInfo, maxRows = 20): ProfileSample {
 /** Liefert die Datenzeilen einer Tabelle als benannte Zeilen, im Datenstrom. */
 export async function* streamTableRows(
   path: string,
-  baseFormat: BaseFormat | null
+  baseFormat: BaseFormat | null,
+  fixedDelimiter?: Delimiter | null
 ): AsyncGenerator<{ row: SourceRow; rowNumber: number; cells: string[] }> {
-  const delimiter = await delimiterFor(path, baseFormat)
+  const delimiter = fixedDelimiter ?? await delimiterFor(path, baseFormat)
   let columns: string[] | null = null
   let rowNumber = 0
 

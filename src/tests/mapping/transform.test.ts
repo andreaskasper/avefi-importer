@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest'
 import type { TransformStep } from '#shared/types/domain'
 import {
-  chainType, runChain, secondsToIso, toIsoDate, toIsoDuration,
+  chainOrderIssues, chainType, runChain, secondsToIso, toIsoDate, toIsoDuration,
   TRANSFORM_CATALOG, transformCatalogForEditor, canonicalOp, compareForm
 } from '../../server/lib/mapping/transform.js'
 import { step, testSchema } from './fixtures.js'
@@ -274,5 +274,53 @@ describe('Listen und Kettentypen', () => {
   it('meldet unbekannte Operationen', () => {
     expect(chainType([step({ op: 'gibtsnicht' })]).errors.length).toBe(1)
     expect(run([step({ op: 'gibtsnicht' })], 'x').errors.length).toBe(1)
+  })
+})
+
+describe('Reihenfolge der Kette', () => {
+  it('meldet einen Schritt, der vor etwas steht, das vor ihm kaeme', () => {
+    // Normdaten vor der Normalisierung: gesucht wird der Rohwert, waehrend das
+    // Ergebnis der Kette ein anderer Wert ist. Sieht hinterher aus wie
+    // "nichts gefunden".
+    const befunde = chainOrderIssues([
+      { op: 'authority', source: 'gnd', kind: 'place' } as never,
+      { op: 'country' } as never
+    ])
+    expect(befunde.length).toBe(0)
+
+    const falsch = chainOrderIssues([
+      { op: 'authority', source: 'gnd', kind: 'place' } as never,
+      { op: 'trim' } as never
+    ])
+    expect(falsch.length).toBe(1)
+    expect(falsch[0]?.op).toBe('trim')
+    expect(falsch[0]?.after).toBe('authority')
+  })
+
+  it('beanstandet Normalisierung nach dem Aufteilen NICHT', () => {
+    // "Leerraum entfernen" nach "Aufteilen" wirkt auf jedes Element und ist
+    // genau richtig. Eine Regel, die stur eine feste Reihenfolge einfordert,
+    // wuerde den Nutzer hier zu einer schlechteren Kette draengen.
+    expect(chainOrderIssues([
+      { op: 'split', sep: ';' } as never,
+      { op: 'trim' } as never
+    ])).toEqual([])
+  })
+
+  it('laesst die empfohlene Reihenfolge ohne Beanstandung durch', () => {
+    const befunde = chainOrderIssues([
+      { op: 'trim' } as never,
+      { op: 'split', sep: ';' } as never,
+      { op: 'country' } as never,
+      { op: 'authority', source: 'gnd', kind: 'place' } as never,
+      { op: 'take', index: 1 } as never
+    ])
+    expect(befunde).toEqual([])
+  })
+
+  it('kennt zu jedem angebotenen Konverter eine Stelle', () => {
+    for (const meta of transformCatalogForEditor()) {
+      expect(typeof meta.phase).toBe('number')
+    }
   })
 })

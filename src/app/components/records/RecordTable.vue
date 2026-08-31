@@ -2,14 +2,30 @@
 /**
  * Die Datensatzliste eines Imports.
  *
- * Der Ring zeigt die Vollstaendigkeit; „Pflichtangabe fehlt" nennt konkret,
- * welche. Im PHP-Stand stand dort nur „ungueltig", und niemand wusste, warum.
+ * Statt eines Vollstaendigkeitsrings steht hier "3 von 4 Kernfeldern" samt der
+ * Namen der fehlenden. Ein Prozentwert bewertet die Daten eines Hauses, ohne zu
+ * sagen, was fehlt — und die Kernfelder sind das, woran der Abgleich mit
+ * anderen Bestaenden haengt, nicht ein Anteil belegter Felder.
  */
 import { formatDateTime } from '~/components/imports/format'
 import type { RecordListItem } from './types'
 
 defineProps<{ records: RecordListItem[]; importId: string }>()
+
 const { t, locale } = useI18n()
+
+/** Beschriftung eines Kernfelds — die Schluessel kommen vom Server. */
+function coreLabel(key: string): string {
+  return t(`records.table.coreField.${key}`)
+}
+
+function coreTitle(r: RecordListItem): string {
+  return r.core.missing.length === 0
+    ? t('records.table.coreComplete')
+    : t('records.table.coreMissing', { fields: r.core.missing.map(coreLabel).join(', ') })
+}
+
+
 </script>
 
 <template>
@@ -23,7 +39,7 @@ const { t, locale } = useI18n()
           <th scope="col">{{ t('records.table.type') }}</th>
           <th scope="col">{{ t('records.table.pid') }}</th>
           <th scope="col">{{ t('records.table.counts') }}</th>
-          <th scope="col">{{ t('records.table.completeness') }}</th>
+          <th scope="col">{{ t('records.table.core') }}</th>
           <th scope="col" style="text-align:right">{{ t('records.table.action') }}</th>
         </tr>
       </thead>
@@ -61,10 +77,16 @@ const { t, locale } = useI18n()
           </td>
           <td class="tnum small">{{ r.manifestations }} / {{ r.items }}</td>
           <td>
-            <div class="ring" :class="r.ring" :style="{ '--p': r.completeness }" role="img"
-                 :aria-label="t('records.table.ring', { percent: r.completeness })">
-              <span aria-hidden="true">{{ r.completeness }}%</span>
-            </div>
+            <!-- Benannte Angaben statt eines Prozentwerts: "3 von 4" sagt, dass
+                 etwas fehlt, und der Zusatz sagt, WAS. Ein Anteil bewertet die
+                 Daten eines Hauses, ohne etwas zu erklaeren. -->
+            <span class="core" :class="r.core.filled === r.core.total ? 'core-full' : 'core-part'"
+                  :title="coreTitle(r)">
+              {{ t('records.table.coreValue', { filled: r.core.filled, total: r.core.total }) }}
+            </span>
+            <span v-if="r.core.missing.length" class="dim small core-missing">
+              {{ r.core.missing.map(coreLabel).join(', ') }}
+            </span>
           </td>
           <td style="text-align:right">
             <NuxtLink class="btn btn-primary btn-sm" :to="`/imports/${importId}/records/${r.id}`"

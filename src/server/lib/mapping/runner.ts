@@ -27,9 +27,11 @@ import type { AuthorityHit, CountryHit, EnrichHit, TransformContext, TransformVa
 import type { AvefiNode, AvefiRecord } from './builder.js'
 import type { TargetDefinition } from './targets.js'
 import { getSchemaModel } from './schema-model.js'
-import { canonicalOp, chainType, compareForm, runChain } from './transform.js'
+import {
+  canonicalOp, chainOrderIssues, chainType, compareForm, resourceTypeForSource, runChain
+} from './transform.js'
 import { AvefiBuilder, acceptsAuthority } from './builder.js'
-import { expectedChainType, getTarget, targetExists } from './targets.js'
+import { authorityKindLabel, expectedAuthorityKinds, expectedChainType, getTarget, targetExists } from './targets.js'
 
 /**
  * Beanstandung des Mappings. Erweitert ValidationIssue um den Vorschlag zum
@@ -156,6 +158,48 @@ export function staticCheck(mapping: MappingJson, schema: SchemaModel = getSchem
           fix: { op: 'language', unknown: 'keep' }
         })
       }
+      // Steht ein Schritt vor etwas, das eigentlich vor ihm kaeme? Erzwungen
+      // wird nichts — die Kette bleibt das, was laeuft. Aber die haeufigste
+      // stille Fehlbedienung ist eine Normdatenabfrage auf dem Rohwert.
+      for (const o of chainOrderIssues(chain)) {
+        out.push({
+          severity: 'warning', code: 'chain.order', sourceField: col, targetField: key,
+          message: `"${opLabel(o.after)}" schlaegt nach, bevor "${opLabel(o.op)}" den Wert fertig `
+            + `gebildet hat. Gesucht wird deshalb der unbearbeitete Wert, waehrend die Kette am Ende `
+            + 'einen anderen liefert — das sieht aus wie "nichts gefunden". Empfohlen: erst '
+            + 'normalisieren und aufteilen, dann nachschlagen.'
+        })
+      }
+
+      // Passt die gesuchte Art zum Ziel? Und wird dieselbe Quelle doppelt
+      // befragt? Beides fiel bisher niemandem auf, weil der Fehler wie
+      // "nichts gefunden" aussieht — die harmloseste aller Meldungen.
+      const wanted = expectedAuthorityKinds(target.writer)
+      const seenSources = new Set<string>()
+      for (const step of chain) {
+        if (typeof step !== 'object' || step === null) continue
+        if (canonicalOp(String(step.op)) !== 'authority') continue
+        const p = step as Record<string, unknown>
+        const source = String(p['source'] ?? 'gnd')
+        const kind = String(p['kind'] ?? 'person')
+        if (wanted !== null && !wanted.includes(kind)) {
+          out.push({
+            severity: 'warning', code: 'authority.kind-mismatch', sourceField: col, targetField: key,
+            message: `"${target.label}" nimmt ${wanted.map(authorityKindLabel).join(' oder ')} auf, `
+              + `gesucht wird aber nach ${authorityKindLabel(kind)}. So findet die Abfrage nichts.`,
+            fix: { op: 'authority', source, kind: wanted[0] ?? kind }
+          })
+        }
+        if (seenSources.has(source)) {
+          out.push({
+            severity: 'warning', code: 'authority.duplicate-source', sourceField: col, targetField: key,
+            message: `Dieselbe Normdatenquelle (${source.toUpperCase()}) wird in diesem Zweig zweimal `
+              + 'befragt. Die zweite Abfrage liefert dasselbe Ergebnis.'
+          })
+        }
+        seenSources.add(source)
+      }
+
       if (chainHas(chain, 'authority') && !acceptsAuthority(target)) {
         out.push({
           severity: 'warning', code: 'authority.unsupported', sourceField: col, targetField: key,
@@ -209,12 +253,34 @@ export function staticCheck(mapping: MappingJson, schema: SchemaModel = getSchem
   return out
 }
 
+/**
+ * Konvertername fuer Meldungen, die nicht in der Oberflaeche entstehen.
+ * Die uebersetzten Namen stehen in i18n; hier genuegt der Schluessel.
+ */
+function opLabel(op: string): string {
+  return op
+}
+
 /** Blockiert eine der Beanstandungen das Speichern? */
 export function hasBlocker(checks: readonly MappingCheck[]): boolean {
   return checks.some((c) => c.severity === 'error')
 }
 
 /* ---------------------------------------------------------- Normdatenbedarf */
+
+/**
+ * Dienste, die schon beim Ermitteln des Bedarfs gebraucht werden.
+ *
+ * Ohne sie rechnet die Kette bis zum Normdatenschritt mit halber Kraft: Ein
+ * vorgeschalteter "country"-Konverter liefert dann "DE" statt "Deutschland",
+ * und genau dieser Wert wandert in den Zwischenspeicher — waehrend zur Laufzeit
+ * "Deutschland" gefragt wird. Der Treffer geht ins Leere, ohne dass etwas
+ * meldet. Landes- und Sprachtabelle sind ortsfest, kosten also nichts.
+ */
+export interface ChainLookupServices {
+  lookupCountry?: TransformContext['lookupCountry']
+  lookupLanguage?: TransformContext['lookupLanguage']
+}
 
 export interface AuthorityRequest {
   column: string
@@ -230,7 +296,8 @@ export interface AuthorityRequest {
  */
 export function collectAuthorityLookups(
   mapping: MappingJson,
-  rows: readonly SourceRow[]
+  rows: readonly SourceRow[],
+  services: ChainLookupServices = {}
 ): AuthorityRequest[] {
   const out: AuthorityRequest[] = []
 
@@ -244,43 +311,170 @@ export function collectAuthorityLookups(
     }
 
     for (const chain of chains) {
-      const step = firstStep(chain, 'authority')
-      if (step === undefined) continue
-      const p = step as Record<string, unknown>
-      const source = String(p['source'] ?? 'gnd')
-      const kind = String(p['kind'] ?? 'person')
+      // Jeder Normdatenschritt der Kette, nicht nur der erste: Wer GND und VIAF
+      // in denselben Zweig haengt, bekam sonst fuer die zweite Quelle nie einen
+      // Bedarf gemeldet — und damit nie einen Treffer.
+      chain.forEach((step, at) => {
+        if (typeof step !== 'object' || step === null) return
+        if (canonicalOp(String(step.op)) !== 'authority') return
+        const p = step as Record<string, unknown>
+        const source = String(p['source'] ?? 'gnd')
+        const kind = String(p['kind'] ?? 'person')
 
-      // Die Kette bis zum authority-Schritt rechnen, damit auch getrimmte und
-      // aufgeteilte Werte im Bedarf stehen, nicht nur die Rohzelle.
-      const upto = chain.slice(0, chain.indexOf(step))
-      const seen = new Set<string>()
-      for (const row of rows) {
-        const res = runChain(upto, String(row[col] ?? ''), { row })
-        const values = Array.isArray(res.value) ? res.value : [res.value]
-        for (const v of values) {
-          const s = String(v).trim()
-          if (s === '') continue
-          const key = compareForm(s)
-          if (seen.has(key) || confirmed[key] !== undefined) continue
-          seen.add(key)
+        // Die Kette bis zu diesem Schritt rechnen, damit auch getrimmte und
+        // aufgeteilte Werte im Bedarf stehen, nicht nur die Rohzelle.
+        const upto = chain.slice(0, at)
+        const seen = new Set<string>()
+        for (const row of rows) {
+          const res = runChain(upto, String(row[col] ?? ''), { row, ...services })
+          const values = Array.isArray(res.value) ? res.value : [res.value]
+          for (const v of values) {
+            const s = String(v).trim()
+            if (s === '') continue
+            const key = compareForm(s)
+            if (seen.has(key) || isConfirmedFor(confirmed, key, source)) continue
+            seen.add(key)
+          }
         }
-      }
-      if (seen.size > 0) out.push({ column: col, source, kind, values: [...seen] })
+        if (seen.size > 0) out.push({ column: col, source, kind, values: [...seen] })
+      })
     }
   }
 
   return out
 }
 
-function normalizeConfirmed(spec: ColumnMapping): Record<string, { id: string; type: string; label?: string }> {
-  const out: Record<string, { id: string; type: string; label?: string }> = {}
+type Confirmed = { id: string; type: string; label?: string }
+
+/**
+ * Bestaetigte Zuordnungen des Profils, je Quellwert eine Liste — eine
+ * Zuordnung je Normdatenquelle. Der Typ wird auf den Ressourcentyp
+ * aufgeloest ("gnd" -> "GNDResource"), damit die Auswahl spaeter ohne
+ * Sonderfaelle vergleichen kann.
+ */
+/* ------------------------------------------------- Normdaten-Wertevorrat */
+
+export interface AuthorityInventoryValue {
+  value: string
+  count: number
+  state: 'offen' | 'bestaetigt' | 'verworfen'
+  id?: string
+  label?: string
+}
+
+export interface AuthorityInventoryEntry {
+  column: string
+  /** Index des Zweigs, -1 fuer die gemeinsame Kette vor der Verzweigung. */
+  branch: number
+  target: string
+  source: string
+  kind: string
+  values: AuthorityInventoryValue[]
+}
+
+/**
+ * Alle Werte, zu denen in diesem Profil Normdaten gesucht werden — mit
+ * Haeufigkeit und aktuellem Stand der Zuordnung.
+ *
+ * Der Unterschied zu collectAuthorityLookups: Dort geht es um den Bedarf einer
+ * Konvertierung, bereits Bestaetigtes faellt heraus und es zaehlt niemand. Hier
+ * geht es um die Arbeitsliste eines Menschen, der entscheiden soll. Die drei
+ * Beispielwerte der Vorschau reichten dafuer nicht: Ein Wert wie "USA", der
+ * eine Entscheidung braucht, aber erst in Zeile 40 steht, war schlicht nicht
+ * erreichbar.
+ */
+export function authorityInventory(
+  mapping: MappingJson,
+  rows: readonly SourceRow[],
+  services: ChainLookupServices = {},
+  limitPerBranch = 500
+): AuthorityInventoryEntry[] {
+  const out: AuthorityInventoryEntry[] = []
+
+  for (const [col, spec] of columnsOf(mapping)) {
+    if (spec.ignore === true) continue
+    const confirmed = normalizeConfirmed(spec)
+    const pre = chainOf(spec)
+
+    ;(spec.targets ?? []).forEach((binding, bi) => {
+      const chain = [...pre, ...(Array.isArray(binding.post) ? binding.post : [])]
+      chain.forEach((step, at) => {
+        if (typeof step !== 'object' || step === null) return
+        if (canonicalOp(String(step.op)) !== 'authority') return
+        const p = step as Record<string, unknown>
+        const source = String(p['source'] ?? 'gnd')
+        const kind = String(p['kind'] ?? 'person')
+        const branch = at < pre.length ? -1 : bi
+
+        // Ein Schritt in der gemeinsamen Kette gilt fuer alle Zweige — er darf
+        // nicht je Zweig noch einmal in der Liste stehen.
+        if (branch === -1 && out.some((e) => e.column === col && e.branch === -1 && e.source === source)) return
+
+        const upto = chain.slice(0, at)
+        const counts = new Map<string, number>()
+        for (const row of rows) {
+          const res = runChain(upto, String(row[col] ?? ''), { row, ...services })
+          const values = Array.isArray(res.value) ? res.value : [res.value]
+          for (const v of values) {
+            const t = String(v).trim()
+            if (t === '') continue
+            const key = compareForm(t)
+            const known = counts.get(t)
+            if (known !== undefined) counts.set(t, known + 1)
+            else if (counts.size < limitPerBranch || confirmed[key] !== undefined) counts.set(t, 1)
+          }
+        }
+        if (counts.size === 0) return
+
+        const wanted = resourceTypeForSource(source)
+        const values: AuthorityInventoryValue[] = [...counts.entries()]
+          .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'de'))
+          .map(([value, count]) => {
+            const hit = (confirmed[compareForm(value)] ?? []).find((c) => c.type === wanted)
+            if (hit === undefined) return { value, count, state: 'offen' as const }
+            return hit.id === ''
+              ? { value, count, state: 'verworfen' as const }
+              : { value, count, state: 'bestaetigt' as const, id: hit.id, ...(hit.label !== undefined ? { label: hit.label } : {}) }
+          })
+
+        out.push({ column: col, branch, target: String(binding.target ?? ''), source, kind, values })
+      })
+    })
+  }
+
+  return out
+}
+
+function normalizeConfirmed(spec: ColumnMapping): Record<string, Confirmed[]> {
+  const out: Record<string, Confirmed[]> = {}
   const raw = spec.authorities
   if (typeof raw !== 'object' || raw === null) return out
   for (const [value, entry] of Object.entries(raw)) {
-    if (typeof entry !== 'object' || entry === null) continue
-    out[compareForm(value)] = { id: String(entry.id ?? ''), type: String(entry.type ?? ''), ...(entry.label !== undefined ? { label: entry.label } : {}) }
+    const list = Array.isArray(entry) ? entry : [entry]
+    for (const e of list) {
+      if (typeof e !== 'object' || e === null) continue
+      const declared = String((e as Confirmed).type ?? '')
+      const type = declared.endsWith('Resource')
+        ? declared
+        : resourceTypeForSource(declared) ?? 'GNDResource'
+      const label = (e as Confirmed).label
+      const key = compareForm(value)
+      const bucket = out[key] ?? []
+      // Erste Zuordnung je Quelle gewinnt; doppelte Eintraege sind ein
+      // Profilfehler, kein Grund zum Abbruch.
+      if (!bucket.some((c) => c.type === type)) {
+        bucket.push({ id: String((e as Confirmed).id ?? ''), type, ...(label !== undefined ? { label } : {}) })
+      }
+      out[key] = bucket
+    }
   }
   return out
+}
+
+/** Ist dieser Wert fuer diese Quelle schon von Hand entschieden? */
+function isConfirmedFor(confirmed: Record<string, Confirmed[]>, key: string, source: string): boolean {
+  const wanted = resourceTypeForSource(source)
+  return (confirmed[key] ?? []).some((c) => c.type === wanted)
 }
 
 /* ---------------------------------------------------------------- Ausfuehren */
@@ -294,6 +488,14 @@ export interface CellOutput {
 
 export interface CellResult {
   raw: string
+  /**
+   * Der Wert nach der gemeinsamen Kette, vor der Verzweigung.
+   *
+   * Damit laesst sich zeigen, wie aus dem Originalwert der AVefi-Wert wurde:
+   * "DE → Deutschland → Werk > Produktion > Ort". Ohne diese Zwischenstufe
+   * sieht man nur Anfang und Ende und muss raten, welcher Konverter gewirkt hat.
+   */
+  pre: string
   outputs: CellOutput[]
   errors: string[]
 }
@@ -397,7 +599,7 @@ export function runRow(
       }
     }
 
-    cells[col] = { raw, outputs, errors: cellErrors }
+    cells[col] = { raw, pre: toValueList(pre.value).map((v) => String(v)).join(' · '), outputs, errors: cellErrors }
     for (const e of cellErrors) errors.push(`${col}: ${e}`)
   }
 

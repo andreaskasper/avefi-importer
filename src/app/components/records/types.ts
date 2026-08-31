@@ -55,6 +55,8 @@ export interface RecordListItem {
   manifestations: number
   items: number
   completeness: number
+  /** Belegte Kernfelder statt eines Prozentwerts. */
+  core: { filled: number; total: number; missing: string[] }
   ring: string
   contributors: string[]
   sourceRow: number | null

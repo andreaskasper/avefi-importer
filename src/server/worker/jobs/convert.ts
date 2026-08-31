@@ -17,7 +17,10 @@ import {
 } from '../../lib/authority/index'
 import { loadSchemaModel } from '../../lib/schema'
 import { AvefiWriter, copyAsAvefi, tableFile } from '../../lib/storage'
-import { findImport, findMappingProfileById, setCounts, setReport, setStatus, type ExtendedImportReport } from '../../lib/imports'
+import {
+  findImport, findMappingProfileById, setCounts, setReport, setRunConfig, setStatus,
+  type ExtendedImportReport
+} from '../../lib/imports'
 import { deleteRecordsOfImport, insertRecords, type NewRecord } from '../../lib/records'
 import { makeConverter } from '../../lib/converters/factory'
 import { AVEFI_JSON_KEY } from '../../lib/converters/avefiJson'
@@ -63,6 +66,7 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
   let authority: ResolvedAuthorities | null = null
   const converter = makeConverter(key, {
     baseFormat: record.base_format,
+    delimiter: record.delimiter as never,
     profile,
     services: { schema, ...authorityServices() },
     prepareAuthorities: async (requests) => {
@@ -250,6 +254,24 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
 
   await setReport(sql, record.id, report)
   await setCounts(sql, record.id, recordCount, rowErrors)
+
+  // Womit dieses Ergebnis entstanden ist. Erst damit laesst sich spaeter sagen,
+  // ob es noch zum heutigen Stand passt — die Profilfassung allein reicht
+  // nicht, weil auch Schemaversion, Trennzeichen und Normdateneinstellungen ins
+  // Ergebnis eingehen.
+  await setRunConfig(sql, record.id, {
+    profileId: profile?.id ?? null,
+    profileVersion: profile?.version ?? null,
+    profileFormatVersion: profile?.mapping_json?.profileFormatVersion != null
+      ? String(profile.mapping_json.profileFormatVersion)
+      : null,
+    avefiSchemaVersion: schemaVersion,
+    delimiter: record.delimiter,
+    authorityEnabled: authorityEnabledFromEnv(),
+    authorityLimit: authorityLimitFromEnv(),
+    at: new Date().toISOString()
+  })
+
   await setStatus(sql, record.id, recordCount > 0 ? 'converted' : 'error')
 
   const validationNote = validationUnavailable === null ? '' : ' · Pruefung nicht moeglich'

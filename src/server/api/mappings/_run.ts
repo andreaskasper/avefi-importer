@@ -11,12 +11,13 @@
  */
 import type { AvefiRecord, MappingJson, ProfileSample } from '#shared/types/domain'
 import {
-  buildPreview, buildProfileSample, collectAuthorityLookups, columnStates, computeComplete, getTarget,
-  hasBlocker, normalizeMapping, openColumns, previewRows, staticCheck,
-  type MappingCheck, type MappingServices, type PreviewInput, type PreviewResult, type SchemaModel
+  authorityInventory, buildPreview, buildProfileSample, collectAuthorityLookups, columnStates,
+  computeComplete, getTarget, hasBlocker, normalizeMapping, openColumns, previewRows, staticCheck,
+  type AuthorityInventoryEntry, type MappingCheck, type MappingServices, type PreviewInput,
+  type PreviewResult, type SchemaModel, type SourceRow
 } from '../../lib/mapping/index'
 import {
-  PREVIEW_AUTHORITY_LIMIT, authorityCandidates, mappingServicesFor, sourcesForKind,
+  PREVIEW_AUTHORITY_LIMIT, authorityCandidates, authorityServices, mappingServicesFor, sourcesForKind,
   type ResolvedAuthorities
 } from '../../lib/authority/index'
 import { db } from '../../db'
@@ -71,7 +72,9 @@ async function previewServices(
   mapping: MappingJson,
   schema: SchemaModel
 ): Promise<{ services: MappingServices; resolved: ResolvedAuthorities }> {
-  const requests = collectAuthorityLookups(mapping, previewRows(input))
+  // Mit den ortsfesten Tabellen, sonst meldet der Bedarf "DE", waehrend die
+  // Kette spaeter "Deutschland" fragt.
+  const requests = collectAuthorityLookups(mapping, previewRows(input), authorityServices())
   return mappingServicesFor(requests, { sql: db(), schema, limit: PREVIEW_AUTHORITY_LIMIT })
 }
 
@@ -180,6 +183,59 @@ export async function prepareSave(source: TableSource, raw: unknown): Promise<Sa
     open: openColumns(mapping),
     sample: buildProfileSample(source.columns, source.rows, { totalRows: source.rowCount })
   }
+}
+
+/* -------------------------------------------------- Normdaten-Wertevorrat */
+
+/** Wie viele Zeilen der Wertevorrat hoechstens durchsieht. */
+const INVENTORY_ROW_LIMIT = 20_000
+
+/**
+ * Zeilen fuer den Wertevorrat: die vorhandenen Zeilen und zusaetzlich je
+ * bekanntem verschiedenen Wert eine Zeile.
+ *
+ * Am Profil fuehrt die Stichprobe nur 25 ganze Zeilen, aber bis zu 200
+ * verschiedene Werte je Spalte. Nur die Zeilen zu nehmen hiesse, genau die
+ * seltenen Werte zu verlieren, um die es hier geht. Die erzeugten Zeilen tragen
+ * nur ihre eine Spalte — ein Konverter, der andere Spalten liest (concat),
+ * sieht sie dort leer. Betroffen sind nur Werte, die in keiner der vorhandenen
+ * Zeilen stehen.
+ */
+export function inventoryRows(source: TableSource): SourceRow[] {
+  const rows: SourceRow[] = source.rows.slice(0, INVENTORY_ROW_LIMIT)
+  for (const [col, values] of Object.entries(source.distinct)) {
+    const known = new Set(rows.map((r) => String(r[col] ?? '').trim()))
+    for (const v of values) {
+      const value = v.value.trim()
+      if (value === '' || known.has(value)) continue
+      rows.push({ [col]: v.value })
+      known.add(value)
+    }
+  }
+  return rows
+}
+
+export interface AuthorityValuesPayload {
+  groups: AuthorityInventoryEntry[]
+  /** Wie viele Werte noch auf eine Entscheidung warten. */
+  open: number
+}
+
+/**
+ * Der vollstaendige Wertevorrat, zu dem dieses Profil Normdaten sucht.
+ *
+ * Die Vorschau zeigt je Spalte drei verschiedene Beispielwerte, weil sie
+ * schnell sein muss. Fuer die Zuordnung von Hand ist das zu wenig: Ein Wert,
+ * der eine Entscheidung braucht, aber erst weiter unten in der Datei steht, war
+ * damit gar nicht erreichbar. Gerechnet wird mit demselben Kettencode wie in
+ * der Vorschau — nur ohne Netz, denn hier zaehlt der Wert, nicht der Treffer.
+ */
+export async function authorityValuesFor(source: TableSource, raw: unknown): Promise<AuthorityValuesPayload> {
+  const version = await avefiSchemaVersion()
+  const { mapping } = normalizeMapping(raw, { columns: source.columns, avefiSchemaVersion: version })
+  const groups = authorityInventory(mapping, inventoryRows(source), authorityServices())
+  const open = groups.reduce((n, g) => n + g.values.filter((v) => v.state === 'offen').length, 0)
+  return { groups, open }
 }
 
 /* ----------------------------------------------------- Normdaten-Kandidaten */

@@ -14,6 +14,7 @@ import type {
   ImportRow,
   ImportStatus,
   MappingJson,
+  RunConfig,
   MappingProfileRow,
   ProfileSample
 } from '#shared/types/domain'
@@ -107,6 +108,23 @@ export async function setFormatProfile(sql: Sql, id: string, profileId: number):
 
 export async function setMappingProfile(sql: Sql, id: string, profileId: number, version: number): Promise<void> {
   await sql`UPDATE imports SET mapping_profile_id = ${profileId}, mapping_version = ${version} WHERE id = ${id}`
+}
+
+/**
+ * Das Spaltentrennzeichen festschreiben.
+ *
+ * Geraten wird nur einmal, beim Erkennen. Ohne diese Festlegung raet jeder
+ * spaetere Lesevorgang neu — und dieselbe Datei kann nach einer Aenderung an
+ * der Heuristik anders zerfallen, ohne dass sich Datei oder Profil geaendert
+ * haben.
+ */
+export async function setDelimiter(sql: Sql, id: string, delimiter: string): Promise<void> {
+  await sql`UPDATE imports SET delimiter = ${delimiter} WHERE id = ${id}`
+}
+
+/** Womit dieses Ergebnis entstanden ist — Grundlage der Frage "noch aktuell?". */
+export async function setRunConfig(sql: Sql, id: string, config: RunConfig): Promise<void> {
+  await sql`UPDATE imports SET run_config = ${sql.json(config as never)} WHERE id = ${id}`
 }
 
 export async function setReport(sql: Sql, id: string, report: ExtendedImportReport): Promise<void> {

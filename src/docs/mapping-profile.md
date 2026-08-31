@@ -49,8 +49,18 @@ Konverter in `server/lib/mapping/transform.ts`.
       ],
       // Bestaetigte Normdaten-Treffer: Quellwert -> Ressource.
       // Nur was ein Mensch bestaetigt hat, steht hier.
+      //
+      // Je Quellwert kann EINE Zuordnung stehen oder eine Liste — eine je
+      // Normdatenquelle. Frueher gab es nur die Einzelform; wer erst GND und
+      // dann VIAF bestaetigte, ueberschrieb damit die erste Entscheidung, ohne
+      // dass etwas darauf hinwies. Die Einzelform bleibt gueltig und gilt als
+      // GND, damit aeltere Profile weiter greifen.
       "authorities": {
-        "Herbert Selpin": { "id": "118613766", "type": "GNDResource", "label": "Selpin, Herbert" }
+        "Herbert Selpin": { "id": "118613766", "type": "GNDResource", "label": "Selpin, Herbert" },
+        "Heinz Sielmann": [
+          { "id": "118614371", "type": "GNDResource", "label": "Sielmann, Heinz" },
+          { "id": "24608912", "type": "VIAFResource" }
+        ]
       }
     },
 
@@ -397,8 +407,28 @@ sondern meldet den Treffer ueber einen Nebenkanal; der Builder haengt ihn als
 ueberschrieben — bei einem Regie-Feld stand dann die GND-Nummer im Namen.
 
 Eine im Feld `authorities` der Spalte bestaetigte Zuordnung schlaegt die
-Automatik. Ein bestaetigter Eintrag mit leerer `id` heisst „bewusst offen
-gelassen" und unterbindet die automatische Suche.
+Automatik — aber nur die zu **derselben Quelle**. Ein bestaetigter GND-Treffer
+laesst eine VIAF-Abfrage im selben Zweig unberuehrt. Ein bestaetigter Eintrag
+mit leerer `id` heisst „bewusst offen gelassen" und unterbindet die
+automatische Suche fuer diese Quelle.
+
+**Mehrere Normdatenquellen duerfen im selben Zweig stehen.** Jede meldet ihren
+Treffer eigenstaendig, und der Builder haengt alle als `same_as` an — soweit das
+Schema die Ressourcenart am Ziel zulaesst. Getrennte Zweige braucht es dafuer
+nicht. Bis zum 31.08.2026 kam trotzdem nur die erste Quelle im Export an: Der
+Bedarf wurde je Kette nur fuer den ersten `authority`-Schritt gesammelt, die
+zweite Quelle wurde also nie gefragt.
+
+Die Oberflaeche prueft ausserdem, ob `kind` zum Ziel passt. Ein GND-Abgleich mit
+`kind: person` auf einem Ortsziel findet nie etwas und sah bisher aus wie „nichts
+gefunden".
+
+**Reihenfolge:** Nachschlagende Konverter (`authority`, `country`, `language`,
+`map`) gehoeren ans Ende der Normalisierung. Steht hinter ihnen noch ein `trim`
+oder ein `split`, sucht die Abfrage den unfertigen Wert, waehrend die Kette am
+Ende einen anderen liefert. Der Editor fuegt neue Konverter an der empfohlenen
+Stelle ein und warnt bei dieser Anordnung; erzwungen wird sie nicht — `trim`
+NACH `split` ist richtig und wirkt dann auf jedes Element.
 
 ```jsonc
 { "op": "authority", "source": "gnd", "kind": "person" }

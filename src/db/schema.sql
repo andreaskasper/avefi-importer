@@ -149,6 +149,17 @@ ALTER TABLE imports ADD COLUMN IF NOT EXISTS mapping_version    INTEGER;
 -- detected_format bleibt als fertiger deutscher Text der Rückfall für Altbestand.
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS format_detail      JSONB;
 
+-- Reproduzierbarkeit: Womit ist dieses Ergebnis entstanden?
+--
+-- Das Trennzeichen wurde bisher bei JEDEM Lesen neu geraten und stand nirgends.
+-- Damit konnte dieselbe Datei nach einer Aenderung an der Heuristik anders
+-- zerfallen, ohne dass sich Datei oder Profil geaendert haetten.
+-- run_config haelt daneben fest, mit welcher Profilfassung, welcher
+-- Schemaversion und welchen Normdateneinstellungen konvertiert wurde. Daraus
+-- laesst sich erkennen, ob ein Ergebnis noch zum heutigen Stand passt.
+ALTER TABLE imports ADD COLUMN IF NOT EXISTS delimiter          TEXT;
+ALTER TABLE imports ADD COLUMN IF NOT EXISTS run_config         JSONB;
+
 CREATE INDEX IF NOT EXISTS idx_mapping_profiles_hash ON mapping_profiles(header_hash);
 CREATE INDEX IF NOT EXISTS idx_imports_header_hash   ON imports(header_hash);
 

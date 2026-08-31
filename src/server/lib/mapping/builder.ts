@@ -139,13 +139,17 @@ export class AvefiBuilder {
 
       case 'named': {
         const list = nodeList(node, w.prop)
+        // Welche Kennungsarten erlaubt sind, sagt das Schema — nicht eine Liste
+        // im Code. Fuer Genre kam dabei frueher fest GND heraus; steht im Schema
+        // spaeter mehr, wirkt das hier ohne Codeaenderung.
+        const allowed = w.className !== undefined ? this.schema.sameAsTypes(w.className) : ['GNDResource']
         const found = list.find((e) => nameOf(e) === v)
         if (found !== undefined) {
-          this.mergeSameAs(found, sameAs, ['GNDResource'])
+          this.mergeSameAs(found, sameAs, allowed)
           return
         }
         const created: AvefiNode = { has_name: v }
-        this.mergeSameAs(created, sameAs, ['GNDResource']) // Genre erlaubt nur GND
+        this.mergeSameAs(created, sameAs, allowed)
         list.push(created)
         return
       }

@@ -103,7 +103,8 @@ const formatLabel = computed(() => {
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
         <h1 style="font-size:19px">{{ item.filename }}</h1>
         <span v-if="formatLabel !== ''" class="fmt">{{ formatLabel }}</span>
-        <ImportsStatusBadge :status="item.status" />
+        <ImportsStatusBadge :status="item.status" :stale="item.stale"
+                              :ran-with-version="item.ranWithVersion" :profile-version="item.profileVersion" />
         <div style="margin-left:auto;display:flex;gap:8px">
           <NuxtLink class="btn btn-outline btn-sm" to="/">{{ t('imports.action.overview') }}</NuxtLink>
         </div>

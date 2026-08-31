@@ -23,7 +23,7 @@ export type TargetWriter =
   | { kind: 'title'; titleType: string; primary: boolean }
   | { kind: 'prop'; prop: string }
   | { kind: 'strlist'; prop: string }
-  | { kind: 'named'; prop: string }
+  | { kind: 'named'; prop: string; className?: string }
   | { kind: 'subject'; className: string; agentType?: string }
   | { kind: 'activity'; category: string; type: string; agentType: string }
   | { kind: 'eventdate'; category: string; type?: string }
@@ -42,6 +42,47 @@ export interface TargetDefinition extends TargetEntry {
 /** Kann dieses Ziel ueberhaupt Normdaten aufnehmen? */
 export function writerAcceptsAuthority(writer: TargetWriter): boolean {
   return ['activity', 'subject', 'named', 'sameas', 'identifier', 'eventplace'].includes(writer.kind)
+}
+
+/**
+ * Welche Normdatenart an diesem Ziel Sinn ergibt — null heisst "keine Aussage".
+ *
+ * Anlass: In Profil 8 stand an der Spalte "Land" ein GND-Abgleich mit
+ * kind "person" auf dem Ziel "Werk > Produktion > Ort". Ein Land wurde also
+ * als Person gesucht und traf nie. Die Oberflaeche liess es zu und schwieg.
+ */
+export function expectedAuthorityKinds(writer: TargetWriter): string[] | null {
+  switch (writer.kind) {
+    case 'eventplace': return ['place']
+    case 'activity': return writer.agentType === 'CorporateBody' ? ['corporate'] : ['person']
+    case 'named': return ['genre', 'subject']
+    case 'subject': return kindsForClass(writer.className)
+    default: return null // Kennungs-Ziele nehmen jede Art auf
+  }
+}
+
+function kindsForClass(className: string): string[] | null {
+  switch (className) {
+    case 'GeographicName': return ['place']
+    case 'Agent': return ['person', 'corporate']
+    case 'Genre': return ['genre', 'subject']
+    case 'Subject': return ['subject', 'genre']
+    case 'WorkVariant': return ['work']
+    default: return null
+  }
+}
+
+/** Lesbarer Name einer Normdatenart fuer Meldungen. */
+export function authorityKindLabel(kind: string): string {
+  switch (kind) {
+    case 'person': return 'Person'
+    case 'corporate': return 'Koerperschaft'
+    case 'place': return 'Ort'
+    case 'genre': return 'Genre'
+    case 'subject': return 'Schlagwort'
+    case 'work': return 'Werk'
+    default: return kind
+  }
 }
 
 export function levelLabel(level: TargetLevel): string {
@@ -121,7 +162,7 @@ function buildCatalog(): Map<string, TargetDefinition> {
   list.push(entry('work.form', 'Form (Dokumentarfilm, Kurzfilm …)', 'work', 'Werk', 'enum:WorkFormEnum', true,
     { kind: 'strlist', prop: 'has_form' }))
   list.push(entry('work.genre', 'Genre', 'work', 'Werk', 'text', true,
-    { kind: 'named', prop: 'has_genre' }))
+    { kind: 'named', prop: 'has_genre', className: 'Genre' }))
 
   list.push(entry('work.production.date', 'Produktionsjahr / -datum', 'work', 'Produktion', 'date', false,
     { kind: 'eventdate', category: 'avefi:ProductionEvent' }))

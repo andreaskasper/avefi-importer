@@ -76,7 +76,8 @@
       "add": "another target for this column",
       "addHint": "A column may end up in several places: shared chain above, own chain and own target per branch.",
       "unknownTarget": "unknown target",
-      "addLabel": "Add another target for this column"
+      "addLabel": "Add another target for this column",
+      "preValue": "Value after the converters shared by every target of this column"
     },
     "chain": {
       "slow": "slow",
@@ -110,7 +111,8 @@
       "srHint": "Hint:",
       "goto": "Jump to column “{column}”",
       "applyFix": "Apply suggestion “{op}”",
-      "policy": "Only structurally impossible mappings are blocked. Suggestions are offered and never applied on their own."
+      "policy": "Only structurally impossible mappings are blocked. Suggestions are offered and never applied on their own.",
+      "applyFixShort": "Apply suggestion"
     },
     "columns": {
       "heading": "Header and profile differ.",
@@ -140,7 +142,108 @@
       "empty": "The sample contains no values.",
       "prefill": "Take the values from the file",
       "addLabel": "Add another source value",
-      "add": "Add"
+      "add": "Add",
+      "values": {
+        "AgentTypeEnum": {
+          "CorporateBody": "Corporate body",
+          "Family": "Family",
+          "Person": "Person",
+          "PersonGroup": "Person group"
+        },
+        "ColourTypeEnum": {
+          "BlackAndWhite": "Black and white",
+          "BlackAndWhiteTinted": "Black and white, tinted",
+          "BlackAndWhiteTintedAndToned": "Black and white, tinted and toned",
+          "BlackAndWhiteToned": "Black and white, toned",
+          "Colour": "Colour",
+          "ColourBlackAndWhite": "Colour and black and white",
+          "Sepia": "Sepia",
+          "Tinted": "Tinted"
+        },
+        "FrameRateEnum": {
+          "VariableFrameRate": "Variable frame rate"
+        },
+        "ItemAccessStatusEnum": {
+          "Archive": "Archive copy",
+          "Distribution": "Distribution copy",
+          "Master": "Master",
+          "Removed": "Removed",
+          "Viewing": "Viewing copy"
+        },
+        "ItemElementTypeEnum": {
+          "EditDecisionList": "Edit decision list",
+          "Lavender": "Lavender print"
+        },
+        "LanguageUsageEnum": {
+          "SDHSubtitles": "Subtitles for the deaf and hard of hearing",
+          "Captions": "Captions",
+          "SpokenLanguage": "Spoken language",
+          "SungLanguage": "Sung language",
+          "SignedLanguage": "Signed language",
+          "NoDialogue": "No dialogue",
+          "VoiceOver": "Voice-over",
+          "OpeningCredits": "Opening credits",
+          "ClosingCredits": "Closing credits"
+        },
+        "PrecisionEnum": {
+          "Approximate": "Approximate",
+          "Uncertain": "Uncertain"
+        },
+        "SoundTypeEnum": {
+          "Combined": "Picture and sound on one carrier",
+          "CombinedAsMute": "Combined, without sound track",
+          "CombinedAsSound": "Combined, with sound track",
+          "MixedSound": "Mixed sound",
+          "Mute": "Copy without sound track",
+          "Silent": "Shot silent",
+          "Sound": "With sound",
+          "Temporary": "Temporary sound"
+        },
+        "TitleTypeEnum": {
+          "AbbreviatedTitle": "Abbreviated title",
+          "AcquisitionTitle": "Acquisition title",
+          "AlternativeTitle": "Alternative title",
+          "CorrectedTitle": "Corrected title",
+          "PreReleaseTitle": "Pre-release title",
+          "PreferredTitle": "Preferred title",
+          "SearchTitle": "Search title",
+          "SeriesTitle": "Series title",
+          "SuppliedDevisedTitle": "Supplied or devised title",
+          "TitleProper": "Title proper",
+          "TranslatedTitle": "Translated title",
+          "TransliteratedTitle": "Transliterated title",
+          "WorkingTitle": "Working title"
+        },
+        "UnitEnum": {
+          "Feet": "Feet",
+          "Metre": "Metre",
+          "KiloByte": "Kilobyte",
+          "MegaByte": "Megabyte",
+          "GigaByte": "Gigabyte",
+          "TeraByte": "Terabyte"
+        },
+        "VariantTypeEnum": {
+          "AbridgedCondensed": "Abridged or condensed",
+          "PreservationRestoration": "Preserved or restored",
+          "BlackAndWhiteCopyOfWorkOriginallyIssuedInColour": "Black and white copy of a work originally issued in colour"
+        },
+        "WorkFormEnum": {
+          "Feature": "Feature-length film",
+          "Featurette": "Featurette",
+          "Fiction": "Fiction film",
+          "HomeMovie": "Home movie",
+          "StockFootage": "Stock footage",
+          "UneditedFootage": "Unedited footage",
+          "AnthologyFilm": "Anthology film",
+          "Newsreel": "Newsreel"
+        },
+        "WorkVariantTypeEnum": {
+          "Analytic": "Analytic",
+          "Collection": "Collection",
+          "Monographic": "Single work",
+          "Serial": "Serial"
+        }
+      }
     },
     "authority": {
       "heading": "Authority data from {source}",
@@ -156,7 +259,35 @@
       "take": "Use this",
       "leaveOpen": "Leave open on purpose",
       "cancel": "Cancel",
-      "close": "Close"
+      "close": "Close",
+      "listLabel": "Values of column \"{column}\" for matching against {source}",
+      "count": "{n}x",
+      "assignFor": "Assign \"{value}\"",
+      "resetFor": "Reset assignment for \"{value}\"",
+      "openCount": "{n} of {all} values are waiting for a decision.",
+      "pageLink": "All authority data of this profile",
+      "pageTitle": "Assign authority data",
+      "pageIntro": "Every value this profile looks up, with frequency and current state. Confirmed assignments take precedence over the automatic ones and stay with the profile.",
+      "pageEmpty": "No converter in this profile looks up authority data.",
+      "pageOpen": "{n} of {all} values are waiting for a decision.",
+      "groupHeading": "Column \"{column}\" → {source}",
+      "groupSource": "Source {source}, searching for {kind}",
+      "groupShared": "shared chain, applies to every branch",
+      "filterOpen": "Show open only",
+      "saved": "Saved.",
+      "saveFailed": "Could not save.",
+      "save": "Save assignments",
+      "backToEditor": "Back to the mapping editor",
+      "skipGroup": "Skip the {n} values of this group",
+      "groupKind": "Searching for {kind}, target: {target}",
+      "kind": {
+        "corporate": "corporate body",
+        "genre": "genre",
+        "person": "person",
+        "place": "place",
+        "subject": "subject",
+        "work": "work"
+      }
     },
     "idorigin": {
       "label": "Authority ID {id}",

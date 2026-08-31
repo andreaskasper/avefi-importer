@@ -49,7 +49,8 @@ src/
       mapping/          Editor, Kette, Verzweigung, Zielauswahl, Vokabular, Ergebnisbaum
       records/          Datensatztabelle, Feldzeilen, Enum-Auswahl, Normdatenfelder
       admin/            Einmalpasswort, Stichprobenvorschau
-    assets/css/app.css
+    assets/css/app.css   Tailwind-4-Einstieg, die beiden daisyUI-Themen und die
+                         anwendungseigenen Bausteine
 
   server/
     api/                Endpunkte, nach Bereichen (siehe unten)
@@ -131,7 +132,7 @@ Zehn Tabellen (`db/schema.sql`):
 |---|---|
 | `institutions` | Haeuser; jeder Import und jedes Profil gehoert einem. |
 | `users` | Konten, Passwort als argon2id. bcrypt wird nur noch gelesen. |
-| `imports` | Ein Upload mit Status, Kopfzeilen-Hash, gewaehltem Blatt, benutztem Profil samt Fassung und Pruefbericht. |
+| `imports` | Ein Upload mit Status, Kopfzeilen-Hash, gewaehltem Blatt, benutztem Profil samt Fassung, festgelegtem Trennzeichen, Laufkonfiguration (`run_config`) und Pruefbericht. |
 | `records` | Erzeugte Datensaetze mit `data_json`, Vollstaendigkeit, Quellzeile und `edited_at`. |
 | `format_profiles` | Im Code vorhandene Konverter. |
 | `format_reviews` | Warteschlange fuer unbekannte Kopfzeilen. |
@@ -158,6 +159,7 @@ derselbe Fehler wie bei Excel-Datumsangaben, eine Ebene tiefer.
 | `/imports/:id/records/:recordId` | Einzelsatzbearbeitung. |
 | `/imports/:id/report` | Pruefbericht. |
 | `/mappings`, `/mappings/new`, `/mappings/:id`, `/mappings/:id/edit` | Profile ohne Import. |
+| `/mappings/:id/normdaten` | Alle Werte eines Profils, zu denen Normdaten gesucht werden — der Durchgang von Hand. |
 | `/reviews`, `/reviews/:id` | Formatpruefung. |
 | `/users`, `/users/:id` | Nutzerverwaltung. |
 | `/profile` | Eigenes Konto. |
@@ -269,6 +271,28 @@ Dateien mit fuehrendem Unterstrich (`_lib.ts`, `_run.ts`, `_source.ts`,
 `_upload.ts`, `_record.ts`, `_schema.ts`) sind keine Endpunkte. Nitro erzeugt aus
 ihnen keine Route; sie liegen dort, weil sie zu den Endpunkten dieses Bereichs
 gehoeren.
+
+## Reproduzierbarkeit
+
+Gleiche Datei plus gleiche Konfiguration muss dasselbe Ergebnis liefern. Dazu
+gehoert mehr als das Mappingprofil:
+
+* **Trennzeichen** (`imports.delimiter`). Geraten wird einmal, beim Erkennen;
+  danach steht es fest. Vorher wurde bei jedem Lesen neu geraten — dieselbe
+  Datei konnte nach einer Aenderung an der Heuristik anders zerfallen, ohne dass
+  sich Datei oder Profil geaendert haetten.
+* **Laufkonfiguration** (`imports.run_config`). Haelt fest, mit welcher
+  Profilfassung, welcher Profilformat- und AVefi-Schemaversion, welchem
+  Trennzeichen und welchen Normdateneinstellungen ein Ergebnis entstanden ist.
+
+Daraus faellt die Frage „ist dieses Ergebnis noch aktuell?" ab. Sie wird
+**abgeleitet**, nicht gespeichert: Verglichen wird die Fassung, mit der
+konvertiert wurde, mit der Fassung, die das Profil heute hat. Ein gespeichertes
+Kennzeichen wuerde driften, sobald jemand ein Profil aendert, ohne dass
+Importcode laeuft — und Profile sind institutionsuebergreifend sichtbar. Die
+Importliste zeigt das als „veraltet" samt beiden Fassungsnummern; ein
+`reconvert` bringt den Import auf Stand. Bestehende Importe werden **nie**
+automatisch nachgezogen.
 
 ## Formate und Konverter
 

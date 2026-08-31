@@ -29,6 +29,10 @@ export interface ImportListItem {
   canReconvert: boolean
   hasAvefi: boolean
   validated: boolean
+  /** Ergebnis aus einer aelteren Fassung des Mappingprofils — abgeleitet, nicht gespeichert. */
+  stale: boolean
+  ranWithVersion: number | null
+  profileVersion: number | null
 }
 
 export interface ImportListResponse {

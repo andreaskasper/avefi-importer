@@ -124,7 +124,7 @@ function toggleTheme() {
 
       <div class="who">
         <span v-if="user?.institution_name" class="dim">{{ user.institution_name }}</span>
-        <button class="ghost" :title="t('theme.switch')" :aria-label="t('theme.switch')" @click="toggleTheme">◐</button>
+        <button type="button" class="ghost" :title="t('theme.switch')" :aria-label="t('theme.switch')" @click="toggleTheme">◐</button>
 
         <div v-if="user" ref="menuRoot" class="usermenu">
           <button ref="menuButton" class="avatar-btn" type="button" aria-haspopup="menu" :aria-expanded="menuOpen"

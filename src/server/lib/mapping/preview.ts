@@ -26,6 +26,15 @@ import { runRow, staticCheck } from './runner.js'
 export const MAX_PREVIEW_ROWS = 60
 /** Beispiele je Spalte. */
 export const EXAMPLES_PER_COLUMN = 3
+
+/**
+ * Wie viele verschiedene Werte je Spalte die Stichprobe des Profils fuehrt.
+ *
+ * Frueher 60. Die Stichprobe ist aber nicht nur Anschauungsmaterial fuer die
+ * Vorschau, sondern die Arbeitsliste der Normdatenzuordnung: Was hier fehlt,
+ * kann niemand von Hand entscheiden.
+ */
+export const SAMPLE_DISTINCT_LIMIT = 200
 /** Verschiedene Schema-Beanstandungen im Bericht. */
 export const MAX_SCHEMA_ISSUES = 25
 
@@ -94,7 +103,7 @@ export function buildProfileSample(
 ): ProfileSample {
   const total = options.totalRows ?? rows.length
   const sampleRows = options.sampleRows ?? 25
-  const perColumn = options.distinctPerColumn ?? 60
+  const perColumn = options.distinctPerColumn ?? SAMPLE_DISTINCT_LIMIT
 
   const values: Record<string, Array<{ value: string; count: number }>> = {}
   const coverage: Record<string, { filled: number; total: number }> = {}
@@ -127,7 +136,7 @@ export function buildProfileSample(
 /* ---------------------------------------------------------------- Vorschau */
 
 export interface PreviewColumn {
-  examples: Array<ColumnExample & { outputs: CellResult['outputs']; errors: string[] }>
+  examples: Array<ColumnExample & { pre: string; outputs: CellResult['outputs']; errors: string[] }>
   /** n von of betrachteten Zeilen gefuellt; total ist die Zeilenzahl der Datei. */
   filled: { n: number; of: number; total: number }
 }
@@ -251,6 +260,7 @@ export function buildPreview(
         const cell = evaluated.get(e.row)?.[col]
         return {
           ...e,
+          pre: cell?.pre ?? '',
           outputs: cell?.outputs ?? [],
           errors: cell?.errors ?? []
         }

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import type { AvefiRecord } from '../../server/lib/mapping/builder.js'
 import {
   addToCoreTally, completeness, completenessIssues, coreCoverage,
-  corePresence, finishCoreTally, newCoreTally, ringClass
+  corePresence, coreScore, finishCoreTally, newCoreTally, ringClass
 } from '../../server/lib/mapping/completeness.js'
 
 const leer: AvefiRecord = { work: {}, manifestations: [], items: [] }
@@ -71,5 +71,25 @@ describe('Kernfelder', () => {
     const tally = newCoreTally()
     addToCoreTally(tally, voll)
     expect(coreCoverage(tally)['regie']).toEqual({ filled: 1, total: 1 })
+  })
+})
+
+describe('Kernfelder statt Prozentwert', () => {
+  it('zaehlt belegte Kernfelder und nennt die fehlenden beim Namen', () => {
+    // Stefans Punkt: Vollstaendigkeit nicht pauschal als Prozentwert bewerten.
+    // "3 von 4" sagt, dass etwas fehlt; die Liste sagt, was.
+    expect(coreScore(voll).filled).toBe(coreScore(voll).total)
+    expect(coreScore(voll).missing).toEqual([])
+
+    const leerScore = coreScore(leer)
+    expect(leerScore.filled).toBe(0)
+    expect(leerScore.missing).toContain('titel')
+    expect(leerScore.missing).toContain('produktionsland')
+  })
+
+  it('rechnet ueber dieselbe Stelle wie die Belegungsstatistik', () => {
+    const presence = corePresence(voll)
+    const belegt = Object.values(presence).filter(Boolean).length
+    expect(coreScore(voll).filled).toBe(belegt)
   })
 })

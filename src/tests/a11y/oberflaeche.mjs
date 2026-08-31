@@ -1273,6 +1273,8 @@ try {
       zweck: 'Ein Mappingprofil zum Bearbeiten.', ruhe: 3500 },
     { pfad: '/mappings/new', datei: '11-schema-editor.md', titel: 'Schema-Editor',
       zweck: 'Ein neues Mappingprofil gegen das AVefi-Schema anlegen.', ruhe: 3000 },
+    { pfad: zumProfil ? zumProfil + '/normdaten' : null, datei: '17-normdaten.md', titel: 'Normdaten zuordnen',
+      zweck: 'Alle Werte eines Profils, zu denen Normdaten gesucht werden, als Arbeitsliste.', ruhe: 3000 },
     { pfad: '/reviews', datei: '12-formatpruefung.md', titel: 'Formatpruefung',
       zweck: 'Die Liste der offenen und erledigten Formatpruefungen.' },
     { pfad: zurPruefung, datei: '13-formatpruefung-detail.md', titel: 'Formatpruefung im Einzelnen',

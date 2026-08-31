@@ -22,6 +22,7 @@ import {
   setDetectedFormat,
   setFingerprint,
   setFormatProfile,
+  setDelimiter,
   setHeaderHash,
   setMappingProfile,
   setReport,
@@ -311,8 +312,11 @@ export async function chooseSheets(sql: Sql, record: ImportRow, sheetNames: read
  * Zuordnung gebaut hat — das ist kein Fehler, sondern der vorgesehene Weg.
  */
 async function routeTable(sql: Sql, record: ImportRow, path: string, base: BaseFormat | null): Promise<void> {
-  const table = await readTable(path, base)
+  // Hier faellt die Entscheidung ueber das Trennzeichen — einmal, und sie wird
+  // festgehalten. Jedes spaetere Lesen nimmt sie, statt neu zu raten.
+  const table = await readTable(path, base, undefined, record.delimiter as never)
   await setHeaderHash(sql, record.id, table.hash)
+  if (record.delimiter === null) await setDelimiter(sql, record.id, table.delimiter)
 
   // Stammt die Tabelle aus einer Arbeitsmappe, bleibt das im Hinweis stehen:
   // "CSV" waere irrefuehrend, hochgeladen wurde eine Excel-Datei.

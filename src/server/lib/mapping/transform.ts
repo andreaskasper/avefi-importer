@@ -55,6 +55,12 @@ export interface TransformOpMeta {
   legacy?: boolean
   /** Womit die Operation ersetzt wurde. */
   replacedBy?: string
+  /**
+   * Empfohlene Stelle in der Kette (siehe OP_PHASE). Wird mitgeschickt, damit
+   * der Editor neue Konverter an der richtigen Stelle einfuegt, ohne die
+   * Reihenfolgetabelle ein zweites Mal zu fuehren.
+   */
+  phase?: number
 }
 
 /** Normdaten-Treffer, der neben dem Wert herlaeuft. */
@@ -110,8 +116,12 @@ export interface ConfirmedAuthority {
 export interface TransformContext {
   /** Die ganze Quellzeile — nur concat braucht sie. */
   row?: SourceRow
-  /** Bestaetigte Normdaten der Spalte, Schluessel ist compareForm(Quellwert). */
-  confirmed?: Record<string, ConfirmedAuthority | undefined>
+  /**
+   * Bestaetigte Normdaten der Spalte, Schluessel ist compareForm(Quellwert).
+   * Je Wert koennen mehrere Zuordnungen stehen — eine je Normdatenquelle. Die
+   * Einzelform bleibt zulaessig, damit aeltere Profile weiter greifen.
+   */
+  confirmed?: Record<string, ConfirmedAuthority | ConfirmedAuthority[] | undefined>
   resolveAuthority?: (value: string, source: string, kind: string) => AuthorityHit | null
   lookupCountry?: (value: string) => CountryHit | null
   lookupLanguage?: (value: string) => string | null
@@ -285,7 +295,9 @@ export const TRANSFORM_CATALOG: Record<string, TransformOpMeta> = {
 
 /** Operationen fuer die Auswahl im Editor — ohne die Altlasten. */
 export function transformCatalogForEditor(): TransformOpMeta[] {
-  return Object.values(TRANSFORM_CATALOG).filter((m) => m.legacy !== true)
+  return Object.values(TRANSFORM_CATALOG)
+    .filter((m) => m.legacy !== true)
+    .map((m) => ({ ...m, phase: phaseOf(m.op) }))
 }
 
 /** Loest Aliasnamen auf und liefert den heute gueltigen Operationsnamen. */
@@ -355,8 +367,89 @@ const RESOURCE_BY_SOURCE: Record<string, string> = {
   eidr: 'EIDRResource'
 }
 
+/* ------------------------------------------------------ Reihenfolge der Kette */
+
+/**
+ * Die empfohlene Stelle jedes Konverters in der Kette.
+ *
+ * Rohwert → Normalisierung → Aufteilen → Normdaten und Vokabular → Formgebung.
+ * Die Reihenfolge wird NICHT erzwungen: Die Kette ist das, was laeuft, und der
+ * Editor zeigt sie so, wie sie laeuft. Wuerde die Ausfuehrung intern
+ * umsortieren, sähe der Nutzer eine andere Reihenfolge als die gerechnete —
+ * genau die Fehlerklasse, die zwischen Vorschau und Export schon einmal Zeit
+ * gekostet hat. Vorgeschlagen und gewarnt wird trotzdem, denn die haeufigste
+ * stille Fehlbedienung ist eine Normdatenabfrage auf dem Rohwert.
+ */
+export const OP_PHASE: Readonly<Record<string, number>> = {
+  trim: 1, lowercase: 1, uppercase: 1, titlecase: 1, replace: 1, regex: 1,
+  substring: 1, number: 1, boolean: 1, year: 1, date: 1, duration: 1,
+  split: 2,
+  country: 3, language: 3, map: 3, authority: 3,
+  take: 4, join: 4, prefix: 4, suffix: 4, template: 4, concat: 4, default: 4
+}
+
+export function phaseOf(op: string): number {
+  return OP_PHASE[canonicalOp(op)] ?? 4
+}
+
+export interface ChainOrderIssue {
+  /** Index des Schritts, der zu frueh steht. */
+  at: number
+  op: string
+  /** Der Schritt, hinter den er gehoert. */
+  after: string
+}
+
+/**
+ * Nachschlagende Schritte, die vor dem stehen, was ihren Suchwert erst bildet.
+ *
+ * Beanstandet wird bewusst NUR dieser eine Fall: ein Nachschlagen (Normdaten,
+ * Laender, Sprachen, Werteliste) und danach noch eine Normalisierung oder ein
+ * Aufteilen. Dann sucht der Konverter den unbearbeiteten Wert, waehrend die
+ * Kette am Ende einen anderen liefert — das Ergebnis sieht aus wie "nichts
+ * gefunden", die harmloseste aller Fehlermeldungen.
+ *
+ * Umgekehrt ist "Leerraum entfernen" NACH "Aufteilen" voellig richtig: Der
+ * Konverter wirkt dann auf jedes Element. Eine Regel, die einfach eine feste
+ * Reihenfolge einfordert, wuerde genau das beanstanden und den Nutzer zu einer
+ * schlechteren Kette drängen.
+ */
+export function chainOrderIssues(chain: readonly TransformStep[]): ChainOrderIssue[] {
+  const out: ChainOrderIssue[] = []
+  let nachschlagen = ''
+  chain.forEach((step, at) => {
+    if (typeof step !== 'object' || step === null) return
+    const op = canonicalOp(String(step.op))
+    const phase = phaseOf(op)
+    if (phase === 3 && nachschlagen === '') nachschlagen = op
+    else if (phase < 3 && nachschlagen !== '') out.push({ at, op, after: nachschlagen })
+  })
+  return out
+}
+
 export function resourceTypeForSource(source: string): string | null {
   return RESOURCE_BY_SOURCE[source.toLowerCase()] ?? null
+}
+
+/**
+ * Die zu einer Quelle passende bestaetigte Zuordnung.
+ *
+ * Ein Eintrag ohne erkennbaren Typ stammt aus der Zeit vor der Quellzuordnung
+ * und gilt fuer die Quelle, mit der er entstanden ist: GND. Sonst waere er fuer
+ * jede Quelle zustaendig und wir haetten den alten Fehler zurueck.
+ */
+export function pickConfirmed(
+  entry: ConfirmedAuthority | readonly ConfirmedAuthority[] | undefined,
+  source: string
+): ConfirmedAuthority | undefined {
+  if (entry === undefined) return undefined
+  const list = Array.isArray(entry) ? entry : [entry as ConfirmedAuthority]
+  const wanted = resourceTypeForSource(source)
+  for (const c of list) {
+    const t = c.type.endsWith('Resource') ? c.type : resourceTypeForSource(c.type) ?? 'GNDResource'
+    if (t === wanted) return c
+  }
+  return undefined
 }
 
 /** Operationen, die eine Liste elementweise bearbeiten. */
@@ -644,8 +737,11 @@ function apply(
       const source = paramStr(p, 'source', 'gnd')
       const kind = paramStr(p, 'kind', 'person')
 
-      // Vom Menschen bestaetigte Zuordnung schlaegt die Automatik.
-      const confirmed = ctx.confirmed?.[compareForm(raw)]
+      // Vom Menschen bestaetigte Zuordnung schlaegt die Automatik — aber nur die
+      // zu DIESER Quelle. Frueher lag je Wert genau ein Eintrag ohne Quellbezug:
+      // Ein zweiter Normdatenkonverter im selben Zweig bekam den Treffer des
+      // ersten zurueck, und der Builder entdoppelte ihn weg.
+      const confirmed = pickConfirmed(ctx.confirmed?.[compareForm(raw)], source)
       if (confirmed !== undefined) {
         if (confirmed.id === '') return value // bewusst offen gelassen
         const resType = confirmed.type.endsWith('Resource')

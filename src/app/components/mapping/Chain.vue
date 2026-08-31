@@ -16,6 +16,8 @@ const props = defineProps<{
   transforms: TransformOpMeta[]
   label: string
   enumValues: string[]
+  /** Name des Vokabulars, damit Schemawerte lesbar beschriftet werden koennen. */
+  enumName?: string
   sourceValues: Array<{ value: string; count: number }>
   idBase: string
 }>()
@@ -56,9 +58,33 @@ function add(meta: TransformOpMeta) {
     if (param.type === 'columns') step.columns = []
   }
   if (meta.op === 'map' && step.fallback === undefined) step.fallback = 'keep_note'
-  props.chain.push(step)
+
+  // An die empfohlene Stelle einfuegen statt stur ans Ende: Rohwert,
+  // Normalisierung, Aufteilen, Normdaten und Vokabular, Formgebung. Wer es
+  // anders will, verschiebt den Schritt — die Kette bleibt frei. Vorgeschlagen
+  // wird nur, weil eine Normdatenabfrage hinter allem anderen fast immer
+  // gemeint ist, davor dagegen fast nie.
+  props.chain.splice(insertAt(meta), 0, step)
   close()
   emit('change')
+}
+
+function phaseOfStep(step: TransformStep): number {
+  return props.transforms.find((m) => m.op === String(step.op))?.phase ?? 4
+}
+
+/** Die erste Stelle, an der ein Schritt dieser Stufe stehen darf. */
+function insertAt(meta: TransformOpMeta): number {
+  const phase = meta.phase ?? 4
+  let at = props.chain.length
+  for (let i = 0; i < props.chain.length; i++) {
+    const step = props.chain[i]
+    if (step !== undefined && phaseOfStep(step) > phase) {
+      at = i
+      break
+    }
+  }
+  return at
 }
 
 function remove(index: number) {
@@ -116,6 +142,7 @@ onBeforeUnmount(() => {
 
     <div v-for="(step, i) in chain" :key="`${idBase}-${i}`" style="position:relative">
       <MappingStep :step="step" :meta="metaOf(String(step.op))" :columns="columns" :enum-values="enumValues"
+                   :enum-name="enumName ?? ''"
                    :source-values="sourceValues" :id-base="`${idBase}-s${i}`" :position="i + 1"
                    @change="emit('change')" @remove="remove(i)" />
       <div v-if="chain.length > 1" style="display:flex;gap:4px;margin:-4px 0 7px">

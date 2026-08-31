@@ -76,7 +76,8 @@
       "add": "weiteres Ziel für diese Spalte",
       "addHint": "Eine Spalte darf mehrfach landen: gemeinsame Kette oben, je Zweig eigene Kette und eigenes Ziel.",
       "unknownTarget": "Ziel unbekannt",
-      "addLabel": "Weiteres Ziel für diese Spalte hinzufügen"
+      "addLabel": "Weiteres Ziel für diese Spalte hinzufügen",
+      "preValue": "Wert nach den Konvertern für alle Ziele dieser Spalte"
     },
     "chain": {
       "slow": "langsam",
@@ -110,7 +111,8 @@
       "srHint": "Hinweis:",
       "goto": "Zu Spalte „{column}“ springen",
       "applyFix": "Vorschlag „{op}“ übernehmen",
-      "policy": "Blockiert wird nur, was strukturell nicht geht. Vorschläge werden angeboten und nie von selbst angewendet."
+      "policy": "Blockiert wird nur, was strukturell nicht geht. Vorschläge werden angeboten und nie von selbst angewendet.",
+      "applyFixShort": "Vorschlag übernehmen"
     },
     "columns": {
       "heading": "Kopfzeile und Profil weichen ab.",
@@ -140,7 +142,149 @@
       "empty": "In der Stichprobe kommen keine Werte vor.",
       "prefill": "Werte aus der Datei übernehmen",
       "addLabel": "Weiteren Quellwert eintragen",
-      "add": "Hinzufügen"
+      "add": "Hinzufügen",
+      "values": {
+        "AgentTypeEnum": {
+          "CorporateBody": "Körperschaft",
+          "Family": "Familie",
+          "Person": "Person",
+          "PersonGroup": "Personengruppe"
+        },
+        "ColourTypeEnum": {
+          "BlackAndWhite": "Schwarzweiß",
+          "BlackAndWhiteTinted": "Schwarzweiß, viragiert",
+          "BlackAndWhiteTintedAndToned": "Schwarzweiß, viragiert und getont",
+          "BlackAndWhiteToned": "Schwarzweiß, getont",
+          "Colour": "Farbe",
+          "ColourBlackAndWhite": "Farbe und Schwarzweiß",
+          "Sepia": "Sepia",
+          "Tinted": "Viragiert"
+        },
+        "FrameRateEnum": {
+          "VariableFrameRate": "Wechselnde Bildfrequenz"
+        },
+        "ItemAccessStatusEnum": {
+          "Archive": "Archivexemplar",
+          "Distribution": "Verleihexemplar",
+          "Master": "Master",
+          "Removed": "Ausgesondert",
+          "Viewing": "Sichtungsexemplar"
+        },
+        "ItemElementTypeEnum": {
+          "ColourNegative": "Farbnegativ",
+          "ColourPositive": "Farbpositiv",
+          "CopperTonedPositive": "Kupfergetontes Positiv",
+          "CyanMatrix": "Cyan-Matrize",
+          "DCDM": "DCDM",
+          "DCP": "DCP",
+          "DirectBWPositive": "Direktes Schwarzweißpositiv",
+          "DuplicateNegative": "Duplikatnegativ",
+          "DuplicatePositive": "Duplikatpositiv",
+          "EditDecisionList": "Schnittliste",
+          "ImageNegative": "Bildnegativ",
+          "Lavender": "Lavendelkopie",
+          "OriginalNegative": "Originalnegativ",
+          "OriginalPositiveReversalFilm": "Originalumkehrpositiv",
+          "Positive": "Positiv",
+          "SoundNegative": "Tonnegativ",
+          "Subtitles": "Untertitel"
+        },
+        "LanguageUsageEnum": {
+          "AudioDescription": "Audiodeskription",
+          "Captions": "Untertitel für Hörende",
+          "ClosingCredits": "Abspann",
+          "Dubbed": "Synchronisation",
+          "Intertitles": "Zwischentitel",
+          "NoDialogue": "Ohne Dialog",
+          "OpeningCredits": "Vorspann",
+          "SDHSubtitles": "Untertitel für Hörgeschädigte",
+          "SignedLanguage": "Gebärdensprache",
+          "SpokenLanguage": "Gesprochene Sprache",
+          "Subtitles": "Untertitel",
+          "SungLanguage": "Gesungene Sprache",
+          "VoiceOver": "Voice-over"
+        },
+        "PrecisionEnum": {
+          "Approximate": "Ungefähr",
+          "Uncertain": "Unsicher"
+        },
+        "SoundTypeEnum": {
+          "Combined": "Bild und Ton auf einem Träger",
+          "CombinedAsMute": "Kombiniert, ohne Tonspur",
+          "CombinedAsSound": "Kombiniert, mit Tonspur",
+          "MixedSound": "Gemischter Ton",
+          "Mute": "Kopie ohne Tonspur",
+          "Silent": "Stumm gedreht",
+          "Sound": "Mit Ton",
+          "Temporary": "Vorläufiger Ton"
+        },
+        "TitleTypeEnum": {
+          "AbbreviatedTitle": "Kurztitel",
+          "AcquisitionTitle": "Zugangstitel",
+          "AlternativeTitle": "Nebentitel",
+          "CorrectedTitle": "Berichtigter Titel",
+          "PreReleaseTitle": "Titel vor der Veröffentlichung",
+          "PreferredTitle": "Bevorzugter Titel",
+          "SearchTitle": "Suchtitel",
+          "SeriesTitle": "Reihentitel",
+          "SuppliedDevisedTitle": "Zugeschriebener Titel",
+          "TitleProper": "Hauptsachtitel",
+          "TranslatedTitle": "Übersetzter Titel",
+          "TransliteratedTitle": "Umschrifttitel",
+          "WorkingTitle": "Arbeitstitel"
+        },
+        "UnitEnum": {
+          "Feet": "Fuß",
+          "Metre": "Meter",
+          "KiloByte": "Kilobyte",
+          "MegaByte": "Megabyte",
+          "GigaByte": "Gigabyte",
+          "TeraByte": "Terabyte"
+        },
+        "VariantTypeEnum": {
+          "AbridgedCondensed": "Gekürzte Fassung",
+          "Augmented": "Erweiterte Fassung",
+          "BlackAndWhiteCopyOfWorkOriginallyIssuedInColour": "Schwarzweißkopie eines ursprünglich farbigen Werks",
+          "Censored": "Zensierte Fassung",
+          "Colourized": "Nachkolorierte Fassung",
+          "DifferentSoundTrack": "Abweichende Tonspur",
+          "Dubbed": "Synchronfassung",
+          "PreservationRestoration": "Restaurierte Fassung",
+          "Sonorized": "Nachvertonte Fassung",
+          "Subtitled": "Untertitelte Fassung"
+        },
+        "WorkFormEnum": {
+          "AmateurFilm": "Amateurfilm",
+          "Compilation": "Kompilation",
+          "Documentary": "Dokumentarfilm",
+          "Excerpt": "Ausschnitt",
+          "Feature": "Langfilm",
+          "Featurette": "Mittellangfilm",
+          "Fiction": "Spielfilm",
+          "HomeMovie": "Familienfilm",
+          "Outtake": "Ausschussmaterial",
+          "ScreenTest": "Probeaufnahme",
+          "Series": "Serie",
+          "Short": "Kurzfilm",
+          "StockFootage": "Archivmaterial",
+          "Trailer": "Trailer",
+          "UneditedFootage": "Ungeschnittenes Material",
+          "AnthologyFilm": "Episodenfilm",
+          "Commercial": "Werbefilm",
+          "EducationalFilm": "Lehrfilm",
+          "EssayFilm": "Essayfilm",
+          "ExperimentalFilm": "Experimentalfilm",
+          "IndustrialFilm": "Industriefilm",
+          "MusicVideo": "Musikvideo",
+          "Newsreel": "Wochenschau"
+        },
+        "WorkVariantTypeEnum": {
+          "Analytic": "Unselbstständiger Teil",
+          "Collection": "Sammlung",
+          "Monographic": "Einzelwerk",
+          "Serial": "Fortlaufendes Werk"
+        }
+      }
     },
     "authority": {
       "heading": "Normdaten aus {source}",
@@ -156,7 +300,35 @@
       "take": "Übernehmen",
       "leaveOpen": "Bewusst offen lassen",
       "cancel": "Abbrechen",
-      "close": "Schließen"
+      "close": "Schließen",
+      "listLabel": "Werte der Spalte „{column}“ für den Abgleich mit {source}",
+      "count": "{n}×",
+      "assignFor": "„{value}“ zuordnen",
+      "resetFor": "Zuordnung für „{value}“ zurücksetzen",
+      "openCount": "{n} von {all} Werten warten auf eine Entscheidung.",
+      "pageLink": "Alle Normdaten dieses Profils",
+      "pageTitle": "Normdaten zuordnen",
+      "pageIntro": "Alle Werte, zu denen dieses Profil Normdaten sucht — mit Häufigkeit und Stand der Zuordnung. Bestätigte Zuordnungen gelten vor der Automatik und bleiben im Profil erhalten.",
+      "pageEmpty": "In diesem Profil sucht kein Konverter nach Normdaten.",
+      "pageOpen": "{n} von {all} Werten warten auf eine Entscheidung.",
+      "groupHeading": "Spalte „{column}“ → {source}",
+      "groupSource": "Quelle {source}, gesucht wird nach {kind}",
+      "groupShared": "gemeinsame Kette, gilt für alle Zweige",
+      "filterOpen": "Nur offene zeigen",
+      "saved": "Gespeichert.",
+      "saveFailed": "Speichern nicht möglich.",
+      "save": "Zuordnungen speichern",
+      "backToEditor": "Zurück zum Zuordnungseditor",
+      "skipGroup": "{n} Werte dieser Gruppe überspringen",
+      "groupKind": "Gesucht wird nach {kind}, Ziel: {target}",
+      "kind": {
+        "corporate": "Körperschaft",
+        "genre": "Genre",
+        "person": "Person",
+        "place": "Ort",
+        "subject": "Schlagwort",
+        "work": "Werk"
+      }
     },
     "idorigin": {
       "label": "Normdaten-ID {id}",

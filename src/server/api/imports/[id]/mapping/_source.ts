@@ -38,7 +38,8 @@ export async function importSource(event: H3Event): Promise<ImportSource> {
 
   let table
   try {
-    table = await readTable(path, row.base_format)
+    // Mit dem festgehaltenen Trennzeichen, nicht mit einem neu geratenen.
+    table = await readTable(path, row.base_format, undefined, row.delimiter as never)
   } catch (e) {
     throw fail(422, 'table_unreadable', { detail: e instanceof Error ? e.message : String(e) },
       'Tabelle nicht lesbar.')

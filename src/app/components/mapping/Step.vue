@@ -15,6 +15,7 @@ const props = defineProps<{
   columns: string[]
   /** Zulaessige Zielwerte, falls das Ziel ein kontrolliertes Vokabular hat. */
   enumValues: string[]
+  enumName?: string
   sourceValues: Array<{ value: string; count: number }>
   idBase: string
   position: number
@@ -97,7 +98,8 @@ function paramId(param: TransformParamSpec): string {
       <div v-for="param in params" :key="param.name" class="step-param">
         <template v-if="param.type === 'map' && enumValues.length > 0">
           <span class="step-plabel">{{ paramLabel(param) }}</span>
-          <MappingVocabulary :step="step" :enum-values="enumValues" :source-values="sourceValues"
+          <MappingVocabulary :step="step" :enum-values="enumValues" :enum-name="enumName ?? ''"
+                             :source-values="sourceValues"
                              :id-base="paramId(param)" @change="emit('change')" />
         </template>
 

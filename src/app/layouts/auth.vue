@@ -14,7 +14,7 @@ function toggleTheme() {
 <template>
   <div class="auth-page">
     <slot />
-    <button class="ghost" :title="t('theme.switch')" :aria-label="t('theme.switch')"
+    <button type="button" class="ghost" :title="t('theme.switch')" :aria-label="t('theme.switch')"
             style="position:fixed;top:16px;right:16px" @click="toggleTheme">◐ {{ t('theme.label') }}</button>
   </div>
 </template>

@@ -36,6 +36,8 @@ export interface TransformOpMeta {
   slow?: boolean
   legacy?: boolean
   replacedBy?: string
+  /** Empfohlene Stelle in der Kette — kommt vom Server, damit es eine Tabelle bleibt. */
+  phase?: number
 }
 
 export interface MappingCheck extends ValidationIssue {
@@ -103,6 +105,8 @@ export interface PreviewExample {
   row: number
   raw: string
   count: number
+  /** Der Wert nach der gemeinsamen Kette — die Zwischenstufe der Herkunft. */
+  pre: string
   outputs: CellOutput[]
   errors: string[]
 }
@@ -168,4 +172,30 @@ export interface AuthorityRequest {
   value: string
   source: string
   kind: string
+}
+
+/** Ein Wert des Normdaten-Wertevorrats samt Stand seiner Zuordnung. */
+export interface AuthorityValue {
+  value: string
+  count: number
+  state: 'offen' | 'bestaetigt' | 'verworfen'
+  id?: string
+  label?: string
+}
+
+/** Alle Werte eines Zweigs, zu denen Normdaten gesucht werden. */
+export interface AuthorityGroup {
+  column: string
+  /** Index des Zweigs, -1 fuer die gemeinsame Kette vor der Verzweigung. */
+  branch: number
+  target: string
+  source: string
+  kind: string
+  values: AuthorityValue[]
+}
+
+export interface AuthorityValuesResponse {
+  profile?: { id: number; name: string }
+  groups: AuthorityGroup[]
+  open: number
 }

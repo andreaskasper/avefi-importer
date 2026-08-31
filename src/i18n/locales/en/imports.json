@@ -66,7 +66,9 @@
       "awaiting_sheet_choice": "Choose a sheet",
       "converted": "Converted",
       "error": "Failed",
-      "unknown": "Unknown"
+      "unknown": "Unknown",
+      "stale": "outdated",
+      "staleHint": "This result was produced with version {ran} of the mapping profile; the profile is now at version {now}. Re-converting brings it up to date."
     },
     "action": {
       "details": "Details",

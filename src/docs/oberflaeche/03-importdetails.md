@@ -1,7 +1,7 @@
 # Importdetails
 
-Adresse: `/imports/3add506d-a500-4607-9f11-7e39714fffce`  
-Seitentitel im Browser: „neu_UPB_Archiv_Test_Kopie.csv · Details · AVefi Importer"  
+Adresse: `/imports/3688f8d9-7ad2-4b27-abf0-04cd17740fea`  
+Seitentitel im Browser: „20240829_ItemExport_1_utf8.csv · Details · AVefi Importer"  
 Sprache des Dokuments: `de`
 
 Ein einzelner Import mit seinem Stand und den Wegen weiter zu Zuordnung, Datensaetzen und Bericht.
@@ -19,7 +19,7 @@ In Dokumentreihenfolge, also so, wie sie beim Wandern ueber die Bereiche kommen:
 
 ### Ueberschriften
 
-- Stufe 1: „neu_UPB_Archiv_Test_Kopie.csv"
+- Stufe 1: „20240829_ItemExport_1_utf8.csv"
 - Stufe 2: „Was jetzt zu tun ist"
 - Stufe 2: „Eckdaten"
 - Stufe 2: „Herunterladen"
@@ -32,7 +32,7 @@ So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die
 2. „Zur Startseite" — Link, im banner
 3. „Importe" — Link, im navigation „Hauptnavigation". als aktuell ausgezeichnet
 4. „Zuordnungen" — Link, im navigation „Hauptnavigation"
-5. „Format-Review 9 offene Aufgaben" — Link, im navigation „Hauptnavigation"
+5. „Format-Review 10 offene Aufgaben" — Link, im navigation „Hauptnavigation"
 6. „Design wechseln" — Schaltflaeche, im banner
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 8. „Importe" — Link, im navigation „Details"
@@ -40,8 +40,9 @@ So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die
 10. „Datensätze bearbeiten" — Link, im main
 11. „Prüfbericht öffnen" — Link, im main
 12. „Zuordnung bearbeiten" — Link, im main
-13. „Original herunterladen" — Link, im main
-14. „AVefi-JSON herunterladen" — Link, im main
+13. „Prüfbericht öffnen" — Link, im main
+14. „Original herunterladen" — Link, im main
+15. „Zwischenstand herunterladen (nicht validiert)" — Link, im main
 
 ### Formularfelder
 
@@ -56,7 +57,7 @@ Keine Tabellen.
 Das wird angesagt, ohne dass die Seite wechselt:
 
 - Statusbereich (status), Ansageart polite (aus role).
-  Aktueller Inhalt: „Der Import ist konvertiert. Die Datensätze lassen sich bearbeiten, der Prüfbericht zeigt Beanstandungen, und die AVefi-JSON steht zum Herunterladen bereit. Da…".
+  Aktueller Inhalt: „Der Import ist konvertiert, aber es gibt Beanstandungen. 75 Fehler und 0 Warnungen stehen im Prüfbericht — mit Zeile beziehungsweise Datensatz und betroffenem…".
 - Statusbereich (status), Ansageart polite.
   Aktueller Inhalt: leer, meldet also gerade nichts.
 
@@ -68,7 +69,9 @@ Mit Alternativtext:
 
 ### Auffaelligkeiten
 
-Nichts, was beim Bedienen im Weg steht.
+Was beim Bedienen stoert. Das ist eine Beschreibung, keine Wertung nach WCAG — die maschinelle Pruefung steht in `tests/a11y/axe.mjs`.
+
+- 2 mal derselbe Name „Prüfbericht öffnen" als Link im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 
 ## Teil 2 — Wie es raeumlich angeordnet ist
 

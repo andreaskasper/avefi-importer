@@ -36,9 +36,22 @@ export interface ImportListItem {
   hasAvefi: boolean
   /** false = der Stand ist nicht gegen das Schema geprueft und darf nur zur Fehlersuche herunter. */
   validated: boolean
+  /**
+   * Das Ergebnis stammt aus einer aelteren Fassung des Mappingprofils.
+   *
+   * Abgeleitet, nicht gespeichert: verglichen wird die Fassung, mit der
+   * konvertiert wurde, mit der Fassung, die das Profil heute hat. Ein
+   * gespeichertes Kennzeichen wuerde driften, sobald jemand ein Profil aendert,
+   * ohne dass Importcode laeuft — und Profile sind hier institutionsuebergreifend
+   * sichtbar. Ein abgeleiteter Zustand kann das nicht.
+   */
+  stale: boolean
+  /** Fassung, mit der konvertiert wurde, und die heutige Fassung des Profils. */
+  ranWithVersion: number | null
+  profileVersion: number | null
 }
 
-export function toListItem(row: ImportRow, edited: number): ImportListItem {
+export function toListItem(row: ImportRow, edited: number, profileVersion: number | null = null): ImportListItem {
   const report = row.report_json as (ImportRow['report_json'] & { stage?: string; sheets?: unknown[] }) | null
   const issues: Record<Severity, number> = { error: 0, warning: 0, info: 0 }
   for (const issue of report?.issues ?? []) issues[issue.severity] = (issues[issue.severity] ?? 0) + 1
@@ -68,7 +81,13 @@ export function toListItem(row: ImportRow, edited: number): ImportListItem {
     hasMapping: row.mapping_profile_id !== null,
     canReconvert: settled && (row.mapping_profile_id !== null || row.format_profile_id !== null),
     hasAvefi,
-    validated: converted && issues.error === 0
+    validated: converted && issues.error === 0,
+    stale: settled
+      && row.mapping_version !== null
+      && profileVersion !== null
+      && profileVersion !== row.mapping_version,
+    ranWithVersion: row.mapping_version,
+    profileVersion
   }
 }
 
@@ -80,7 +99,21 @@ export default defineEventHandler(async (event) => {
     editedCounts(sql, user.institution_id)
   ])
 
-  const imports = rows.map((r) => toListItem(r, edited[r.id] ?? 0))
+  // Die heutigen Fassungen der beteiligten Profile — daraus faellt ab, welche
+  // Ergebnisse noch zum aktuellen Stand passen.
+  const ids = [...new Set(rows.map((r) => r.mapping_profile_id).filter((id): id is number => id !== null))]
+  const versions = new Map<number, number>()
+  if (ids.length > 0) {
+    const found = await sql<Array<{ id: number; version: number }>>`
+      SELECT id, version FROM mapping_profiles WHERE id = ANY(${ids})`
+    for (const p of found) versions.set(p.id, p.version)
+  }
+
+  const imports = rows.map((r) => toListItem(
+    r,
+    edited[r.id] ?? 0,
+    r.mapping_profile_id !== null ? versions.get(r.mapping_profile_id) ?? null : null
+  ))
   return {
     imports,
     kpi: {

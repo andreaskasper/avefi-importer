@@ -184,6 +184,9 @@ try {
     '/mappings',
     zumProfil,
     zumProfil === null ? null : `${zumProfil}/edit`,
+    // Die Normdatenseite ist der zweite Ort, an dem Zuordnungen entstehen —
+    // sie gehoert genauso geprueft wie der Editor.
+    zumProfil === null ? null : `${zumProfil}/normdaten`,
     '/mappings/new',
     '/reviews',
     zurPruefung,
@@ -317,7 +320,9 @@ try {
       await jsonKnopf.click()
       await seite.waitForTimeout(600)
     }
-    for (const reiter of ['manifestations', 'items']) {
+    // Seit dem 31.08. gibt es zwei Reiter: Werk und Aufbau. Die Exemplare
+    // stehen im Aufbau unter ihrer Fassung, nicht mehr in einem eigenen Reiter.
+    for (const reiter of ['structure']) {
       const knopf = seite.locator(`#tab-${reiter}`)
       if (await knopf.count()) {
         await knopf.click()

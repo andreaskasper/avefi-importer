@@ -21,6 +21,7 @@ import {
   type MappingServices,
   type RunTally
 } from '../mapping/runner'
+import { authorityServices } from '../authority/services.js'
 import type { CanonicalRecord } from './types'
 
 export interface RowOutcome {
@@ -63,7 +64,7 @@ export class ProfileRun {
 
   /** Welche Werte muessen nachgeschlagen werden? Gerechnet wird im Kern. */
   collectAuthorities(rows: readonly SourceRow[]): AuthorityRequest[] {
-    return collectAuthorityLookups(this.mapping, rows)
+    return collectAuthorityLookups(this.mapping, rows, authorityServices())
   }
 
   runRow(row: SourceRow, baseId: string, rowNumber: number): RowOutcome {

@@ -16,6 +16,8 @@ import type { TransformStep } from './types'
 const props = defineProps<{
   step: TransformStep
   enumValues: string[]
+  /** Name des Vokabulars im Schema, z. B. ColourTypeEnum. */
+  enumName?: string
   /** Werte der Quelle mit Haeufigkeit. */
   sourceValues: Array<{ value: string; count: number }>
   idBase: string
@@ -23,6 +25,10 @@ const props = defineProps<{
 
 const emit = defineEmits<{ change: [] }>()
 const { t } = useI18n()
+
+// Technische Schemawerte gehoeren nicht ungefiltert in die Oberflaeche. Der
+// Wert bleibt sichtbar, aber hinter der lesbaren Beschriftung.
+const { labelWithCode } = useVocabLabel()
 
 const added = ref<string[]>([])
 const manual = ref('')
@@ -107,7 +113,9 @@ function prefill() {
                     @change="set(row.value, ($event.target as HTMLSelectElement).value)">
               <option value="">{{ t('mapping.vocab.unmapped') }}</option>
               <option v-if="row.invalid" :value="row.target">{{ row.target }} ({{ t('mapping.vocab.notInSchema') }})</option>
-              <option v-for="v in enumValues" :key="v" :value="v">{{ v }}</option>
+              <option v-for="v in enumValues" :key="v" :value="v">
+                {{ labelWithCode(enumName ?? '', v) }}
+              </option>
             </select>
           </td>
         </tr>

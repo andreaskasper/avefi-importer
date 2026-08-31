@@ -19,7 +19,7 @@ import {
   addSameAs, emptyActivity, emptyEntity, emptyEvent, emptyIdentifier, emptyItem,
   emptyLanguage, emptyManifestation, emptyTitle, emptyValue, nextKey, parseRecord,
   serializeRecord, splitMatches, DEFAULT_ALT_TITLE_TYPE, DEFAULT_PRIMARY_TITLE_TYPE,
-  type UiIdentifier, type UiRecord, type UiValue
+  type UiIdentifier, type UiItem, type UiManifestation, type UiRecord, type UiValue
 } from '~/components/records/model'
 import type {
   AuthoritySearchResponse, CheckResponse, EditorConfig, RecordDetailResponse, SaveResponse
@@ -47,7 +47,7 @@ const loadError = computed(() => {
 
 const ui = ref<UiRecord | null>(null)
 const baseline = ref('')
-const tab = ref<'work' | 'manifestations' | 'items'>('work')
+const tab = ref<'work' | 'structure'>('work')
 const showJson = ref(false)
 
 function build() {
@@ -279,7 +279,81 @@ function inItem(index: number, text: string) {
   return t('records.editor.aria.inScope', { scope, text })
 }
 
-const tabs = ['work', 'manifestations', 'items'] as const
+/* ------------------------------------------- Fassung, Exemplar, Zugehoerigkeit */
+
+/*
+ * Ein Exemplar gehoert zu genau einer Fassung. Das AVefi-Schema haelt diese
+ * Beziehung in is_item_of fest, und der Import setzt sie auch — sichtbar war
+ * sie nur nirgends, weil Werk, Fassung und Exemplar als drei gleichrangige
+ * Reiter nebeneinander standen. Gelesen und geschrieben wird hier deshalb
+ * genau dieses Feld; erfunden wird nichts.
+ */
+
+/** Die lokale Kennung einer Fassung — daran haengen ihre Exemplare. */
+function manifestationId(m: UiManifestation): string {
+  const local = m.identifiers.find((x) => x.resourceType === 'LocalResource' && x.id.trim() !== '')
+  if (local !== undefined) return local.id.trim()
+  const list = (m.raw as Record<string, unknown>).has_identifier
+  if (Array.isArray(list)) {
+    for (const entry of list) {
+      if (typeof entry === 'object' && entry !== null) {
+        const id = String((entry as Record<string, unknown>).id ?? '').trim()
+        if (id !== '') return id
+      }
+    }
+  }
+  return ''
+}
+
+/** Zu welcher Fassung gehoert dieses Exemplar? Leer heisst: zu keiner. */
+function itemParent(it: UiItem): string {
+  const link = (it.raw as Record<string, unknown>).is_item_of
+  if (typeof link !== 'object' || link === null) return ''
+  const one = Array.isArray(link) ? link[0] : link
+  if (typeof one !== 'object' || one === null) return ''
+  return String((one as Record<string, unknown>).id ?? '').trim()
+}
+
+function itemsOf(m: UiManifestation): UiItem[] {
+  const id = manifestationId(m)
+  if (id === '') return []
+  return (ui.value?.items ?? []).filter((it) => itemParent(it) === id)
+}
+
+/**
+ * Exemplare ohne erkennbare Fassung.
+ *
+ * Sie werden nicht stillschweigend der ersten Fassung untergeschoben: Wo die
+ * Quelldatei keine Zuordnung hergibt, ist das eine Aussage ueber die Daten und
+ * keine, die die Oberflaeche treffen darf.
+ */
+const orphanItems = computed<UiItem[]>(() => {
+  const bekannt = new Set((ui.value?.manifestations ?? []).map(manifestationId).filter((x) => x !== ''))
+  return (ui.value?.items ?? []).filter((it) => {
+    const parent = itemParent(it)
+    return parent === '' || !bekannt.has(parent)
+  })
+})
+
+/** Ein neues Exemplar entsteht unter der Fassung, unter der man es anlegt. */
+function addItemTo(m: UiManifestation) {
+  if (ui.value === null) return
+  const neu = emptyItem(ui.value.work.titles[0]?.has_name ?? '')
+  const id = manifestationId(m)
+  if (id !== '') (neu.raw as Record<string, unknown>).is_item_of = { category: 'avefi:LocalResource', id }
+  ui.value.items.push(neu)
+}
+
+/** Ein Exemplar einer Fassung zuordnen. */
+function assignItem(it: UiItem, index: string) {
+  const m = ui.value?.manifestations[Number(index)]
+  if (m === undefined) return
+  const id = manifestationId(m)
+  if (id === '') return
+  ;(it.raw as Record<string, unknown>).is_item_of = { category: 'avefi:LocalResource', id }
+}
+
+const tabs = ['work', 'structure'] as const
 function onTabKey(e: KeyboardEvent, index: number) {
   if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
   e.preventDefault()
@@ -413,10 +487,8 @@ function backToList() {
                 :aria-controls="`panel-${name}`" :tabindex="tab === name ? 0 : -1"
                 @click="tab = name" @keydown="onTabKey($event, i)">
           <template v-if="name === 'work'">{{ t('records.editor.tabs.work') }}</template>
-          <template v-else-if="name === 'manifestations'">
-            {{ t('records.editor.tabs.manifestations', { count: ui.manifestations.length }) }}
-          </template>
-          <template v-else>{{ t('records.editor.tabs.items', { count: ui.items.length }) }}</template>
+          <template v-else>{{ t('records.editor.tabs.structure', {
+            manifestations: ui.manifestations.length, items: ui.items.length }) }}</template>
         </button>
       </div>
 
@@ -603,8 +675,9 @@ function backToList() {
       </section>
 
       <!-- FASSUNGEN -->
-      <section v-show="tab === 'manifestations'" id="panel-manifestations" class="ed-tabpanel" role="tabpanel"
-               aria-labelledby="tab-manifestations" tabindex="0">
+      <section v-show="tab === 'structure'" id="panel-structure" class="ed-tabpanel" role="tabpanel"
+               aria-labelledby="tab-structure" tabindex="0">
+        <p class="note">{{ t('records.editor.structure.lead') }}</p>
         <p v-if="ui.manifestations.length === 0" class="dim">{{ t('records.editor.manifestation.empty') }}</p>
         <div v-for="(m, i) in ui.manifestations" :key="m.key" class="ed-card">
           <div class="ed-card-head">
@@ -648,118 +721,55 @@ function backToList() {
             <span aria-hidden="true">+</span> {{ t('records.editor.work.addNote') }}
           </button>
           <p class="note">{{ t('records.editor.manifestation.kept') }}</p>
+
+          <!-- Die Exemplare DIESER Fassung, eingerueckt darunter. Ein Exemplar
+               gehoert zu genau einer Fassung; als gleichrangiger Reiter war
+               diese Beziehung unsichtbar. -->
+          <div class="ed-children">
+            <h3 class="ed-childhead">
+              {{ t('records.editor.structure.itemsOf', {
+                manifestation: i + 1, count: itemsOf(m).length }) }}
+            </h3>
+            <RecordsItemCard v-for="(it, j) in itemsOf(m)" :key="it.key" :item="it" :index="ui.items.indexOf(it)"
+                             :heading="t('records.editor.structure.itemHeading', {
+                               index: j + 1, manifestation: i + 1 })"
+                             :enums="enums" :resource-types="resourceTypes"
+                             @remove="removeAt(ui.items, ui.items.indexOf(it))" />
+            <button type="button" class="btn btn-outline btn-sm"
+                    :aria-label="inManifestation(i, t('records.editor.item.add'))"
+                    @click="addItemTo(m)">
+              <span aria-hidden="true">+</span> {{ t('records.editor.item.add') }}
+            </button>
+          </div>
         </div>
+
         <button type="button" class="btn btn-outline"
                 @click="ui.manifestations.push(emptyManifestation(ui.work.titles[0]?.has_name ?? ''))">
           <span aria-hidden="true">+</span> {{ t('records.editor.manifestation.add') }}
         </button>
-      </section>
 
-      <!-- EXEMPLARE -->
-      <section v-show="tab === 'items'" id="panel-items" class="ed-tabpanel" role="tabpanel"
-               aria-labelledby="tab-items" tabindex="0">
-        <p v-if="ui.items.length === 0" class="dim">{{ t('records.editor.item.empty') }}</p>
-        <div v-for="(it, i) in ui.items" :key="it.key" class="ed-card">
-          <div class="ed-card-head">
-            <h2>{{ t('records.editor.item.heading', { index: i + 1 }) }}</h2>
-            <button type="button" class="iconbtn-del"
-                    :aria-label="t('records.editor.item.remove', { index: i + 1 })"
-                    @click="removeAt(ui.items, i)"><span aria-hidden="true">🗑</span></button>
+        <!-- Exemplare ohne Fassung: nicht verstecken, sondern benennen. Sie
+             entstehen, wenn eine Quelldatei keine Zuordnung hergibt. -->
+        <section v-if="orphanItems.length > 0" class="ed-orphans">
+          <h2>{{ t('records.editor.structure.orphanHeading', { count: orphanItems.length }) }}</h2>
+          <p class="note">{{ t('records.editor.structure.orphanLead') }}</p>
+          <div v-for="it in orphanItems" :key="it.key" class="ed-orphan">
+            <RecordsItemCard :item="it" :index="ui.items.indexOf(it)"
+                             :heading="t('records.editor.structure.orphanItemHeading', {
+                               index: orphanItems.indexOf(it) + 1 })"
+                             :enums="enums" :resource-types="resourceTypes"
+                             @remove="removeAt(ui.items, ui.items.indexOf(it))" />
+            <label v-if="ui.manifestations.length > 0" class="ed-assign">
+              {{ t('records.editor.structure.assign') }}
+              <select class="input" :value="''" @change="assignItem(it, ($event.target as HTMLSelectElement).value)">
+                <option value="">{{ t('records.editor.structure.assignNone') }}</option>
+                <option v-for="(m, mi) in ui.manifestations" :key="m.key" :value="String(mi)">
+                  {{ t('records.editor.manifestation.heading', { index: mi + 1 }) }}
+                </option>
+              </select>
+            </label>
           </div>
-          <div class="ed-title-row">
-            <input v-model="it.title.has_name" class="input" type="text"
-                   :aria-label="t('records.editor.item.title')" :placeholder="t('records.editor.item.title')">
-            <RecordsEnumSelect :id="`i-title-type-${it.key}`" v-model="it.title.type" :values="enums('TitleTypeEnum')"
-                               :label="t('records.editor.work.titleType')" />
-          </div>
-          <div class="ed-grid2">
-            <div class="ed-f">
-              <label :for="`i-element-${it.key}`">{{ t('records.editor.item.elementType') }}</label>
-              <RecordsEnumSelect :id="`i-element-${it.key}`" v-model="it.element_type"
-                                 :values="enums('ItemElementTypeEnum')" />
-            </div>
-            <div class="ed-f">
-              <label :for="`i-colour-${it.key}`">{{ t('records.editor.item.colour') }}</label>
-              <RecordsEnumSelect :id="`i-colour-${it.key}`" v-model="it.has_colour_type"
-                                 :values="enums('ColourTypeEnum')" />
-            </div>
-            <div class="ed-f">
-              <label :for="`i-sound-${it.key}`">{{ t('records.editor.item.sound') }}</label>
-              <RecordsEnumSelect :id="`i-sound-${it.key}`" v-model="it.has_sound_type"
-                                 :values="enums('SoundTypeEnum')" />
-            </div>
-            <div class="ed-f">
-              <label :for="`i-frame-${it.key}`">{{ t('records.editor.item.frameRate') }}</label>
-              <RecordsEnumSelect :id="`i-frame-${it.key}`" v-model="it.has_frame_rate"
-                                 :values="enums('FrameRateEnum')" />
-            </div>
-            <div class="ed-f">
-              <label :for="`i-access-${it.key}`">{{ t('records.editor.item.access') }}</label>
-              <RecordsEnumSelect :id="`i-access-${it.key}`" v-model="it.has_access_status"
-                                 :values="enums('ItemAccessStatusEnum')" />
-            </div>
-            <div class="ed-f">
-              <label :for="`i-duration-${it.key}`">{{ t('records.editor.item.duration') }}</label>
-              <input :id="`i-duration-${it.key}`" v-model="it.duration" class="input" type="text"
-                     :aria-describedby="`i-duration-hint-${it.key}`" placeholder="PT01H30M00S">
-              <span :id="`i-duration-hint-${it.key}`" class="note">{{ t('records.editor.item.durationHint') }}</span>
-            </div>
-          </div>
-
-          <div class="ed-sub">
-            <span class="ed-sublabel">{{ t('records.editor.item.languages') }}</span>
-            <div v-for="(lang, j) in it.languages" :key="lang.key" class="ed-title-row">
-              <RecordsEnumSelect :id="`i-lang-${lang.key}`" v-model="lang.code" :values="enums('LanguageCodeEnum')"
-                                 :label="t('records.editor.item.language')"
-                                 :placeholder="t('records.editor.item.language')" />
-              <RecordsEnumSelect :id="`i-langusage-${lang.key}`" v-model="lang.usage"
-                                 :values="enums('LanguageUsageEnum')"
-                                 :label="t('records.editor.item.languageUsage')"
-                                 :placeholder="t('records.editor.item.languageUsage')" />
-              <button type="button" class="iconbtn-del"
-                      :aria-label="inItem(i, t('records.editor.item.removeLanguage', { index: j + 1 }))"
-                      @click="removeAt(it.languages, j)"><span aria-hidden="true">🗑</span></button>
-            </div>
-            <button type="button" class="btn btn-outline btn-sm"
-                    :aria-label="inItem(i, t('records.editor.item.addLanguage'))"
-                    @click="it.languages.push(emptyLanguage())">
-              <span aria-hidden="true">+</span> {{ t('records.editor.item.addLanguage') }}
-            </button>
-          </div>
-
-          <div v-for="(id, j) in it.identifiers" :key="id.key" class="ed-title-row">
-            <select v-model="id.resourceType" class="input" :aria-label="t('records.editor.work.identifierType')">
-              <option v-for="name in resourceTypes" :key="name" :value="name">
-                {{ te(`records.editor.resource.${name}`) ? t(`records.editor.resource.${name}`) : name }}
-              </option>
-            </select>
-            <input v-model="id.id" class="input" type="text" :aria-label="t('records.editor.work.identifier')">
-            <button type="button" class="iconbtn-del"
-                    :aria-label="inItem(i, t('records.editor.work.removeIdentifier', { index: j + 1 }))"
-                    @click="removeAt(it.identifiers, j)"><span aria-hidden="true">🗑</span></button>
-          </div>
-          <button type="button" class="btn btn-outline btn-sm"
-                  :aria-label="inItem(i, t('records.editor.work.addIdentifier'))"
-                  @click="addIdentifier(it.identifiers)">
-            <span aria-hidden="true">+</span> {{ t('records.editor.work.addIdentifier') }}
-          </button>
-
-          <div v-for="(note, j) in it.notes" :key="note.key" class="ed-title-row" style="margin-top:8px">
-            <input v-model="note.value" class="input" type="text" :aria-label="t('records.editor.work.note')">
-            <button type="button" class="iconbtn-del"
-                    :aria-label="inItem(i, t('records.editor.work.removeNote', { index: j + 1 }))"
-                    @click="removeAt(it.notes, j)"><span aria-hidden="true">🗑</span></button>
-          </div>
-          <button type="button" class="btn btn-outline btn-sm"
-                  :aria-label="inItem(i, t('records.editor.work.addNote'))"
-                  @click="addValue(it.notes)">
-            <span aria-hidden="true">+</span> {{ t('records.editor.work.addNote') }}
-          </button>
-        </div>
-        <button type="button" class="btn btn-outline"
-                @click="ui.items.push(emptyItem(ui.work.titles[0]?.has_name ?? ''))">
-          <span aria-hidden="true">+</span> {{ t('records.editor.item.add') }}
-        </button>
+        </section>
       </section>
 
       <p style="margin-top:18px">

@@ -3,10 +3,11 @@
 import { describe, expect, it } from 'vitest'
 import type { MappingJson } from '#shared/types/domain'
 import {
-  addToTally, collectAuthorityLookups, groupingLabel, groupsWorks, hasBlocker,
+  addToTally, authorityInventory, collectAuthorityLookups, groupingLabel, groupsWorks, hasBlocker,
   mergeRecords, newRunTally, readTarget, runRow, staticCheck
 } from '../../server/lib/mapping/runner.js'
 import { emptyMapping } from '../../server/lib/mapping/profile.js'
+import { lookupCountry } from '../../server/lib/authority/countries.js'
 import { demoMapping, demoRows, step, testSchema } from './fixtures.js'
 
 const services = { schema: testSchema }
@@ -272,5 +273,82 @@ describe('Sammelbericht und Normdatenbedarf', () => {
     expect(req.length).toBe(1)
     expect(req[0]?.source).toBe('gnd')
     expect(req[0]?.values).toEqual(['joachim masannek'])
+  })
+
+  it('meldet den Bedarf JEDER Normdatenquelle eines Zweigs, nicht nur der ersten', () => {
+    // Lucas Befund vom 31.08.: Zwei Normdatenkonverter im selben Zweig, und im
+    // Export steht nur die Kennung des ersten. Ursache war nicht der Export —
+    // fuer die zweite Quelle wurde nie ein Bedarf gemeldet, also nie gesucht.
+    const m = emptyMapping(['Regie'], '1.2.3')
+    m.columns['Regie'] = {
+      pre: [
+        step({ op: 'authority', source: 'gnd', kind: 'person' }),
+        step({ op: 'authority', source: 'viaf', kind: 'person' })
+      ],
+      targets: [{ target: 'work.activity.directing', post: [] }]
+    }
+    const req = collectAuthorityLookups(m, [{ Regie: 'Joachim Masannek' }])
+    expect(req.map((r) => r.source).sort()).toEqual(['gnd', 'viaf'])
+  })
+
+  it('haelt eine bestaetigte Zuordnung nur fuer ihre eigene Quelle', () => {
+    // Der Eintrag ist GND. Fuer VIAF ist der Wert weiterhin offen — sonst
+    // bekaeme der VIAF-Konverter die GND-Kennung zurueck.
+    const m = emptyMapping(['Regie'], '1.2.3')
+    m.columns['Regie'] = {
+      pre: [
+        step({ op: 'authority', source: 'gnd', kind: 'person' }),
+        step({ op: 'authority', source: 'viaf', kind: 'person' })
+      ],
+      targets: [{ target: 'work.activity.directing', post: [] }],
+      authorities: { 'Joachim Masannek': { id: '123', type: 'GNDResource' } }
+    }
+    const req = collectAuthorityLookups(m, [{ Regie: 'Joachim Masannek' }])
+    expect(req.map((r) => r.source)).toEqual(['viaf'])
+  })
+})
+
+describe('authorityInventory', () => {
+  const inventar = () => {
+    const m = emptyMapping(['Land'], '1.2.3')
+    m.columns['Land'] = {
+      pre: [{ op: 'trim' }],
+      targets: [{ target: 'work.production.place', post: [step({ op: 'authority', source: 'gnd', kind: 'place' })] }],
+      authorities: { Deutschland: { id: '4011882-4', type: 'GNDResource', label: 'Deutschland' } }
+    }
+    return m
+  }
+
+  it('fuehrt auch seltene Werte, nicht nur die ersten drei', () => {
+    // Genau Lucas zweiter Punkt: "USA" braucht eine Entscheidung, stand aber
+    // ausserhalb der drei Beispielwerte und war damit unerreichbar.
+    const rows = [
+      { Land: 'Deutschland' }, { Land: 'Deutschland' }, { Land: 'Frankreich' },
+      { Land: 'Italien' }, { Land: 'Spanien' }, { Land: 'USA' }
+    ]
+    const groups = authorityInventory(inventar(), rows)
+    expect(groups.length).toBe(1)
+    const werte = groups[0]?.values ?? []
+    expect(werte.map((v) => v.value)).toContain('USA')
+    expect(werte[0]?.value).toBe('Deutschland')
+    expect(werte[0]?.count).toBe(2)
+  })
+
+  it('nennt den Stand jeder Zuordnung', () => {
+    const groups = authorityInventory(inventar(), [{ Land: 'Deutschland' }, { Land: 'USA' }])
+    const werte = groups[0]?.values ?? []
+    expect(werte.find((v) => v.value === 'Deutschland')?.state).toBe('bestaetigt')
+    expect(werte.find((v) => v.value === 'Deutschland')?.id).toBe('4011882-4')
+    expect(werte.find((v) => v.value === 'USA')?.state).toBe('offen')
+  })
+
+  it('rechnet die Kette vor dem Nachschlagen — gefragt wird der normalisierte Wert', () => {
+    const m = emptyMapping(['Land'], '1.2.3')
+    m.columns['Land'] = {
+      pre: [step({ op: 'country', unknown: 'keep' })],
+      targets: [{ target: 'work.production.place', post: [step({ op: 'authority', source: 'gnd', kind: 'place' })] }]
+    }
+    const groups = authorityInventory(m, [{ Land: 'DE' }], { lookupCountry }, 50)
+    expect(groups[0]?.values.map((v) => v.value)).toEqual(['Deutschland'])
   })
 })

@@ -59,7 +59,8 @@ function percent(entry: { filled: number; total: number }): number {
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
         <h1 style="font-size:19px">{{ t('imports.report.heading') }}</h1>
         <span v-if="item.base_format" class="fmt">{{ item.base_format.toUpperCase() }}</span>
-        <ImportsStatusBadge :status="item.status" />
+        <ImportsStatusBadge :status="item.status" :stale="item.stale"
+                              :ran-with-version="item.ranWithVersion" :profile-version="item.profileVersion" />
         <span class="dim small">{{ item.filename }}</span>
         <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
           <NuxtLink class="btn btn-outline btn-sm" :to="`/imports/${item.id}`">{{ t('imports.menu.detail') }}</NuxtLink>

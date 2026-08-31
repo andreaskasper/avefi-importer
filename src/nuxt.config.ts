@@ -1,3 +1,5 @@
+import tailwindcss from '@tailwindcss/vite'
+
 // AVefi Importer — Nuxt-Konfiguration.
 //
 // Trennung nach Vertrag (Anlage „Integration und Kompatibilitaet"):
@@ -89,6 +91,10 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    // Tailwind 4 und daisyUI 5 — dieselbe Grundlage wie das AVefi-Frontend.
+    // Das Aussehen kommt damit aus einem gemeinsamen Designsystem statt aus
+    // einem eigenen Theme, das neben AVefi steht und mit ihm auseinanderlaeuft.
+    plugins: [tailwindcss()],
     server: {
       // Zugriff ueber die Traefik-Domain im Entwicklungsmodus erlauben
       allowedHosts: true,

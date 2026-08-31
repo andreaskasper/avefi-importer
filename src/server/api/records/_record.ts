@@ -7,7 +7,7 @@
  */
 import type { AvefiNode, AvefiRecord, RecordRow, ValidationIssue } from '#shared/types/domain'
 import type { SourceInfo } from '../../lib/converters/types'
-import { completenessIssues, ringClass } from '../../lib/mapping/index'
+import { completenessIssues, coreScore, ringClass } from '../../lib/mapping/index'
 import { fail } from '../imports/_lib'
 
 function asNode(v: unknown): AvefiNode {
@@ -72,6 +72,11 @@ export interface RecordListItem {
   manifestations: number
   items: number
   completeness: number
+  /**
+   * Belegte Kernfelder statt eines Prozentwerts: benannte Angaben, keine
+   * Bewertung der Daten eines Hauses.
+   */
+  core: { filled: number; total: number; missing: string[] }
   ring: string
   contributors: string[]
   sourceRow: number | null
@@ -93,6 +98,7 @@ export function toListItem(row: RecordRow): RecordListItem {
     manifestations: row.manifestation_count,
     items: row.item_count,
     completeness: row.completeness,
+    core: coreScore(record),
     ring: ringClass(row.completeness),
     contributors: contributorsOf(record).slice(0, 6),
     sourceRow: row.source_row,

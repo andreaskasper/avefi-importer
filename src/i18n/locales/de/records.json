@@ -37,7 +37,17 @@
       "missing": "Pflichtangabe fehlt",
       "missingTitle": "Fehlt: {list}",
       "sourceRow": "Zeile {row}",
-      "ring": "Vollständigkeit {percent} Prozent"
+      "ring": "Vollständigkeit {percent} Prozent",
+      "core": "Kernfelder",
+      "coreValue": "{filled} von {total}",
+      "coreComplete": "Alle vier Kernfelder belegt.",
+      "coreMissing": "Es fehlen: {fields}",
+      "coreField": {
+        "produktionsdatum": "Produktionsdatum",
+        "produktionsland": "Produktionsland",
+        "regie": "Regie",
+        "titel": "Titel"
+      }
     },
     "paging": {
       "showing": "{from}–{to} von {total}",
@@ -79,7 +89,8 @@
       "tabs": {
         "work": "Werk",
         "manifestations": "Fassungen ({count})",
-        "items": "Exemplare ({count})"
+        "items": "Exemplare ({count})",
+        "structure": "Fassungen ({manifestations}) und Exemplare ({items})"
       },
       "check": {
         "heading": "Prüfung gegen das AVefi-Schema",
@@ -247,7 +258,17 @@
         "TGNResource": "Getty TGN"
       },
       "removeEntry": "Eintrag {index} entfernen",
-      "close": "Schließen"
+      "close": "Schließen",
+      "structure": {
+        "lead": "Ein Exemplar gehört zu genau einer Fassung. Die Exemplare stehen deshalb unter ihrer Fassung.",
+        "itemsOf": "Exemplare der Fassung {manifestation} ({count})",
+        "itemHeading": "Exemplar {index} der Fassung {manifestation}",
+        "orphanHeading": "Exemplare ohne Fassung ({count})",
+        "orphanLead": "Für diese Exemplare gibt die Quelldatei keine Fassung her. Sie werden keiner zugeordnet, solange niemand entscheidet, zu welcher sie gehören.",
+        "orphanItemHeading": "Exemplar {index} ohne Fassung",
+        "assign": "Einer Fassung zuordnen",
+        "assignNone": "– bitte wählen –"
+      }
     },
     "error": {
       "record_not_found": "Diesen Datensatz gibt es nicht (mehr). Vielleicht wurde der Import inzwischen neu konvertiert.",

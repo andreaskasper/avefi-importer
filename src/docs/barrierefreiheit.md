@@ -179,7 +179,16 @@ kommt aus `axe.mjs`.
 
 Beide Farbschemata muessen WCAG AA erfuellen: 4,5:1 fuer Text, 3:1 fuer grosse
 Schrift und Bedienelemente. Die Farbwerte stehen ausschliesslich in
-`app/assets/css/app.css` als Variablen; geaendert wird dort und nirgends sonst.
+`app/assets/css/app.css`, seit dem 31.08.2026 in den beiden daisyUI-Themen
+„light" und „dark"; geaendert wird dort und nirgends sonst. Die semantischen
+Namen der Anwendung (`--primary`, `--ok`, `--border` …) zeigen auf diese
+Themenfarben — eine Palette, zwei Sprechweisen.
+
+Die Umstellung auf Tailwind 4 mit daisyUI 5 hat die Kontraste **nicht**
+zurueckgeworfen, weil die Themen mit genau den Werten belegt wurden, die aus
+dieser Pruefung stammen. Das ist der Grund, warum eine neue Grundlage nicht
+automatisch neue Befunde bedeutet — und der Grund, warum man sie trotzdem
+misst: 75 Staende, beide Schemata, nach der Umstellung erneut durchlaufen.
 
 Zwei Fallen, die hier schon zugeschlagen haben:
 

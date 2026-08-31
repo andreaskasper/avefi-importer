@@ -153,7 +153,8 @@ function isUploading(item: ImportListItem): boolean {
               </template>
               <span v-else class="dim small">{{ t('imports.table.uploadDone') }}</span>
             </td>
-            <td><ImportsStatusBadge :status="item.status" /></td>
+            <td><ImportsStatusBadge :status="item.status" :stale="item.stale"
+                              :ran-with-version="item.ranWithVersion" :profile-version="item.profileVersion" /></td>
             <td class="tnum">
               <template v-if="item.record_count > 0">{{ formatNumber(item.record_count, locale) }}</template>
               <span v-else class="dim">{{ t('imports.table.none') }}</span>

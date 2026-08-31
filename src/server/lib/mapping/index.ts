@@ -118,6 +118,7 @@ export type {
 /* --------------------------------------------------------------- Runner */
 export {
   addToTally,
+  authorityInventory,
   collectAuthorityLookups,
   groupingLabel,
   groupsWorks,
@@ -130,6 +131,8 @@ export {
   workKey
 } from './runner.js'
 export type {
+  AuthorityInventoryEntry,
+  AuthorityInventoryValue,
   AuthorityRequest,
   CellOutput,
   CellResult,
@@ -145,6 +148,7 @@ export {
   buildProfileSample,
   dataChecks,
   EXAMPLES_PER_COLUMN,
+  SAMPLE_DISTINCT_LIMIT,
   MAX_PREVIEW_ROWS,
   MAX_SCHEMA_ISSUES,
   pickExamples,
@@ -175,6 +179,7 @@ export type { TargetSuggestion } from './suggest.js'
 export {
   addToCoreTally,
   completeness,
+  coreScore,
   completenessChecks,
   completenessIssues,
   coreCoverage,

@@ -3,6 +3,8 @@
 import { describe, expect, it } from 'vitest'
 import { buildPreview, buildProfileSample, pickExamples, previewChain } from '../../server/lib/mapping/preview.js'
 import { emptyMapping } from '../../server/lib/mapping/profile.js'
+import { runRow } from '../../server/lib/mapping/runner.js'
+import { lookupCountry } from '../../server/lib/authority/countries.js'
 import { demoMapping, demoRows, step, testSchema } from './fixtures.js'
 
 const rows = [
@@ -95,5 +97,20 @@ describe('Kette einzeln vorrechnen', () => {
     expect(r.list).toEqual(['A', 'B'])
     expect(r.value).toBe('A; B')
     expect(r.errors).toEqual([])
+  })
+})
+
+describe('Herkunft eines Werts', () => {
+  it('nennt die Zwischenstufe nach der gemeinsamen Kette', () => {
+    // Stefans Praezisierung: Bei transformierten Werten soll sichtbar sein, wie
+    // aus dem Originalwert der AVefi-Wert wurde.
+    const m = emptyMapping(['Land'], '1.2.3')
+    m.columns['Land'] = {
+      pre: [step({ op: 'country', unknown: 'keep' })],
+      targets: [{ target: 'work.production.place', post: [] }]
+    }
+    const ergebnis = runRow(m, { Land: 'DE' }, 'r1', { schema: testSchema, lookupCountry })
+    expect(ergebnis.cells['Land']?.raw).toBe('DE')
+    expect(ergebnis.cells['Land']?.pre).toBe('Deutschland')
   })
 })

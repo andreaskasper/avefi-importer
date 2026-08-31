@@ -38,7 +38,32 @@ export interface ImportRow {
   report_json: ImportReport | null
   detected_format: string | null
   format_detail: FormatDetail | null
+  /** Festgelegtes Spaltentrennzeichen — geraten wird nur einmal, beim Erkennen. */
+  delimiter: string | null
+  /** Womit das vorliegende Ergebnis entstanden ist. */
+  run_config: RunConfig | null
   created_at: string
+}
+
+/**
+ * Der reproduzierbare Zustand eines Konvertierungslaufs.
+ *
+ * Nicht alles, was das Ergebnis bestimmt, steckt im Mappingprofil: das
+ * Trennzeichen der Datei, die Fassung des AVefi-Schemas, die
+ * Normdateneinstellungen. Wer nachvollziehen will, warum ein Ergebnis so
+ * aussieht, braucht diese Angaben zusammen mit der Profilfassung.
+ */
+export interface RunConfig {
+  profileId: number | null
+  profileVersion: number | null
+  /** Fassung des Profilformats, nicht des Profils. */
+  profileFormatVersion: string | null
+  avefiSchemaVersion: string | null
+  delimiter: string | null
+  authorityEnabled: boolean
+  authorityLimit: number | null
+  /** Zeitpunkt des Laufs, ISO. */
+  at: string
 }
 
 /**
@@ -143,6 +168,17 @@ export interface TargetBinding {
   post: TransformStep[]
 }
 
+/**
+ * Eine von Hand bestaetigte Normdatenzuordnung. Je Quellwert kann es mehrere
+ * geben — eine je Normdatenquelle (GND, Wikidata, VIAF).
+ */
+export interface ConfirmedAuthorityEntry {
+  id: string
+  /** Resource-Typ ("GNDResource") oder Quellschluessel ("gnd"). */
+  type: string
+  label?: string
+}
+
 export interface ColumnMapping {
   /** Gemeinsame Kette vor der Verzweigung. */
   pre?: TransformStep[]
@@ -153,7 +189,7 @@ export interface ColumnMapping {
   /** Zuordnung von Quellwerten auf Vokabularwerte. */
   valuemap?: Record<string, string>
   /** Bestaetigte Normdaten-Treffer: Quellwert -> Ressource. */
-  authorities?: Record<string, { id: string; type: string; label?: string }>
+  authorities?: Record<string, ConfirmedAuthorityEntry | ConfirmedAuthorityEntry[]>
 }
 
 export interface MappingDefault {

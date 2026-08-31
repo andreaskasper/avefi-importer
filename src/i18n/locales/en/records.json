@@ -37,7 +37,17 @@
       "missing": "Required field missing",
       "missingTitle": "Missing: {list}",
       "sourceRow": "Row {row}",
-      "ring": "Completeness {percent} percent"
+      "ring": "Completeness {percent} percent",
+      "core": "Core fields",
+      "coreValue": "{filled} of {total}",
+      "coreComplete": "All four core fields are filled.",
+      "coreMissing": "Missing: {fields}",
+      "coreField": {
+        "produktionsdatum": "Production date",
+        "produktionsland": "Production country",
+        "regie": "Directing",
+        "titel": "Title"
+      }
     },
     "paging": {
       "showing": "{from}–{to} of {total}",
@@ -79,7 +89,8 @@
       "tabs": {
         "work": "Work",
         "manifestations": "Manifestations ({count})",
-        "items": "Items ({count})"
+        "items": "Items ({count})",
+        "structure": "Manifestations ({manifestations}) and items ({items})"
       },
       "check": {
         "heading": "Validation against the AVefi schema",
@@ -247,7 +258,17 @@
         "TGNResource": "Getty TGN"
       },
       "removeEntry": "Remove entry {index}",
-      "close": "Close"
+      "close": "Close",
+      "structure": {
+        "lead": "An item belongs to exactly one manifestation, so items are listed underneath theirs.",
+        "itemsOf": "Items of manifestation {manifestation} ({count})",
+        "itemHeading": "Item {index} of manifestation {manifestation}",
+        "orphanHeading": "Items without a manifestation ({count})",
+        "orphanLead": "The source file does not say which manifestation these items belong to. They stay unassigned until someone decides.",
+        "orphanItemHeading": "Item {index} without a manifestation",
+        "assign": "Assign to a manifestation",
+        "assignNone": "– please choose –"
+      }
     },
     "error": {
       "record_not_found": "This record does not exist (any more). The import may have been converted again in the meantime.",
