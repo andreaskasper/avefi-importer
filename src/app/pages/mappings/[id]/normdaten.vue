@@ -17,14 +17,17 @@ import type { ColumnMapping, MappingJson } from '#shared/types/domain'
 import MappingAuthorityDialog from '~/components/mapping/AuthorityDialog.vue'
 import { failureText, mappingFailure } from '~/components/mapping/errors'
 import type {
+
   AuthorityCandidate, AuthorityRequest, AuthorityValuesResponse, CandidateResponse, EditorPayload
 } from '~/components/mapping/types'
+
+const api = useApi()
 
 const route = useRoute()
 const { t, te } = useI18n()
 const id = computed(() => String(route.params.id ?? ''))
 
-const { data, error } = await useFetch<{ payload: EditorPayload }>(() => `/api/mappings/${id.value}/editor`)
+const { data, error } = await useFetch<{ payload: EditorPayload }>(() => api(`/mappings/${id.value}/editor`))
 const failure = computed(() => (error.value ? mappingFailure(error.value) : null))
 const loadError = computed(() => failureText(t, te, failure.value))
 const subject = computed(() => data.value?.payload.subject ?? id.value)
@@ -44,7 +47,7 @@ const noteKind = ref<'ok' | 'bad'>('ok')
 async function load() {
   busy.value = true
   try {
-    const res = await $fetch<AuthorityValuesResponse>(`/api/mappings/${id.value}/authority-values`, {
+    const res = await $fetch<AuthorityValuesResponse>(api(`/mappings/${id.value}/authority-values`), {
       method: 'POST', body: { mapping: mapping.value }
     })
     groups.value = res.groups
@@ -89,7 +92,7 @@ async function openDialog(column: string, value: string, source: string, kind: s
   dialogError.value = ''
   dialogBusy.value = true
   try {
-    const res = await $fetch<CandidateResponse>(`/api/mappings/${id.value}/candidates`, {
+    const res = await $fetch<CandidateResponse>(api(`/mappings/${id.value}/candidates`), {
       method: 'POST', body: { value, kind, sources: [source] }
     })
     candidates.value = res.candidates
@@ -118,7 +121,7 @@ function reset(column: string, value: string, source: string) {
 async function save() {
   busy.value = true
   try {
-    await $fetch(`/api/mappings/${id.value}/save`, { method: 'POST', body: { mapping: mapping.value } })
+    await $fetch(api(`/mappings/${id.value}/save`), { method: 'POST', body: { mapping: mapping.value } })
     note.value = t('mapping.authority.saved')
     noteKind.value = 'ok'
   } catch (e) {
@@ -142,7 +145,7 @@ useHead({ title: () => `${subject.value} · ${t('mapping.authority.pageTitle')}`
       <span>{{ t('mapping.authority.pageTitle') }}</span>
     </nav>
 
-    <div v-if="loadError" class="alert" role="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError" class="alert">{{ loadError }}</div>
 
     <template v-else>
       <h1>{{ t('mapping.authority.pageTitle') }}</h1>
@@ -160,7 +163,9 @@ useHead({ title: () => `${subject.value} · ${t('mapping.authority.pageTitle')}`
         <NuxtLink class="linkbtn" :to="`/mappings/${id}/edit`">{{ t('mapping.authority.backToEditor') }}</NuxtLink>
       </div>
 
-      <p v-if="note" class="alert" :class="noteKind === 'ok' ? 'alert-ok' : ''" role="status">{{ note }}</p>
+      <div class="live-region" role="status" aria-live="polite">
+        <p v-if="note" class="alert" :class="noteKind === 'ok' ? 'alert-ok' : ''">{{ note }}</p>
+      </div>
 
       <p v-if="groups.length === 0 && !busy" class="dim">{{ t('mapping.authority.pageEmpty') }}</p>
 

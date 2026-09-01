@@ -87,3 +87,32 @@ describe('Vokabularkandidaten', () => {
     expect(r['Titel']).toBeUndefined()
   })
 })
+
+describe('Kopfzeilen, die sich selbst erklaeren', () => {
+  // Gemeldet beim Test des Duesseldorfer CSV-Exports: die Spalte
+  // "category: avefi:Item has_format" bekam "Werk › Form" vorgeschlagen, weil
+  // "format" mit dem Stichwort "form" beginnt. Die Kopfzeile nennt die Ebene
+  // und das Feld — beides wurde nicht gelesen.
+  it('liest die Ebene aus der Kopfzeile und stuft Fremdes zurueck', () => {
+    const r = suggestForColumn('category: avefi:Item has_format', 5)
+    const first = r[0]
+    expect(first).toBeDefined()
+    expect(first!.target.startsWith('item.')).toBe(true)
+    const werkForm = r.find((x) => x.target === 'work.form')
+    if (werkForm !== undefined) expect(werkForm.score).toBeLessThan(first!.score)
+  })
+
+  it('nimmt einen genannten Schemafeldnamen als Angabe, nicht als Aehnlichkeit', () => {
+    expect(suggestForColumn('has_colour_type', 3)[0]?.target).toBe('item.colour_type')
+    expect(suggestForColumn('avefi:Item has_access_status', 3)[0]?.target).toBe('item.access_status')
+  })
+
+  it('findet ein Feld weiterhin ueber das deutsche Wort', () => {
+    expect(suggestForColumn('Farbe', 3)[0]?.target).toBe('item.colour_type')
+    expect(suggestForColumn('Regie', 3)[0]?.target).toBe('work.activity.directing')
+  })
+
+  it('laesst eine Kopfzeile ohne Ebenenangabe unveraendert', () => {
+    expect(suggestForColumn('Form', 3)[0]?.target).toBe('work.form')
+  })
+})

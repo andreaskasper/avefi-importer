@@ -241,6 +241,16 @@ export class AvefiBuilder {
         return
       }
 
+      case 'format': {
+        // Mehrwertig, aber je Traegerklasse und Wert nur einmal: eine Spalte,
+        // die "35mmFilm" in mehreren Zeilen desselben Exemplars nennt, soll
+        // nicht mehrere gleiche Eintraege erzeugen.
+        const list = nodeList(node, 'has_format')
+        const already = list.some((f) => f['category'] === `avefi:${w.className}` && f['type'] === v)
+        if (!already) list.push({ category: `avefi:${w.className}`, type: v })
+        return
+      }
+
       case 'language': {
         const list = nodeList(node, 'in_language')
         const found = list.find((l) => l['code'] === v)

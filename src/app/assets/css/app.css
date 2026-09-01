@@ -299,7 +299,14 @@ tbody tr:hover{background:var(--surface-2)}
 .apphead{display:flex;align-items:center;gap:14px;padding:13px 22px;border-bottom:1px solid var(--border);
   background:var(--surface)}
 .apphead .logo{display:flex;align-items:center;gap:9px;font-weight:700}
+.apphead .navwrap{display:flex;align-items:center;position:relative}
 .apphead nav{display:flex;gap:6px;margin-left:8px}
+/* Der Aufklappknopf gehoert nur zum schmalen Fenster. Oberhalb steht die
+   Navigation ohnehin da, und ein Knopf, der nichts oeffnet, waere ein
+   zusaetzlicher Tabstopp ohne Zweck. */
+.apphead .navtoggle{display:none;background:none;border:0;cursor:pointer;
+  font-size:18px;line-height:1;padding:6px 9px;border-radius:7px;color:var(--muted)}
+.apphead .navtoggle:hover{background:var(--primary-100);color:var(--primary)}
 .apphead nav a{font-size:13px;color:var(--muted);text-decoration:none;padding:6px 11px;border-radius:7px;font-weight:600}
 .apphead nav a.on{background:var(--primary-100);color:var(--primary)}
 .apphead .who{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
@@ -436,10 +443,25 @@ textarea.input{resize:vertical;line-height:1.5}
   .userform{grid-template-columns:1fr}
   .login-wrap{grid-template-columns:1fr}.login-hero{display:none}
   .grid2{grid-template-columns:1fr}
+  /* Schmales Fenster: die Navigation liegt hinter dem Aufklappknopf. Sie war
+     hier ersatzlos ausgeblendet — mit display:none, das den Zweig auch aus dem
+     Barrierebaum nimmt, sodass die drei Ziele weder mit der Tabulatortaste noch
+     mit der Suche des Browsers zu finden waren. */
+  .apphead .navtoggle{display:inline-flex}
   .apphead nav{display:none}
+  .apphead nav.open{display:flex;flex-direction:column;gap:2px;position:absolute;
+    top:calc(100% + 8px);left:0;z-index:60;min-width:210px;padding:6px;
+    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    box-shadow:0 10px 28px rgba(0,0,0,.18);margin-left:0}
+  .apphead nav.open a{padding:9px 12px}
 }
 
 /* ---------- Barrierefreiheit ---------- */
+/* Huelle fuer Meldebereiche: dauerhaft im Baum, damit ein Vorlesewerkzeug sie
+   kennt, bevor eine Meldung erscheint. Ohne Rahmen und ohne Abstand, damit sie
+   im leeren Zustand nichts verschiebt. */
+.live-region{margin:0;padding:0}
+
 /* Nur für Screenreader sichtbar (visuell versteckt, aber vorlesbar). */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
   clip:rect(0,0,0,0);white-space:nowrap;border:0}

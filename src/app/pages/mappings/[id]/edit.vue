@@ -10,11 +10,13 @@ import MappingEditor from '~/components/mapping/Editor.vue'
 import { failureText, mappingFailure } from '~/components/mapping/errors'
 import type { EditorPayload } from '~/components/mapping/types'
 
+const api = useApi()
+
 const route = useRoute()
 const { t, te } = useI18n()
 const id = computed(() => String(route.params.id ?? ''))
 
-const { data, error } = await useFetch<{ payload: EditorPayload }>(() => `/api/mappings/${id.value}/editor`)
+const { data, error } = await useFetch<{ payload: EditorPayload }>(() => api(`/mappings/${id.value}/editor`))
 
 const failure = computed(() => (error.value ? mappingFailure(error.value) : null))
 const loadError = computed(() => failureText(t, te, failure.value))

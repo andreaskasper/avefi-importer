@@ -101,7 +101,8 @@
       "enumCount": "{n} permitted values",
       "authority": "can carry authority data",
       "clear": "Remove target",
-      "none": "No target chosen yet."
+      "none": "No target chosen yet.",
+      "hits": "1 match | {n} matches"
     },
     "check": {
       "heading": "Checks",
@@ -243,7 +244,10 @@
           "Monographic": "Single work",
           "Serial": "Serial"
         }
-      }
+      },
+      "orphan": "not in this file",
+      "orphanHint": "One mapped value does not occur in this file. | {n} mapped values do not occur in this file.",
+      "orphanDrop": "Remove entry | Remove {n} entries"
     },
     "authority": {
       "heading": "Authority data from {source}",

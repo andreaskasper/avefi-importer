@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const api = useApi()
 /** Rahmen fuer angemeldete Seiten. Kopfzeile, Navigation, Nutzermenue. */
 const { user, logout } = useAuth()
 const route = useRoute()
@@ -8,6 +9,25 @@ const menuOpen = ref(false)
 const menuRoot = ref<HTMLElement | null>(null)
 const menuButton = ref<HTMLButtonElement | null>(null)
 const menuBox = ref<HTMLElement | null>(null)
+
+/*
+ * Die Hauptnavigation auf schmalen Fenstern.
+ *
+ * Sie war unterhalb von 820px per display:none ausgeblendet, und zwar ersatzlos:
+ * die drei Ziele waren dann weder mit der Tabulatortaste noch mit der Suche des
+ * Browsers zu erreichen, weil display:none einen Zweig auch aus dem
+ * Barrierebaum nimmt. Ein Test mit Vorlesewerkzeug hat genau das gefunden.
+ *
+ * Aufklappmuster statt Menue: Es sind Verweise, keine Befehle. Ein role="menu"
+ * wuerde ein Vorlesewerkzeug dazu bringen, sie als Menuebefehle anzusagen und
+ * die Bedienung auf Pfeiltasten umzustellen. Der Knopf sagt ueber
+ * aria-expanded, ob offen ist, und ueber aria-controls, was er oeffnet; die
+ * Verweise bleiben Verweise.
+ */
+const navOpen = ref(false)
+const navRoot = ref<HTMLElement | null>(null)
+const navToggle = ref<HTMLButtonElement | null>(null)
+const navBox = ref<HTMLElement | null>(null)
 
 const active = computed(() => {
   const p = route.path
@@ -23,17 +43,62 @@ const initials = computed(() => {
   return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || n[0]!.toUpperCase()
 })
 
-const { data: reviewCount } = await useFetch<{ open: number }>('/api/reviews/count', {
+const { data: reviewCount } = await useFetch<{ open: number }>(api('/reviews/count'), {
   default: () => ({ open: 0 }),
   immediate: true
 })
 
 function onDocClick(e: MouseEvent) {
   if (menuOpen.value && menuRoot.value && !menuRoot.value.contains(e.target as Node)) menuOpen.value = false
+  if (navOpen.value && navRoot.value && !navRoot.value.contains(e.target as Node)) navOpen.value = false
 }
 function onKey(e: KeyboardEvent) {
-  if (e.key === 'Escape' && menuOpen.value) closeMenu(true)
+  if (e.key !== 'Escape') return
+  if (menuOpen.value) closeMenu(true)
+  else if (navOpen.value) closeNav(true)
 }
+
+/** Verweise der Navigation in Dokumentreihenfolge. */
+function navItems(): HTMLElement[] {
+  return Array.from(navBox.value?.querySelectorAll<HTMLElement>('a') ?? [])
+}
+
+function closeNav(focusButton = false) {
+  navOpen.value = false
+  if (focusButton) navToggle.value?.focus()
+}
+
+/**
+ * Aufklappen und den Fokus mitnehmen. Bleibt der Fokus auf dem Knopf, bemerkt
+ * mit einem Vorlesewerkzeug niemand, dass sich etwas geoeffnet hat.
+ */
+async function toggleNav() {
+  navOpen.value = !navOpen.value
+  if (!navOpen.value) return
+  await nextTick()
+  navItems()[0]?.focus()
+}
+
+/**
+ * Pfeiltasten sind hier eine Zugabe, keine Pflicht: Tabulator fuehrt durch die
+ * Verweise wie ueberall sonst, Escape schliesst und gibt den Fokus zurueck.
+ */
+function onNavKey(e: KeyboardEvent) {
+  const list = navItems()
+  if (list.length === 0) return
+  const at = list.indexOf(document.activeElement as HTMLElement)
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    list[(at + 1) % list.length]?.focus()
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    list[(at - 1 + list.length) % list.length]?.focus()
+  }
+}
+
+// Nach einem Seitenwechsel steht die Navigation offen ueber der neuen Seite,
+// wenn sie niemand schliesst.
+watch(() => route.path, () => { navOpen.value = false })
 
 /** Eintraege des Menues in Reihenfolge — Grundlage der Pfeiltastenbedienung. */
 function menuItems(): HTMLElement[] {
@@ -105,7 +170,15 @@ function toggleTheme() {
         <span class="applogo"><img src="/av-efi-logo.svg" alt="AV-EFI" height="26"></span>
       </NuxtLink>
 
-      <nav :aria-label="t('mainNav')">
+      <div ref="navRoot" class="navwrap">
+        <button ref="navToggle" type="button" class="navtoggle" aria-controls="hauptnavigation"
+                :aria-expanded="navOpen" :aria-label="t('nav.toggle')" :title="t('nav.toggle')"
+                @click.stop="toggleNav">
+          <span aria-hidden="true">☰</span>
+        </button>
+
+      <nav id="hauptnavigation" ref="navBox" :class="navOpen ? 'open' : ''" :aria-label="t('mainNav')"
+           @keydown="onNavKey">
         <NuxtLink to="/" :class="active === 'imports' ? 'on' : ''"
                   :aria-current="active === 'imports' ? 'page' : undefined">{{ t('nav.imports') }}</NuxtLink>
         <NuxtLink to="/mappings" :class="active === 'mappings' ? 'on' : ''"
@@ -121,6 +194,7 @@ function toggleTheme() {
             {{ t('nav.reviewsBadge') }}</span></span>
         </NuxtLink>
       </nav>
+      </div>
 
       <div class="who">
         <span v-if="user?.institution_name" class="dim">{{ user.institution_name }}</span>

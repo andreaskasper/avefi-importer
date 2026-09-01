@@ -22,8 +22,11 @@ import {
   type UiIdentifier, type UiItem, type UiManifestation, type UiRecord, type UiValue
 } from '~/components/records/model'
 import type {
+
   AuthoritySearchResponse, CheckResponse, EditorConfig, RecordDetailResponse, SaveResponse
 } from '~/components/records/types'
+
+const api = useApi()
 
 const route = useRoute()
 const router = useRouter()
@@ -33,9 +36,9 @@ const keepFocus = useKeepFocus()
 const importId = computed(() => String(route.params.id ?? ''))
 const recordId = computed(() => String(route.params.recordId ?? ''))
 
-const { data: config, error: configError } = await useFetch<EditorConfig>('/api/records/config')
+const { data: config, error: configError } = await useFetch<EditorConfig>(api('/records/config'))
 const { data: detail, error: detailError } = await useFetch<RecordDetailResponse>(
-  () => `/api/imports/${importId.value}/records/${recordId.value}`
+  () => api(`/imports/${importId.value}/records/${recordId.value}`)
 )
 
 const loadError = computed(() => {
@@ -108,7 +111,7 @@ async function runCheckInner() {
   try {
     // Der Ring zeigt weiter den gespeicherten Wert: Sonst spraenge er beim
     // Tippen und wuerde etwas versprechen, was noch nirgends steht.
-    check.value = await $fetch<CheckResponse>('/api/records/validate', {
+    check.value = await $fetch<CheckResponse>(api('/records/validate'), {
       method: 'POST',
       body: output.value
     })
@@ -129,7 +132,7 @@ async function saveInner() {
   saved.value = false
   actionError.value = ''
   try {
-    const res = await $fetch<SaveResponse>(`/api/imports/${importId.value}/records/${recordId.value}`, {
+    const res = await $fetch<SaveResponse>(api(`/imports/${importId.value}/records/${recordId.value}`), {
       method: 'PUT',
       body: output.value
     })
@@ -227,7 +230,7 @@ async function matchAllInner() {
   await Promise.all(open.map(async (entity) => {
     const name = entity.has_name.trim()
     try {
-      const res = await $fetch<AuthoritySearchResponse>('/api/records/authority/search', {
+      const res = await $fetch<AuthoritySearchResponse>(api('/records/authority/search'), {
         query: { kind: entity.kind, q: name }
       })
       const split = splitMatches(name, res.results)
@@ -381,7 +384,7 @@ function backToList() {
       <span>{{ titleText }}</span>
     </nav>
 
-    <div v-if="loadError !== ''" class="alert" role="alert">
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">
       {{ loadError }}
       <p style="margin:8px 0 0">
         <NuxtLink class="btn btn-outline btn-sm" :to="`/imports/${importId}/records`">
@@ -424,12 +427,16 @@ function backToList() {
         <span v-if="editedAt"> · {{ t('records.editor.editedAt', { when: formatDateTime(editedAt, locale) }) }}</span>
       </p>
 
-      <div v-if="config.schemaError" class="alert" role="alert" style="margin-bottom:12px">
-        {{ t('records.editor.schemaMissing', { reason: config.schemaError }) }}
+      <div class="live-region" role="alert" aria-live="assertive">
+        <div v-if="config.schemaError" class="alert" style="margin-bottom:12px">
+          {{ t('records.editor.schemaMissing', { reason: config.schemaError }) }}
+        </div>
       </div>
 
-      <div v-if="actionError !== ''" class="alert" role="alert" style="margin-bottom:12px">{{ actionError }}</div>
-      <div v-if="saved" class="alert-ok" role="status" style="margin-bottom:12px">{{ t('records.editor.saved') }}</div>
+      <div class="live-region" role="alert" aria-live="assertive">
+        <div v-if="actionError !== ''" class="alert" style="margin-bottom:12px">{{ actionError }}</div>
+      </div>
+      <div role="status" aria-live="polite" v-if="saved" class="alert-ok" style="margin-bottom:12px">{{ t('records.editor.saved') }}</div>
       <div v-else-if="dirty" class="dim small" role="status" style="margin-bottom:12px">
         {{ t('records.editor.unsaved') }}
       </div>
@@ -565,7 +572,9 @@ function backToList() {
             </button>
           </div>
           <p class="note" style="margin-top:0">{{ t('records.editor.work.subjectsHint') }}</p>
-          <p v-if="matchMessage !== ''" class="okval" role="status">{{ matchMessage }}</p>
+          <div class="live-region" role="status" aria-live="polite">
+            <p v-if="matchMessage !== ''" class="okval">{{ matchMessage }}</p>
+          </div>
           <RecordsEntityRow v-for="(entity, i) in ui.work.subjects" :key="entity.key" :entity="entity"
                             :kinds="subjectKinds" :id-prefix="`subject-${entity.key}`"
                             :index="i + 1" :remove-label="t('records.editor.removeEntry', { index: i + 1 })"

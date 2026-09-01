@@ -13,6 +13,8 @@
  */
 import { apiFailure, failureText, type ApiFailure } from './errors'
 
+const api = useApi()
+
 const emit = defineEmits<{ uploaded: []; queued: [] }>()
 const { t, te } = useI18n()
 const keepFocus = useKeepFocus()
@@ -87,7 +89,7 @@ function codeText(code: string, params: Record<string, unknown>): string {
 function send(file: File, job: Job): Promise<void> {
   return new Promise((resolve) => {
     const xhr = new XMLHttpRequest()
-    xhr.open('POST', `/api/imports/upload?name=${encodeURIComponent(file.name)}`, true)
+    xhr.open('POST', api(`/imports/upload?name=${encodeURIComponent(file.name)}`), true)
     xhr.setRequestHeader('content-type', 'application/octet-stream')
     xhr.withCredentials = true
 
@@ -174,7 +176,7 @@ async function submitUrlInner() {
   }
   urlBusy.value = true
   try {
-    await $fetch('/api/imports/url', { method: 'POST', body: { url } })
+    await $fetch(api('/imports/url'), { method: 'POST', body: { url } })
     urlValue.value = ''
     urlDone.value = true
     emit('queued')

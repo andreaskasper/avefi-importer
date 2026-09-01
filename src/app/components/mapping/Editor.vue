@@ -572,21 +572,38 @@ const canonicalJson = computed(() => {
     </p>
     <p v-if="busy" class="dim small" style="margin:0 0 8px" aria-hidden="true">{{ t('mapping.state.calculating') }}</p>
 
-    <div v-if="message" class="alert alert-ok" role="status" style="margin-bottom:14px">{{ message }}</div>
-    <div v-if="errorText" class="alert" role="alert" style="margin-bottom:14px">{{ errorText }}</div>
-    <div v-if="incompleteWarning" class="alert" role="alert" style="margin-bottom:14px">{{ incompleteWarning }}</div>
-    <div v-if="adoptNote" class="alert alert-ok" role="status" style="margin-bottom:14px">{{ adoptNote }}</div>
+    <!--
+      Die beiden Bereiche stehen dauerhaft im Baum; nur ihr Inhalt wechselt.
+
+      Vorher hing an jeder Meldung ein v-if, das Element entstand also
+      gemeinsam mit seinem Text. Ein Bereich mit role="status", der erst mit
+      seinem Inhalt eingefuegt wird, wird von den verbreiteten Vorlesewerkzeugen
+      nicht angesagt — sie beobachten Bereiche, die sie schon kennen. Deshalb
+      blieb "Speichern" ohne hoerbare Rueckmeldung, obwohl die Bestaetigung
+      sichtbar dastand. Gemeldet beim Test mit Vorlesewerkzeug.
+
+      Getrennt nach Dringlichkeit: Bestaetigungen warten hoeflich, Fehler und
+      der Hinweis auf offene Spalten unterbrechen.
+    -->
+    <div class="live-region" role="status" aria-live="polite">
+      <div v-if="message" class="alert alert-ok" style="margin-bottom:14px">{{ message }}</div>
+      <div v-if="adoptNote" class="alert alert-ok" style="margin-bottom:14px">{{ adoptNote }}</div>
+    </div>
+    <div class="live-region" role="alert" aria-live="assertive">
+      <div v-if="errorText" class="alert" style="margin-bottom:14px">{{ errorText }}</div>
+      <div v-if="incompleteWarning" class="alert" style="margin-bottom:14px">{{ incompleteWarning }}</div>
+    </div>
 
     <MappingColumnReport :report="payload.columnReport" />
 
-    <div v-if="payload.issues.length" class="alert" role="status" style="margin-bottom:14px">
+    <div v-if="payload.issues.length" class="alert" style="margin-bottom:14px">
       <strong>{{ t('mapping.issues.heading') }}</strong>
       <ul class="tight">
         <li v-for="(issue, i) in payload.issues" :key="i">{{ issue.message }}</li>
       </ul>
     </div>
 
-    <div v-if="payload.foreign.length && mappedCount === 0" class="alert" role="status" style="margin-bottom:14px">
+    <div v-if="payload.foreign.length && mappedCount === 0" class="alert" style="margin-bottom:14px">
       {{ t('mapping.adopt.offer', { n: payload.foreign.length }, payload.foreign.length) }}
       <span v-for="(p, i) in payload.foreign" :key="p.id">
         <button type="button" class="linkbtn" @click="adoptTarget = p">
@@ -832,13 +849,15 @@ const canonicalJson = computed(() => {
             </template>
           </div>
 
-          <div v-if="preview && preview.schema.length" class="alert" role="status" style="margin-top:10px">
-            <strong>{{ t('mapping.schema.previewIssues') }}</strong>
-            <ul class="tight">
-              <li v-for="(issue, i) in preview.schema" :key="i">
-                {{ issue.message }} <span class="dim">({{ issue.rows }}×)</span>
-              </li>
-            </ul>
+          <div class="live-region" role="status" aria-live="polite">
+            <div v-if="preview && preview.schema.length" class="alert" style="margin-top:10px">
+              <strong>{{ t('mapping.schema.previewIssues') }}</strong>
+              <ul class="tight">
+                <li v-for="(issue, i) in preview.schema" :key="i">
+                  {{ issue.message }} <span class="dim">({{ issue.rows }}×)</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </section>
 

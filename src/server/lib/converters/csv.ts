@@ -13,6 +13,7 @@
  */
 import { createReadStream } from 'node:fs'
 import { open } from 'node:fs/promises'
+import { Transform } from 'node:stream'
 import { parse } from 'csv-parse'
 
 /** Reihenfolge ist die Rangfolge bei Gleichstand. */
@@ -26,13 +27,90 @@ export function stripBom(s: string): string {
   return s.startsWith(BOM) ? s.slice(1) : s
 }
 
-/** Liest den Anfang einer Datei als UTF-8-Text (fuer Erkennung und Diagnose). */
-export async function readHead(path: string, bytes = 64 * 1024): Promise<string> {
+/* ------------------------------------------------------------- Kodierung */
+
+/*
+ * Die Anwendung las jede Datei als UTF-8. Eine Datei aus einem aelteren
+ * Tabellenprogramm ist das oft nicht, und der Fehler faellt nicht als Fehler
+ * auf: aus "Franzoesisch" wird ein Wort mit einem Ersatzzeichen darin, das
+ * durch die ganze Verarbeitung laeuft und sich in der Werteliste des Profils
+ * dauerhaft neben dem richtigen Wert einnistet. Genau so gemeldet.
+ *
+ * Vertraglich geschuldet ist UTF-8. Eine Datei zurueckzuweisen, die sich
+ * fehlerfrei lesen laesst, waere aber die schlechtere Antwort — zumal der Weg
+ * "lokal umwandeln und neu hochladen" derjenige ist, der die Werteliste
+ * verschmutzt hat. Also: erkennen, lesen, und im Bericht sagen, wie gelesen
+ * wurde. Geraten wird nichts, was nicht nachher dasteht.
+ */
+export type SourceEncoding = 'utf-8' | 'utf-16le' | 'utf-16be' | 'windows-1252'
+
+/** Wie viele Bytes fuer die Erkennung betrachtet werden. */
+const ENCODING_PROBE_BYTES = 256 * 1024
+
+/**
+ * Kodierung einer Datei bestimmen: Byte-Order-Mark zuerst, sonst der Versuch,
+ * die Probe streng als UTF-8 zu lesen. UTF-8 ist so streng gebaut, dass eine
+ * laengere Probe aus einer Datei einer anderen Kodierung fast sicher daran
+ * scheitert; erst dann faellt die Wahl auf Windows-1252, die verbreitetste
+ * Einbytekodierung in Exporten dieser Herkunft.
+ */
+export function sniffEncodingFromBuffer(buf: Buffer): SourceEncoding {
+  if (buf.length >= 2 && buf[0] === 0xff && buf[1] === 0xfe) return 'utf-16le'
+  if (buf.length >= 2 && buf[0] === 0xfe && buf[1] === 0xff) return 'utf-16be'
+  if (buf.length >= 3 && buf[0] === 0xef && buf[1] === 0xbb && buf[2] === 0xbf) return 'utf-8'
+  try {
+    new TextDecoder('utf-8', { fatal: true }).decode(buf)
+    return 'utf-8'
+  } catch {
+    return 'windows-1252'
+  }
+}
+
+export async function sniffEncoding(path: string, bytes = ENCODING_PROBE_BYTES): Promise<SourceEncoding> {
   const fh = await open(path, 'r')
   try {
     const buf = Buffer.alloc(bytes)
     const { bytesRead } = await fh.read(buf, 0, bytes, 0)
-    return stripBom(buf.subarray(0, bytesRead).toString('utf8'))
+    return sniffEncodingFromBuffer(buf.subarray(0, bytesRead))
+  } finally {
+    await fh.close()
+  }
+}
+
+/** Lesbarer Name fuer Bericht und Oberflaeche. */
+export function encodingLabel(e: SourceEncoding): string {
+  switch (e) {
+    case 'utf-8': return 'UTF-8'
+    case 'utf-16le': return 'UTF-16 (LE)'
+    case 'utf-16be': return 'UTF-16 (BE)'
+    case 'windows-1252': return 'Windows-1252'
+  }
+}
+
+/**
+ * Wandelt einen Bytestrom in Text. Nur noetig, wenn die Datei nicht UTF-8 ist —
+ * bei UTF-8 bleibt der Weg unveraendert derselbe wie bisher.
+ */
+function decodeStream(encoding: SourceEncoding): Transform {
+  const decoder = new TextDecoder(encoding)
+  return new Transform({
+    transform(chunk, _enc, done) {
+      done(null, decoder.decode(chunk as Buffer, { stream: true }))
+    },
+    flush(done) {
+      done(null, decoder.decode())
+    }
+  })
+}
+
+/** Liest den Anfang einer Datei als Text (fuer Erkennung und Diagnose). */
+export async function readHead(path: string, bytes = 64 * 1024): Promise<string> {
+  const encoding = await sniffEncoding(path)
+  const fh = await open(path, 'r')
+  try {
+    const buf = Buffer.alloc(bytes)
+    const { bytesRead } = await fh.read(buf, 0, bytes, 0)
+    return stripBom(new TextDecoder(encoding).decode(buf.subarray(0, bytesRead)))
   } finally {
     await fh.close()
   }
@@ -158,6 +236,8 @@ export interface CsvReadOptions {
   delimiter: Delimiter
   /** Hoechstzahl gelieferter Zeilen (Kopfzeile eingeschlossen). */
   maxRows?: number
+  /** Bereits ermittelte Kodierung; sonst wird sie an der Datei bestimmt. */
+  encoding?: SourceEncoding
 }
 
 /**
@@ -168,7 +248,10 @@ export interface CsvReadOptions {
  * landen. Wer sie zaehlen will, vergleicht die Laenge mit der Kopfzeile.
  */
 export async function* readCsvRows(path: string, opts: CsvReadOptions): AsyncGenerator<string[]> {
-  const parser = createReadStream(path).pipe(
+  const encoding = opts.encoding ?? (await sniffEncoding(path))
+  const bytes = createReadStream(path)
+  const source = encoding === 'utf-8' ? bytes : bytes.pipe(decodeStream(encoding))
+  const parser = source.pipe(
     parse({
       delimiter: opts.delimiter,
       bom: true,

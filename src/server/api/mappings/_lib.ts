@@ -157,6 +157,8 @@ function schemaPathOf(writer: ReturnType<typeof allTargets>[number]['writer'], l
       return `${root}.has_extent.has_value (${writer.unit})`
     case 'language':
       return `${root}.in_language[${writer.usage}].code`
+    case 'format':
+      return `${root}.has_format[${writer.className}].type`
   }
   return root
 }

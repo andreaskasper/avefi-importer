@@ -72,7 +72,9 @@ onBeforeUnmount(() => {
               <input id="otp-value" class="input mono" type="text" :value="password" readonly
                      style="font-size:16px;letter-spacing:.06em" @focus="($event.target as HTMLInputElement).select()">
             </p>
-            <p v-if="copied !== ''" class="okval" role="status">{{ copied }}</p>
+            <div class="live-region" role="status" aria-live="polite">
+              <p v-if="copied !== ''" class="okval">{{ copied }}</p>
+            </div>
           </div>
           <div class="modal-foot">
             <button type="button" class="btn btn-outline" @click="copy">{{ t('admin.users.otp.copy') }}</button>

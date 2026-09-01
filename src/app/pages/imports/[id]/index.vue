@@ -12,11 +12,13 @@ import { apiFailure, failureText } from '~/components/imports/errors'
 import { fileSize, formatDetailLabel, formatNumber } from '~/components/imports/format'
 import { BUSY_STATES, type ImportDetailResponse } from '~/components/imports/types'
 
+const api = useApi()
+
 const route = useRoute()
 const { t, te, locale } = useI18n()
 const id = computed(() => String(route.params.id ?? ''))
 
-const { data, refresh, error } = await useFetch<ImportDetailResponse>(() => `/api/imports/${id.value}`)
+const { data, refresh, error } = await useFetch<ImportDetailResponse>(() => api(`/imports/${id.value}`))
 
 const loadError = computed(() => (error.value ? failureText(t, te, apiFailure(error.value)) : ''))
 const item = computed(() => data.value?.import ?? null)
@@ -97,7 +99,7 @@ const formatLabel = computed(() => {
       <span>{{ t('imports.detail.crumb') }}</span>
     </nav>
 
-    <div v-if="loadError !== ''" class="alert" role="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
 
     <template v-else-if="item !== null">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
@@ -215,10 +217,10 @@ const formatLabel = computed(() => {
           {{ t('imports.detail.draftWarning') }}
         </p>
         <p style="display:flex;gap:8px;flex-wrap:wrap">
-          <a v-if="data?.hasOriginal" class="btn btn-outline btn-sm" :href="`/api/imports/${item.id}/original`">
+          <a v-if="data?.hasOriginal" class="btn btn-outline btn-sm" :href="api(`/imports/${item.id}/original`)">
             <span aria-hidden="true">⤓</span> {{ t('imports.menu.original') }}</a>
           <a v-if="item.hasAvefi" class="btn btn-sm" :class="item.validated ? 'btn-outline' : 'btn-outline'"
-             :href="`/api/imports/${item.id}/avefi.json`"
+             :href="api(`/imports/${item.id}/avefi.json`)"
              :style="item.validated ? undefined : 'color:var(--warn);border-color:var(--warn)'">
             <span aria-hidden="true">⤓</span>
             {{ item.validated ? t('imports.menu.avefi') : t('imports.menu.avefiDraft') }}</a>

@@ -11,6 +11,8 @@
  */
 import { failureText, mappingFailure, type MappingFailure } from '~/components/mapping/errors'
 
+const api = useApi()
+
 const { t, te } = useI18n()
 useHead({ title: () => t('mapping.new.title') })
 
@@ -61,7 +63,7 @@ async function submit() {
       created: boolean
       columns: number
       rows: number
-    }>(`/api/mappings/new?name=${encodeURIComponent(chosen.name)}`, {
+    }>(api(`/mappings/new?name=${encodeURIComponent(chosen.name)}`), {
       method: 'POST',
       body: chosen,
       headers: { 'content-type': 'application/octet-stream' }
@@ -89,7 +91,9 @@ async function submit() {
     <h1 style="font-size:19px;margin-bottom:6px">{{ t('mapping.new.heading') }}</h1>
     <p class="note" style="margin-bottom:16px">{{ t('mapping.new.lead') }}</p>
 
-    <div v-if="errorText" class="alert" role="alert" style="margin-bottom:14px">{{ errorText }}</div>
+    <div class="live-region" role="alert" aria-live="assertive">
+      <div v-if="errorText" class="alert" style="margin-bottom:14px">{{ errorText }}</div>
+    </div>
 
     <form @submit.prevent="submit">
       <!-- Kein role="button" auf dem Kasten: Er enthaelt eine Ueberschrift und

@@ -48,9 +48,8 @@ function describe(target: EditorTarget): string {
 function levelLabel(level: string): string {
   return t(`mapping.level.${level}`)
 }
-const groupLabel = useGroupLabel()
 function pathOf(target: EditorTarget): string {
-  return `${levelLabel(target.level)} › ${groupLabel(target.group)} › ${labelOf(target)}`
+  return `${levelLabel(target.level)} › ${labelOf(target)}`
 }
 
 /**
@@ -63,19 +62,56 @@ const suchtext = computed(() => {
   return sel !== null && query.value === pathOf(sel) ? '' : query.value
 })
 
+/*
+ * Dieselbe Zerlegung wie beim Aufbau des Suchindex (server/api/mappings/_lib.ts).
+ *
+ * Sie liefen auseinander: der Index trennte am Punkt, die Suche behielt ihn.
+ * Wer den Schluessel "item.colour_type" eintippte, suchte damit nach einem
+ * Wort, das im Index gar nicht vorkommt, und bekam nichts.
+ */
 const words = computed(() =>
-  suchtext.value.trim().toLowerCase().split(/[^\p{L}\p{N}_.]+/u).filter((w) => w !== '')
+  suchtext.value.trim().toLowerCase().split(/[^\p{L}\p{N}_]+/u).filter((w) => w !== '')
 )
 
+/*
+ * Die Liste war auf 40 Eintraege begrenzt, der Katalog hat 60.
+ *
+ * Damit standen Farbe, Ton, Bildfrequenz, Zugangsstatus, Laufzeit, Laenge, die
+ * drei Sprachen und beide Daten ueberhaupt nicht zur Wahl, solange niemand ein
+ * Suchwort tippte — darunter drei der vier Vokabularfelder, die die
+ * Leistungsbeschreibung namentlich nennt. Die Grenze war unsichtbar: kein
+ * Hinweis, kein Rollbalkenende, das etwas verraten haette. Gemeldet beim Test
+ * mit Vorlesewerkzeug, wo man die Liste ohnehin nur mit Pfeiltasten durchgeht.
+ *
+ * Es gibt jetzt keine Grenze mehr. Stattdessen ist die Liste nach Ebene
+ * gegliedert, damit 60 Eintraege am Stueck bedienbar bleiben.
+ */
 const matches = computed(() => {
   const list = props.targets
-  if (words.value.length === 0) return list.slice(0, 40)
-  return list
-    .filter((target) => {
-      const haystack = [...target.search, labelOf(target).toLowerCase(), describe(target).toLowerCase()].join(' ')
-      return words.value.every((w) => haystack.includes(w))
-    })
-    .slice(0, 40)
+  if (words.value.length === 0) return [...list]
+  return list.filter((target) => {
+    const haystack = [...target.search, labelOf(target).toLowerCase(), describe(target).toLowerCase()].join(' ')
+    return words.value.every((w) => haystack.includes(w))
+  })
+})
+
+/** Reihenfolge der Ebenen in der Liste. */
+const LEVELS = ['work', 'manifestation', 'item'] as const
+
+/**
+ * Die Treffer in Bloecke je Ebene, mit dem laufenden Index jedes Eintrags in
+ * `matches` — die Pfeiltastenbedienung zaehlt weiter durch alle Bloecke, die
+ * Gliederung ist nur fuer die Anzeige und fuer die Ansage da.
+ */
+const groups = computed(() => {
+  const out: Array<{ level: string; items: Array<{ target: EditorTarget; index: number }> }> = []
+  for (const level of LEVELS) {
+    const items = matches.value
+      .map((target, index) => ({ target, index }))
+      .filter((x) => x.target.level === level)
+    if (items.length > 0) out.push({ level, items })
+  }
+  return out
 })
 
 watch(matches, () => {
@@ -202,16 +238,34 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
         <li v-if="matches.length === 0" class="ac-item" role="presentation">
           <span class="dim small">{{ t('mapping.target.noMatch') }}</span>
         </li>
-        <li v-for="(target, i) in matches" :id="optionId(i)" :key="target.key" role="option"
-            :aria-selected="target.key === modelValue ? 'true' : 'false'"
-            :class="['ac-item', i === activeIndex ? 'on' : '']"
-            style="cursor:pointer"
-            @mouseenter="activeIndex = i" @click="choose(target)">
-          <span class="ac-src" :class="`src-${target.level}`">{{ levelLabel(target.level) }}</span>
-          <span class="ac-lab">{{ labelOf(target) }}</span>
-          <span class="ac-desc mono">{{ target.schemaPath }}</span>
+        <!--
+          Je Ebene ein Block. Ohne die Gliederung waeren es sechzig Eintraege am
+          Stueck, die mit den Pfeiltasten alle gleich klingen; so sagt ein
+          Vorlesewerkzeug beim Wechsel die Ebene an.
+        -->
+        <li v-for="block in groups" :key="block.level" role="group"
+            :aria-label="`${levelLabel(block.level)} (${block.items.length})`">
+          <p class="ac-group">{{ levelLabel(block.level) }} <span class="dim">({{ block.items.length }})</span></p>
+          <ul class="ac-sub">
+            <li v-for="entry in block.items" :id="optionId(entry.index)" :key="entry.target.key" role="option"
+                :aria-selected="entry.target.key === modelValue ? 'true' : 'false'"
+                :class="['ac-item', entry.index === activeIndex ? 'on' : '']"
+                style="cursor:pointer"
+                @mouseenter="activeIndex = entry.index" @click="choose(entry.target)">
+              <span class="ac-lab">{{ labelOf(entry.target) }}</span>
+              <span class="ac-desc mono">{{ entry.target.schemaPath }}</span>
+            </li>
+          </ul>
         </li>
       </ul>
+
+      <!--
+        Die Trefferzahl gehoert angesagt: bei einer Liste ohne Grenze ist der
+        Unterschied zwischen zwei und sechzig Treffern die eigentliche Auskunft.
+      -->
+      <p class="sr-only" role="status" aria-live="polite">
+        {{ openList ? t('mapping.target.hits', { n: matches.length }, matches.length) : '' }}
+      </p>
     </div>
 
     <!--
@@ -239,5 +293,10 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
 /* Der Tastaturfokus liegt im Eingabefeld; ohne diese Markierung waere nicht zu
    sehen, welcher Eintrag mit Enter uebernommen wird. */
 .ac-item.on { background: var(--primary-100); }
-.ac-menu { list-style: none; margin: 0; padding: 0; }
+.ac-menu, .ac-sub { list-style: none; margin: 0; padding: 0; }
+.ac-group {
+  margin: 0; padding: 7px 10px 3px; font-size: 11px; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
+  position: sticky; top: 0; background: var(--card); z-index: 1;
+}
 </style>

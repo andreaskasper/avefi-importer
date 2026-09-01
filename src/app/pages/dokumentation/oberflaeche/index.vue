@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const api = useApi()
 /**
  * Uebersicht der Oberflaechenbeschreibungen.
  *
@@ -13,7 +14,7 @@ interface UebersichtDaten {
 }
 
 const { t } = useI18n()
-const { data, error } = await useFetch<UebersichtDaten>('/api/doku/oberflaeche')
+const { data, error } = await useFetch<UebersichtDaten>(api('/doku/oberflaeche'))
 
 useHead({ title: () => t('doku.overview.pageTitle') })
 
@@ -34,7 +35,7 @@ const titel = computed(() => data.value?.titel ?? t('doku.overview.heading'))
     <p class="doku-lead">{{ t('doku.overview.lead') }}</p>
     <p class="note">{{ t('doku.overview.languageNote') }}</p>
 
-    <div v-if="error" class="alert" role="alert">{{ t('doku.error.load') }}</div>
+    <div v-if="error" class="alert" role="alert" aria-live="assertive">{{ t('doku.error.load') }}</div>
     <!-- Der Inhalt stammt aus dem Verzeichnis docs/ dieses Projekts und wird
          serverseitig aus Markdown erzeugt; jeder Textteil ist dabei maskiert. -->
     <!-- eslint-disable-next-line vue/no-v-html -->

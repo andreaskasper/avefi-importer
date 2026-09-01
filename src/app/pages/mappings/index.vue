@@ -8,6 +8,8 @@
  */
 import { failureText, mappingFailure, type MappingFailure } from '~/components/mapping/errors'
 
+const api = useApi()
+
 const { t, te, locale } = useI18n()
 useHead({ title: () => t('mapping.list.title') })
 
@@ -25,7 +27,7 @@ interface ProfileRow {
   own: boolean
 }
 
-const { data, error, refresh } = await useFetch<{ profiles: ProfileRow[]; own: number }>('/api/mappings')
+const { data, error, refresh } = await useFetch<{ profiles: ProfileRow[]; own: number }>(api('/mappings'))
 
 const loadError = computed(() => (error.value ? failureText(t, te, mappingFailure(error.value)) : ''))
 const profiles = computed(() => data.value?.profiles ?? [])
@@ -56,7 +58,7 @@ async function onProfileFile(event: Event) {
       profile: { id: number; name: string }
       created: boolean
       hasSample: boolean
-    }>('/api/mappings', { method: 'POST', body: { profile: document } })
+    }>(api('/mappings'), { method: 'POST', body: { profile: document } })
     await refresh()
     importMessage.value = res.hasSample
       ? t(res.created ? 'mapping.list.imported' : 'mapping.list.updated', { name: res.profile.name })
@@ -85,9 +87,15 @@ function formatDate(value: string): string {
       <span class="dim small">{{ t('mapping.list.count', { n: profiles.length }, profiles.length) }}</span>
     </div>
 
-    <div v-if="loadError" class="alert" role="alert" style="margin-bottom:14px">{{ loadError }}</div>
-    <div v-if="importError" class="alert" role="alert" style="margin-bottom:14px">{{ importError }}</div>
-    <div v-if="importMessage" class="alert alert-ok" role="status" style="margin-bottom:14px">{{ importMessage }}</div>
+    <div class="live-region" role="alert" aria-live="assertive">
+      <div v-if="loadError" class="alert" style="margin-bottom:14px">{{ loadError }}</div>
+    </div>
+    <div class="live-region" role="alert" aria-live="assertive">
+      <div v-if="importError" class="alert" style="margin-bottom:14px">{{ importError }}</div>
+    </div>
+    <div class="live-region" role="status" aria-live="polite">
+      <div v-if="importMessage" class="alert alert-ok" style="margin-bottom:14px">{{ importMessage }}</div>
+    </div>
 
     <div class="newprofile">
       <h2 style="font-size:14px;margin-bottom:5px">{{ t('mapping.list.newHeading') }}</h2>
@@ -167,7 +175,7 @@ function formatDate(value: string): string {
                           :aria-label="t('mapping.list.viewFor', { name: profile.name })">
                   {{ t('mapping.list.view') }}
                 </NuxtLink>
-                <a class="btn btn-outline btn-sm" :href="`/api/mappings/${profile.id}/export`"
+                <a class="btn btn-outline btn-sm" :href="api(`/mappings/${profile.id}/export`)"
                    :title="t('mapping.list.exportFor', { name: profile.name })"
                    :aria-label="t('mapping.list.exportFor', { name: profile.name })"><span
                      aria-hidden="true">⭳</span></a>

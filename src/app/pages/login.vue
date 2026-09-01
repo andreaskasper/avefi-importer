@@ -80,7 +80,9 @@ async function submitInner() {
             <p class="dim small" style="margin:4px 0 6px">{{ t('auth.intro') }}</p>
           </div>
 
-          <div v-if="errorKey !== null" class="alert" role="alert">{{ errorText }}</div>
+          <div class="live-region" role="alert" aria-live="assertive">
+            <div v-if="errorKey !== null" class="alert">{{ errorText }}</div>
+          </div>
 
           <div class="field">
             <label for="email">{{ t('auth.email') }}</label>

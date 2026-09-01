@@ -45,14 +45,34 @@ const rows = computed(() => {
   for (const v of props.sourceValues) keys.push(v.value)
   for (const k of Object.keys(map.value)) if (!keys.includes(k)) keys.push(k)
   for (const k of added.value) if (!keys.includes(k)) keys.push(k)
+  const present = new Set(props.sourceValues.map((v) => v.value))
   return keys.map((value) => ({
     value,
     count: counts.get(value) ?? 0,
     target: map.value[value] ?? '',
     /** Zielwert steht nicht in der Werteliste des Schemas. */
-    invalid: (map.value[value] ?? '') !== '' && !props.enumValues.includes(map.value[value] ?? '')
+    invalid: (map.value[value] ?? '') !== '' && !props.enumValues.includes(map.value[value] ?? ''),
+    /**
+     * Der Wert steht in der gespeicherten Zuordnung, kommt in dieser Datei aber
+     * nicht vor. Das ist nicht zwangslaeufig falsch — ein Profil wird bewusst
+     * ueber mehrere Lieferungen hinweg benutzt. Es ist aber der Weg, auf dem
+     * eine falsch gelesene Datei dauerhaft Spuren hinterlaesst: einmal als
+     * Windows-1252 hochgeladen, steht der verstuemmelte Wert fuer immer neben
+     * dem richtigen. Deshalb sichtbar machen, aber nichts von selbst loeschen.
+     */
+    orphan: !present.has(value) && (map.value[value] ?? '') !== ''
   }))
 })
+
+const orphans = computed(() => rows.value.filter((r) => r.orphan))
+
+/** Alle verwaisten Eintraege auf einmal aus der Zuordnung nehmen. */
+function dropOrphans() {
+  const next = { ...map.value }
+  for (const row of orphans.value) delete next[row.value]
+  props.step.map = next
+  emit('change')
+}
 
 const openCount = computed(() => rows.value.filter((r) => r.target === '').length)
 const invalidCount = computed(() => rows.value.filter((r) => r.invalid).length)
@@ -102,8 +122,11 @@ function prefill() {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, i) in rows" :key="row.value">
-          <td><span class="fn" :title="row.value">{{ row.value }}</span></td>
+        <tr v-for="(row, i) in rows" :key="row.value" :class="row.orphan ? 'is-orphan' : ''">
+          <td>
+            <span class="fn" :title="row.value">{{ row.value }}</span>
+            <span v-if="row.orphan" class="dim small"> · {{ t('mapping.vocab.orphan') }}</span>
+          </td>
           <td class="tnum dim small">{{ row.count > 0 ? row.count : '–' }}</td>
           <td>
             <label class="sr-only" :for="`${idBase}-v${i}`">
@@ -122,6 +145,13 @@ function prefill() {
       </tbody>
     </table>
 
+    <p v-if="orphans.length > 0" class="note" style="margin:0 0 8px">
+      {{ t('mapping.vocab.orphanHint', { n: orphans.length }, orphans.length) }}
+      <button type="button" class="linkbtn" style="margin-left:6px" @click="dropOrphans">
+        {{ t('mapping.vocab.orphanDrop', { n: orphans.length }, orphans.length) }}
+      </button>
+    </p>
+
     <div class="vocabhint">
       <button type="button" class="btn btn-outline btn-sm" @click="prefill">{{ t('mapping.vocab.prefill') }}</button>
       <label class="sr-only" :for="`${idBase}-manual`">{{ t('mapping.vocab.addLabel') }}</label>
@@ -131,3 +161,8 @@ function prefill() {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Verwaist: in der Zuordnung, aber nicht in dieser Datei. */
+.is-orphan td { opacity: .72; }
+</style>

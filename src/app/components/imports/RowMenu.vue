@@ -11,6 +11,8 @@
  */
 import type { ImportListItem } from './types'
 
+const api = useApi()
+
 const props = defineProps<{ item: ImportListItem }>()
 const emit = defineEmits<{ reconvert: []; delete: [] }>()
 const { t } = useI18n()
@@ -129,11 +131,11 @@ function pick(fn: () => void) {
           <span class="mi" aria-hidden="true">☰</span>{{ t('imports.menu.detail') }}
         </NuxtLink>
 
-        <a class="menu-item" role="menuitem" :href="`/api/imports/${item.id}/original`" @click="close()">
+        <a class="menu-item" role="menuitem" :href="api(`/imports/${item.id}/original`)" @click="close()">
           <span class="mi" aria-hidden="true">⤓</span>{{ t('imports.menu.original') }}
         </a>
 
-        <a v-if="item.hasAvefi" class="menu-item" role="menuitem" :href="`/api/imports/${item.id}/avefi.json`"
+        <a v-if="item.hasAvefi" class="menu-item" role="menuitem" :href="api(`/imports/${item.id}/avefi.json`)"
            @click="close()">
           <span class="mi" aria-hidden="true">{}</span>
           <template v-if="item.validated">{{ t('imports.menu.avefi') }}</template>

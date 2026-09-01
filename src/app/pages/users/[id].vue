@@ -9,6 +9,8 @@ import { apiFailure, failureText } from '~/components/records/errors'
 import { formatDateTime } from '~/components/imports/format'
 import type { InstitutionRow, UserRow } from '#shared/types/domain'
 
+const api = useApi()
+
 interface UserWithInstitution extends UserRow {
   institution_name: string | null
 }
@@ -24,7 +26,7 @@ const route = useRoute()
 const { t, te, locale } = useI18n()
 const id = computed(() => String(route.params.id ?? ''))
 
-const { data, error, refresh } = await useFetch<UserResponse>(() => `/api/users/${id.value}`)
+const { data, error, refresh } = await useFetch<UserResponse>(() => api(`/users/${id.value}`))
 
 const loadError = computed(() => (error.value ? failureText(t, te, apiFailure(error.value), ['admin', 'imports']) : ''))
 const user = computed(() => data.value?.user ?? null)
@@ -52,7 +54,7 @@ async function save() {
   saveError.value = ''
   message.value = ''
   try {
-    await $fetch(`/api/users/${id.value}`, {
+    await $fetch(api(`/users/${id.value}`), {
       method: 'PATCH',
       body: {
         name: form.name,
@@ -86,7 +88,7 @@ async function reset() {
   message.value = ''
   try {
     const res = await $fetch<{ ok: true; oneTimePassword: string; generated: boolean }>(
-      `/api/users/${id.value}/password`,
+      api(`/users/${id.value}/password`),
       { method: 'POST', body: ownPassword.value ? { password: password.value } : {} }
     )
     confirmReset.value = false
@@ -110,16 +112,20 @@ async function reset() {
       <span>{{ user?.email ?? id }}</span>
     </nav>
 
-    <div v-if="loadError !== ''" class="alert" role="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
 
     <template v-else-if="user !== null">
       <h1 style="font-size:19px;margin-bottom:14px">{{ t('admin.users.detail.heading') }}</h1>
 
-      <div v-if="message !== ''" class="alert-ok" role="status" style="margin-bottom:16px">{{ message }}</div>
+      <div class="live-region" role="status" aria-live="polite">
+        <div v-if="message !== ''" class="alert-ok" style="margin-bottom:16px">{{ message }}</div>
+      </div>
 
       <section class="card" style="margin-bottom:16px" aria-labelledby="basics-heading">
         <h2 id="basics-heading" style="font-size:15px;margin-bottom:14px">{{ t('admin.users.detail.basics') }}</h2>
-        <div v-if="saveError !== ''" class="alert" role="alert" style="margin-bottom:12px">{{ saveError }}</div>
+        <div class="live-region" role="alert" aria-live="assertive">
+          <div v-if="saveError !== ''" class="alert" style="margin-bottom:12px">{{ saveError }}</div>
+        </div>
         <form class="stackform" @submit.prevent="save">
           <div class="field" style="width:100%">
             <label for="u-email">{{ t('admin.users.detail.email') }}</label>
@@ -164,7 +170,9 @@ async function reset() {
           {{ t('admin.users.detail.passwordHeading') }}
         </h2>
         <p class="note" style="margin-top:0">{{ t('admin.users.detail.passwordText') }}</p>
-        <div v-if="resetError !== ''" class="alert" role="alert" style="margin-bottom:12px">{{ resetError }}</div>
+        <div class="live-region" role="alert" aria-live="assertive">
+          <div v-if="resetError !== ''" class="alert" style="margin-bottom:12px">{{ resetError }}</div>
+        </div>
         <form class="stackform" autocomplete="off" @submit.prevent="confirmReset = true">
           <label class="checkline">
             <input v-model="ownPassword" type="checkbox"> {{ t('admin.users.detail.passwordOwn') }}

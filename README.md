@@ -233,12 +233,14 @@ Wer einen anderen vorgelagerten Server einsetzt, prueft das nach.
   Lieferungen desselben Werks werden nicht zusammengefuehrt.
 * **Tausendertrennzeichen** erkennt der `number`-Konverter nicht; das
   Dezimalzeichen wird angegeben.
-* **Konfiguration ohne Wirkung:** `DEMO_PASSWORD` und `NUXT_PUBLIC_API_BASE`
-  stehen in `nuxt.config.ts`, werden aber von keiner Stelle im Code gelesen.
-  Sie zu setzen aendert nichts.
-* **`npm run migrate` und `npm run seed` brechen ab.** Die in `package.json`
-  genannten Dateien `server/db/migrate.ts` und `server/db/seed.ts` gibt es
-  nicht. Fuer Schema und erstes Konto gilt der Weg in `src/docs/deployment.md`.
+* **`npm run typecheck` meldet 35 offene Befunde.** Das Skript war bis zum
+  01.09.2026 gar nicht lauffaehig, weil `vue-tsc` fehlte; es ist jetzt als
+  Entwicklungsabhaengigkeit dabei. Die Befunde stammen aus der Zeit davor und
+  liegen samtlich ausserhalb des vertraglichen Kernablaufs — im Editor fuer
+  einzelne Datensaetze, in der Nutzerverwaltung, im Format-Review und in drei
+  Auslieferungsendpunkten. Es sind fehlende Nullpruefungen auf Werten, die
+  `useFetch` als moeglicherweise undefiniert fuehrt. Tests und Build laufen
+  davon unberuehrt durch.
 
 ## Was ueber den Auftragsumfang hinausgeht
 

@@ -34,22 +34,24 @@ const summary = computed(() => {
 </script>
 
 <template>
-  <div v-if="relevant && report" class="alert" role="status" style="margin-bottom:14px">
-    <strong>{{ t('mapping.columns.heading') }}</strong>
-    <span class="dim small"> {{ summary }}</span>
-    <ul class="tight">
-      <li v-if="report.missing.length">
-        {{ t('mapping.columns.missing', { n: report.missing.length }) }}
-        <span class="mono">{{ report.missing.join(', ') }}</span>
-      </li>
-      <li v-if="report.extra.length">
-        {{ t('mapping.columns.extra', { n: report.extra.length }) }}
-        <span class="mono">{{ report.extra.join(', ') }}</span>
-      </li>
-      <li v-for="rename in report.renamed" :key="rename.from">
-        {{ t('mapping.columns.renamed', {
-          from: rename.from, to: rename.to, percent: Math.round(rename.similarity * 100) }) }}
-      </li>
-    </ul>
+  <div class="live-region" role="status" aria-live="polite">
+    <div v-if="relevant && report" class="alert" style="margin-bottom:14px">
+      <strong>{{ t('mapping.columns.heading') }}</strong>
+      <span class="dim small"> {{ summary }}</span>
+      <ul class="tight">
+        <li v-if="report.missing.length">
+          {{ t('mapping.columns.missing', { n: report.missing.length }) }}
+          <span class="mono">{{ report.missing.join(', ') }}</span>
+        </li>
+        <li v-if="report.extra.length">
+          {{ t('mapping.columns.extra', { n: report.extra.length }) }}
+          <span class="mono">{{ report.extra.join(', ') }}</span>
+        </li>
+        <li v-for="rename in report.renamed" :key="rename.from">
+          {{ t('mapping.columns.renamed', {
+            from: rename.from, to: rename.to, percent: Math.round(rename.similarity * 100) }) }}
+        </li>
+      </ul>
+    </div>
   </div>
 </template>

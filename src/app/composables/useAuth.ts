@@ -6,6 +6,9 @@ export interface SessionUser extends UserRow {
 
 /** Angemeldeter Nutzer, einmal geladen und app-weit geteilt. */
 export function useAuth() {
+  // Innerhalb der Funktion, nicht auf Modulebene: useRuntimeConfig() braucht
+  // den Nuxt-Kontext, und den gibt es beim Auswerten des Moduls noch nicht.
+  const api = useApi()
   const user = useState<SessionUser | null>('auth:user', () => null)
   const loaded = useState<boolean>('auth:loaded', () => false)
 
@@ -17,19 +20,19 @@ export function useAuth() {
     // gueltiger Sitzung. Erst im Browser fiel es nicht mehr auf, weil dort
     // Cookies von selbst mitgehen.
     const request = useRequestFetch()
-    const res = await request<{ user: SessionUser | null }>('/api/auth/me').catch(() => ({ user: null }))
+    const res = await request<{ user: SessionUser | null }>(api('/auth/me')).catch(() => ({ user: null }))
     user.value = res.user
     loaded.value = true
     return user.value
   }
 
   async function login(email: string, password: string) {
-    await $fetch('/api/auth/login', { method: 'POST', body: { email, password } })
+    await $fetch(api('/auth/login'), { method: 'POST', body: { email, password } })
     await refresh()
   }
 
   async function logout() {
-    await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
+    await $fetch(api('/auth/logout'), { method: 'POST' }).catch(() => {})
     user.value = null
     await navigateTo('/login')
   }

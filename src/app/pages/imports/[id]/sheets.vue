@@ -10,11 +10,13 @@ import { apiFailure, failureText, type ApiFailure } from '~/components/imports/e
 import { formatNumber } from '~/components/imports/format'
 import type { SheetsResponse } from '~/components/imports/types'
 
+const api = useApi()
+
 const route = useRoute()
 const { t, te, locale } = useI18n()
 const id = computed(() => String(route.params.id ?? ''))
 
-const { data, error } = await useFetch<SheetsResponse>(() => `/api/imports/${id.value}/sheets`)
+const { data, error } = await useFetch<SheetsResponse>(() => api(`/imports/${id.value}/sheets`))
 
 const loadFailure = computed<ApiFailure | null>(() => (error.value ? apiFailure(error.value) : null))
 const loadError = computed(() => failureText(t, te, loadFailure.value))
@@ -53,7 +55,7 @@ async function submit() {
   }
   busy.value = true
   try {
-    const res = await $fetch<{ ids: string[] }>(`/api/imports/${id.value}/sheets`, {
+    const res = await $fetch<{ ids: string[] }>(api(`/imports/${id.value}/sheets`), {
       method: 'POST',
       body: { sheets: chosen.value }
     })
@@ -76,7 +78,7 @@ async function submit() {
       <span>{{ t('imports.sheets.crumb') }}</span>
     </nav>
 
-    <div v-if="loadFailure !== null" class="alert" role="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadFailure !== null" class="alert">{{ loadError }}</div>
 
     <template v-else>
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
@@ -87,7 +89,9 @@ async function submit() {
 
       <p class="note" style="margin-bottom:14px">{{ t('imports.sheets.lead') }}</p>
 
-      <div v-if="submitError !== ''" class="alert" role="alert" style="margin-bottom:14px">{{ submitError }}</div>
+      <div class="live-region" role="alert" aria-live="assertive">
+        <div v-if="submitError !== ''" class="alert" style="margin-bottom:14px">{{ submitError }}</div>
+      </div>
 
       <div v-if="sheets.length === 0" class="tablewrap">
         <div class="empty">

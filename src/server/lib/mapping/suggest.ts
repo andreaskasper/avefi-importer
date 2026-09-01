@@ -64,6 +64,12 @@ const KEYWORDS: Record<string, readonly string[]> = {
   'item.duration': ['laufzeit', 'dauer', 'laenge', 'spieldauer', 'duration', 'minuten', 'spielzeit'],
   'item.extent.metre': ['meter', 'laengem', 'filmlaenge', 'konfektionierung'],
   'item.extent.feet': ['fuss', 'feet', 'ft'],
+  'item.format.film': ['format', 'filmformat', 'bildformat', 'formatfilm', 'gauge'],
+  'item.format.video': ['videoformat', 'video', 'band', 'videoband', 'kassette'],
+  'item.format.audio': ['tontraeger', 'audioformat', 'magnetton'],
+  'item.format.optical': ['datentraeger', 'disc', 'scheibe'],
+  'item.format.digitalfile': ['datei', 'dateiformat', 'container', 'wrapper'],
+  'item.format.encoding': ['kodierung', 'codec', 'encoding', 'komprimierung'],
   'item.language.spoken': ['sprache', 'sprachfassung', 'language', 'originalsprache'],
   'item.language.subtitles': ['untertitelsprache', 'untertitel', 'subtitles'],
   'item.language.intertitles': ['zwischentitel', 'intertitles'],
@@ -97,7 +103,12 @@ export function tokens(header: string): string[] {
   let h = header.trim().toLowerCase()
   h = h.replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
   h = h.replace(/\(\d+\)\s*$/, '') // "Titel (2)" ist immer noch ein Titel
-  const parts = h.split(/[^a-z0-9]+/).filter((p) => p !== '')
+  const parts = h.split(/[^a-z0-9_]+/).filter((p) => p !== '')
+  // Ein Feldname wie has_colour_type ist ein Wort; seine Teile sind aber auch
+  // welche, sonst faende "Farbe" ihn nicht mehr.
+  for (const p of [...parts]) {
+    if (p.includes('_')) parts.push(...p.split('_').filter((x) => x !== ''))
+  }
   // Zusammengeschrieben mitpruefen: "Entst Jahr" auch als "entstjahr".
   if (parts.length > 1) parts.push(parts.join(''))
   return parts
@@ -111,6 +122,59 @@ function hasQualifier(parts: readonly string[]): boolean {
     }
   }
   return false
+}
+
+/**
+ * Woerter, mit denen eine Kopfzeile die Ebene selbst nennt.
+ *
+ * Anlass: eine Spalte hiess "category: avefi:Item has_format" und bekam
+ * "Werk › Form" vorgeschlagen, weil "format" mit dem Stichwort "form" beginnt.
+ * Die Kopfzeile sagte zweimal, dass ein Exemplar gemeint ist, und beides wurde
+ * nicht gelesen.
+ */
+const LEVEL_WORDS: Record<string, string> = {
+  item: 'item', exemplar: 'item', copy: 'item',
+  manifestation: 'manifestation', fassung: 'manifestation',
+  work: 'work', werk: 'work', workvariant: 'work'
+}
+
+/** Nennt die Kopfzeile eine Ebene ausdruecklich? */
+export function levelInHeader(parts: readonly string[]): string | null {
+  for (const t of parts) {
+    const level = LEVEL_WORDS[t]
+    if (level !== undefined) return level
+  }
+  return null
+}
+
+/**
+ * Schemafeldname -> Ziel, fuer Kopfzeilen, die ihre eigenen Feldnamen
+ * mitliefern. Nennt eine Spalte das Feld beim Namen, ist das keine
+ * Wortaehnlichkeit mehr, sondern eine Angabe — sie schlaegt jeden anderen
+ * Treffer.
+ *
+ * Nur eindeutige Felder stehen hier. `has_format` fehlt mit Absicht: es
+ * verteilt sich im Schema auf sechs Traegerklassen, und welche gemeint ist,
+ * sagt der Feldname nicht. Dafuer sorgen die Stichwoerter und die Ebene.
+ */
+const SCHEMA_FIELDS: Record<string, string> = {
+  has_colour_type: 'item.colour_type',
+  has_sound_type: 'item.sound_type',
+  has_frame_rate: 'item.frame_rate',
+  has_access_status: 'item.access_status',
+  element_type: 'item.element_type',
+  has_duration: 'item.duration',
+  has_form: 'work.form',
+  has_genre: 'work.genre',
+  variant_type: 'work.variant_type',
+  has_webresource: 'item.webresource',
+  has_note: 'item.note'
+}
+
+/** Ebene eines Ziels, abgelesen am Schluessel. */
+function levelOfTarget(key: string): string | null {
+  const head = key.split('.')[0]
+  return head === 'work' || head === 'manifestation' || head === 'item' ? head : null
 }
 
 /** Vorschlaege fuer eine Spalte, bester zuerst. */
@@ -129,6 +193,23 @@ export function suggestForColumn(header: string, limit = 3): TargetSuggestion[] 
     }
     if (best > 0) scores.set(target, best)
   }
+  // Das Schemafeld beim Namen genannt schlaegt jede Wortaehnlichkeit.
+  for (const t of parts) {
+    const target = SCHEMA_FIELDS[t]
+    if (target !== undefined) scores.set(target, 120)
+  }
+
+  // Nennt die Kopfzeile die Ebene, wird alles von einer anderen Ebene
+  // zurueckgestuft statt verworfen: die Angabe kann auch falsch sein, und ein
+  // schwaecherer Vorschlag ist immer noch besser als keiner.
+  const level = levelInHeader(parts)
+  if (level !== null) {
+    for (const [target, score] of [...scores]) {
+      const t = levelOfTarget(target)
+      if (t !== null && t !== level) scores.set(target, Math.round(score / 3))
+    }
+  }
+
   if (scores.size === 0) return []
 
   // "Diverse Titel" und "Untertitel" sind keine Haupttitel. Ohne diese Regel

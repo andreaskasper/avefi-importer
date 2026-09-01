@@ -33,6 +33,12 @@ export type TargetWriter =
   | { kind: 'duration' }
   | { kind: 'extent'; unit: string }
   | { kind: 'language'; usage: string }
+  // has_format ist im Schema kein Enum, sondern eine Liste aus sechs Klassen
+  // (Film, Video, Audio, Optical, DigitalFile, DigitalFileEncoding), jede mit
+  // einer eigenen Werteliste. Die Traegerklasse steht deshalb am Ziel und wird
+  // nicht aus dem Wert erraten: "DV" kommt sowohl in FormatVideoTypeEnum als
+  // auch in FormatDigitalFileTypeEnum vor.
+  | { kind: 'format'; className: string }
 
 /** Katalogeintrag: der oeffentliche Teil aus domain.ts plus die Bauanleitung. */
 export interface TargetDefinition extends TargetEntry {
@@ -111,6 +117,21 @@ const ACTIVITIES: ReadonlyArray<readonly [string, string, string, string]> = [
   ['animation', 'avefi:AnimationActivity', 'Animator', 'Animation']
 ]
 
+/**
+ * Traegerklassen fuer has_format: Klasse -> [Schluesselteil, Label].
+ *
+ * Der Name der Werteliste folgt der Klasse — Film gehoert zu
+ * FormatFilmTypeEnum —, deshalb steht sie hier nicht noch einmal daneben.
+ */
+const ITEM_FORMATS: ReadonlyArray<readonly [string, string, string]> = [
+  ['Film', 'film', 'Film (16mm, 35mm …)'],
+  ['Video', 'video', 'Videoband (BetacamSP, VHS …)'],
+  ['Audio', 'audio', 'Tontraeger (Magnetton, Audiokassette …)'],
+  ['Optical', 'optical', 'Optischer Datentraeger (DVD, Blu-ray …)'],
+  ['DigitalFile', 'digitalfile', 'Datei (MXF, MP4, DPX …)'],
+  ['DigitalFileEncoding', 'encoding', 'Kodierung der Datei (MPEG4, Quicktime …)']
+]
+
 /** Normdaten-Verknuepfungen auf Werkebene: Resource-Typ -> Label. */
 const WORK_SAME_AS: ReadonlyArray<readonly [string, string]> = [
   ['GNDResource', 'GND'],
@@ -137,7 +158,13 @@ function entry(
     group,
     type,
     multi,
-    path: `${levelLabel(level)} › ${group} › ${label}`,
+    // Zweistufig: Ebene und Feld. Die Gruppe bleibt als Sortierschluessel
+    // erhalten, steht aber in keinem angezeigten Text mehr. Sie hat im Schema
+    // keine Entsprechung, und wo sie eine vorgab, war sie irrefuehrend:
+    // "Werk › Werk › Form" nannte eine Ebene, die es nicht gibt, und
+    // "Exemplar › Technik › Farbe" eine, die sich niemand erklaeren konnte.
+    // Der echte Schemapfad steht ohnehin daneben.
+    path: `${levelLabel(level)} › ${label}`,
     writer,
     acceptsAuthority: writerAcceptsAuthority(writer),
     ...(description !== undefined ? { description } : {})
@@ -228,6 +255,12 @@ function buildCatalog(): Map<string, TargetDefinition> {
     { kind: 'extent', unit: 'Metre' }))
   list.push(entry('item.extent.feet', 'Laenge in Fuss', 'item', 'Technik', 'number', false,
     { kind: 'extent', unit: 'Feet' }))
+
+  for (const [className, key, label] of ITEM_FORMATS) {
+    list.push(entry(`item.format.${key}`, label, 'item', 'Format', `enum:Format${className}TypeEnum`, true,
+      { kind: 'format', className },
+      'Traeger oder Datei, auf der das Exemplar vorliegt.'))
+  }
 
   list.push(entry('item.language.spoken', 'Sprache (gesprochen)', 'item', 'Sprache', 'lang', true,
     { kind: 'language', usage: 'SpokenLanguage' }))

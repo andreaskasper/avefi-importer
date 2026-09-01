@@ -8,7 +8,8 @@
     "mappings": "Zuordnungen",
     "reviews": "Format-Review",
     "reviewsTitle": "Offene Zuordnungsaufgaben: {count}",
-    "reviewsBadge": "offene Aufgaben"
+    "reviewsBadge": "offene Aufgaben",
+    "toggle": "Navigation aufklappen"
   },
   "menu": {
     "profile": "Mein Profil",

@@ -252,15 +252,12 @@ werden: `DB_*` und `SESSION_SECRET`. Alles andere liest der Code direkt aus
 | `EFI_CONV_REF` | nein (Bauzeit) | `main` | Zweig oder Commit von efi-conv. Fuer reproduzierbare Ergebnisse einen Commit eintragen. |
 | `APP_DOMAIN` | nein | `avefiimporter.goo1.de` | Nur fuer die Traefik-Regel in `docker-compose.dev.yml`. Die Anwendung selbst kennt keine feste Domain. |
 
-Zwei weitere Variablen sind in `nuxt.config.ts` vorgesehen, werden aber derzeit
-von keiner Stelle im Code gelesen. Sie zu setzen hat keine Wirkung:
-
 | Variable | Stand |
 |---|---|
-| `DEMO_PASSWORD` | Vorbereitet fuer einen einfachen Zugriffsschutz ohne Nutzerkonto. `SessionData.demoUnlocked` existiert, wird aber nirgends gesetzt oder ausgewertet. Der Zugang laeuft ueber die Nutzerverwaltung. |
-| `NUXT_PUBLIC_API_BASE` | Vorbereitet fuer eine konfigurierbare API-Basis. Die Oberflaeche ruft `/api/...` mit festen Pfaden auf. |
+| `DEMO_PASSWORD` | Wirksam. Ist die Variable gesetzt, liegt eine Basis-Authentifizierung vor der ganzen Anwendung (`server/middleware/00.demo-gate.ts`) — der einfache Zugriffsschutz ohne Nutzerverwaltung, den die Leistungsbeschreibung fuer Entwicklung und Vorfuehrung verlangt. Ist sie leer, entfaellt die Huerde und der Zugang laeuft allein ueber die Nutzerverwaltung. |
+| `NUXT_PUBLIC_API_BASE` | Wirksam. Alle Aufrufe der Oberflaeche gehen ueber `useApi()` und stellen diese Basis voran; ohne Angabe gilt `/api`. Damit laesst sich der Importer hinter einem fremden Frontend oder unter eigener Subdomain betreiben, ohne den Code anzufassen. |
 
-Ebenfalls ohne Wirkung im Code: `APP_HOST` aus `docker-compose.dev.yml` und
+Ohne Wirkung im Code sind `APP_HOST` aus `docker-compose.dev.yml` und
 `NODE_ENV` ausserhalb dessen, was Nuxt und Nitro selbst daraus machen.
 
 ### Normdaten in beiden Containern
@@ -324,11 +321,10 @@ laesst sich nicht erneut konvertieren.
 
 ## Offene Punkte
 
-* **Kein Skript fuer Initialisierung und Migration.** `package.json` nennt
-  `npm run migrate` (`server/db/migrate.ts`) und `npm run seed`
-  (`server/db/seed.ts`); beide Dateien gibt es nicht, die Befehle brechen ab.
-  Solange das so ist, gilt der oben beschriebene Weg von Hand. Er ist
-  ausgefuehrt und funktioniert, aber ein Skript waere die bessere Antwort.
+* **`npm run typecheck` meldet 35 offene Befunde.** Bis zum 01.09.2026 war das
+  Skript gar nicht lauffaehig, weil `vue-tsc` fehlte. Die Befunde stammen aus
+  dieser Zeit und liegen ausserhalb des vertraglichen Kernablaufs; Tests und
+  Build laufen unberuehrt durch. Siehe README.
 * **Der Kopfkommentar in `db/schema.sql`** verweist noch auf den Seed-Bot der
   PHP-Fassung (`php app/bot.php -t seed`). Der Hinweis stimmt nicht mehr.
 * **Die laufende Testdatenbank enthaelt eine Tabelle `jobs`**, die in

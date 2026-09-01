@@ -7,6 +7,8 @@
  */
 import type { AuthorityDetailResponse } from './types'
 
+const api = useApi()
+
 const props = defineProps<{ source: string; id: string }>()
 const emit = defineEmits<{ close: [] }>()
 const { t } = useI18n()
@@ -19,7 +21,7 @@ let returnTo: HTMLElement | null = null
 
 async function load() {
   loading.value = true
-  data.value = await $fetch<AuthorityDetailResponse>('/api/records/authority/detail', {
+  data.value = await $fetch<AuthorityDetailResponse>(api('/records/authority/detail'), {
     query: { source: props.source, id: props.id }
   }).catch(() => null)
   loading.value = false

@@ -131,3 +131,23 @@ describe('Pflichtangaben und Titelanleihe', () => {
     expect(b.build('x').items.length).toBe(0)
   })
 })
+
+describe('Format des Exemplars', () => {
+  it('schreibt Traegerklasse und Wert, und legt Klassen nebeneinander', () => {
+    const b = new AvefiBuilder(testSchema)
+    b.write(t('item.format.film'), '35mmFilm')
+    b.write(t('item.format.optical'), 'DVD')
+    const formats = b.build('x').items[0]?.['has_format'] as any[]
+    expect(formats).toEqual([
+      { category: 'avefi:Film', type: '35mmFilm' },
+      { category: 'avefi:Optical', type: 'DVD' }
+    ])
+  })
+
+  it('schreibt denselben Wert nicht zweimal', () => {
+    const b = new AvefiBuilder(testSchema)
+    b.write(t('item.format.film'), '16mmFilm')
+    b.write(t('item.format.film'), '16mmFilm')
+    expect((b.build('x').items[0]?.['has_format'] as any[]).length).toBe(1)
+  })
+})

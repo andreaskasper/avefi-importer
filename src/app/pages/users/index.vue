@@ -11,6 +11,8 @@ import { apiFailure, failureText } from '~/components/records/errors'
 import { formatDateTime } from '~/components/imports/format'
 import type { InstitutionRow, UserRow } from '#shared/types/domain'
 
+const api = useApi()
+
 interface UserWithInstitution extends UserRow {
   institution_name: string | null
 }
@@ -23,7 +25,7 @@ interface UsersResponse {
 }
 
 const { t, te, locale } = useI18n()
-const { data, error, refresh } = await useFetch<UsersResponse>('/api/users')
+const { data, error, refresh } = await useFetch<UsersResponse>(api('/users'))
 
 const loadError = computed(() => (error.value ? failureText(t, te, apiFailure(error.value), ['admin', 'imports']) : ''))
 const users = computed(() => data.value?.users ?? [])
@@ -47,7 +49,7 @@ async function create() {
   formError.value = ''
   message.value = ''
   try {
-    const res = await $fetch<{ ok: true; oneTimePassword: string; generated: boolean }>('/api/users', {
+    const res = await $fetch<{ ok: true; oneTimePassword: string; generated: boolean }>(api('/users'), {
       method: 'POST',
       body: {
         email: form.email,
@@ -84,7 +86,7 @@ async function setActive(user: UserWithInstitution, active: boolean) {
   rowError.value = ''
   message.value = ''
   try {
-    await $fetch(`/api/users/${user.id}`, { method: 'PATCH', body: { active } })
+    await $fetch(api(`/users/${user.id}`), { method: 'PATCH', body: { active } })
     message.value = active ? t('admin.users.done.unlocked') : t('admin.users.done.locked')
     confirmLock.value = null
     await refresh()
@@ -101,7 +103,7 @@ async function remove(user: UserWithInstitution) {
   rowError.value = ''
   message.value = ''
   try {
-    await $fetch(`/api/users/${user.id}`, { method: 'DELETE' })
+    await $fetch(api(`/users/${user.id}`), { method: 'DELETE' })
     message.value = t('admin.users.done.deleted', { email: user.email })
     confirmDelete.value = null
     await refresh()
@@ -119,15 +121,21 @@ async function remove(user: UserWithInstitution) {
     <h1 style="font-size:19px;margin-bottom:6px">{{ t('admin.users.heading') }}</h1>
     <p class="note" style="margin-bottom:16px">{{ t('admin.users.lead') }}</p>
 
-    <div v-if="loadError !== ''" class="alert" role="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
 
     <template v-else>
-      <div v-if="message !== ''" class="alert-ok" role="status" style="margin-bottom:14px">{{ message }}</div>
-      <div v-if="rowError !== ''" class="alert" role="alert" style="margin-bottom:14px">{{ rowError }}</div>
+      <div class="live-region" role="status" aria-live="polite">
+        <div v-if="message !== ''" class="alert-ok" style="margin-bottom:14px">{{ message }}</div>
+      </div>
+      <div class="live-region" role="alert" aria-live="assertive">
+        <div v-if="rowError !== ''" class="alert" style="margin-bottom:14px">{{ rowError }}</div>
+      </div>
 
       <section class="card" style="margin-bottom:18px" aria-labelledby="create-heading">
         <h2 id="create-heading" style="font-size:15px;margin-bottom:14px">{{ t('admin.users.create.heading') }}</h2>
-        <div v-if="formError !== ''" class="alert" role="alert" style="margin-bottom:12px">{{ formError }}</div>
+        <div class="live-region" role="alert" aria-live="assertive">
+          <div v-if="formError !== ''" class="alert" style="margin-bottom:12px">{{ formError }}</div>
+        </div>
         <form class="userform" @submit.prevent="create">
           <div class="field">
             <label for="nu-email">{{ t('admin.users.create.email') }}</label>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const api = useApi()
 /**
  * Eine einzelne Oberflaechenbeschreibung.
  *
@@ -19,7 +20,7 @@ const { t } = useI18n()
 const route = useRoute()
 const kennung = computed(() => String(route.params.seite ?? ''))
 
-const { data, error } = await useFetch<KapitelDaten>(() => `/api/doku/oberflaeche/${kennung.value}`)
+const { data, error } = await useFetch<KapitelDaten>(() => api(`/doku/oberflaeche/${kennung.value}`))
 
 if (error.value) {
   throw createError({ statusCode: 404, statusMessage: t('doku.error.missing'), fatal: true })
@@ -27,7 +28,7 @@ if (error.value) {
 
 useHead({ title: () => t('doku.page.pageTitle', { name: data.value?.titel ?? '' }) })
 
-const bildAdresse = computed(() => `/api/doku/oberflaeche/bild/${kennung.value}`)
+const bildAdresse = computed(() => api(`/doku/oberflaeche/bild/${kennung.value}`))
 </script>
 
 <template>

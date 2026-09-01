@@ -8,7 +8,8 @@
     "mappings": "Mappings",
     "reviews": "Format review",
     "reviewsTitle": "Open mapping tasks: {count}",
-    "reviewsBadge": "open tasks"
+    "reviewsBadge": "open tasks",
+    "toggle": "Open navigation"
   },
   "menu": {
     "profile": "My profile",

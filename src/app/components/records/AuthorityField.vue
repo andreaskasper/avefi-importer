@@ -9,6 +9,8 @@
 import { apiFailure, failureText } from './errors'
 import type { AuthorityHit, AuthoritySearchResponse } from './types'
 
+const api = useApi()
+
 const props = withDefaults(
   defineProps<{
     modelValue: string
@@ -53,7 +55,7 @@ async function search(value: string) {
   const mine = ++sequence
   problem.value = ''
   try {
-    const res = await $fetch<AuthoritySearchResponse>('/api/records/authority/search', {
+    const res = await $fetch<AuthoritySearchResponse>(api('/records/authority/search'), {
       query: { kind: props.kind, q: value.trim() }
     })
     if (mine !== sequence) return

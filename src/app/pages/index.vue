@@ -10,11 +10,13 @@ import { apiFailure, failureText, type ApiFailure } from '~/components/imports/e
 import { formatNumber } from '~/components/imports/format'
 import { BUSY_STATES, type ImportListResponse, type ImportStatusResponse } from '~/components/imports/types'
 
+const api = useApi()
+
 const { t, te, locale } = useI18n()
 const route = useRoute()
 useHead({ title: () => t('imports.pageTitle') })
 
-const { data, refresh, error } = await useFetch<ImportListResponse>('/api/imports', {
+const { data, refresh, error } = await useFetch<ImportListResponse>(api('/imports'), {
   default: () => ({ imports: [], kpi: { records: 0, awaiting: 0 } })
 })
 
@@ -61,7 +63,7 @@ function stop() {
 }
 
 async function poll() {
-  const status = await $fetch<ImportStatusResponse>('/api/imports/status').catch(() => null)
+  const status = await $fetch<ImportStatusResponse>(api('/imports/status')).catch(() => null)
   if (status === null) {
     stop()
     return
@@ -126,7 +128,9 @@ async function afterUpload() {
   <main id="main" class="appwrap">
     <h1 class="sr-only">{{ t('imports.heading') }}</h1>
 
-    <div v-if="loadFailure !== null" class="alert" role="alert" style="margin-bottom:14px">{{ loadError }}</div>
+    <div class="live-region" role="alert" aria-live="assertive">
+      <div v-if="loadFailure !== null" class="alert" style="margin-bottom:14px">{{ loadError }}</div>
+    </div>
 
     <ImportsUploadPanel @uploaded="afterUpload" @queued="afterUpload" />
 

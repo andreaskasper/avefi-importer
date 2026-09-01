@@ -84,7 +84,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown, true))
           </div>
 
           <div class="modal-body">
-            <p v-if="busy" class="dim" role="status">
+            <p role="status" aria-live="polite" v-if="busy" class="dim">
               {{ t('mapping.authority.searching', { source: request.source.toUpperCase() }) }}
             </p>
             <p v-else-if="error" class="alert" role="alert">{{ error }}</p>

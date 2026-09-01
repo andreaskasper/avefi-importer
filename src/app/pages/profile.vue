@@ -11,6 +11,8 @@ import { apiFailure, failureText } from '~/components/records/errors'
 import { formatDateTime } from '~/components/imports/format'
 import type { UserRow } from '#shared/types/domain'
 
+const api = useApi()
+
 interface ProfileResponse {
   user: UserRow & { institution_name: string | null }
   minPasswordLength: number
@@ -18,7 +20,7 @@ interface ProfileResponse {
 
 const { t, te, locale } = useI18n()
 const { refresh: refreshAuth } = useAuth()
-const { data, error, refresh } = await useFetch<ProfileResponse>('/api/profile')
+const { data, error, refresh } = await useFetch<ProfileResponse>(api('/profile'))
 
 const loadError = computed(() => (error.value ? failureText(t, te, apiFailure(error.value), ['admin', 'imports']) : ''))
 const user = computed(() => data.value?.user ?? null)
@@ -41,7 +43,7 @@ async function saveName() {
   nameError.value = ''
   nameMessage.value = ''
   try {
-    await $fetch('/api/profile', { method: 'PATCH', body: { name: name.value } })
+    await $fetch(api('/profile'), { method: 'PATCH', body: { name: name.value } })
     nameMessage.value = t('admin.profile.nameSaved')
     await refresh()
     await refreshAuth()
@@ -65,7 +67,7 @@ async function changePassword() {
   passwordError.value = ''
   passwordMessage.value = ''
   try {
-    await $fetch('/api/profile/password', {
+    await $fetch(api('/profile/password'), {
       method: 'POST',
       body: { current: current.value, next: next.value, confirm: confirm.value }
     })
@@ -91,13 +93,17 @@ async function changePassword() {
 
     <h1 style="font-size:19px;margin-bottom:14px">{{ t('admin.profile.heading') }}</h1>
 
-    <div v-if="loadError !== ''" class="alert" role="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
 
     <template v-else-if="user !== null">
       <section class="card" style="margin-bottom:16px" aria-labelledby="name-heading">
         <h2 id="name-heading" style="font-size:15px;margin-bottom:14px">{{ t('admin.profile.nameHeading') }}</h2>
-        <div v-if="nameMessage !== ''" class="alert-ok" role="status" style="margin-bottom:12px">{{ nameMessage }}</div>
-        <div v-if="nameError !== ''" class="alert" role="alert" style="margin-bottom:12px">{{ nameError }}</div>
+        <div class="live-region" role="status" aria-live="polite">
+          <div v-if="nameMessage !== ''" class="alert-ok" style="margin-bottom:12px">{{ nameMessage }}</div>
+        </div>
+        <div class="live-region" role="alert" aria-live="assertive">
+          <div v-if="nameError !== ''" class="alert" style="margin-bottom:12px">{{ nameError }}</div>
+        </div>
         <form class="stackform" @submit.prevent="saveName">
           <div class="field" style="width:100%">
             <label for="pf-name">{{ t('admin.profile.name') }}</label>
@@ -124,10 +130,14 @@ async function changePassword() {
 
       <section class="card" aria-labelledby="pw-heading">
         <h2 id="pw-heading" style="font-size:15px;margin-bottom:14px">{{ t('admin.profile.passwordHeading') }}</h2>
-        <div v-if="passwordMessage !== ''" class="alert-ok" role="status" style="margin-bottom:12px">
-          {{ passwordMessage }}
+        <div class="live-region" role="status" aria-live="polite">
+          <div v-if="passwordMessage !== ''" class="alert-ok" style="margin-bottom:12px">
+            {{ passwordMessage }}
+          </div>
         </div>
-        <div v-if="passwordError !== ''" class="alert" role="alert" style="margin-bottom:12px">{{ passwordError }}</div>
+        <div class="live-region" role="alert" aria-live="assertive">
+          <div v-if="passwordError !== ''" class="alert" style="margin-bottom:12px">{{ passwordError }}</div>
+        </div>
         <form class="stackform" autocomplete="off" @submit.prevent="changePassword">
           <div class="field" style="width:100%">
             <label for="pf-cur">{{ t('admin.profile.current') }}</label>

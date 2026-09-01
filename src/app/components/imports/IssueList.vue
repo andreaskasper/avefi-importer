@@ -53,7 +53,7 @@ function setFilter(value: Filter) {
     <h2 class="side-h" style="margin:0 0 8px">{{ t('imports.report.issues.heading') }}</h2>
     <p class="note" style="margin:0 0 10px">{{ t('imports.report.issues.lead') }}</p>
 
-    <div v-if="total === 0" class="alert-ok" role="status">{{ t('imports.report.issues.none') }}</div>
+    <div role="status" aria-live="polite" v-if="total === 0" class="alert-ok">{{ t('imports.report.issues.none') }}</div>
 
     <template v-else>
       <div role="group" :aria-label="t('imports.report.issues.filterLabel')"

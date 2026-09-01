@@ -14,6 +14,8 @@ import { apiFailure, failureText } from '~/components/records/errors'
 import { formatNumber } from '~/components/imports/format'
 import type { RecordListResponse } from '~/components/records/types'
 
+const api = useApi()
+
 const route = useRoute()
 const { t, te, locale } = useI18n()
 
@@ -29,7 +31,7 @@ const limit = 50
 // bleibt beim Wechsel in den Editor stehen. Wuerde sie beim Einstieg ueber einen
 // Deeplink auf einen Datensatz nichts laden, waere die Liste danach leer.
 const { data, error, refresh } = await useFetch<RecordListResponse>(
-  () => `/api/imports/${importId.value}/records`,
+  () => api(`/imports/${importId.value}/records`),
   {
     query: { q: query, limit, offset },
     watch: [query, offset]
@@ -100,7 +102,7 @@ watch(isChild, (child) => {
       <span>{{ t('records.crumb') }}</span>
     </nav>
 
-    <div v-if="loadError !== ''" class="alert" role="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
 
     <template v-else-if="item !== null">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
@@ -112,7 +114,7 @@ watch(isChild, (child) => {
         </span>
         <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
           <NuxtLink class="btn btn-outline btn-sm" :to="`/imports/${importId}`">{{ t('records.toImport') }}</NuxtLink>
-          <a class="btn btn-outline btn-sm" :href="`/api/imports/${importId}/avefi.json`">
+          <a class="btn btn-outline btn-sm" :href="api(`/imports/${importId}/avefi.json`)">
             <span aria-hidden="true">⤓</span> {{ t('records.download') }}</a>
         </div>
       </div>
@@ -125,7 +127,7 @@ watch(isChild, (child) => {
         <button v-if="query !== ''" class="btn btn-outline btn-sm" type="button" @click="clearSearch">
           {{ t('records.search.clear') }}
         </button>
-        <span v-if="query !== ''" class="dim small" role="status">
+        <span role="status" aria-live="polite" v-if="query !== ''" class="dim small">
           {{ t('records.search.hits', { count: formatNumber(filtered, locale), total: formatNumber(total, locale) }) }}
         </span>
         <span v-else class="note" style="margin:0">{{ t('records.search.hint') }}</span>

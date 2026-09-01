@@ -101,7 +101,8 @@
       "enumCount": "{n} zulässige Werte",
       "authority": "kann Normdaten tragen",
       "clear": "Ziel entfernen",
-      "none": "Noch kein Ziel gewählt."
+      "none": "Noch kein Ziel gewählt.",
+      "hits": "1 Treffer | {n} Treffer"
     },
     "check": {
       "heading": "Prüfung",
@@ -284,7 +285,10 @@
           "Monographic": "Einzelwerk",
           "Serial": "Fortlaufendes Werk"
         }
-      }
+      },
+      "orphan": "nicht in dieser Datei",
+      "orphanHint": "Ein Eintrag der Zuordnung kommt in dieser Datei nicht vor. | {n} Einträge der Zuordnung kommen in dieser Datei nicht vor.",
+      "orphanDrop": "Eintrag entfernen | {n} Einträge entfernen"
     },
     "authority": {
       "heading": "Normdaten aus {source}",

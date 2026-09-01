@@ -9,6 +9,8 @@
 import { apiFailure, failureText } from '~/components/records/errors'
 import { formatDateTime } from '~/components/imports/format'
 
+const api = useApi()
+
 interface ReviewDetail {
   review: {
     id: number
@@ -38,7 +40,7 @@ const router = useRouter()
 const { t, te, locale } = useI18n()
 
 const id = computed(() => String(route.params.id ?? ''))
-const { data, error } = await useFetch<ReviewDetail>(() => `/api/reviews/${id.value}`)
+const { data, error } = await useFetch<ReviewDetail>(() => api(`/reviews/${id.value}`))
 
 const loadError = computed(() => (error.value ? failureText(t, te, apiFailure(error.value), ['admin', 'imports']) : ''))
 const review = computed(() => data.value?.review ?? null)
@@ -61,7 +63,7 @@ async function assign() {
   busy.value = true
   actionError.value = ''
   try {
-    const res = await $fetch<{ ok: true; label: string; started: number }>(`/api/reviews/${id.value}/assign`, {
+    const res = await $fetch<{ ok: true; label: string; started: number }>(api(`/reviews/${id.value}/assign`), {
       method: 'POST',
       body: { converterKey: converterKey.value, scope: scope.value }
     })
@@ -78,7 +80,7 @@ async function reject() {
   busy.value = true
   actionError.value = ''
   try {
-    const res = await $fetch<{ ok: true; rejected: number }>(`/api/reviews/${id.value}/reject`, {
+    const res = await $fetch<{ ok: true; rejected: number }>(api(`/reviews/${id.value}/reject`), {
       method: 'POST',
       body: { scope: 'file' }
     })
@@ -101,7 +103,7 @@ async function reject() {
       <span>{{ review?.filename ?? id }}</span>
     </nav>
 
-    <div v-if="loadError !== ''" class="alert" role="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
 
     <template v-else-if="review !== null && data !== null">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
@@ -114,7 +116,9 @@ async function reject() {
         </span>
       </div>
 
-      <div v-if="actionError !== ''" class="alert" role="alert" style="margin-bottom:14px">{{ actionError }}</div>
+      <div class="live-region" role="alert" aria-live="assertive">
+        <div v-if="actionError !== ''" class="alert" style="margin-bottom:14px">{{ actionError }}</div>
+      </div>
 
       <div class="grid2" style="align-items:start">
         <section class="card" aria-labelledby="recognition-heading">
@@ -174,7 +178,7 @@ async function reject() {
           </form>
 
           <div style="display:flex;gap:8px;align-items:center;margin-top:14px">
-            <a class="btn btn-outline btn-sm" :href="`/api/imports/${review.importId}/original`">
+            <a class="btn btn-outline btn-sm" :href="api(`/imports/${review.importId}/original`)">
               <span aria-hidden="true">⤓</span> {{ t('admin.reviews.detail.download') }}
             </a>
             <button class="btn btn-outline btn-sm" type="button" style="margin-left:auto"

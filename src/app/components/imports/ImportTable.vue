@@ -11,6 +11,8 @@ import { apiFailure, failureText, type ApiFailure } from './errors'
 import { fileSize, formatDetailLabel, formatNumber } from './format'
 import type { ImportListItem } from './types'
 
+const api = useApi()
+
 const props = defineProps<{ items: ImportListItem[] }>()
 const emit = defineEmits<{ changed: []; message: [string] }>()
 
@@ -54,10 +56,10 @@ async function confirm() {
   failure.value = null
   try {
     if (job.kind === 'delete') {
-      await $fetch(`/api/imports/${job.item.id}`, { method: 'DELETE' })
+      await $fetch(api(`/imports/${job.item.id}`), { method: 'DELETE' })
       emit('message', t('imports.toast.deleted'))
     } else {
-      await $fetch(`/api/imports/${job.item.id}/reconvert`, { method: 'POST' })
+      await $fetch(api(`/imports/${job.item.id}/reconvert`), { method: 'POST' })
       emit('message', t('imports.toast.reconverting'))
     }
     pending.value = null
@@ -101,7 +103,9 @@ function isUploading(item: ImportListItem): boolean {
 
 <template>
   <div>
-    <div v-if="failure !== null" class="alert" role="alert" style="margin-bottom:12px">{{ failureMessage }}</div>
+    <div class="live-region" role="alert" aria-live="assertive">
+      <div v-if="failure !== null" class="alert" style="margin-bottom:12px">{{ failureMessage }}</div>
+    </div>
 
     <div v-if="props.items.length === 0" class="tablewrap">
       <div class="empty">

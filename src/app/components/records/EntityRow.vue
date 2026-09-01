@@ -10,6 +10,8 @@
 import { addSameAs, splitMatches, type UiEntity } from './model'
 import type { AuthorityHit, AuthoritySearchResponse, SubjectKind } from './types'
 
+const api = useApi()
+
 const props = defineProps<{
   entity: UiEntity
   kinds: SubjectKind[]
@@ -49,7 +51,7 @@ async function match() {
   }
   const mine = ++sequence
   try {
-    const res = await $fetch<AuthoritySearchResponse>('/api/records/authority/search', {
+    const res = await $fetch<AuthoritySearchResponse>(api('/records/authority/search'), {
       query: { kind: props.entity.kind, q: name }
     })
     if (mine !== sequence) return

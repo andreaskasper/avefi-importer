@@ -8,6 +8,8 @@
  */
 import { failureText, mappingFailure, type MappingFailure } from '~/components/mapping/errors'
 
+const api = useApi()
+
 const route = useRoute()
 const { t, te, locale } = useI18n()
 const id = computed(() => String(route.params.id ?? ''))
@@ -37,7 +39,7 @@ interface Detail {
   versions: Array<{ version: number; name: string; created_at: string; user_name: string | null }>
 }
 
-const { data, error, refresh } = await useFetch<Detail>(() => `/api/mappings/${id.value}`)
+const { data, error, refresh } = await useFetch<Detail>(() => api(`/mappings/${id.value}`))
 
 const loadError = computed(() => (error.value ? failureText(t, te, mappingFailure(error.value)) : ''))
 const profile = computed(() => data.value?.profile ?? null)
@@ -67,7 +69,7 @@ async function run(action: () => Promise<string>) {
 
 function rename() {
   void run(async () => {
-    await $fetch(`/api/mappings/${id.value}`, { method: 'PATCH', body: { name: newName.value } })
+    await $fetch(api(`/mappings/${id.value}`), { method: 'PATCH', body: { name: newName.value } })
     return t('mapping.detail.renamed')
   })
 }
@@ -76,7 +78,7 @@ const confirmDelete = ref(false)
 function remove() {
   confirmDelete.value = false
   void run(async () => {
-    await $fetch(`/api/mappings/${id.value}`, { method: 'DELETE' })
+    await $fetch(api(`/mappings/${id.value}`), { method: 'DELETE' })
     await navigateTo('/mappings')
     return t('mapping.detail.deleted')
   })
@@ -86,7 +88,7 @@ const restoring = ref<number | null>(null)
 function restore(version: number) {
   restoring.value = null
   void run(async () => {
-    await $fetch(`/api/mappings/${id.value}/restore`, { method: 'POST', body: { version } })
+    await $fetch(api(`/mappings/${id.value}/restore`), { method: 'POST', body: { version } })
     return t('mapping.detail.restored', { n: version })
   })
 }
@@ -102,7 +104,7 @@ async function uploadSample(event: Event) {
   sampleFailure.value = null
   busy.value = true
   try {
-    await $fetch(`/api/mappings/${id.value}/sample?name=${encodeURIComponent(file.name)}`, {
+    await $fetch(api(`/mappings/${id.value}/sample?name=${encodeURIComponent(file.name)}`), {
       method: 'POST',
       body: file,
       headers: { 'content-type': 'application/octet-stream' }
@@ -145,12 +147,18 @@ function formatDateTime(value: string): string {
       <span>{{ profile?.name ?? id }}</span>
     </nav>
 
-    <div v-if="loadError" class="alert" role="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError" class="alert">{{ loadError }}</div>
 
     <template v-else-if="data && profile">
-      <div v-if="message" class="alert alert-ok" role="status" style="margin-bottom:14px">{{ message }}</div>
-      <div v-if="actionError" class="alert" role="alert" style="margin-bottom:14px">{{ actionError }}</div>
-      <div v-if="sampleError" class="alert" role="alert" style="margin-bottom:14px">{{ sampleError }}</div>
+      <div class="live-region" role="status" aria-live="polite">
+        <div v-if="message" class="alert alert-ok" style="margin-bottom:14px">{{ message }}</div>
+      </div>
+      <div class="live-region" role="alert" aria-live="assertive">
+        <div v-if="actionError" class="alert" style="margin-bottom:14px">{{ actionError }}</div>
+      </div>
+      <div class="live-region" role="alert" aria-live="assertive">
+        <div v-if="sampleError" class="alert" style="margin-bottom:14px">{{ sampleError }}</div>
+      </div>
 
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
         <h1 style="font-size:19px">{{ profile.name }}</h1>
@@ -241,7 +249,7 @@ function formatDateTime(value: string): string {
             <div style="display:flex;gap:8px;flex-wrap:wrap">
               <NuxtLink v-if="data.own && data.hasSample" class="btn btn-primary btn-sm"
                         :to="`/mappings/${profile.id}/edit`">{{ t('mapping.detail.edit') }}</NuxtLink>
-              <a class="btn btn-outline btn-sm" :href="`/api/mappings/${profile.id}/export`">
+              <a class="btn btn-outline btn-sm" :href="api(`/mappings/${profile.id}/export`)">
                 {{ t('mapping.list.export') }}
               </a>
               <button v-if="data.own" type="button" class="btn btn-outline btn-sm"

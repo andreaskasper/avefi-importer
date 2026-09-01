@@ -15,7 +15,7 @@
 import { readFile, stat } from 'node:fs/promises'
 import type { BaseFormat, Severity, ValidationIssue } from '#shared/types/domain'
 import { jsonHint, locateJsonError } from './jsonLint'
-import { delimiterFor, readCsvRows } from './csv'
+import { delimiterFor, encodingLabel, readCsvRows, sniffEncoding } from './csv'
 import { XMLValidator } from 'fast-xml-parser'
 
 /** Ueber dieser Groesse wird nicht mehr zeilengenau analysiert. */
@@ -195,12 +195,27 @@ async function analyzeCsv(path: string, baseFormat: BaseFormat): Promise<ParseDi
   const label = baseFormat.toUpperCase()
   const delimiter = await delimiterFor(path, baseFormat)
   const delimiterName = delimiter === '\t' ? 'Tabulator' : `„${delimiter}“`
+  const encoding = await sniffEncoding(path)
 
   const errors: DiagnosticEntry[] = []
   let header: string[] | null = null
   let dataRows = 0
   let line = 0
   let ragged = 0
+
+  // Wie die Datei gelesen wurde, gehoert in den Bericht und nicht in eine
+  // stille Annahme: Zur Reproduzierbarkeit einer Konvertierung gehoert, wie
+  // die Datei zerlegt wurde. Bei UTF-8 ist das eine Bestaetigung, sonst eine
+  // Entscheidung, die jemand nachvollziehen koennen muss.
+  if (encoding !== 'utf-8') {
+    errors.push(
+      entry(
+        'info',
+        `Die Datei ist nicht UTF-8 kodiert; sie wurde als ${encodingLabel(encoding)} gelesen.`,
+        'Sonderzeichen im Ergebnis stichprobenartig pruefen. Dauerhaft ist ein Export in UTF-8 der sicherere Weg.'
+      )
+    )
+  }
 
   try {
     for await (const cells of readCsvRows(path, { delimiter })) {
@@ -256,7 +271,7 @@ async function analyzeCsv(path: string, baseFormat: BaseFormat): Promise<ParseDi
     )
   }
 
-  return { ok: !errors.some((e) => e.severity === 'error'), format: label, errors }
+  return { ok: !errors.some((e) => e.severity === 'error'), format: `${label} (${encodingLabel(encoding)})`, errors }
 }
 
 /** Uebersetzt die Diagnose in Berichtsmeldungen. */

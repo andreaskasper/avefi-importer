@@ -14,11 +14,23 @@ function t(key: string) {
 }
 
 describe('Bestand', () => {
-  it('kennt 54 Ziele auf drei Ebenen', () => {
-    expect(allTargets().length).toBe(54)
+  it('kennt 60 Ziele auf drei Ebenen', () => {
+    expect(allTargets().length).toBe(60)
     expect(allTargets().filter((x) => x.level === 'work').length).toBe(31)
     expect(allTargets().filter((x) => x.level === 'manifestation').length).toBe(5)
-    expect(allTargets().filter((x) => x.level === 'item').length).toBe(18)
+    expect(allTargets().filter((x) => x.level === 'item').length).toBe(24)
+  })
+
+  it('bietet has_format je Traegerklasse an', () => {
+    const formats = allTargets().filter((x) => x.key.startsWith('item.format.'))
+    expect(formats.length).toBe(6)
+    // Die Werteliste haengt an der Klasse, nicht am Wert: "DV" steht in
+    // FormatVideoTypeEnum und in FormatDigitalFileTypeEnum.
+    expect(t('item.format.film').type).toBe('enum:FormatFilmTypeEnum')
+    expect(t('item.format.video').type).toBe('enum:FormatVideoTypeEnum')
+    expect(t('item.format.encoding').type).toBe('enum:FormatDigitalFileEncodingTypeEnum')
+    expect(formats.every((x) => x.multi)).toBe(true)
+    expect(formats.every((x) => x.level === 'item')).toBe(true)
   })
 
   it('vergibt jeden Schluessel nur einmal', () => {
@@ -30,8 +42,14 @@ describe('Bestand', () => {
     expect(allTargets().filter((x) => x.key.startsWith('work.activity.')).length).toBe(11)
   })
 
-  it('zeigt den vollen Pfad an', () => {
-    expect(t('work.activity.directing').path).toBe('Werk › Beteiligte › Regie')
+  it('nennt im Pfad die Ebene und das Feld, sonst nichts', () => {
+    // Die mittlere Ebene war ein reiner Anzeigeeimer ohne Entsprechung im
+    // Schema. Sie erzeugte "Werk › Werk › Form" und "Exemplar › Technik ›
+    // Farbe" — beides Ebenen, die es nicht gibt.
+    expect(t('work.activity.directing').path).toBe('Werk › Regie')
+    expect(t('work.form').path).toBe('Werk › Form (Dokumentarfilm, Kurzfilm …)')
+    expect(t('item.colour_type').path).toBe('Exemplar › Farbe')
+    expect(allTargets().every((x) => x.path.split('›').length === 2)).toBe(true)
     expect(levelLabel('manifestation')).toBe('Fassung')
   })
 
