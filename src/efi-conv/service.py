@@ -69,6 +69,24 @@ class CheckRequest(BaseModel):
     row_map: dict[str, int] | None = None
 
 
+class CrossRequest(BaseModel):
+    """
+    Die satzuebergreifende Pruefung, fuer den GESAMTEN Bestand auf einmal.
+
+    Kennungen und Verweise gelten ueber die ganze Lieferung. Solange sie je
+    Buendel geprueft wurden, meldete der Dienst Verweise als "zeigt ins Leere",
+    deren Ziel nur im vorigen Buendel lag, und uebersah doppelte Kennungen, die
+    weit auseinander standen.
+
+    Geschickt wird deshalb eine reduzierte Sicht: category, has_identifier und
+    die Verweisfelder. Das passt auch bei zehntausend Saetzen in eine Anfrage,
+    waehrend die vollstaendigen Saetze zweistellige Megabyte waeren.
+    """
+
+    records: list[dict[str, Any]]
+    row_map: dict[str, int] | None = None
+
+
 class Issue(BaseModel):
     severity: str
     message: str
@@ -119,23 +137,49 @@ def health():
     return {"ok": True, "schema": schema_info()}
 
 
-@app.post("/check")
-def check(req: CheckRequest):
-    """Alle Datensaetze pruefen und jeden Verstoss einzeln melden."""
-    v = validator()
-    issues: list[dict[str, Any]] = []
-    row_map = req.row_map or {}
-    valid_count = 0
+def _stelle(row_map: dict[str, int], i: int) -> int | None:
+    """Quellzeile zu einer laufenden Nummer, 0- wie 1-basiert nachgeschlagen."""
+    return row_map.get(str(i)) or row_map.get(str(i + 1))
 
-    # Erst die satzuebergreifenden Regeln vorbereiten. efi-conv check prueft in
-    # pass_checks nicht nur jeden Satz fuer sich, sondern auch Eindeutigkeit der
-    # Kennungen und aufloesbare Verweise. Ohne diese beiden Regeln meldet der
-    # Dienst „in Ordnung", waehrend die Kommandozeile denselben Bestand ablehnt.
+
+def _zeilenwort(row_map: dict[str, int], nummern: list[int]) -> str:
+    """
+    Andere Fundstellen benennen — nach Moeglichkeit als Zeile der Quelldatei.
+
+    Die laufende Nummer des Pruefsatzes ist nicht die Datensatznummer der
+    Oberflaeche: Je Zeile entstehen ein Werk, eine Manifestation und ein
+    Exemplar. "Datensatz 162" war deshalb eine Angabe, die im Importer auf
+    nichts zeigte. Wo die Zeile bekannt ist, wird sie genannt.
+    """
+    zeilen = [_stelle(row_map, n - 1) for n in nummern]
+    if zeilen and all(z is not None for z in zeilen):
+        eindeutig = sorted({int(z) for z in zeilen if z is not None})
+        wort = "Zeile" if len(eindeutig) == 1 else "den Zeilen"
+        return f"{wort} {', '.join(str(z) for z in eindeutig)}"
+    wort = "Pruefsatz" if len(nummern) == 1 else "den Pruefsaetzen"
+    return f"{wort} {', '.join(str(n) for n in nummern)}"
+
+
+def _satzuebergreifend(records: list[dict[str, Any]], row_map: dict[str, int]) -> list[dict[str, Any]]:
+    """
+    Die drei Regeln, die den ganzen Bestand brauchen.
+
+    efi-conv check prueft in pass_checks nicht nur jeden Satz fuer sich, sondern
+    auch Eindeutigkeit der Kennungen, aufloesbare Verweise und ob zu jeder
+    Manifestation ein Exemplar gehoert. Ohne sie meldet der Dienst "in Ordnung",
+    waehrend die Kommandozeile denselben Bestand ablehnt.
+
+    Aufgerufen wird das ueber /crossref mit ALLEN Saetzen, nie je Buendel: Die
+    Regeln sind nur ueber die vollstaendige Lieferung richtig. Solange sie in
+    /check steckten und /check gebuendelt aufgerufen wurde, meldete der Dienst
+    Verweise als "zeigt ins Leere", deren Ziel im vorigen Buendel lag.
+    """
+    issues: list[dict[str, Any]] = []
     id_owners: dict[str, list[int]] = defaultdict(list)
     referenced: dict[str, list[int]] = defaultdict(list)
     own_ids: dict[int, list[str]] = {}
 
-    for i, rec in enumerate(req.records):
+    for i, rec in enumerate(records):
         n = i + 1
         ids = [_id_key(x) for x in (rec.get("has_identifier") or [])]
         own_ids[n] = [x for x in ids if x]
@@ -146,31 +190,28 @@ def check(req: CheckRequest):
 
     known_ids = set(id_owners)
 
-    for i, rec in enumerate(req.records):
+    for i, rec in enumerate(records):
         n = i + 1
-        row = row_map.get(str(i)) or row_map.get(str(n))
-        had_error = False
+        row = _stelle(row_map, i)
 
-        # Kennung doppelt vergeben — efi-conv: „Identifier is not unique"
+        # Kennung doppelt vergeben — efi-conv: "Identifier is not unique"
         for key in own_ids.get(n, []):
             others = [o for o in id_owners[key] if o != n]
             if others:
-                had_error = True
                 issues.append({
                     "severity": "error",
                     "message": (
                         f"Kennung {key} ist nicht eindeutig, sie kommt auch in "
-                        f"Datensatz {', '.join(str(o) for o in others)} vor."
+                        f"{_zeilenwort(row_map, others)} vor."
                     ),
                     "record": n, "row": row,
                     "targetField": "has_identifier", "value": key,
                     "code": "identifier_not_unique",
                 })
 
-        # Verweis zeigt ins Leere — efi-conv: „dangling record"
+        # Verweis zeigt ins Leere — efi-conv: "dangling record"
         for ref in _refs(rec):
             if ref not in known_ids:
-                had_error = True
                 issues.append({
                     "severity": "error",
                     "message": f"Der Verweis {ref} zeigt auf keinen Datensatz dieser Lieferung.",
@@ -178,6 +219,49 @@ def check(req: CheckRequest):
                     "targetField": "is_manifestation_of/is_item_of",
                     "value": ref, "code": "dangling_reference",
                 })
+
+        # Knoten ohne zugehoeriges Exemplar — efi-conv: "No items associated with"
+        cat = str(rec.get("category") or "")
+        if cat.endswith(("Manifestation", "WorkVariant")):
+            keys = own_ids.get(n, [])
+            if keys and not any(referenced.get(k) for k in keys):
+                issues.append({
+                    "severity": "error",
+                    "message": f"Zu {cat} {keys[0]} gehoert kein Exemplar.",
+                    "record": n, "row": row,
+                    "targetField": "has_identifier",
+                    "value": keys[0],
+                    "code": "no_items_associated",
+                })
+
+    return issues
+
+
+@app.post("/crossref")
+def crossref(req: CrossRequest):
+    """Die satzuebergreifenden Regeln, in einem Durchgang ueber alles."""
+    issues = _satzuebergreifend(req.records, req.row_map or {})
+    return {"checked": len(req.records), "issues": issues}
+
+
+@app.post("/check")
+def check(req: CheckRequest):
+    """
+    Jeden Satz fuer sich pruefen.
+
+    Satzuebergreifendes steht bewusst nicht hier: Diese Aufrufe kommen
+    gebuendelt, und eine Regel ueber die ganze Lieferung waere dann nur ueber
+    einen Ausschnitt geprueft. Dafuer gibt es /crossref.
+    """
+    v = validator()
+    issues: list[dict[str, Any]] = []
+    row_map = req.row_map or {}
+    valid_count = 0
+
+    for i, rec in enumerate(req.records):
+        n = i + 1
+        row = _stelle(row_map, i)
+        had_error = False
 
         # 1. Schemapruefung — derselbe Validator, den efi-conv check benutzt
         for err in v.iter_errors(rec):
@@ -236,29 +320,14 @@ def check(req: CheckRequest):
         if not had_error:
             valid_count += 1
 
-    # Knoten ohne zugehoeriges Exemplar — efi-conv: „No items associated with"
-    for i, rec in enumerate(req.records):
-        n = i + 1
-        cat = str(rec.get("category") or "")
-        if not cat.endswith(("Manifestation", "WorkVariant")):
-            continue
-        keys = own_ids.get(n, [])
-        if keys and not any(referenced.get(k) for k in keys):
-            issues.append({
-                "severity": "error",
-                "message": f"Zu {cat} {keys[0]} gehoert kein Exemplar.",
-                "record": n,
-                "row": row_map.get(str(i)) or row_map.get(str(n)),
-                "targetField": "has_identifier",
-                "value": keys[0],
-                "code": "no_items_associated",
-            })
-
-    bad = {i.get("record") for i in issues if i["severity"] == "error"}
+    # „valid" zaehlt nur, was DIESER Durchgang beurteilen kann. Die
+    # satzuebergreifenden Regeln laufen in /crossref; wer beide Ergebnisse
+    # zusammenfuehrt, muss die Zahl dort neu bilden — sonst gilt ein Satz als
+    # gueltig, dessen Kennung doppelt vergeben ist.
     return {
-        "ok": not bad,
+        "ok": valid_count == len(req.records),
         "checked": len(req.records),
-        "valid": len(req.records) - len(bad),
+        "valid": valid_count,
         "issues": issues,
         "schema": schema_info(),
     }

@@ -28,7 +28,7 @@ import { profileIdFromKey } from '../../lib/converters/profileTable'
 import { buildFromInternal } from '../../lib/converters/avefi'
 import { analyzeParse, diagnosticsToIssues } from '../../lib/converters/parseDiagnostics'
 import { IssueCollector, type AvefiNode } from '../../lib/converters/types'
-import { checkRecords } from '../validate'
+import { checkCrossref, checkRecords, querSicht } from '../validate'
 
 /** So viele Datensaetze gehen in einem Rutsch in die Datenbank. */
 const INSERT_BATCH = 200
@@ -104,6 +104,21 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
   let pendingNodes: AvefiNode[] = []
   let pendingRowMap: Record<string, number> = {}
 
+  /**
+   * Kennungen und Verweise des GANZEN Imports, fuer den Durchgang am Ende.
+   *
+   * Die Schemapruefung laeuft in Buendeln, weil sie den vollstaendigen Satz
+   * braucht und der bei zehntausend Saetzen nicht in eine Anfrage passt.
+   * Eindeutigkeit und Verweise brauchen dagegen den ganzen Bestand, aber nur
+   * wenige Felder daraus — die werden hier mitgeschrieben und kosten kaum
+   * Speicher.
+   */
+  const querNodes: Record<string, unknown>[] = []
+  const querRowMap: Record<string, number> = {}
+
+  /** Beanstandete Pruefsaetze, ueber alle Buendel und den Querlauf hinweg. */
+  const fehlerhaft = new Set<number>()
+
   const flushRecords = async (): Promise<void> => {
     if (pendingRecords.length === 0) return
     await insertRecords(sql, record.id, pendingRecords)
@@ -114,13 +129,19 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
     if (pendingNodes.length === 0) return
     if (!force && pendingNodes.length < 500) return
     const offset = nodeCount - pendingNodes.length
-    const result = await checkRecords(pendingNodes as Record<string, unknown>[], pendingRowMap)
+    // false: Der Querlauf gehoert nicht in ein Buendel, sondern einmal ans Ende.
+    const result = await checkRecords(pendingNodes as Record<string, unknown>[], pendingRowMap, 120_000, false)
     checked += result.checked
-    valid += result.valid
     if (result.unavailable !== null) validationUnavailable = result.unavailable
     if (result.schema?.version) schemaVersion = result.schema.version
     for (const issue of result.issues) {
-      issues.add(issue.record === undefined ? issue : { ...issue, record: issue.record + offset })
+      const gehoben = issue.record === undefined ? issue : { ...issue, record: issue.record + offset }
+      issues.add(gehoben)
+      // Gezaehlt wird ueber Mengen statt ueber Summen: Derselbe Satz kann in
+      // diesem Buendel und spaeter im Querlauf beanstandet werden, und zweimal
+      // abzuziehen ergaebe zu wenig gueltige Saetze. Der IssueCollector taugt
+      // dafuer nicht — er deckelt bei 500 Meldungen.
+      if (gehoben.severity === 'error' && gehoben.record !== undefined) fehlerhaft.add(gehoben.record)
     }
     pendingNodes = []
     pendingRowMap = {}
@@ -171,6 +192,8 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
           // findet eine Meldung zurueck zur Zeile der Quelldatei.
           if (source.row !== undefined) pendingRowMap[String(pendingNodes.length + 1)] = source.row
           pendingNodes.push(node)
+          if (source.row !== undefined) querRowMap[String(querNodes.length + 1)] = source.row
+          querNodes.push(querSicht(node as unknown as Record<string, unknown>))
         }
       }
 
@@ -201,9 +224,21 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
     const nodes = avefiNodesOf(JSON.parse(await readFile(path, 'utf8')))
     nodeCount = nodes.length
     pendingNodes = nodes
+    querNodes.push(...nodes.map((n) => querSicht(n as unknown as Record<string, unknown>)))
   }
 
   await flushValidation(true)
+
+  // Satzuebergreifendes zuletzt und ueber alles: Eindeutigkeit der Kennungen,
+  // aufloesbare Verweise, Exemplar je Manifestation. Ueber ein Buendel geprueft
+  // waeren diese Regeln nicht strenger, sondern falsch.
+  const quer = await checkCrossref(querNodes, querRowMap)
+  if (quer.unavailable !== null) validationUnavailable = quer.unavailable
+  for (const issue of quer.issues) {
+    issues.add(issue)
+    if (issue.severity === 'error' && issue.record !== undefined) fehlerhaft.add(issue.record)
+  }
+  valid = Math.max(0, checked - fehlerhaft.size)
 
   if (recordCount === 0 && issues.count === 0) {
     issues.add({
