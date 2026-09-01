@@ -220,10 +220,10 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
 
 <template>
   <div ref="root" class="branch-target">
-    <label class="step-plabel" :for="inputId">{{ label }}</label>
+    <label class="ui-step-plabel" :for="inputId">{{ label }}</label>
 
     <div class="ac-wrap">
-      <input :id="inputId" class="input" type="text" role="combobox" autocomplete="off" spellcheck="false"
+      <input :id="inputId" class="ui-input" type="text" role="combobox" autocomplete="off" spellcheck="false"
              aria-autocomplete="list"
              :aria-expanded="openList ? 'true' : 'false'" :aria-controls="`${inputId}-list`"
              :aria-activedescendant="openList && activeIndex >= 0 ? optionId(activeIndex) : undefined"

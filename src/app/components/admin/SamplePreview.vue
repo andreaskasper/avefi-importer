@@ -15,7 +15,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div v-if="tree !== null" class="card">
+  <div v-if="tree !== null" class="ui-card">
     <div class="frow" style="grid-template-columns:150px 1fr;padding:8px 0">
       <span class="side-h" style="margin:0">{{ t('admin.reviews.detail.root') }}</span>
       <span class="fval mono small">{{ tree.root }}</span>
@@ -53,7 +53,7 @@ const { t } = useI18n()
     </table>
   </div>
 
-  <div v-else class="card">
+  <div v-else class="ui-card">
     <p class="dim small" style="margin:0">{{ t('admin.reviews.detail.noSample') }}</p>
   </div>
 </template>

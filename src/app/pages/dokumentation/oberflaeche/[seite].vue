@@ -49,7 +49,7 @@ const bildAdresse = computed(() => api(`/doku/oberflaeche/bild/${kennung.value}`
     <!-- eslint-disable-next-line vue/no-v-html -->
     <div class="doku-body" lang="de" v-html="data.html" />
 
-    <section class="card doku-shot" aria-labelledby="doku-abzug">
+    <section class="ui-card doku-shot" aria-labelledby="doku-abzug">
       <h2 id="doku-abzug">{{ t('doku.shot.heading') }}</h2>
       <p class="doku-shot-note">{{ t('doku.shot.note') }}</p>
       <template v-if="data.bild">

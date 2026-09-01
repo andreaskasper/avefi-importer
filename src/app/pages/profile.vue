@@ -93,25 +93,25 @@ async function changePassword() {
 
     <h1 style="font-size:19px;margin-bottom:14px">{{ t('admin.profile.heading') }}</h1>
 
-    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="ui-alert">{{ loadError }}</div>
 
     <template v-else-if="user !== null">
-      <section class="card" style="margin-bottom:16px" aria-labelledby="name-heading">
+      <section class="ui-card" style="margin-bottom:16px" aria-labelledby="name-heading">
         <h2 id="name-heading" style="font-size:15px;margin-bottom:14px">{{ t('admin.profile.nameHeading') }}</h2>
         <div class="live-region" role="status" aria-live="polite">
-          <div v-if="nameMessage !== ''" class="alert-ok" style="margin-bottom:12px">{{ nameMessage }}</div>
+          <div v-if="nameMessage !== ''" class="ui-alert-ok" style="margin-bottom:12px">{{ nameMessage }}</div>
         </div>
         <div class="live-region" role="alert" aria-live="assertive">
-          <div v-if="nameError !== ''" class="alert" style="margin-bottom:12px">{{ nameError }}</div>
+          <div v-if="nameError !== ''" class="ui-alert" style="margin-bottom:12px">{{ nameError }}</div>
         </div>
         <form class="stackform" @submit.prevent="saveName">
           <div class="field" style="width:100%">
             <label for="pf-name">{{ t('admin.profile.name') }}</label>
-            <input id="pf-name" v-model="name" class="input" type="text" required autocomplete="name">
+            <input id="pf-name" v-model="name" class="ui-input" type="text" required autocomplete="name">
           </div>
           <div class="field" style="width:100%">
             <label for="pf-email">{{ t('admin.profile.email') }}</label>
-            <input id="pf-email" class="input" type="email" :value="user.email" disabled aria-describedby="pf-email-note">
+            <input id="pf-email" class="ui-input" type="email" :value="user.email" disabled aria-describedby="pf-email-note">
             <span id="pf-email-note" class="note">{{ t('admin.profile.emailNote') }}</span>
           </div>
           <p class="note" style="margin:0">
@@ -128,30 +128,30 @@ async function changePassword() {
         </form>
       </section>
 
-      <section class="card" aria-labelledby="pw-heading">
+      <section class="ui-card" aria-labelledby="pw-heading">
         <h2 id="pw-heading" style="font-size:15px;margin-bottom:14px">{{ t('admin.profile.passwordHeading') }}</h2>
         <div class="live-region" role="status" aria-live="polite">
-          <div v-if="passwordMessage !== ''" class="alert-ok" style="margin-bottom:12px">
+          <div v-if="passwordMessage !== ''" class="ui-alert-ok" style="margin-bottom:12px">
             {{ passwordMessage }}
           </div>
         </div>
         <div class="live-region" role="alert" aria-live="assertive">
-          <div v-if="passwordError !== ''" class="alert" style="margin-bottom:12px">{{ passwordError }}</div>
+          <div v-if="passwordError !== ''" class="ui-alert" style="margin-bottom:12px">{{ passwordError }}</div>
         </div>
         <form class="stackform" autocomplete="off" @submit.prevent="changePassword">
           <div class="field" style="width:100%">
             <label for="pf-cur">{{ t('admin.profile.current') }}</label>
-            <input id="pf-cur" v-model="current" class="input" type="password" required autocomplete="current-password">
+            <input id="pf-cur" v-model="current" class="ui-input" type="password" required autocomplete="current-password">
           </div>
           <div class="field" style="width:100%">
             <label for="pf-new">{{ t('admin.profile.new') }}</label>
-            <input id="pf-new" v-model="next" class="input" type="password" :minlength="minLength" required
+            <input id="pf-new" v-model="next" class="ui-input" type="password" :minlength="minLength" required
                    autocomplete="new-password" aria-describedby="pf-new-hint">
             <span id="pf-new-hint" class="note">{{ t('admin.profile.passwordHint', { min: minLength }) }}</span>
           </div>
           <div class="field" style="width:100%">
             <label for="pf-conf">{{ t('admin.profile.confirm') }}</label>
-            <input id="pf-conf" v-model="confirm" class="input" type="password" :minlength="minLength" required
+            <input id="pf-conf" v-model="confirm" class="ui-input" type="password" :minlength="minLength" required
                    autocomplete="new-password">
           </div>
           <button class="btn btn-primary" type="submit" :disabled="changing">

@@ -103,7 +103,7 @@ async function reject() {
       <span>{{ review?.filename ?? id }}</span>
     </nav>
 
-    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="ui-alert">{{ loadError }}</div>
 
     <template v-else-if="review !== null && data !== null">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
@@ -117,11 +117,11 @@ async function reject() {
       </div>
 
       <div class="live-region" role="alert" aria-live="assertive">
-        <div v-if="actionError !== ''" class="alert" style="margin-bottom:14px">{{ actionError }}</div>
+        <div v-if="actionError !== ''" class="ui-alert" style="margin-bottom:14px">{{ actionError }}</div>
       </div>
 
       <div class="grid2" style="align-items:start">
-        <section class="card" aria-labelledby="recognition-heading">
+        <section class="ui-card" aria-labelledby="recognition-heading">
           <h2 id="recognition-heading" class="side-h" style="margin-bottom:12px">
             {{ t('admin.reviews.detail.recognition') }}
           </h2>
@@ -148,7 +148,7 @@ async function reject() {
           <p class="note">{{ t('admin.reviews.detail.note') }}</p>
         </section>
 
-        <section class="card" aria-labelledby="resolution-heading">
+        <section class="ui-card" aria-labelledby="resolution-heading">
           <h2 id="resolution-heading" class="side-h" style="margin-bottom:12px">
             {{ t('admin.reviews.detail.resolution') }}
           </h2>
@@ -157,7 +157,7 @@ async function reject() {
             <p class="note" style="margin:0">{{ t('admin.reviews.detail.assignText') }}</p>
             <div class="field" style="width:100%">
               <label for="converter">{{ t('admin.reviews.detail.converter') }}</label>
-              <select id="converter" v-model="converterKey" class="input" required>
+              <select id="converter" v-model="converterKey" class="ui-input" required>
                 <option v-for="c in data.converters" :key="c.key" :value="c.key">{{ c.label }} ({{ c.key }})</option>
               </select>
             </div>

@@ -132,7 +132,7 @@ function scoped(text: string) {
 
 <template>
   <div class="ed-entity">
-    <select v-if="!fixedKind" class="input kindsel" :value="entity.kind"
+    <select v-if="!fixedKind" class="ui-input kindsel" :value="entity.kind"
             :aria-label="t('records.editor.authority.kindLabel')"
             @change="entity.kind = ($event.target as HTMLSelectElement).value">
       <option v-for="k in kinds" :key="k.kind" :value="k.kind">
@@ -162,7 +162,7 @@ function scoped(text: string) {
           <span class="idbadge-lab">{{ hit.label }}</span>
           <span class="idbadge-id">{{ hit.id }}</span>
         </button>
-        <button type="button" class="btn btn-outline btn-xs"
+        <button type="button" class="btn btn-outline ui-btn-xs"
                 :aria-label="scoped(t('records.editor.authority.accept'))" @click="acceptAll">
           {{ t('records.editor.authority.accept') }}
         </button>

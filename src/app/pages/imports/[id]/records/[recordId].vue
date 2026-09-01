@@ -84,7 +84,11 @@ const resourceTypes = computed(() => Object.keys(config.value?.resourceTypes ?? 
 /* ------------------------------------------------------------------- Pruefung */
 
 const completeness = ref(0)
-const ring = ref('')
+/** Kernfelder des Datensatzes — dieselbe Angabe wie in der Liste. */
+const core = ref<{ filled: number; total: number; missing: string[] } | null>(null)
+function coreLabel(key: string): string {
+  return t(`records.table.coreField.${key}`)
+}
 const editedAt = ref<string | null>(null)
 const check = ref<CheckResponse | null>(null)
 const checking = ref(false)
@@ -95,7 +99,7 @@ const actionError = ref('')
 watch(detail, (d) => {
   if (d === null) return
   completeness.value = d.record.completeness
-  ring.value = d.record.ring
+  core.value = d.record.core ?? null
   editedAt.value = d.record.editedAt
   check.value = null
 }, { immediate: true })
@@ -137,7 +141,7 @@ async function saveInner() {
       body: output.value
     })
     completeness.value = res.completeness
-    ring.value = res.ring
+    core.value = res.core ?? null
     editedAt.value = res.editedAt
     check.value = res
     baseline.value = JSON.stringify(output.value)
@@ -384,7 +388,7 @@ function backToList() {
       <span>{{ titleText }}</span>
     </nav>
 
-    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="ui-alert">
       {{ loadError }}
       <p style="margin:8px 0 0">
         <NuxtLink class="btn btn-outline btn-sm" :to="`/imports/${importId}/records`">
@@ -396,10 +400,18 @@ function backToList() {
     <template v-else-if="ui !== null && detail !== null && config !== null">
       <div class="editbar">
         <h1 class="ed-title">{{ titleText }}</h1>
-        <div class="bigring ed-ring" :class="ring" :style="{ '--p': completeness }" role="img"
-             :aria-label="t('records.editor.ring', { percent: completeness })">
-          <span aria-hidden="true"><b class="tnum">{{ completeness }}%</b></span>
-        </div>
+        <!-- Benannte Angaben statt eines Anteils, wie in der Datensatzliste
+             seit dem 31.08.: Ein Prozentwert am Einzeldatensatz bewertet die
+             Daten, statt zu sagen, was fehlt. In der Liste war er ersetzt, in
+             der Detailansicht stand er weiter — gemeldet von Stefan Stretz
+             am 01.09.2026. -->
+        <p v-if="core !== null" class="ed-core">
+          <span class="core" :class="core.filled === core.total ? 'core-full' : 'core-part'">
+            {{ t('records.table.coreValue', { filled: core.filled, total: core.total }) }}
+          </span>
+          <span v-if="core.missing.length" class="dim small core-missing">{{
+            t('records.table.coreMissing', { fields: core.missing.map(coreLabel).join(', ') }) }}</span>
+        </p>
         <div class="ed-actions">
           <NuxtLink v-if="detail.prev !== null" class="btn btn-outline btn-sm"
                     :to="`/imports/${importId}/records/${detail.prev}`"><span
@@ -428,21 +440,21 @@ function backToList() {
       </p>
 
       <div class="live-region" role="alert" aria-live="assertive">
-        <div v-if="config.schemaError" class="alert" style="margin-bottom:12px">
+        <div v-if="config.schemaError" class="ui-alert" style="margin-bottom:12px">
           {{ t('records.editor.schemaMissing', { reason: config.schemaError }) }}
         </div>
       </div>
 
       <div class="live-region" role="alert" aria-live="assertive">
-        <div v-if="actionError !== ''" class="alert" style="margin-bottom:12px">{{ actionError }}</div>
+        <div v-if="actionError !== ''" class="ui-alert" style="margin-bottom:12px">{{ actionError }}</div>
       </div>
-      <div role="status" aria-live="polite" v-if="saved" class="alert-ok" style="margin-bottom:12px">{{ t('records.editor.saved') }}</div>
+      <div role="status" aria-live="polite" v-if="saved" class="ui-alert-ok" style="margin-bottom:12px">{{ t('records.editor.saved') }}</div>
       <div v-else-if="dirty" class="dim small" role="status" style="margin-bottom:12px">
         {{ t('records.editor.unsaved') }}
       </div>
 
       <!-- Pruefung -->
-      <section class="card" style="margin-bottom:16px" aria-labelledby="check-heading">
+      <section class="ui-card" style="margin-bottom:16px" aria-labelledby="check-heading">
         <div class="ed-card-head">
           <h2 id="check-heading" class="side-h" style="margin:0">{{ t('records.editor.check.heading') }}</h2>
           <button type="button" class="btn btn-outline btn-sm" :disabled="checking" @click="runCheck">
@@ -453,13 +465,13 @@ function backToList() {
 
         <div aria-live="polite">
           <p v-if="check === null" class="dim small">{{ t('records.editor.check.never') }}</p>
-          <div v-else-if="check.unavailable !== null" class="alert" role="alert" style="margin:0">
+          <div v-else-if="check.unavailable !== null" class="ui-alert" role="alert" style="margin:0">
             {{ t('records.editor.check.unavailable', { reason: check.unavailable }) }}
           </div>
-          <div v-else-if="issues.length === 0" class="alert-ok" style="margin:0">
+          <div v-else-if="issues.length === 0" class="ui-alert-ok" style="margin:0">
             <span aria-hidden="true">✓</span> {{ t('records.editor.check.ok') }}
           </div>
-          <div v-else class="alert" style="margin:0">
+          <div v-else class="ui-alert" style="margin:0">
             <b>{{ t('records.editor.check.errors', { count: issues.length }, issues.length) }}</b>
             — {{ t('records.editor.check.saveAnyway') }}
             <ul class="ed-errs">
@@ -515,7 +527,7 @@ function backToList() {
             </div>
             <div class="ed-f">
               <label for="w-year">{{ t('records.editor.work.productionYear') }}</label>
-              <input id="w-year" v-model="ui.work.productionYear" class="input" type="text"
+              <input id="w-year" v-model="ui.work.productionYear" class="ui-input" type="text"
                      aria-describedby="w-year-hint">
               <span id="w-year-hint" class="note">{{ t('records.editor.work.productionYearHint') }}</span>
             </div>
@@ -524,7 +536,7 @@ function backToList() {
           <div class="ed-sub">
             <span class="ed-sublabel">{{ t('records.editor.work.productionPlace') }}</span>
             <div v-for="(place, i) in ui.work.productionPlaces" :key="place.key" class="ed-title-row">
-              <input v-model="place.has_name" class="input" type="text"
+              <input v-model="place.has_name" class="ui-input" type="text"
                      :aria-label="t('records.editor.work.productionPlace')">
               <button type="button" class="iconbtn-del"
                       :aria-label="t('records.editor.work.removeProductionPlace', { index: i + 1 })"
@@ -540,13 +552,13 @@ function backToList() {
         <div class="ed-card">
           <h2>{{ t('records.editor.work.titles') }}</h2>
           <div v-for="(title, i) in ui.work.titles" :key="title.key" class="ed-title-row">
-            <input :id="`title-${title.key}`" v-model="title.has_name" class="input" type="text"
+            <input :id="`title-${title.key}`" v-model="title.has_name" class="ui-input" type="text"
                    :aria-label="i === 0 ? t('records.editor.work.primaryTitle') : t('records.editor.work.altTitle')"
                    :placeholder="i === 0 ? t('records.editor.work.primaryTitle') : t('records.editor.work.altTitle')">
             <RecordsEnumSelect :id="`title-type-${title.key}`" v-model="title.type" :values="enums('TitleTypeEnum')"
                                :label="t('records.editor.work.titleType')" />
             <span v-if="i === 0" class="ed-primary-badge">{{ t('records.editor.work.primaryBadge') }}</span>
-            <button v-else type="button" class="btn btn-outline btn-xs"
+            <button v-else type="button" class="btn btn-outline ui-btn-xs"
                     :title="t('records.editor.work.makePrimaryHint')"
                     :aria-label="t('records.editor.aria.inScope', {
                       scope: t('records.editor.work.titleNumber', { index: i + 1 }),
@@ -601,7 +613,7 @@ function backToList() {
         <div class="ed-card">
           <h2>{{ t('records.editor.work.events') }}</h2>
           <div v-for="(event, i) in ui.work.events" :key="event.key" class="ed-title-row">
-            <select v-model="event.category" class="input" :aria-label="t('records.editor.work.eventCategory')">
+            <select v-model="event.category" class="ui-input" :aria-label="t('records.editor.work.eventCategory')">
               <option v-for="c in eventCategories" :key="c.category" :value="c.category">
                 {{ t(`records.editor.event.${c.category}`) }}
               </option>
@@ -610,7 +622,7 @@ function backToList() {
                                :values="enums(eventCategories.find((c) => c.category === event.category)?.enumName ?? '')"
                                :label="t('records.editor.work.eventType')"
                                :placeholder="t('records.editor.work.eventType')" />
-            <input v-model="event.has_date" class="input" type="text"
+            <input v-model="event.has_date" class="ui-input" type="text"
                    :aria-label="t('records.editor.work.eventDate')"
                    :placeholder="t('records.editor.work.eventDate')">
             <button type="button" class="iconbtn-del" :aria-label="t('records.editor.work.removeEvent', { index: i + 1 })"
@@ -649,12 +661,12 @@ function backToList() {
         <div class="ed-card">
           <h2>{{ t('records.editor.work.identifiers') }}</h2>
           <div v-for="(id, i) in ui.work.identifiers" :key="id.key" class="ed-title-row">
-            <select v-model="id.resourceType" class="input" :aria-label="t('records.editor.work.identifierType')">
+            <select v-model="id.resourceType" class="ui-input" :aria-label="t('records.editor.work.identifierType')">
               <option v-for="name in resourceTypes" :key="name" :value="name">
                 {{ te(`records.editor.resource.${name}`) ? t(`records.editor.resource.${name}`) : name }}
               </option>
             </select>
-            <input v-model="id.id" class="input" type="text" :aria-label="t('records.editor.work.identifier')"
+            <input v-model="id.id" class="ui-input" type="text" :aria-label="t('records.editor.work.identifier')"
                    :placeholder="t('records.editor.work.identifier')">
             <button type="button" class="iconbtn-del"
                     :aria-label="inWork(t('records.editor.work.removeIdentifier', { index: i + 1 }))"
@@ -668,7 +680,7 @@ function backToList() {
 
           <div class="ed-forms">
             <div v-for="(note, i) in ui.work.notes" :key="note.key" class="ed-title-row">
-              <input v-model="note.value" class="input" type="text" :aria-label="t('records.editor.work.note')"
+              <input v-model="note.value" class="ui-input" type="text" :aria-label="t('records.editor.work.note')"
                      :placeholder="t('records.editor.work.note')">
               <button type="button" class="iconbtn-del"
                       :aria-label="inWork(t('records.editor.work.removeNote', { index: i + 1 }))"
@@ -696,19 +708,19 @@ function backToList() {
                     @click="removeAt(ui.manifestations, i)"><span aria-hidden="true">🗑</span></button>
           </div>
           <div class="ed-title-row">
-            <input v-model="m.title.has_name" class="input" type="text"
+            <input v-model="m.title.has_name" class="ui-input" type="text"
                    :aria-label="t('records.editor.manifestation.title')"
                    :placeholder="t('records.editor.manifestation.title')">
             <RecordsEnumSelect :id="`m-title-type-${m.key}`" v-model="m.title.type" :values="enums('TitleTypeEnum')"
                                :label="t('records.editor.work.titleType')" />
           </div>
           <div v-for="(id, j) in m.identifiers" :key="id.key" class="ed-title-row">
-            <select v-model="id.resourceType" class="input" :aria-label="t('records.editor.work.identifierType')">
+            <select v-model="id.resourceType" class="ui-input" :aria-label="t('records.editor.work.identifierType')">
               <option v-for="name in resourceTypes" :key="name" :value="name">
                 {{ te(`records.editor.resource.${name}`) ? t(`records.editor.resource.${name}`) : name }}
               </option>
             </select>
-            <input v-model="id.id" class="input" type="text" :aria-label="t('records.editor.work.identifier')">
+            <input v-model="id.id" class="ui-input" type="text" :aria-label="t('records.editor.work.identifier')">
             <button type="button" class="iconbtn-del"
                     :aria-label="inManifestation(i, t('records.editor.work.removeIdentifier', { index: j + 1 }))"
                     @click="removeAt(m.identifiers, j)"><span aria-hidden="true">🗑</span></button>
@@ -719,7 +731,7 @@ function backToList() {
             <span aria-hidden="true">+</span> {{ t('records.editor.work.addIdentifier') }}
           </button>
           <div v-for="(note, j) in m.notes" :key="note.key" class="ed-title-row" style="margin-top:8px">
-            <input v-model="note.value" class="input" type="text" :aria-label="t('records.editor.work.note')">
+            <input v-model="note.value" class="ui-input" type="text" :aria-label="t('records.editor.work.note')">
             <button type="button" class="iconbtn-del"
                     :aria-label="inManifestation(i, t('records.editor.work.removeNote', { index: j + 1 }))"
                     @click="removeAt(m.notes, j)"><span aria-hidden="true">🗑</span></button>
@@ -770,7 +782,7 @@ function backToList() {
                              @remove="removeAt(ui.items, ui.items.indexOf(it))" />
             <label v-if="ui.manifestations.length > 0" class="ed-assign">
               {{ t('records.editor.structure.assign') }}
-              <select class="input" :value="''" @change="assignItem(it, ($event.target as HTMLSelectElement).value)">
+              <select class="ui-input" :value="''" @change="assignItem(it, ($event.target as HTMLSelectElement).value)">
                 <option value="">{{ t('records.editor.structure.assignNone') }}</option>
                 <option v-for="(m, mi) in ui.manifestations" :key="m.key" :value="String(mi)">
                   {{ t('records.editor.manifestation.heading', { index: mi + 1 }) }}

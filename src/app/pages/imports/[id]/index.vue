@@ -99,7 +99,7 @@ const formatLabel = computed(() => {
       <span>{{ t('imports.detail.crumb') }}</span>
     </nav>
 
-    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="ui-alert">{{ loadError }}</div>
 
     <template v-else-if="item !== null">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
@@ -115,7 +115,7 @@ const formatLabel = computed(() => {
       <!-- Was jetzt zu tun ist -->
       <section v-if="state !== null" style="margin-bottom:18px">
         <h2 class="side-h" style="margin:0 0 8px">{{ t('imports.detail.next') }}</h2>
-        <div :class="state.tone === 'ok' ? 'alert-ok' : state.tone === 'error' ? 'alert' : 'card'"
+        <div :class="state.tone === 'ok' ? 'ui-alert-ok' : state.tone === 'error' ? 'ui-alert' : 'ui-card'"
              :role="state.tone === 'error' ? 'alert' : 'status'">
           <p class="fn">{{ state.title }}</p>
           <p style="margin-top:6px">{{ state.text }}</p>
@@ -136,7 +136,7 @@ const formatLabel = computed(() => {
 
       <!-- Fehlerlage -->
       <section v-if="item.status === 'error'" style="margin-bottom:18px">
-        <div class="alert" role="alert">
+        <div class="ui-alert" role="alert">
           <p>
             <template v-if="stageLabel !== null">{{ t('imports.detail.stage', { stage: stageLabel }) }}</template>
             <template v-else>{{ t('imports.detail.stageUnknown') }}</template>
@@ -165,7 +165,7 @@ const formatLabel = computed(() => {
       <!-- Beanstandungen aus dem Bericht: nur der Weg dorthin, damit sie nicht
            an zwei Stellen stehen. -->
       <section v-if="item.issues.error + item.issues.warning + item.issues.info > 0" style="margin-bottom:18px">
-        <div class="card">
+        <div class="ui-card">
           <p class="fn">{{ t('imports.report.issues.heading') }}</p>
           <p class="dim small" style="margin-top:4px">
             {{ t('imports.report.issues.errors', { count: item.issues.error }) }} ·
@@ -181,7 +181,7 @@ const formatLabel = computed(() => {
 
       <!-- Eckdaten -->
       <h2 class="side-h" style="margin:0 0 8px">{{ t('imports.detail.meta') }}</h2>
-      <div class="card" style="margin-bottom:18px">
+      <div class="ui-card" style="margin-bottom:18px">
         <div class="frow" style="grid-template-columns:200px 1fr;padding:7px 0">
           <span>{{ t('imports.detail.file') }}</span><span class="fval">{{ item.filename }}</span>
         </div>
@@ -212,8 +212,8 @@ const formatLabel = computed(() => {
 
       <!-- Herunterladen -->
       <h2 class="side-h" style="margin:0 0 8px">{{ t('imports.detail.downloads') }}</h2>
-      <div class="card">
-        <p v-if="item.hasAvefi && !item.validated" class="alert" style="margin-bottom:12px">
+      <div class="ui-card">
+        <p v-if="item.hasAvefi && !item.validated" class="ui-alert" style="margin-bottom:12px">
           {{ t('imports.detail.draftWarning') }}
         </p>
         <p style="display:flex;gap:8px;flex-wrap:wrap">

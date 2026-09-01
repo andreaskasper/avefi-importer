@@ -117,7 +117,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="ac-wrap">
-    <input :id="id" class="input" type="text" role="combobox" autocomplete="off"
+    <input :id="id" class="ui-input" type="text" role="combobox" autocomplete="off"
            :value="modelValue" :placeholder="placeholder" :aria-label="label"
            :aria-expanded="open" :aria-controls="listId" aria-autocomplete="list"
            @input="onInput" @keydown="onKeydown" @blur="onBlur"

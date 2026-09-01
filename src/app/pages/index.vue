@@ -129,23 +129,23 @@ async function afterUpload() {
     <h1 class="sr-only">{{ t('imports.heading') }}</h1>
 
     <div class="live-region" role="alert" aria-live="assertive">
-      <div v-if="loadFailure !== null" class="alert" style="margin-bottom:14px">{{ loadError }}</div>
+      <div v-if="loadFailure !== null" class="ui-alert" style="margin-bottom:14px">{{ loadError }}</div>
     </div>
 
     <ImportsUploadPanel @uploaded="afterUpload" @queued="afterUpload" />
 
     <div class="grid2" style="margin:16px 0">
-      <div class="card kpi">
+      <div class="ui-card kpi">
         <span class="v tnum">{{ formatNumber(kpi.records, locale) }}</span>
         <span class="l">{{ t('imports.kpi.records') }}</span>
       </div>
-      <div class="card kpi">
+      <div class="ui-card kpi">
         <span class="v tnum">{{ formatNumber(kpi.awaiting, locale) }}</span>
         <span class="l">{{ t('imports.kpi.awaiting') }}</span>
       </div>
     </div>
 
-    <div v-if="notice !== ''" class="alert-ok" style="margin-bottom:12px">{{ notice }}</div>
+    <div v-if="notice !== ''" class="ui-alert-ok" style="margin-bottom:12px">{{ notice }}</div>
 
     <p class="sr-only" role="status" aria-live="polite">{{ announcement }}</p>
 

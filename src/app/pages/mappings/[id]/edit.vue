@@ -36,7 +36,7 @@ useHead({ title: () => `${subject.value} · ${t('mapping.crumb')}` })
     </nav>
 
     <template v-if="loadError">
-      <div class="alert" role="alert">{{ loadError }}</div>
+      <div class="ui-alert" role="alert">{{ loadError }}</div>
       <p v-if="failure?.code === 'no_sample'" style="margin-top:12px">
         <NuxtLink class="btn btn-primary btn-sm" :to="`/mappings/${id}`">{{ t('mapping.detail.addSample') }}</NuxtLink>
       </p>

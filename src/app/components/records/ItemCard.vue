@@ -52,7 +52,7 @@ function addValue(list: UiValue[]) {
               @click="emit('remove')"><span aria-hidden="true">🗑</span></button>
     </div>
     <div class="ed-title-row">
-      <input v-model="item.title.has_name" class="input" type="text"
+      <input v-model="item.title.has_name" class="ui-input" type="text"
              :aria-label="t('records.editor.item.title')" :placeholder="t('records.editor.item.title')">
       <RecordsEnumSelect :id="`it-title-type-${item.key}`" v-model="item.title.type" :values="enums('TitleTypeEnum')"
                          :label="t('records.editor.work.titleType')" />
@@ -85,7 +85,7 @@ function addValue(list: UiValue[]) {
       </div>
       <div class="ed-f">
         <label :for="`it-duration-${item.key}`">{{ t('records.editor.item.duration') }}</label>
-        <input :id="`it-duration-${item.key}`" v-model="item.duration" class="input" type="text"
+        <input :id="`it-duration-${item.key}`" v-model="item.duration" class="ui-input" type="text"
                :aria-describedby="`it-duration-hint-${item.key}`" placeholder="PT01H30M00S">
         <span :id="`it-duration-hint-${item.key}`" class="note">{{ t('records.editor.item.durationHint') }}</span>
       </div>
@@ -113,12 +113,12 @@ function addValue(list: UiValue[]) {
     </div>
 
     <div v-for="(id, j) in item.identifiers" :key="id.key" class="ed-title-row">
-      <select v-model="id.resourceType" class="input" :aria-label="t('records.editor.work.identifierType')">
+      <select v-model="id.resourceType" class="ui-input" :aria-label="t('records.editor.work.identifierType')">
         <option v-for="name in resourceTypes" :key="name" :value="name">
           {{ te(`records.editor.resource.${name}`) ? t(`records.editor.resource.${name}`) : name }}
         </option>
       </select>
-      <input v-model="id.id" class="input" type="text" :aria-label="t('records.editor.work.identifier')">
+      <input v-model="id.id" class="ui-input" type="text" :aria-label="t('records.editor.work.identifier')">
       <button type="button" class="iconbtn-del"
               :aria-label="scoped(t('records.editor.work.removeIdentifier', { index: j + 1 }))"
               @click="removeAt(item.identifiers, j)"><span aria-hidden="true">🗑</span></button>
@@ -130,7 +130,7 @@ function addValue(list: UiValue[]) {
     </button>
 
     <div v-for="(note, j) in item.notes" :key="note.key" class="ed-title-row" style="margin-top:8px">
-      <input v-model="note.value" class="input" type="text" :aria-label="t('records.editor.work.note')">
+      <input v-model="note.value" class="ui-input" type="text" :aria-label="t('records.editor.work.note')">
       <button type="button" class="iconbtn-del"
               :aria-label="scoped(t('records.editor.work.removeNote', { index: j + 1 }))"
               @click="removeAt(item.notes, j)"><span aria-hidden="true">🗑</span></button>

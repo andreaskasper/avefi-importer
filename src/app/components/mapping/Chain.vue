@@ -163,7 +163,7 @@ onBeforeUnmount(() => {
       <div v-if="picking" class="chain-picker" role="dialog" :aria-label="t('mapping.chain.pickerTitle')">
         <div style="grid-column:1/-1;display:flex;align-items:center;gap:8px">
           <strong class="chain-pgroup-h" style="margin:0;flex:1">{{ t('mapping.chain.pickerTitle') }}</strong>
-          <button type="button" class="modal-x" :aria-label="t('mapping.chain.closePicker')" @click="close">×</button>
+          <button type="button" class="ui-modal-x" :aria-label="t('mapping.chain.closePicker')" @click="close">×</button>
         </div>
         <div v-for="g in groups" :key="g.group" class="chain-pgroup">
           <div class="chain-pgroup-h">{{ groupLabel(g.group) }}</div>

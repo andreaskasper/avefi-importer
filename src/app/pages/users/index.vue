@@ -121,33 +121,33 @@ async function remove(user: UserWithInstitution) {
     <h1 style="font-size:19px;margin-bottom:6px">{{ t('admin.users.heading') }}</h1>
     <p class="note" style="margin-bottom:16px">{{ t('admin.users.lead') }}</p>
 
-    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="ui-alert">{{ loadError }}</div>
 
     <template v-else>
       <div class="live-region" role="status" aria-live="polite">
-        <div v-if="message !== ''" class="alert-ok" style="margin-bottom:14px">{{ message }}</div>
+        <div v-if="message !== ''" class="ui-alert-ok" style="margin-bottom:14px">{{ message }}</div>
       </div>
       <div class="live-region" role="alert" aria-live="assertive">
-        <div v-if="rowError !== ''" class="alert" style="margin-bottom:14px">{{ rowError }}</div>
+        <div v-if="rowError !== ''" class="ui-alert" style="margin-bottom:14px">{{ rowError }}</div>
       </div>
 
-      <section class="card" style="margin-bottom:18px" aria-labelledby="create-heading">
+      <section class="ui-card" style="margin-bottom:18px" aria-labelledby="create-heading">
         <h2 id="create-heading" style="font-size:15px;margin-bottom:14px">{{ t('admin.users.create.heading') }}</h2>
         <div class="live-region" role="alert" aria-live="assertive">
-          <div v-if="formError !== ''" class="alert" style="margin-bottom:12px">{{ formError }}</div>
+          <div v-if="formError !== ''" class="ui-alert" style="margin-bottom:12px">{{ formError }}</div>
         </div>
         <form class="userform" @submit.prevent="create">
           <div class="field">
             <label for="nu-email">{{ t('admin.users.create.email') }}</label>
-            <input id="nu-email" v-model="form.email" class="input" type="email" required autocomplete="off">
+            <input id="nu-email" v-model="form.email" class="ui-input" type="email" required autocomplete="off">
           </div>
           <div class="field">
             <label for="nu-name">{{ t('admin.users.create.name') }}</label>
-            <input id="nu-name" v-model="form.name" class="input" type="text" required autocomplete="off">
+            <input id="nu-name" v-model="form.name" class="ui-input" type="text" required autocomplete="off">
           </div>
           <div class="field">
             <label for="nu-inst">{{ t('admin.users.create.institution') }}</label>
-            <select id="nu-inst" v-model="form.institutionId" class="input">
+            <select id="nu-inst" v-model="form.institutionId" class="ui-input">
               <option value="">{{ t('admin.users.create.noInstitution') }}</option>
               <option v-for="inst in institutions" :key="inst.id" :value="String(inst.id)">{{ inst.name }}</option>
             </select>
@@ -166,7 +166,7 @@ async function remove(user: UserWithInstitution) {
             </label>
             <template v-if="form.ownPassword">
               <label class="sr-only" for="nu-pw">{{ t('admin.users.create.password') }}</label>
-              <input id="nu-pw" v-model="form.password" class="input" type="text"
+              <input id="nu-pw" v-model="form.password" class="ui-input" type="text"
                      :minlength="minLength" required autocomplete="new-password" aria-describedby="nu-pw-hint">
             </template>
             <span id="nu-pw-hint" class="note">{{ t('admin.users.create.passwordHint', { min: minLength }) }}</span>

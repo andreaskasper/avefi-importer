@@ -48,7 +48,7 @@ function removeRef(index: number) {
 
 <template>
   <div class="ed-entity">
-    <select class="input kindsel" :value="act.category" :aria-label="t('records.editor.activity.category')"
+    <select class="ui-input kindsel" :value="act.category" :aria-label="t('records.editor.activity.category')"
             @change="act.category = ($event.target as HTMLSelectElement).value; act.type = ''; emit('change')">
       <option v-for="c in categories" :key="c.category" :value="c.category">
         {{ t(`records.editor.activity.${c.category}`) }}

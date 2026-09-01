@@ -35,7 +35,7 @@ const summary = computed(() => {
 
 <template>
   <div class="live-region" role="status" aria-live="polite">
-    <div v-if="relevant && report" class="alert" style="margin-bottom:14px">
+    <div v-if="relevant && report" class="ui-alert" style="margin-bottom:14px">
       <strong>{{ t('mapping.columns.heading') }}</strong>
       <span class="dim small"> {{ summary }}</span>
       <ul class="tight">

@@ -33,7 +33,13 @@ const active = computed(() => {
   const p = route.path
   if (p.startsWith('/mappings')) return 'mappings'
   if (p.startsWith('/reviews')) return 'reviews'
-  return 'imports'
+  // Nur der Importbereich selbst. Bis zum 01.09.2026 war "Importe" der
+  // Auffangwert fuer jeden anderen Pfad, also auch fuer Nutzerverwaltung,
+  // Profil und Dokumentation. Das setzte dort aria-current="page" auf einen
+  // Punkt, auf dem man gar nicht steht — fuer ein Vorlesewerkzeug keine
+  // Kleinigkeit, sondern eine falsche Ortsangabe.
+  if (p === '/' || p.startsWith('/imports')) return 'imports'
+  return ''
 })
 
 const initials = computed(() => {
@@ -201,23 +207,23 @@ function toggleTheme() {
         <button type="button" class="ghost" :title="t('theme.switch')" :aria-label="t('theme.switch')" @click="toggleTheme">◐</button>
 
         <div v-if="user" ref="menuRoot" class="usermenu">
-          <button ref="menuButton" class="avatar-btn" type="button" aria-haspopup="menu" :aria-expanded="menuOpen"
+          <button ref="menuButton" class="ui-avatar-btn" type="button" aria-haspopup="menu" :aria-expanded="menuOpen"
                   :aria-label="t('userMenu', { name: user.name })" :title="user.name"
                   @click.stop="toggleMenu">
-            <span class="avatar" aria-hidden="true">{{ initials }}</span>
+            <span class="ui-avatar" aria-hidden="true">{{ initials }}</span>
           </button>
-          <div ref="menuBox" class="menu" role="menu" :aria-label="t('userMenu', { name: user.name })"
+          <div ref="menuBox" class="ui-menu" role="menu" :aria-label="t('userMenu', { name: user.name })"
                :hidden="!menuOpen" @keydown="onMenuKey">
-            <div class="menu-head">
+            <div class="ui-menu-head">
               <div class="fn">{{ user.name }}</div>
               <div class="dim small">{{ user.email }}</div>
             </div>
-            <NuxtLink class="menu-item" role="menuitem" to="/profile" @click="closeMenu()">{{ t('menu.profile') }}</NuxtLink>
-            <NuxtLink v-if="user.is_admin" class="menu-item" role="menuitem" to="/users"
+            <NuxtLink class="ui-menu-item" role="menuitem" to="/profile" @click="closeMenu()">{{ t('menu.profile') }}</NuxtLink>
+            <NuxtLink v-if="user.is_admin" class="ui-menu-item" role="menuitem" to="/users"
                       @click="closeMenu()">{{ t('menu.users') }}</NuxtLink>
-            <NuxtLink class="menu-item" role="menuitem" to="/dokumentation/oberflaeche"
+            <NuxtLink class="ui-menu-item" role="menuitem" to="/dokumentation/oberflaeche"
                       @click="closeMenu()">{{ t('menu.doku') }}</NuxtLink>
-            <button class="menu-item" role="menuitem" type="button" @click="logout()">{{ t('menu.logout') }}</button>
+            <button class="ui-menu-item" role="menuitem" type="button" @click="logout()">{{ t('menu.logout') }}</button>
           </div>
         </div>
       </div>

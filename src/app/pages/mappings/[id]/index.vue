@@ -147,17 +147,17 @@ function formatDateTime(value: string): string {
       <span>{{ profile?.name ?? id }}</span>
     </nav>
 
-    <div role="alert" aria-live="assertive" v-if="loadError" class="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError" class="ui-alert">{{ loadError }}</div>
 
     <template v-else-if="data && profile">
       <div class="live-region" role="status" aria-live="polite">
-        <div v-if="message" class="alert alert-ok" style="margin-bottom:14px">{{ message }}</div>
+        <div v-if="message" class="ui-alert ui-alert-ok" style="margin-bottom:14px">{{ message }}</div>
       </div>
       <div class="live-region" role="alert" aria-live="assertive">
-        <div v-if="actionError" class="alert" style="margin-bottom:14px">{{ actionError }}</div>
+        <div v-if="actionError" class="ui-alert" style="margin-bottom:14px">{{ actionError }}</div>
       </div>
       <div class="live-region" role="alert" aria-live="assertive">
-        <div v-if="sampleError" class="alert" style="margin-bottom:14px">{{ sampleError }}</div>
+        <div v-if="sampleError" class="ui-alert" style="margin-bottom:14px">{{ sampleError }}</div>
       </div>
 
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
@@ -172,7 +172,7 @@ function formatDateTime(value: string): string {
       </div>
 
       <div class="grid2" style="align-items:start">
-        <section class="card">
+        <section class="ui-card">
           <h2 class="side-h" style="margin-bottom:12px">{{ t('mapping.detail.columnsHeading') }}</h2>
           <div v-if="data.columns.length === 0" class="dim small">{{ t('mapping.detail.noColumns') }}</div>
           <div v-else class="tablewrap" style="border:0">
@@ -221,24 +221,24 @@ function formatDateTime(value: string): string {
         </section>
 
         <div style="display:flex;flex-direction:column;gap:14px">
-          <section v-if="data.own && !data.hasSample" class="card" style="border-color:var(--warn)">
+          <section v-if="data.own && !data.hasSample" class="ui-card" style="border-color:var(--warn)">
             <h2 class="side-h" style="margin-bottom:8px">{{ t('mapping.detail.sampleHeading') }}</h2>
             <p class="note" style="margin:0 0 10px">{{ t('mapping.detail.sampleHint') }}</p>
             <p>
               <label class="sr-only" for="samplefile">{{ t('mapping.detail.sampleLabel') }}</label>
-              <input id="samplefile" ref="sampleInput" class="input" type="file"
+              <input id="samplefile" ref="sampleInput" class="ui-input" type="file"
                      accept=".csv,.tsv,.tab,.txt,.xlsx,.xlsm,.xltx,text/csv" style="max-width:280px"
                      :disabled="busy" @change="uploadSample">
             </p>
           </section>
 
-          <section class="card">
+          <section class="ui-card">
             <h2 class="side-h" style="margin-bottom:12px">{{ t('mapping.detail.manageHeading') }}</h2>
 
             <form v-if="data.own" class="stackform" style="margin-bottom:14px" @submit.prevent="rename">
               <div class="field" style="width:100%">
                 <label for="pname">{{ t('mapping.detail.nameLabel') }}</label>
-                <input id="pname" v-model="newName" class="input" required>
+                <input id="pname" v-model="newName" class="ui-input" required>
               </div>
               <button class="btn btn-outline btn-sm" type="submit" :disabled="busy">
                 {{ t('mapping.detail.rename') }}
@@ -258,7 +258,7 @@ function formatDateTime(value: string): string {
             </div>
           </section>
 
-          <section class="card">
+          <section class="ui-card">
             <h2 class="side-h" style="margin-bottom:12px">{{ t('mapping.detail.historyHeading') }}</h2>
             <p v-if="data.versions.length === 0" class="dim small" style="margin:0">
               {{ t('mapping.detail.noHistory') }}
@@ -290,15 +290,15 @@ function formatDateTime(value: string): string {
 
       <ClientOnly>
         <Teleport to="body">
-          <div v-if="confirmDelete" class="modal-overlay" @click.self="confirmDelete = false">
-            <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="del-title">
-              <div class="modal-head">
+          <div v-if="confirmDelete" class="ui-modal-overlay" @click.self="confirmDelete = false">
+            <div class="ui-modal-box" role="dialog" aria-modal="true" aria-labelledby="del-title">
+              <div class="ui-modal-head">
                 <h2 id="del-title" style="font-size:15px;flex:1">{{ t('mapping.detail.deleteTitle') }}</h2>
-                <button class="modal-x" type="button" :aria-label="t('mapping.detail.cancel')"
+                <button class="ui-modal-x" type="button" :aria-label="t('mapping.detail.cancel')"
                         @click="confirmDelete = false">×</button>
               </div>
-              <div class="modal-body">{{ t('mapping.detail.deleteText', { n: data.useCount }) }}</div>
-              <div class="modal-foot">
+              <div class="ui-modal-body">{{ t('mapping.detail.deleteText', { n: data.useCount }) }}</div>
+              <div class="ui-modal-foot">
                 <button type="button" class="btn btn-outline" @click="confirmDelete = false">
                   {{ t('mapping.detail.cancel') }}
                 </button>
@@ -307,15 +307,15 @@ function formatDateTime(value: string): string {
             </div>
           </div>
 
-          <div v-if="restoring !== null" class="modal-overlay" @click.self="restoring = null">
-            <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="res-title">
-              <div class="modal-head">
+          <div v-if="restoring !== null" class="ui-modal-overlay" @click.self="restoring = null">
+            <div class="ui-modal-box" role="dialog" aria-modal="true" aria-labelledby="res-title">
+              <div class="ui-modal-head">
                 <h2 id="res-title" style="font-size:15px;flex:1">{{ t('mapping.detail.restoreTitle') }}</h2>
-                <button class="modal-x" type="button" :aria-label="t('mapping.detail.cancel')"
+                <button class="ui-modal-x" type="button" :aria-label="t('mapping.detail.cancel')"
                         @click="restoring = null">×</button>
               </div>
-              <div class="modal-body">{{ t('mapping.detail.restoreText', { n: restoring }) }}</div>
-              <div class="modal-foot">
+              <div class="ui-modal-body">{{ t('mapping.detail.restoreText', { n: restoring }) }}</div>
+              <div class="ui-modal-foot">
                 <button type="button" class="btn btn-outline" @click="restoring = null">
                   {{ t('mapping.detail.cancel') }}
                 </button>

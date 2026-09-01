@@ -83,9 +83,9 @@ function paramId(param: TransformParamSpec): string {
 </script>
 
 <template>
-  <div class="step">
-    <div class="step-head">
-      <span class="step-name">{{ position }}. {{ opLabel }}</span>
+  <div class="ui-step">
+    <div class="ui-step-head">
+      <span class="ui-step-name">{{ position }}. {{ opLabel }}</span>
       <span v-if="meta?.slow" class="badge b-wait" :title="t('mapping.chain.slowHint')">
         <span class="bd" />{{ t('mapping.chain.slow') }}
       </span>
@@ -94,25 +94,25 @@ function paramId(param: TransformParamSpec): string {
               @click="emit('remove')">✕</button>
     </div>
 
-    <div v-if="params.length" class="step-params">
-      <div v-for="param in params" :key="param.name" class="step-param">
+    <div v-if="params.length" class="ui-step-params">
+      <div v-for="param in params" :key="param.name" class="ui-step-param">
         <template v-if="param.type === 'map' && enumValues.length > 0">
-          <span class="step-plabel">{{ paramLabel(param) }}</span>
+          <span class="ui-step-plabel">{{ paramLabel(param) }}</span>
           <MappingVocabulary :step="step" :enum-values="enumValues" :enum-name="enumName ?? ''"
                              :source-values="sourceValues"
                              :id-base="paramId(param)" @change="emit('change')" />
         </template>
 
         <template v-else-if="param.type === 'map'">
-          <label class="step-plabel" :for="paramId(param)">{{ paramLabel(param) }}</label>
-          <textarea :id="paramId(param)" class="input mono" rows="4" :value="mapText()"
+          <label class="ui-step-plabel" :for="paramId(param)">{{ paramLabel(param) }}</label>
+          <textarea :id="paramId(param)" class="ui-input mono" rows="4" :value="mapText()"
                     :placeholder="t('mapping.chain.mapPlaceholder')"
                     @change="setMapText(($event.target as HTMLTextAreaElement).value)" />
         </template>
 
         <template v-else-if="param.type === 'choice'">
-          <label class="step-plabel" :for="paramId(param)">{{ paramLabel(param) }}</label>
-          <select :id="paramId(param)" class="input" :value="String(value(param.name) ?? '')"
+          <label class="ui-step-plabel" :for="paramId(param)">{{ paramLabel(param) }}</label>
+          <select :id="paramId(param)" class="ui-input" :value="String(value(param.name) ?? '')"
                   @change="set(param.name, ($event.target as HTMLSelectElement).value)">
             <option v-for="(_l, key) in (param.choices ?? {})" :key="key" :value="key">
               {{ choiceLabel(param, String(key)) }}
@@ -130,8 +130,8 @@ function paramId(param: TransformParamSpec): string {
 
         <template v-else-if="param.type === 'columns'">
           <fieldset style="border:0;padding:0;margin:0">
-            <legend class="step-plabel">{{ paramLabel(param) }}</legend>
-            <div class="step-cols">
+            <legend class="ui-step-plabel">{{ paramLabel(param) }}</legend>
+            <div class="ui-step-cols">
               <label v-for="c in columns" :key="c" class="checkline">
                 <input type="checkbox"
                        :checked="Array.isArray(step.columns) && (step.columns as string[]).includes(c)"
@@ -142,8 +142,8 @@ function paramId(param: TransformParamSpec): string {
         </template>
 
         <template v-else>
-          <label class="step-plabel" :for="paramId(param)">{{ paramLabel(param) }}</label>
-          <input :id="paramId(param)" class="input" :type="param.type === 'int' ? 'number' : 'text'"
+          <label class="ui-step-plabel" :for="paramId(param)">{{ paramLabel(param) }}</label>
+          <input :id="paramId(param)" class="ui-input" :type="param.type === 'int' ? 'number' : 'text'"
                  :value="String(value(param.name) ?? '')"
                  @change="set(param.name, param.type === 'int'
                    ? Number(($event.target as HTMLInputElement).value)

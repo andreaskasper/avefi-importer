@@ -72,22 +72,22 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown, true))
 <template>
   <ClientOnly>
     <Teleport to="body">
-      <div v-if="request !== null" class="modal-overlay" @click.self="emit('close')">
-        <div ref="box" class="modal-box" role="dialog" aria-modal="true" aria-labelledby="auth-title"
+      <div v-if="request !== null" class="ui-modal-overlay" @click.self="emit('close')">
+        <div ref="box" class="ui-modal-box" role="dialog" aria-modal="true" aria-labelledby="auth-title"
              style="max-width:720px">
-          <div class="modal-head">
+          <div class="ui-modal-head">
             <h2 id="auth-title" style="font-size:15px;flex:1">
               {{ t('mapping.authority.dialogTitle', { value: request.value }) }}
             </h2>
-            <button ref="closeButton" class="modal-x" type="button" :aria-label="t('mapping.authority.close')"
+            <button ref="closeButton" class="ui-modal-x" type="button" :aria-label="t('mapping.authority.close')"
                     @click="emit('close')">×</button>
           </div>
 
-          <div class="modal-body">
+          <div class="ui-modal-body">
             <p role="status" aria-live="polite" v-if="busy" class="dim">
               {{ t('mapping.authority.searching', { source: request.source.toUpperCase() }) }}
             </p>
-            <p v-else-if="error" class="alert" role="alert">{{ error }}</p>
+            <p v-else-if="error" class="ui-alert" role="alert">{{ error }}</p>
             <template v-else>
               <p v-if="candidates.length === 0" class="note" style="margin:0">{{ t('mapping.authority.noHits') }}</p>
               <div v-for="(candidate, i) in candidates" :key="i" class="candrow">
@@ -112,7 +112,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown, true))
             </template>
           </div>
 
-          <div class="modal-foot">
+          <div class="ui-modal-foot">
             <button type="button" class="btn btn-outline btn-sm" @click="emit('choose', { id: '', type: '' })">
               {{ t('mapping.authority.leaveOpen') }}
             </button>

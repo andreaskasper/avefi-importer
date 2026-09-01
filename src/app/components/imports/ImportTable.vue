@@ -104,7 +104,7 @@ function isUploading(item: ImportListItem): boolean {
 <template>
   <div>
     <div class="live-region" role="alert" aria-live="assertive">
-      <div v-if="failure !== null" class="alert" style="margin-bottom:12px">{{ failureMessage }}</div>
+      <div v-if="failure !== null" class="ui-alert" style="margin-bottom:12px">{{ failureMessage }}</div>
     </div>
 
     <div v-if="props.items.length === 0" class="tablewrap">

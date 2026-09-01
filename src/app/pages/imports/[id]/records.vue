@@ -102,7 +102,7 @@ watch(isChild, (child) => {
       <span>{{ t('records.crumb') }}</span>
     </nav>
 
-    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="ui-alert">{{ loadError }}</div>
 
     <template v-else-if="item !== null">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
@@ -121,7 +121,7 @@ watch(isChild, (child) => {
 
       <form class="urlform" style="margin:0 0 14px" role="search" @submit.prevent="submitSearch">
         <label class="sr-only" for="record-search">{{ t('records.search.label') }}</label>
-        <input id="record-search" v-model="search" class="input" type="search"
+        <input id="record-search" v-model="search" class="ui-input" type="search"
                :placeholder="t('records.search.placeholder')" style="max-width:280px">
         <button class="btn btn-outline btn-sm" type="submit">{{ t('records.search.submit') }}</button>
         <button v-if="query !== ''" class="btn btn-outline btn-sm" type="button" @click="clearSearch">

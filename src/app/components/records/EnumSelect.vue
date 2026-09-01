@@ -44,13 +44,13 @@ function onChange(e: Event) {
 
 <template>
   <span class="ed-enum">
-    <select v-if="hasValues" :id="id" class="input" :value="modelValue"
+    <select v-if="hasValues" :id="id" class="ui-input" :value="modelValue"
             :aria-label="label" :aria-describedby="described" @change="onChange">
       <option value="">{{ placeholder ?? t('records.table.none') }}</option>
       <option v-if="unknown" :value="modelValue">{{ modelValue }}</option>
       <option v-for="v in values" :key="v" :value="v">{{ v }}</option>
     </select>
-    <input v-else :id="id" class="input" type="text" :value="modelValue" :placeholder="placeholder"
+    <input v-else :id="id" class="ui-input" type="text" :value="modelValue" :placeholder="placeholder"
            :aria-label="label" :aria-describedby="described" @input="onChange">
     <span v-if="!hasValues" :id="hintId" class="note">{{ t('records.editor.enum.empty') }}</span>
     <span v-else-if="unknown" :id="hintId" class="note warnhint">

@@ -35,7 +35,7 @@ const titel = computed(() => data.value?.titel ?? t('doku.overview.heading'))
     <p class="doku-lead">{{ t('doku.overview.lead') }}</p>
     <p class="note">{{ t('doku.overview.languageNote') }}</p>
 
-    <div v-if="error" class="alert" role="alert" aria-live="assertive">{{ t('doku.error.load') }}</div>
+    <div v-if="error" class="ui-alert" role="alert" aria-live="assertive">{{ t('doku.error.load') }}</div>
     <!-- Der Inhalt stammt aus dem Verzeichnis docs/ dieses Projekts und wird
          serverseitig aus Markdown erzeugt; jeder Textteil ist dabei maskiert. -->
     <!-- eslint-disable-next-line vue/no-v-html -->

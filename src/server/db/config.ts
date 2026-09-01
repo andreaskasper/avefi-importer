@@ -9,6 +9,11 @@ export function standaloneDb(): postgres.Sql {
     username: process.env.DB_USER || 'avefi',
     password: process.env.DB_PASS || 'avefi',
     max: 4,
-    idle_timeout: 30
+    idle_timeout: 30,
+    // Das Schema ist durchgaengig mit IF NOT EXISTS geschrieben. PostgreSQL
+    // quittiert jedes uebersprungene Objekt mit einem NOTICE — beim Start
+    // sind das ueber achtzig Zeilen, die nichts melden und alles verdecken,
+    // was danach kommt.
+    onnotice: () => {}
   })
 }

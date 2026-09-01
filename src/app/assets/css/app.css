@@ -226,7 +226,7 @@ tbody tr:hover{background:var(--surface-2)}
 .tablewrap{overflow-x:auto;overflow-y:hidden;border:1px solid var(--border);border-radius:12px}
 
 /* cards / kpi */
-.card{border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:16px}
+.ui-card{border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:16px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .kpi{display:flex;flex-direction:column;gap:2px}
 .kpi .v{font-size:24px;font-weight:800;letter-spacing:-.02em}
@@ -249,7 +249,7 @@ tbody tr:hover{background:var(--surface-2)}
 .pickwrap label{display:inline-block}
 .pickwrap input:focus-visible + label{outline:2px solid var(--primary);outline-offset:2px}
 .urlform{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
-.urlform .input{flex:1;min-width:220px}
+.urlform .ui-input{flex:1;min-width:220px}
 
 /* upload progress list */
 .upload-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
@@ -260,15 +260,15 @@ tbody tr:hover{background:var(--surface-2)}
 .ui-err{color:var(--danger);font-weight:600}
 
 /* modal (AvefiModal) */
-.modal-overlay{position:fixed;inset:0;background:rgba(20,35,42,.45);display:grid;place-items:center;z-index:200;padding:20px}
-.modal-box{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--border);border-radius:14px;
+.ui-modal-overlay{position:fixed;inset:0;background:rgba(20,35,42,.45);display:grid;place-items:center;z-index:200;padding:20px}
+.ui-modal-box{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--border);border-radius:14px;
   box-shadow:var(--shadow);overflow:hidden}
-.modal-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
-.modal-head h3{font-size:15px;flex:1}
-.modal-x{border:0;background:none;font-size:20px;line-height:1;color:var(--muted);cursor:pointer;padding:0 4px}
-.modal-x:hover{color:var(--ink)}
-.modal-body{padding:16px;font-size:14px;color:var(--ink);line-height:1.55}
-.modal-foot{padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.ui-modal-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.ui-modal-head h3{font-size:15px;flex:1}
+.ui-modal-x{border:0;background:none;font-size:20px;line-height:1;color:var(--muted);cursor:pointer;padding:0 4px}
+.ui-modal-x:hover{color:var(--ink)}
+.ui-modal-body{padding:16px;font-size:14px;color:var(--ink);line-height:1.55}
+.ui-modal-foot{padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
 
 /* delete import */
 .iconbtn-del{border:1px solid var(--border);background:var(--surface);border-radius:8px;padding:5px 9px;cursor:pointer;
@@ -280,7 +280,7 @@ tbody tr:hover{background:var(--surface-2)}
 .legend{margin-top:18px;border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:16px 18px}
 .legend h3{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:12px}
 .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px}
-.flow .step{border:1px solid var(--border);background:var(--surface-2);border-radius:8px;padding:7px 10px;font-weight:600}
+.flow .ui-step{border:1px solid var(--border);background:var(--surface-2);border-radius:8px;padding:7px 10px;font-weight:600}
 .flow .arr{color:var(--faint)}
 .flow .branch{border-color:var(--wait);background:var(--wait-bg);color:var(--wait)}
 .legend .keys{display:flex;gap:14px;flex-wrap:wrap;margin-top:13px;font-size:12px;color:var(--muted)}
@@ -310,7 +310,7 @@ tbody tr:hover{background:var(--surface-2)}
 .apphead nav a{font-size:13px;color:var(--muted);text-decoration:none;padding:6px 11px;border-radius:7px;font-weight:600}
 .apphead nav a.on{background:var(--primary-100);color:var(--primary)}
 .apphead .who{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
-.avatar{width:30px;height:30px;border-radius:50%;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;
+.ui-avatar{width:30px;height:30px;border-radius:50%;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;
   font-size:12px;font-weight:700}
 .appwrap{max-width:1120px;margin:22px auto 60px;padding:0 18px}
 
@@ -338,15 +338,15 @@ tbody tr:hover{background:var(--surface-2)}
 .field label{font-size:12.5px;font-weight:700;color:var(--muted)}
 /* Ueberschrift einer Feldgruppe, die kein label sein darf. */
 .field .fieldhead{font-size:12.5px;font-weight:700;color:var(--muted)}
-.input{border:1px solid var(--border-strong);border-radius:9px;background:var(--surface-2);padding:11px 13px;
+.ui-input{border:1px solid var(--border-strong);border-radius:9px;background:var(--surface-2);padding:11px 13px;
   font:inherit;font-size:14px;color:var(--ink);width:100%}
-.input::placeholder{color:var(--faint)}
-.divider{display:flex;align-items:center;gap:12px;color:var(--faint);font-size:12px;margin:4px 0}
-.divider::before,.divider::after{content:"";height:1px;background:var(--border);flex:1}
+.ui-input::placeholder{color:var(--faint)}
+.ui-divider{display:flex;align-items:center;gap:12px;color:var(--faint);font-size:12px;margin:4px 0}
+.ui-divider::before,.ui-divider::after{content:"";height:1px;background:var(--border);flex:1}
 .sso{border:1px solid var(--border-strong);background:var(--surface);border-radius:9px;padding:11px;
   display:flex;align-items:center;justify-content:center;gap:9px;font-weight:600;font-size:13.5px;
   color:var(--muted);cursor:default}
-.alert{border:1px solid var(--danger);background:var(--danger-bg);color:var(--danger);border-radius:9px;
+.ui-alert{border:1px solid var(--danger);background:var(--danger-bg);color:var(--danger);border-radius:9px;
   padding:10px 12px;font-size:13px;font-weight:600}
 /* Offizielles AV-EFI-Logo im Formularkopf. Der „AV"-Schriftzug ist dunkel,
    daher im Dark-Mode eine weiße Platte, damit es lesbar bleibt. */
@@ -366,16 +366,16 @@ tbody tr:hover{background:var(--surface-2)}
 
 /* ------- user context menu ------- */
 .usermenu{position:relative}
-.avatar-btn{border:0;background:none;padding:0;cursor:pointer;border-radius:50%;line-height:0}
-.avatar-btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
-.menu{position:absolute;right:0;top:calc(100% + 8px);min-width:212px;background:var(--surface);
+.ui-avatar-btn{border:0;background:none;padding:0;cursor:pointer;border-radius:50%;line-height:0}
+.ui-avatar-btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.ui-menu{position:absolute;right:0;top:calc(100% + 8px);min-width:212px;background:var(--surface);
   border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);padding:6px;z-index:60}
-.menu[hidden]{display:none}
-.menu-head{padding:8px 10px 10px;border-bottom:1px solid var(--border);margin-bottom:6px}
-.menu-head .fn{font-size:13.5px}
-.menu-item{display:block;padding:8px 10px;border-radius:7px;text-decoration:none;color:var(--ink);
+.ui-menu[hidden]{display:none}
+.ui-menu-head{padding:8px 10px 10px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.ui-menu-head .fn{font-size:13.5px}
+.ui-menu-item{display:block;padding:8px 10px;border-radius:7px;text-decoration:none;color:var(--ink);
   font-size:13.5px;font-weight:600}
-.menu-item:hover{background:var(--surface-2)}
+.ui-menu-item:hover{background:var(--surface-2)}
 
 /* ------- stacked forms + success alert ------- */
 .stackform{display:flex;flex-direction:column;gap:13px;align-items:flex-start}
@@ -386,7 +386,7 @@ tbody tr:hover{background:var(--surface-2)}
 .userform .field{margin:0}
 .userform > .checkline{grid-column:1/-1}
 .userform > button{grid-column:1/-1;justify-self:start}
-.alert-ok{border:1px solid var(--ok);background:var(--ok-bg);color:var(--ok);border-radius:9px;
+.ui-alert-ok{border:1px solid var(--ok);background:var(--ok-bg);color:var(--ok);border-radius:9px;
   padding:10px 12px;font-size:13px;font-weight:600}
 
 /* ------- record editor ------- */
@@ -413,7 +413,7 @@ tbody tr:hover{background:var(--surface-2)}
 .frow > label{font-size:12.5px;font-weight:600;color:var(--muted)}
 .frow .req{color:var(--danger)}
 .frow .fval{min-width:0}
-textarea.input{resize:vertical;line-height:1.5}
+textarea.ui-input{resize:vertical;line-height:1.5}
 
 .repeat-list{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
 .repeat-row{display:flex;gap:10px;align-items:flex-start}
@@ -479,7 +479,7 @@ textarea.input{resize:vertical;line-height:1.5}
 /* Durchgängig sichtbarer Tastatur-Fokus. */
 a:focus-visible,button:focus-visible,.btn:focus-visible,input:focus-visible,
 select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible,
-.dropzone:focus-visible,.menu-item:focus-visible{
+.dropzone:focus-visible,.ui-menu-item:focus-visible{
   outline:2px solid var(--primary);outline-offset:2px;border-radius:6px}
 
 /* ---------- AVefi-Editor (Vue) ---------- */
@@ -498,8 +498,8 @@ select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible,
 .ed-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
 .ed-f{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--ink-dim,#667)}
 .ed-title-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-.ed-title-row .input{flex:1}
-.ed-title-row .input[type],.ed-title-row select{min-width:0}
+.ed-title-row .ui-input{flex:1}
+.ed-title-row .ui-input[type],.ed-title-row select{min-width:0}
 .ed-primary-badge{font-size:11px;font-weight:700;color:var(--ok);background:var(--ok-bg);padding:2px 8px;border-radius:999px;white-space:nowrap}
 .ed-entity{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px}
 .ed-entity .kindsel{width:130px;flex:none}
@@ -544,7 +544,7 @@ select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible,
 .ed-suggest{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:2px;padding:6px 8px;
   background:var(--ok-bg);border:1px dashed var(--ok);border-radius:8px}
 .ed-suggest-lbl{font-size:12px;font-weight:700;color:var(--ok)}
-.btn-xs{padding:3px 9px;font-size:11.5px;border-radius:6px}
+.ui-btn-xs{padding:3px 9px;font-size:11.5px;border-radius:6px}
 .linkbtn{border:0;background:none;cursor:pointer;color:var(--ink-dim,#889);font-size:16px;line-height:1;padding:0 4px}
 .linkbtn:hover{color:var(--danger)}
 
@@ -572,17 +572,17 @@ select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible,
 
 /* Beim Öffnen wird das Menü an <body> gehängt und fest positioniert (JS setzt
    left/top), damit .tablewrap mit overflow:auto es nicht abschneidet. */
-.menu.menu-float{position:fixed;right:auto;top:0;left:0;min-width:246px}
-button.menu-item{width:100%;text-align:left;border:0;background:none;cursor:pointer;
+.ui-menu.ui-menu-float{position:fixed;right:auto;top:0;left:0;min-width:246px}
+button.ui-menu-item{width:100%;text-align:left;border:0;background:none;cursor:pointer;
   font-family:inherit;font-size:13.5px;font-weight:600;color:var(--ink)}
-.menu-item:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
-.menu-item .mi{display:inline-block;width:20px;color:var(--faint)}
-.menu-item:hover .mi{color:inherit}
-.menu-item .dim{font-weight:600}
-.menu-item.danger{color:var(--danger)}
-.menu-item.danger .mi{color:var(--danger);opacity:.7}
-.menu-item.danger:hover{background:var(--danger-bg)}
-.menu-sep{height:1px;background:var(--border);margin:5px 6px}
+.ui-menu-item:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+.ui-menu-item .mi{display:inline-block;width:20px;color:var(--faint)}
+.ui-menu-item:hover .mi{color:inherit}
+.ui-menu-item .dim{font-weight:600}
+.ui-menu-item.danger{color:var(--danger)}
+.ui-menu-item.danger .mi{color:var(--danger);opacity:.7}
+.ui-menu-item.danger:hover{background:var(--danger-bg)}
+.ui-menu-sep{height:1px;background:var(--border);margin:5px 6px}
 
 /* ------- Mapping-Editor ------- */
 .appwrap.wide{max-width:1480px}
@@ -605,7 +605,7 @@ button.menu-item{width:100%;text-align:left;border:0;background:none;cursor:poin
 .chainbox{display:flex;flex-direction:column;gap:12px;padding:6px 2px}
 .chaintarget{border-top:1px dashed var(--border);padding-top:10px}
 .tsel{display:flex;gap:6px;align-items:center;margin-bottom:5px}
-.tsel .input{min-width:230px}
+.tsel .ui-input{min-width:230px}
 .tsugg{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 /* Grün und Rot gelten überall, wo ein Vorschau-Ergebnis steht — getrennte Ansicht,
    zusammengelegte Ansicht und Verzweigung. */
@@ -631,14 +631,14 @@ button.menu-item{width:100%;text-align:left;border:0;background:none;cursor:poin
 .chain-pitem{display:block;width:100%;text-align:left;border:0;background:none;padding:5px 7px;
   border-radius:6px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
 .chain-pitem:hover{background:var(--surface-2)}
-.step{border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:7px;background:var(--surface-2)}
-.step-head{display:flex;align-items:center;gap:8px}
-.step-name{font-weight:700;font-size:13px}
-.step-head .iconbtn-del{margin-left:auto}
-.step-params{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:8px}
-.step-param{display:flex;flex-direction:column;gap:3px}
-.step-plabel{font-size:11.5px;color:var(--muted);font-weight:600}
-.step-cols{display:flex;flex-direction:column;gap:2px;max-height:130px;overflow:auto}
+.ui-step{border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:7px;background:var(--surface-2)}
+.ui-step-head{display:flex;align-items:center;gap:8px}
+.ui-step-name{font-weight:700;font-size:13px}
+.ui-step-head .iconbtn-del{margin-left:auto}
+.ui-step-params{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:8px}
+.ui-step-param{display:flex;flex-direction:column;gap:3px}
+.ui-step-plabel{font-size:11.5px;color:var(--muted);font-weight:600}
+.ui-step-cols{display:flex;flex-direction:column;gap:2px;max-height:130px;overflow:auto}
 .vocabhint{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:7px}
 
 .treelvl{margin-bottom:12px}
@@ -652,7 +652,7 @@ button.menu-item{width:100%;text-align:left;border:0;background:none;cursor:poin
 .tl-label{font-weight:600}
 .tl-from{text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
 .defrow{display:flex;gap:6px;align-items:center;margin-bottom:6px}
-.defrow .input{min-width:0}
+.defrow .ui-input{min-width:0}
 ul.tight{margin:6px 0 0 18px;padding:0}
 ul.tight li{margin-bottom:3px;font-size:13px}
 
@@ -673,7 +673,7 @@ ul.tight li{margin-bottom:3px;font-size:13px}
 .branch-no{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
 .branch-head .iconbtn-del{margin-left:auto}
 .branch-target{display:flex;flex-direction:column;gap:3px;margin-top:9px}
-.branch-target .input{max-width:420px}
+.branch-target .ui-input{max-width:420px}
 .branch-result{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
 .branch-add-item{margin-top:14px}
 .tchips{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
@@ -840,3 +840,8 @@ ul.tight li{margin-bottom:3px;font-size:13px}
 .ed-orphan{margin-bottom:12px}
 .ed-assign{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:600;color:var(--muted);margin-top:6px}
 .ed-assign select{max-width:260px}
+
+/* Kernfelder in der Kopfzeile des Datensatz-Editors — dieselbe Aussage wie in
+   der Liste. Der Prozentring stand hier bis zum 01.09.2026 noch. */
+.ed-core{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0}
+.ed-core .core-missing{flex-basis:100%}

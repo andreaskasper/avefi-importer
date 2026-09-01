@@ -59,24 +59,24 @@ onBeforeUnmount(() => {
 <template>
   <ClientOnly>
     <Teleport to="body">
-      <div class="modal-overlay">
-        <div ref="box" class="modal-box" role="dialog" aria-modal="true" aria-labelledby="otp-title"
+      <div class="ui-modal-overlay">
+        <div ref="box" class="ui-modal-box" role="dialog" aria-modal="true" aria-labelledby="otp-title"
              aria-describedby="otp-text">
-          <div class="modal-head">
+          <div class="ui-modal-head">
             <h3 id="otp-title">{{ t('admin.users.otp.heading', { email }) }}</h3>
           </div>
-          <div class="modal-body">
+          <div class="ui-modal-body">
             <p id="otp-text">{{ t('admin.users.otp.text') }}</p>
             <p class="field">
               <label class="side-h" for="otp-value">{{ t('admin.users.otp.label') }}</label>
-              <input id="otp-value" class="input mono" type="text" :value="password" readonly
+              <input id="otp-value" class="ui-input mono" type="text" :value="password" readonly
                      style="font-size:16px;letter-spacing:.06em" @focus="($event.target as HTMLInputElement).select()">
             </p>
             <div class="live-region" role="status" aria-live="polite">
               <p v-if="copied !== ''" class="okval">{{ copied }}</p>
             </div>
           </div>
-          <div class="modal-foot">
+          <div class="ui-modal-foot">
             <button type="button" class="btn btn-outline" @click="copy">{{ t('admin.users.otp.copy') }}</button>
             <button ref="closeButton" type="button" class="btn btn-primary" @click="emit('close')">
               {{ t('admin.users.otp.dismiss') }}

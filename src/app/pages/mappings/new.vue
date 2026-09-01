@@ -92,7 +92,7 @@ async function submit() {
     <p class="note" style="margin-bottom:16px">{{ t('mapping.new.lead') }}</p>
 
     <div class="live-region" role="alert" aria-live="assertive">
-      <div v-if="errorText" class="alert" style="margin-bottom:14px">{{ errorText }}</div>
+      <div v-if="errorText" class="ui-alert" style="margin-bottom:14px">{{ errorText }}</div>
     </div>
 
     <form @submit.prevent="submit">

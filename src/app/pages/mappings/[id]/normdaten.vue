@@ -145,7 +145,7 @@ useHead({ title: () => `${subject.value} · ${t('mapping.authority.pageTitle')}`
       <span>{{ t('mapping.authority.pageTitle') }}</span>
     </nav>
 
-    <div role="alert" aria-live="assertive" v-if="loadError" class="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError" class="ui-alert">{{ loadError }}</div>
 
     <template v-else>
       <h1>{{ t('mapping.authority.pageTitle') }}</h1>
@@ -164,7 +164,7 @@ useHead({ title: () => `${subject.value} · ${t('mapping.authority.pageTitle')}`
       </div>
 
       <div class="live-region" role="status" aria-live="polite">
-        <p v-if="note" class="alert" :class="noteKind === 'ok' ? 'alert-ok' : ''">{{ note }}</p>
+        <p v-if="note" class="ui-alert" :class="noteKind === 'ok' ? 'ui-alert-ok' : ''">{{ note }}</p>
       </div>
 
       <p v-if="groups.length === 0 && !busy" class="dim">{{ t('mapping.authority.pageEmpty') }}</p>
@@ -177,7 +177,7 @@ useHead({ title: () => `${subject.value} · ${t('mapping.authority.pageTitle')}`
         Zuordnungseditor.
       -->
       <section v-for="(group, gi) in groups" :key="`${group.column}-${group.branch}-${group.source}`"
-               :id="`gruppe-${gi}`" class="card authgroup">
+               :id="`gruppe-${gi}`" class="ui-card authgroup">
         <a v-if="gi + 1 < groups.length" class="skip-inline" :href="`#gruppe-${gi + 1}`">
           {{ t('mapping.authority.skipGroup', { n: valuesOf(group).length }) }}
         </a>

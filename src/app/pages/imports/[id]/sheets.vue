@@ -78,7 +78,7 @@ async function submit() {
       <span>{{ t('imports.sheets.crumb') }}</span>
     </nav>
 
-    <div role="alert" aria-live="assertive" v-if="loadFailure !== null" class="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadFailure !== null" class="ui-alert">{{ loadError }}</div>
 
     <template v-else>
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
@@ -90,7 +90,7 @@ async function submit() {
       <p class="note" style="margin-bottom:14px">{{ t('imports.sheets.lead') }}</p>
 
       <div class="live-region" role="alert" aria-live="assertive">
-        <div v-if="submitError !== ''" class="alert" style="margin-bottom:14px">{{ submitError }}</div>
+        <div v-if="submitError !== ''" class="ui-alert" style="margin-bottom:14px">{{ submitError }}</div>
       </div>
 
       <div v-if="sheets.length === 0" class="tablewrap">

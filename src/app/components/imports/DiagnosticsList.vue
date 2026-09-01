@@ -46,7 +46,7 @@ function snippetRows(entry: DiagnosticEntry): SnippetRow[] {
 
 <template>
   <div>
-    <article v-for="(entry, index) in entries" :key="index" class="card" style="margin-bottom:14px"
+    <article v-for="(entry, index) in entries" :key="index" class="ui-card" style="margin-bottom:14px"
              :style="{ borderLeft: `4px solid var(--${entry.severity === 'error' ? 'danger' : 'warn'})` }">
       <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
         <span class="badge" :class="entry.severity === 'error' ? 'b-danger' : 'b-warn'">

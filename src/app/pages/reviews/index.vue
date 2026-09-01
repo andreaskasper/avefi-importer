@@ -66,16 +66,16 @@ const rejected = computed(() => Number(route.query.rejected ?? 0))
     </div>
     <p class="note" style="margin-bottom:14px">{{ t('admin.reviews.lead') }}</p>
 
-    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="ui-alert">{{ loadError }}</div>
 
     <template v-else>
       <div class="live-region" role="status" aria-live="polite">
-        <div v-if="assigned !== null" class="alert-ok" style="margin-bottom:14px">
+        <div v-if="assigned !== null" class="ui-alert-ok" style="margin-bottom:14px">
           {{ t('admin.reviews.assigned', { label: assigned, count: assignedCount }, assignedCount) }}
         </div>
       </div>
       <div class="live-region" role="status" aria-live="polite">
-        <div v-if="rejected > 0" class="alert-ok" style="margin-bottom:14px">
+        <div v-if="rejected > 0" class="ui-alert-ok" style="margin-bottom:14px">
           {{ t('admin.reviews.rejected', { count: rejected }, rejected) }}
         </div>
       </div>

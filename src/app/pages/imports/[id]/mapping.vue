@@ -39,7 +39,7 @@ useHead({ title: () => `${filename.value} · ${t('mapping.crumb')}` })
       <span>{{ t('mapping.crumb') }}</span>
     </nav>
 
-    <div role="alert" aria-live="assertive" v-if="loadError" class="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError" class="ui-alert">{{ loadError }}</div>
 
     <MappingEditor v-else-if="data" :payload="data.payload" back-to="/" :back-label="t('mapping.nav.imports')" />
   </main>

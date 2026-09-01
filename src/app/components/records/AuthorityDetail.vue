@@ -63,18 +63,18 @@ onBeforeUnmount(() => {
 <template>
   <ClientOnly>
     <Teleport to="body">
-      <div class="modal-overlay" @click.self="emit('close')">
-        <div ref="box" class="modal-box detail-box" role="dialog" aria-modal="true"
+      <div class="ui-modal-overlay" @click.self="emit('close')">
+        <div ref="box" class="ui-modal-box detail-box" role="dialog" aria-modal="true"
              aria-labelledby="authority-detail-title">
-          <div class="modal-head">
+          <div class="ui-modal-head">
             <h3 id="authority-detail-title">
               {{ data && data.detail.title ? data.detail.title : t('records.editor.authority.detailHeading') }}
             </h3>
-            <button ref="closeButton" type="button" class="modal-x"
+            <button ref="closeButton" type="button" class="ui-modal-x"
                     :aria-label="t('records.editor.authority.detailClose')"
                     @click="emit('close')">×</button>
           </div>
-          <div class="modal-body">
+          <div class="ui-modal-body">
             <p v-if="loading" class="dim">{{ t('records.editor.authority.detailLoading') }}</p>
             <div v-else-if="data && data.found" class="detail-content">
               <img v-if="data.detail.image" :src="data.detail.image" alt="" class="detail-img" referrerpolicy="no-referrer">
@@ -84,7 +84,7 @@ onBeforeUnmount(() => {
             </div>
             <p v-else class="dim">{{ t('records.editor.authority.detailNone') }}</p>
           </div>
-          <div class="modal-foot">
+          <div class="ui-modal-foot">
             <a v-if="data && data.detail.wikiUrl" class="btn btn-outline btn-sm" :href="data.detail.wikiUrl"
                target="_blank" rel="noopener">{{ t('records.editor.authority.openWikipedia') }}</a>
             <a v-if="data && data.detail.url" class="btn btn-outline btn-sm" :href="data.detail.url"

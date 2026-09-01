@@ -113,43 +113,43 @@ function pick(fn: () => void) {
 
     <ClientOnly>
       <Teleport to="body">
-      <div v-if="open" ref="menu" class="menu menu-float" role="menu"
+      <div v-if="open" ref="menu" class="ui-menu ui-menu-float" role="menu"
            :aria-label="t('imports.action.menuLabel', { name: item.filename })"
            :style="{ top: pos.top + 'px', left: pos.left + 'px' }" @keydown="onMenuKey">
-        <NuxtLink v-if="item.hasMapping" class="menu-item" role="menuitem" :to="`/imports/${item.id}/mapping`"
+        <NuxtLink v-if="item.hasMapping" class="ui-menu-item" role="menuitem" :to="`/imports/${item.id}/mapping`"
                   @click="close()">
           <span class="mi" aria-hidden="true">⇄</span>{{ t('imports.menu.mapping') }}
         </NuxtLink>
 
-        <NuxtLink v-if="item.hasReport" class="menu-item" role="menuitem" :to="`/imports/${item.id}/report`"
+        <NuxtLink v-if="item.hasReport" class="ui-menu-item" role="menuitem" :to="`/imports/${item.id}/report`"
                   @click="close()">
           <span class="mi" aria-hidden="true">☑</span>{{ t('imports.menu.report') }}
           <span v-if="issueCount > 0" class="dim"> {{ t('imports.menu.reportIssues') }}</span>
         </NuxtLink>
 
-        <NuxtLink class="menu-item" role="menuitem" :to="`/imports/${item.id}`" @click="close()">
+        <NuxtLink class="ui-menu-item" role="menuitem" :to="`/imports/${item.id}`" @click="close()">
           <span class="mi" aria-hidden="true">☰</span>{{ t('imports.menu.detail') }}
         </NuxtLink>
 
-        <a class="menu-item" role="menuitem" :href="api(`/imports/${item.id}/original`)" @click="close()">
+        <a class="ui-menu-item" role="menuitem" :href="api(`/imports/${item.id}/original`)" @click="close()">
           <span class="mi" aria-hidden="true">⤓</span>{{ t('imports.menu.original') }}
         </a>
 
-        <a v-if="item.hasAvefi" class="menu-item" role="menuitem" :href="api(`/imports/${item.id}/avefi.json`)"
+        <a v-if="item.hasAvefi" class="ui-menu-item" role="menuitem" :href="api(`/imports/${item.id}/avefi.json`)"
            @click="close()">
           <span class="mi" aria-hidden="true">{}</span>
           <template v-if="item.validated">{{ t('imports.menu.avefi') }}</template>
           <template v-else>{{ t('imports.menu.avefiDraft') }}</template>
         </a>
 
-        <button v-if="item.canReconvert" type="button" class="menu-item" role="menuitem"
+        <button v-if="item.canReconvert" type="button" class="ui-menu-item" role="menuitem"
                 @click="pick(() => emit('reconvert'))">
           <span class="mi" aria-hidden="true">↻</span>{{ t('imports.menu.reconvert') }}
         </button>
 
-        <div class="menu-sep" role="separator" />
+        <div class="ui-menu-sep" role="separator" />
 
-        <button type="button" class="menu-item danger" role="menuitem" @click="pick(() => emit('delete'))">
+        <button type="button" class="ui-menu-item danger" role="menuitem" @click="pick(() => emit('delete'))">
           <span class="mi" aria-hidden="true">🗑</span>{{ t('imports.menu.delete') }}
         </button>
       </div>

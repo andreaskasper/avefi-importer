@@ -223,7 +223,7 @@ function clearJobs() {
 
     <form class="urlform" @submit.prevent="submitUrl">
       <label class="dim small" for="import-url" style="white-space:nowrap">{{ t('imports.url.label') }}</label>
-      <input id="import-url" v-model="urlValue" class="input" type="url" inputmode="url"
+      <input id="import-url" v-model="urlValue" class="ui-input" type="url" inputmode="url"
              :placeholder="t('imports.url.placeholder')" :aria-label="t('imports.url.field')"
              :aria-invalid="urlFailure !== null ? 'true' : undefined"
              :aria-describedby="urlFailure !== null ? 'import-url-error' : undefined">
@@ -233,8 +233,8 @@ function clearJobs() {
     </form>
 
     <div aria-live="polite">
-      <div v-if="urlFailure !== null" id="import-url-error" class="alert" style="margin-top:10px">{{ urlError }}</div>
-      <div v-if="urlDone" class="alert-ok" style="margin-top:10px">{{ t('imports.url.added') }}</div>
+      <div v-if="urlFailure !== null" id="import-url-error" class="ui-alert" style="margin-top:10px">{{ urlError }}</div>
+      <div v-if="urlDone" class="ui-alert-ok" style="margin-top:10px">{{ t('imports.url.added') }}</div>
     </div>
 
     <p class="sr-only" role="status" aria-live="polite">{{ announcement }}</p>

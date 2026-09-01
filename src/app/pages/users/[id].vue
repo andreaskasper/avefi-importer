@@ -112,34 +112,34 @@ async function reset() {
       <span>{{ user?.email ?? id }}</span>
     </nav>
 
-    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="ui-alert">{{ loadError }}</div>
 
     <template v-else-if="user !== null">
       <h1 style="font-size:19px;margin-bottom:14px">{{ t('admin.users.detail.heading') }}</h1>
 
       <div class="live-region" role="status" aria-live="polite">
-        <div v-if="message !== ''" class="alert-ok" style="margin-bottom:16px">{{ message }}</div>
+        <div v-if="message !== ''" class="ui-alert-ok" style="margin-bottom:16px">{{ message }}</div>
       </div>
 
-      <section class="card" style="margin-bottom:16px" aria-labelledby="basics-heading">
+      <section class="ui-card" style="margin-bottom:16px" aria-labelledby="basics-heading">
         <h2 id="basics-heading" style="font-size:15px;margin-bottom:14px">{{ t('admin.users.detail.basics') }}</h2>
         <div class="live-region" role="alert" aria-live="assertive">
-          <div v-if="saveError !== ''" class="alert" style="margin-bottom:12px">{{ saveError }}</div>
+          <div v-if="saveError !== ''" class="ui-alert" style="margin-bottom:12px">{{ saveError }}</div>
         </div>
         <form class="stackform" @submit.prevent="save">
           <div class="field" style="width:100%">
             <label for="u-email">{{ t('admin.users.detail.email') }}</label>
-            <input id="u-email" class="input" type="email" :value="user.email" disabled
+            <input id="u-email" class="ui-input" type="email" :value="user.email" disabled
                    aria-describedby="u-email-note">
             <span id="u-email-note" class="note">{{ t('admin.users.detail.emailNote') }}</span>
           </div>
           <div class="field" style="width:100%">
             <label for="u-name">{{ t('admin.users.detail.name') }}</label>
-            <input id="u-name" v-model="form.name" class="input" type="text" required>
+            <input id="u-name" v-model="form.name" class="ui-input" type="text" required>
           </div>
           <div class="field" style="width:100%">
             <label for="u-inst">{{ t('admin.users.detail.institution') }}</label>
-            <select id="u-inst" v-model="form.institutionId" class="input">
+            <select id="u-inst" v-model="form.institutionId" class="ui-input">
               <option value="">{{ t('admin.users.detail.noInstitution') }}</option>
               <option v-for="inst in (data?.institutions ?? [])" :key="inst.id" :value="String(inst.id)">
                 {{ inst.name }}
@@ -165,13 +165,13 @@ async function reset() {
         </form>
       </section>
 
-      <section class="card" aria-labelledby="password-heading">
+      <section class="ui-card" aria-labelledby="password-heading">
         <h2 id="password-heading" style="font-size:15px;margin-bottom:14px">
           {{ t('admin.users.detail.passwordHeading') }}
         </h2>
         <p class="note" style="margin-top:0">{{ t('admin.users.detail.passwordText') }}</p>
         <div class="live-region" role="alert" aria-live="assertive">
-          <div v-if="resetError !== ''" class="alert" style="margin-bottom:12px">{{ resetError }}</div>
+          <div v-if="resetError !== ''" class="ui-alert" style="margin-bottom:12px">{{ resetError }}</div>
         </div>
         <form class="stackform" autocomplete="off" @submit.prevent="confirmReset = true">
           <label class="checkline">
@@ -179,7 +179,7 @@ async function reset() {
           </label>
           <div v-if="ownPassword" class="field" style="width:100%">
             <label for="u-pw">{{ t('admin.users.detail.password') }}</label>
-            <input id="u-pw" v-model="password" class="input" type="text" :minlength="minLength" required
+            <input id="u-pw" v-model="password" class="ui-input" type="text" :minlength="minLength" required
                    autocomplete="new-password" aria-describedby="u-pw-hint">
             <span id="u-pw-hint" class="note">{{ t('admin.users.detail.passwordHint', { min: minLength }) }}</span>
           </div>

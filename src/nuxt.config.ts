@@ -67,6 +67,11 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    // db/schema.sql gehoert ins Bundle: Der Auslieferungscontainer kopiert nur
+    // .output, dort gaebe es die Datei sonst nicht — und ohne sie kann eine
+    // gebaute Auslieferung ihr eigenes Schema nicht anlegen.
+    serverAssets: [{ baseName: 'db', dir: '../db' }],
+
     routeRules: {
       // Nichts an dieser Anwendung darf zwischengespeichert werden: jede Seite
       // zeigt Daten der angemeldeten Institution. Ohne diese Koepfe legt ein

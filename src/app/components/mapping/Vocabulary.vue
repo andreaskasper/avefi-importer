@@ -132,7 +132,7 @@ function prefill() {
             <label class="sr-only" :for="`${idBase}-v${i}`">
               {{ t('mapping.vocab.selectFor', { value: row.value }) }}
             </label>
-            <select :id="`${idBase}-v${i}`" class="input" :value="row.target"
+            <select :id="`${idBase}-v${i}`" class="ui-input" :value="row.target"
                     @change="set(row.value, ($event.target as HTMLSelectElement).value)">
               <option value="">{{ t('mapping.vocab.unmapped') }}</option>
               <option v-if="row.invalid" :value="row.target">{{ row.target }} ({{ t('mapping.vocab.notInSchema') }})</option>
@@ -155,7 +155,7 @@ function prefill() {
     <div class="vocabhint">
       <button type="button" class="btn btn-outline btn-sm" @click="prefill">{{ t('mapping.vocab.prefill') }}</button>
       <label class="sr-only" :for="`${idBase}-manual`">{{ t('mapping.vocab.addLabel') }}</label>
-      <input :id="`${idBase}-manual`" v-model="manual" class="input" style="max-width:180px"
+      <input :id="`${idBase}-manual`" v-model="manual" class="ui-input" style="max-width:180px"
              :placeholder="t('mapping.vocab.addLabel')" @keydown.enter.prevent="addManual">
       <button type="button" class="btn btn-outline btn-sm" @click="addManual">{{ t('mapping.vocab.add') }}</button>
     </div>

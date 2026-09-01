@@ -55,7 +55,7 @@ function percent(entry: { filled: number; total: number }): number {
       <span>{{ t('imports.report.crumb') }}</span>
     </nav>
 
-    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="alert">{{ loadError }}</div>
+    <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="ui-alert">{{ loadError }}</div>
 
     <template v-else-if="item !== null">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
@@ -84,35 +84,35 @@ function percent(entry: { filled: number; total: number }): number {
       </div>
 
       <template v-else>
-        <div role="status" aria-live="polite" v-if="allGood" class="alert-ok" style="margin-bottom:16px">
+        <div role="status" aria-live="polite" v-if="allGood" class="ui-alert-ok" style="margin-bottom:16px">
           <span aria-hidden="true">✓</span>
           {{ t('imports.report.allGood', { count: formatNumber(avefiCount, locale) }, avefiCount) }}
         </div>
-        <div v-else class="alert" role="status" style="margin-bottom:16px">
+        <div v-else class="ui-alert" role="status" style="margin-bottom:16px">
           <template v-if="checked > 0">
             {{ t('imports.report.hasIssues', { invalid: summary?.invalid ?? 0, total: checked }) }}
           </template>
           <template v-else>{{ t('imports.report.hasIssuesNoCheck') }}</template>
         </div>
 
-        <p v-if="item.hasAvefi && !item.validated" class="alert" style="margin-bottom:16px">
+        <p v-if="item.hasAvefi && !item.validated" class="ui-alert" style="margin-bottom:16px">
           {{ t('imports.detail.draftWarning') }}
         </p>
 
         <div v-if="summary !== null" class="grid2" style="grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px">
-          <div class="card kpi">
+          <div class="ui-card kpi">
             <span class="v tnum">{{ formatNumber(summary.records, locale) }}</span>
             <span class="l">{{ t('imports.report.kpi.records') }}</span>
           </div>
-          <div class="card kpi">
+          <div class="ui-card kpi">
             <span class="v tnum">{{ formatNumber(summary.avefiRecords, locale) }}</span>
             <span class="l">{{ t('imports.report.kpi.avefi') }}</span>
           </div>
-          <div class="card kpi">
+          <div class="ui-card kpi">
             <span class="v tnum" style="color:var(--ok)">{{ formatNumber(summary.valid, locale) }}</span>
             <span class="l">{{ t('imports.report.kpi.valid') }}</span>
           </div>
-          <div class="card kpi">
+          <div class="ui-card kpi">
             <span class="v tnum" :style="summary.invalid > 0 ? 'color:var(--danger)' : undefined">
               {{ formatNumber(summary.invalid, locale) }}</span>
             <span class="l">{{ t('imports.report.kpi.invalid') }}</span>
@@ -121,7 +121,7 @@ function percent(entry: { filled: number; total: number }): number {
 
         <section v-if="coverage.length > 0" style="margin-bottom:18px">
           <h2 class="side-h" style="margin:0 0 8px">{{ t('imports.report.coverage.heading') }}</h2>
-          <div class="card">
+          <div class="ui-card">
             <p class="note" style="margin:0 0 12px">{{ t('imports.report.coverage.lead') }}</p>
             <div v-for="[field, entry] in coverage" :key="field" class="frow"
                  style="grid-template-columns:210px 1fr 120px;padding:7px 0;align-items:center">
@@ -140,7 +140,7 @@ function percent(entry: { filled: number; total: number }): number {
 
         <section v-if="mapping !== null" style="margin-bottom:18px">
           <h2 class="side-h" style="margin:0 0 8px">{{ t('imports.report.mapping.heading') }}</h2>
-          <div class="card">
+          <div class="ui-card">
             <div class="frow" style="grid-template-columns:200px 1fr;padding:7px 0">
               <span>{{ t('imports.report.mapping.profile') }}</span>
               <span class="fval">{{ mapping.profile?.name ?? '–' }}
@@ -163,7 +163,7 @@ function percent(entry: { filled: number; total: number }): number {
 
         <section style="margin-top:18px">
           <h2 class="side-h" style="margin:0 0 8px">{{ t('imports.report.meta.heading') }}</h2>
-          <div class="card">
+          <div class="ui-card">
             <div class="frow" style="grid-template-columns:200px 1fr;padding:7px 0">
               <span>{{ t('imports.report.meta.converter') }}</span>
               <span class="fval mono small">{{ report.converter ?? t('imports.report.meta.unknown') }}</span>

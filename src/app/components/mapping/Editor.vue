@@ -550,7 +550,7 @@ const canonicalJson = computed(() => {
 
       <label class="map-name">
         <span class="dim small">{{ t('mapping.head.nameLabel') }}</span>
-        <input v-model="name" class="input" :aria-label="t('mapping.head.nameLabel')">
+        <input v-model="name" class="ui-input" :aria-label="t('mapping.head.nameLabel')">
       </label>
 
       <div class="map-actions">
@@ -586,24 +586,24 @@ const canonicalJson = computed(() => {
       der Hinweis auf offene Spalten unterbrechen.
     -->
     <div class="live-region" role="status" aria-live="polite">
-      <div v-if="message" class="alert alert-ok" style="margin-bottom:14px">{{ message }}</div>
-      <div v-if="adoptNote" class="alert alert-ok" style="margin-bottom:14px">{{ adoptNote }}</div>
+      <div v-if="message" class="ui-alert ui-alert-ok" style="margin-bottom:14px">{{ message }}</div>
+      <div v-if="adoptNote" class="ui-alert ui-alert-ok" style="margin-bottom:14px">{{ adoptNote }}</div>
     </div>
     <div class="live-region" role="alert" aria-live="assertive">
-      <div v-if="errorText" class="alert" style="margin-bottom:14px">{{ errorText }}</div>
-      <div v-if="incompleteWarning" class="alert" style="margin-bottom:14px">{{ incompleteWarning }}</div>
+      <div v-if="errorText" class="ui-alert" style="margin-bottom:14px">{{ errorText }}</div>
+      <div v-if="incompleteWarning" class="ui-alert" style="margin-bottom:14px">{{ incompleteWarning }}</div>
     </div>
 
     <MappingColumnReport :report="payload.columnReport" />
 
-    <div v-if="payload.issues.length" class="alert" style="margin-bottom:14px">
+    <div v-if="payload.issues.length" class="ui-alert" style="margin-bottom:14px">
       <strong>{{ t('mapping.issues.heading') }}</strong>
       <ul class="tight">
         <li v-for="(issue, i) in payload.issues" :key="i">{{ issue.message }}</li>
       </ul>
     </div>
 
-    <div v-if="payload.foreign.length && mappedCount === 0" class="alert" style="margin-bottom:14px">
+    <div v-if="payload.foreign.length && mappedCount === 0" class="ui-alert" style="margin-bottom:14px">
       {{ t('mapping.adopt.offer', { n: payload.foreign.length }, payload.foreign.length) }}
       <span v-for="(p, i) in payload.foreign" :key="p.id">
         <button type="button" class="linkbtn" @click="adoptTarget = p">
@@ -619,7 +619,7 @@ const canonicalJson = computed(() => {
       <div>
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
           <label class="dim small" for="mapfilter">{{ t('mapping.filter.label') }}</label>
-          <select id="mapfilter" v-model="filter" class="input" style="width:auto">
+          <select id="mapfilter" v-model="filter" class="ui-input" style="width:auto">
             <option value="all">{{ t('mapping.filter.all', { n: columns.length }) }}</option>
             <option value="untouched">{{ t('mapping.filter.untouched', { n: openColumns.length }) }}</option>
             <option value="mapped">{{ t('mapping.filter.mapped', { n: mappedCount }) }}</option>
@@ -820,7 +820,7 @@ const canonicalJson = computed(() => {
       </div>
 
       <aside id="mapside" class="mapside" tabindex="-1" :aria-label="t('mapping.table.sideLabel')">
-        <section class="card">
+        <section class="ui-card">
           <h2 class="side-h">{{ t('mapping.tree.heading') }}</h2>
           <MappingResultTree :targets="targets" :target-use="preview?.targetUse ?? {}" />
 
@@ -840,7 +840,7 @@ const canonicalJson = computed(() => {
               <p v-if="schemaResult.issues.length === 0" class="note">
                 {{ t('mapping.schema.ok', { n: schemaResult.checked }) }}
               </p>
-              <div v-else class="alert" role="status" style="margin-top:8px">
+              <div v-else class="ui-alert" role="status" style="margin-top:8px">
                 <strong>{{ t('mapping.schema.issues', { n: schemaResult.issues.length }) }}</strong>
                 <ul class="tight">
                   <li v-for="(issue, i) in schemaResult.issues" :key="i">{{ issue.message }}</li>
@@ -850,7 +850,7 @@ const canonicalJson = computed(() => {
           </div>
 
           <div class="live-region" role="status" aria-live="polite">
-            <div v-if="preview && preview.schema.length" class="alert" style="margin-top:10px">
+            <div v-if="preview && preview.schema.length" class="ui-alert" style="margin-top:10px">
               <strong>{{ t('mapping.schema.previewIssues') }}</strong>
               <ul class="tight">
                 <li v-for="(issue, i) in preview.schema" :key="i">
@@ -861,7 +861,7 @@ const canonicalJson = computed(() => {
           </div>
         </section>
 
-        <section class="card">
+        <section class="ui-card">
           <h2 class="side-h">{{ t('mapping.defaults.heading') }}</h2>
           <p class="note">{{ t('mapping.defaults.hint') }}</p>
           <div v-for="(entry, i) in mapping.defaults" :key="i" class="defrow" style="flex-wrap:wrap">
@@ -870,7 +870,7 @@ const canonicalJson = computed(() => {
                                  :input-id="`default-${i}-target`"
                                  @update:model-value="entry.target = $event; refresh()" />
             <label class="sr-only" :for="`default-${i}-value`">{{ t('mapping.defaults.valueLabel', { n: i + 1 }) }}</label>
-            <input :id="`default-${i}-value`" v-model="entry.value" class="input"
+            <input :id="`default-${i}-value`" v-model="entry.value" class="ui-input"
                    :placeholder="t('mapping.defaults.valueLabel', { n: i + 1 })" @change="refresh">
             <button type="button" class="iconbtn-del" :aria-label="t('mapping.defaults.remove', { n: i + 1 })"
                     @click="removeDefault(i)">✕</button>
@@ -881,7 +881,7 @@ const canonicalJson = computed(() => {
           </button>
         </section>
 
-        <section class="card">
+        <section class="ui-card">
           <h2 class="side-h">{{ t('mapping.grouping.heading') }}</h2>
           <p class="note">{{ t('mapping.grouping.hint') }}</p>
           <fieldset style="border:0;padding:0;margin:0">

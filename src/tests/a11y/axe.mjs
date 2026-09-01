@@ -55,13 +55,117 @@ function melden(stand, ergebnis) {
   }
 }
 
+/**
+ * Kontrast aus den gerenderten Bildpunkten bestimmen.
+ *
+ * axe rechnet den Kontrast aus den berechneten Farben. Liegt hinter dem Text
+ * ein Hintergrundbild, gibt es auf und meldet „incomplete" — kein Verstoss,
+ * keine Entwarnung, sondern „nicht beurteilt". daisyUI legt auf jeden Knopf
+ * ein Hintergrundbild, also fielen am 01.09.2026 saemtliche Knoepfe in diese
+ * Luecke: 171 allein auf der Startseite. Der Lauf meldete „kein Befund" und
+ * meinte „keiner unter denen, die ich beurteilen konnte".
+ *
+ * Hier wird deshalb nachgemessen, woran nichts mehr zu deuteln ist: Das
+ * Element wird abfotografiert, die haeufigste Farbe gilt als Grund, die
+ * haeufigste deutlich abweichende als Schrift.
+ */
+async function kontrastMessen(seite, element) {
+  const bild = await element.screenshot({ timeout: 5000 })
+  return seite.evaluate(async (datenUrl) => {
+    const bild = new Image()
+    bild.src = datenUrl
+    await bild.decode()
+    const flaeche = document.createElement('canvas')
+    flaeche.width = bild.width
+    flaeche.height = bild.height
+    const stift = flaeche.getContext('2d')
+    stift.drawImage(bild, 0, 0)
+    const punkte = stift.getImageData(0, 0, flaeche.width, flaeche.height).data
+    const haeufigkeit = new Map()
+    for (let i = 0; i < punkte.length; i += 4) {
+      const farbe = (punkte[i] << 16) | (punkte[i + 1] << 8) | punkte[i + 2]
+      haeufigkeit.set(farbe, (haeufigkeit.get(farbe) ?? 0) + 1)
+    }
+    const gesamt = punkte.length / 4
+    const kanal = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }
+    const helligkeit = (f) => 0.2126 * kanal(f >> 16 & 255) + 0.7152 * kanal(f >> 8 & 255) + 0.0722 * kanal(f & 255)
+    const verhaeltnis = (a, b) => {
+      const hoch = Math.max(helligkeit(a), helligkeit(b))
+      const tief = Math.min(helligkeit(a), helligkeit(b))
+      return (hoch + 0.05) / (tief + 0.05)
+    }
+    const sortiert = [...haeufigkeit.entries()].sort((a, b) => b[1] - a[1])
+    const grund = sortiert[0][0]
+    let schrift = grund
+    let bestes = 0
+    for (const [farbe, anzahl] of sortiert) {
+      // Unter einem halben Prozent Flaeche ist es Kantenglaettung, nicht Schrift.
+      if (anzahl / gesamt < 0.005) break
+      const k = verhaeltnis(grund, farbe)
+      if (k > bestes) { bestes = k; schrift = farbe }
+    }
+    const hex = (f) => '#' + f.toString(16).padStart(6, '0')
+    return { grund: hex(grund), schrift: hex(schrift), verhaeltnis: Math.round(bestes * 100) / 100 }
+  }, 'data:image/png;base64,' + bild.toString('base64'))
+}
+
+/**
+ * Die Kontraste nachmessen, die axe offengelassen hat.
+ *
+ * Gleichartige Elemente werden einmal gemessen: Eine Tabelle mit neunzig
+ * Zeilen hat neunzig gleiche Knoepfe, und neunzigmal dieselbe Zahl macht das
+ * Protokoll unlesbar, ohne etwas hinzuzufuegen.
+ */
+async function offeneKontraste(seite, ergebnis, stand) {
+  const knoten = ergebnis.incomplete
+    .filter((regel) => regel.id === 'color-contrast')
+    .flatMap((regel) => regel.nodes.map((n) => n.target.join(' ')))
+  const gemessen = []
+  const gesehen = new Set()
+  for (const auswahl of knoten) {
+    if (gemessen.length >= 60) break
+    let element
+    try {
+      element = await seite.locator(auswahl).first()
+      if (!(await element.isVisible())) continue
+    } catch { continue }
+    let kennung
+    try {
+      kennung = await element.evaluate((n) => `${n.tagName}.${n.className}|${(n.innerText ?? '').trim().slice(0, 20)}`)
+    } catch { continue }
+    if (gesehen.has(kennung)) continue
+    gesehen.add(kennung)
+    try {
+      const mass = await kontrastMessen(seite, element)
+      gemessen.push({ auswahl, kennung, ...mass })
+    } catch { /* Element ist weg oder nicht abzulichten */ }
+  }
+  const zuWenig = gemessen.filter((m) => m.verhaeltnis < 4.5)
+  if (knoten.length > 0) {
+    console.log(`         offener Kontrast: ${knoten.length} Stellen, ${gemessen.length} Arten nachgemessen, ${zuWenig.length} zu schwach`)
+  }
+  for (const m of zuWenig) {
+    console.log(`           NACHGEMESSEN ${m.verhaeltnis}:1  ${m.schrift} auf ${m.grund}  ${m.auswahl}`)
+    befunde.push(`${stand}: Kontrast ${m.verhaeltnis}:1 (nachgemessen) bei ${m.auswahl}`)
+  }
+  return { offen: knoten.length, zuWenig: zuWenig.length }
+}
+
 async function pruefe(seite, stand) {
   await seite.evaluate(AXE)
+  // Ohne die offenen Punkte waere „kein Befund" eine Aussage ueber die
+  // Reichweite des Werkzeugs, nicht ueber die Seite.
   const ergebnis = await seite.evaluate(
-    async (regeln) => window.axe.run(document, { resultTypes: ['violations'], runOnly: { type: 'tag', values: regeln } }),
+    async (regeln) => window.axe.run(document, { runOnly: { type: 'tag', values: regeln } }),
     REGELN
   )
   melden(stand, ergebnis)
+  const andereOffen = ergebnis.incomplete.filter((r) => r.id !== 'color-contrast')
+  if (andereOffen.length > 0) {
+    const summe = andereOffen.reduce((n, r) => n + r.nodes.length, 0)
+    console.log(`         nicht beurteilt: ${summe}x in ${andereOffen.map((r) => r.id).join(', ')}`)
+  }
+  await offeneKontraste(seite, ergebnis, stand)
 }
 
 async function anmelden(seite) {

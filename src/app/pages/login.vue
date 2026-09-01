@@ -81,19 +81,19 @@ async function submitInner() {
           </div>
 
           <div class="live-region" role="alert" aria-live="assertive">
-            <div v-if="errorKey !== null" class="alert">{{ errorText }}</div>
+            <div v-if="errorKey !== null" class="ui-alert">{{ errorText }}</div>
           </div>
 
           <div class="field">
             <label for="email">{{ t('auth.email') }}</label>
-            <input id="email" v-model="email" class="input" type="email" name="email" autocomplete="username"
+            <input id="email" v-model="email" class="ui-input" type="email" name="email" autocomplete="username"
                    :placeholder="t('auth.emailPlaceholder')" required autofocus
                    :aria-invalid="errorKey !== null ? 'true' : undefined">
           </div>
 
           <div class="field">
             <label for="password">{{ t('auth.password') }}</label>
-            <input id="password" v-model="password" class="input" type="password" name="password"
+            <input id="password" v-model="password" class="ui-input" type="password" name="password"
                    autocomplete="current-password" :placeholder="t('auth.passwordPlaceholder')" required
                    :aria-invalid="errorKey !== null ? 'true' : undefined">
           </div>
@@ -102,7 +102,7 @@ async function submitInner() {
             {{ busy ? t('auth.submitting') : t('auth.submit') }}
           </button>
 
-          <div class="divider">{{ t('auth.or') }}</div>
+          <div class="ui-divider">{{ t('auth.or') }}</div>
           <p class="sso" :title="t('auth.ssoHint')">
             <span class="dot" style="box-shadow:none" aria-hidden="true" /> {{ t('auth.sso') }}
             <span class="sr-only">— {{ t('auth.ssoHint') }}</span>

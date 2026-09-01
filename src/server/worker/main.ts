@@ -10,6 +10,7 @@
  *    einmal sechs Tage lang einen Geisterprozess erzeugt.
  */
 import { standaloneDb } from '../db/config'
+import { schemaAnwenden, schemaAutomatisch, schemaVonPlatte } from '../db/schema'
 import { claim, complete, fail } from './queue'
 import { setStatus } from '../lib/imports'
 import * as download from './jobs/download'
@@ -41,6 +42,22 @@ const HANDLERS: Record<JobClass, (sql: Sql, payload: Record<string, unknown>) =>
 console.log(`[worker] Start, Node ${process.version}, max uptime ${maxUptime / 1000}s, once=${runOnce}`)
 
 const sql = standaloneDb()
+
+// Schema vor dem ersten Auftrag. Der Hintergrundprozess ist die Stelle, an der
+// ein veraltetes Schema zuschlaegt: Am 01.09.2026 brach eine Konvertierung mit
+// `column "run_config" of relation "imports" does not exist` ab, weil nach dem
+// Ausrollen niemand `npm run migrate` aufgerufen hatte. Die Vorkehrungssperre
+// in schemaAnwenden sorgt dafuer, dass Weboberflaeche und Worker sich beim
+// gleichzeitigen Start nicht in die Quere kommen.
+if (schemaAutomatisch()) {
+  try {
+    const anzahl = await schemaAnwenden(sql, await schemaVonPlatte())
+    console.log(`[worker] Schema angewandt, ${anzahl} Tabellen.`)
+  } catch (e) {
+    console.error('[worker] Schema fehlgeschlagen, Start abgebrochen:', e instanceof Error ? e.message : e)
+    process.exit(1)
+  }
+}
 
 /** Fuehrt einen Auftrag aus und pflegt seinen Zustand. */
 async function process_(job: WorkerJobRow): Promise<void> {

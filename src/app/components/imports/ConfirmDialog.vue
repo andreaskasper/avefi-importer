@@ -68,15 +68,15 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown, true))
 <template>
   <ClientOnly>
     <Teleport to="body">
-    <div v-if="open" class="modal-overlay" @click.self="emit('cancel')">
-      <div ref="box" class="modal-box" role="dialog" aria-modal="true" aria-labelledby="confirm-title"
+    <div v-if="open" class="ui-modal-overlay" @click.self="emit('cancel')">
+      <div ref="box" class="ui-modal-box" role="dialog" aria-modal="true" aria-labelledby="confirm-title"
            aria-describedby="confirm-text">
-        <div class="modal-head">
+        <div class="ui-modal-head">
           <h3 id="confirm-title">{{ title }}</h3>
-          <button class="modal-x" type="button" :aria-label="t('imports.confirm.cancel')" @click="emit('cancel')">×</button>
+          <button class="ui-modal-x" type="button" :aria-label="t('imports.confirm.cancel')" @click="emit('cancel')">×</button>
         </div>
-        <div id="confirm-text" class="modal-body">{{ message }}</div>
-        <div class="modal-foot">
+        <div id="confirm-text" class="ui-modal-body">{{ message }}</div>
+        <div class="ui-modal-foot">
           <button class="btn btn-outline" type="button" @click="emit('cancel')">{{ t('imports.confirm.cancel') }}</button>
           <button ref="okButton" class="btn" :class="danger ? 'btn-danger' : 'btn-primary'" type="button"
                   :disabled="busy" @click="emit('confirm')">{{ okText }}</button>

@@ -88,13 +88,13 @@ function formatDate(value: string): string {
     </div>
 
     <div class="live-region" role="alert" aria-live="assertive">
-      <div v-if="loadError" class="alert" style="margin-bottom:14px">{{ loadError }}</div>
+      <div v-if="loadError" class="ui-alert" style="margin-bottom:14px">{{ loadError }}</div>
     </div>
     <div class="live-region" role="alert" aria-live="assertive">
-      <div v-if="importError" class="alert" style="margin-bottom:14px">{{ importError }}</div>
+      <div v-if="importError" class="ui-alert" style="margin-bottom:14px">{{ importError }}</div>
     </div>
     <div class="live-region" role="status" aria-live="polite">
-      <div v-if="importMessage" class="alert alert-ok" style="margin-bottom:14px">{{ importMessage }}</div>
+      <div v-if="importMessage" class="ui-alert ui-alert-ok" style="margin-bottom:14px">{{ importMessage }}</div>
     </div>
 
     <div class="newprofile">
@@ -109,7 +109,7 @@ function formatDate(value: string): string {
         <p class="note">{{ t('mapping.list.importHint') }}</p>
         <p class="row">
           <label class="sr-only" for="profilejson">{{ t('mapping.list.importLabel') }}</label>
-          <input id="profilejson" class="input" type="file" accept=".json,application/json"
+          <input id="profilejson" class="ui-input" type="file" accept=".json,application/json"
                  style="max-width:320px" :disabled="importBusy" @change="onProfileFile">
         </p>
       </details>
