@@ -28,6 +28,117 @@ Zeitzone durchgängig Europe/Berlin. Commits verweisen auf
 
 ---
 
+## 2026-09-01 — Andreas Kasper, Sprungziele im Prüfbericht
+
+Commits `26e0038` (Oberfläche, Handbuch) und `b6480a8` (Prüfung).
+Live auf `https://avefiimporter.goo1.de`.
+
+### Eine Beanstandung beschrieb die Stelle, führte aber nicht hin
+
+**Gemeldet von Andreas Kasper (13:40).** Im Prüfbericht steht zu jeder
+Beanstandung, wo sie sitzt — Zeile, Prüfsatz, Quellspalte, Schemafeld —, aber
+es war Text. Wer den Fehler ansehen wollte, musste die Datensatzliste öffnen
+und suchen. Ausdrücklicher Rahmen der Meldung: Die Tester finden die Seite gut,
+also nur minimale Änderungen.
+
+Zwei Angaben sind jetzt Sprungmarken. Die Zeile führt zu dem Datensatz, der aus
+ihr entstanden ist; die Quellspalte führt in die Zuordnung und klappt die Spalte
+dort auf. Das Listenbild bleibt sonst, wie es war: dieselbe Sortierung, dieselbe
+Filterleiste, dasselbe Nachladen.
+
+Die Zeile wird beim Lesen des Berichts zu einer Datensatznummer aufgelöst
+(`SELECT id, source_row FROM records …`) und **nicht** in `report_json`
+geschrieben. Eine gespeicherte Nummer zeigte nach dem nächsten „Neu
+konvertieren" auf einen Satz, den es nicht mehr gibt.
+
+Für die Spalte gab es die Mechanik schon: Der Zuordnungs-Editor kann seit dem
+25.08. per `gotoColumn` zu einer Spalte springen, bisher nur aus seiner eigenen
+Prüfleiste heraus. Er nimmt jetzt zusätzlich `?spalte=…` aus der Adresse entgegen.
+
+### „Datensatz 159" meinte nie den Datensatz 159
+
+**Aufgefallen bei derselben Meldung.** Die Facette hieß „Datensatz", zeigte aber
+die Position im Prüfbestand: Je Zeile entstehen ein Werk, eine Manifestation und
+ein Exemplar, aus Zeile 53 werden also die Prüfsätze 157 bis 159. In der
+Oberfläche heißt „Datensatz" dagegen die Zeile in `records`. Ein Link auf diese
+Zahl hätte auf einen fremden Satz gezeigt.
+
+Die Facette heißt jetzt **Prüfsatz**. Für die Kommandozeile mit `efi-conv check`
+ist die Nummer weiter nützlich, zum Auffinden im Importer ist es die Zeile.
+Querverweise in den Meldungen nennen ab sofort die Zeile: statt „kommt auch in
+Datensatz 162 vor" steht „kommt auch in Zeile 54 vor". Wirkt auf neue
+Konvertierungen; bereits erzeugte Berichte behalten ihren Text.
+
+### Lösungshinweis je Beanstandung, und das Handbuch in der Anwendung
+
+Beim ersten Auftreten einer Kennung steht jetzt eine Zeile, was zu tun ist, mit
+Verweis ins Handbuch. Einmal je Kennung, nicht an jeder Meldung: Bei zwanzig
+gleichartigen Hinweisen wäre derselbe Satz zwanzigmal die längere, nicht die
+verständlichere Liste. Der Katalog liegt in den Übersetzungen
+(`imports.advice.*`, deutsch und englisch) und deckt die acht Kennungen ab, die
+im Betrieb vorkommen. Fehlt eine, erscheint keine Hinweiszeile — nie ein leerer
+Kasten.
+
+Das Handbuch lag im Wurzelverzeichnis des Repositoriums und war für die
+Anwendung damit unsichtbar: In den Container gemountet ist nur `src/`. Es liegt
+jetzt unter `src/docs/handbuch/` und ist unter `/dokumentation/handbuch` lesbar,
+über dieselbe Mechanik wie die Oberflächenbeschreibungen (`doku/rubrik.ts`, von
+beiden Rubriken geteilt). Überschriften tragen Kennungen, damit ein Verweis auf
+einen Abschnitt zeigen kann; Umlaute werden dabei umschrieben, und
+gleichlautende Überschriften werden durchgezählt — zwei gleiche `id`-Werte auf
+einer Seite wären ein Barrierefreiheitsfehler. Kapitel 3 hat einen neuen
+Abschnitt „Beanstandungen und ihre Behebung" mit einer Unterüberschrift je
+Kennung. `tests/a11y/axe.mjs` prüft die neuen Seiten in beiden Farbschemata mit.
+
+### 107 Fehler, die es nicht gab: die Prüfung sah immer nur 500 Sätze
+
+**Aus eigenem Antrieb, beim Lesen des Prüfcodes gefunden.** Drei Regeln des
+Prüfdienstes gelten über die ganze Lieferung: Eindeutigkeit der Kennungen,
+auflösbare Verweise, und dass zu jeder Manifestation ein Exemplar gehört. Sie
+liefen in `/check` mit, und `/check` wird in Bündeln zu 500 Sätzen aufgerufen.
+Jede Regel sah also nur einen Ausschnitt.
+
+Nachweisbar an `20240829_ItemExport_1.csv` (9.630 Sätze, 20 Bündel): 43
+`dangling_reference` und 32 `no_items_associated`, zusammen **alle 75 Fehler
+dieses Imports**. Sie saßen sämtlich direkt hinter einer Bündelgrenze — 501 bis
+506, 1010 bis 1012, 1515, 2016, 2517 bis 2520 und so fort. Die Manifestation lag
+in Bündel 2, ihr Werk in Bündel 1, also „zeigt auf keinen Datensatz dieser
+Lieferung". Umgekehrt blieb eine doppelt vergebene Kennung unentdeckt, wenn ihre
+beiden Träger in verschiedenen Bündeln standen.
+
+Die drei Regeln sind aus `/check` heraus und in einen eigenen Endpunkt
+`/crossref` gewandert, der **einmal** über den gesamten Bestand läuft. Damit das
+in eine Anfrage passt, bekommt er eine reduzierte Sicht: `category`,
+`has_identifier` und die vier Verweisfelder. Bei 9.630 Sätzen sind das wenige
+hundert Kilobyte statt zweistelliger Megabyte. Die Auswahl der Felder ist eine
+Feldauswahl im Worker, keine zweite Umsetzung der Regel — gelesen und beurteilt
+wird weiter in `efi-conv/service.py`.
+
+`convert.ts` bündelt eine Ebene höher noch einmal und sammelt die reduzierte
+Sicht deshalb über den ganzen Import mit; geprüft wird sie nach dem letzten
+Bündel. Die Zahl der gültigen Sätze wird seitdem über eine Menge beanstandeter
+Prüfsätze gebildet statt über eine Summe je Bündel: Derselbe Satz kann in seinem
+Bündel und noch einmal im Querlauf beanstandet werden, und zweimal abgezogen
+ergäbe zu wenig gültige Sätze.
+
+Beide betroffenen Importe wurden neu konvertiert. Vorher je 9.555 gültig, 75
+Fehler; nachher **9.630 gültig, 0 Fehler**. `tests/pruefung/querlauf.test.ts`
+nagelt fest, dass `/check` gebündelt und `/crossref` genau einmal über alles
+aufgerufen wird.
+
+### Offen geblieben
+
+- Der Import `0a67d79e` (UPB-Archivliste) ist **nicht** neu konvertiert worden —
+  die Tester arbeiten daran. Sein Bericht zeigt die Sprungmarken und die
+  Hinweiszeilen, in den Meldungstexten steht aber weiter „Datensatz 162" statt
+  „Zeile 54". Ein „Neu konvertieren" räumt das auf.
+- Das Handbuch stammt aus der PHP-Fassung. Kapitel 1 und 6 sind überholt, und
+  Kapitel 3 nennt an einer Stelle noch `/imports/<uuid>/details` und
+  `AvefiMapper`. Der neue Abschnitt ist auf dem Stand, der Rest des Kapitels
+  nicht.
+
+---
+
 ## 2026-09-01 — Stefan Stretz und Luca Wollny, zweite Testrunde
 
 Commit `2719a43`. Live auf `https://avefiimporter.goo1.de`.
