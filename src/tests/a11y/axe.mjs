@@ -363,7 +363,11 @@ try {
   for (const pfad of seiten) {
     await abschnitt(pfad, async () => {
       await seite.goto(BASIS + pfad, { waitUntil: 'networkidle' })
-      if (pfad === zurZuordnung) await seite.waitForSelector('table.maptable', { timeout: 30000 })
+      // Grosszuegig: Die Zuordnungsseite baut die groesste Tabelle der Anwendung
+      // auf, und der Durchgang laeuft oft neben anderen Containern auf derselben
+      // Maschine. 30 s haben am 01.09.2026 einen Lauf abgebrochen, der sonst
+      // sauber war - die Seite selbst war nach 1,6 s da.
+      if (pfad === zurZuordnung) await seite.waitForSelector('table.maptable', { timeout: 90000 })
       await seite.waitForTimeout(2500)
       for (const schema of SCHEMATA) {
         await seite.evaluate((s) => document.documentElement.setAttribute('data-theme', s), schema)

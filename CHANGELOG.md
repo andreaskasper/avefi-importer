@@ -86,11 +86,66 @@ abweichende als Schrift, alles unter 4,5:1 als Fehler. Gleichartige Elemente
 werden einmal gemessen. Die Zahl der nicht beurteilten Fälle steht jetzt in
 jedem Protokoll, auch für die übrigen Regeln.
 
-Der gemeldete Befund selbst bestätigte sich nicht: nachgemessen in Chromium und
-Firefox, helles Schema, weiße Schrift auf `#486e83` — **5,48:1** für
-„Bearbeiten", „Zuordnen", „Zuordnung beginnen" und „Konto anlegen". Der Hinweis
-war trotzdem der wertvollste dieser Runde, weil er nicht den Knopf traf,
-sondern die Messung.
+### Und dann war der gemeldete Befund doch richtig
+
+In der ersten Antwort an die Runde stand, die Nachmessung ergebe **5,48:1** und
+der Befund lasse sich nicht nachstellen. **Das war falsch.**
+
+Die Nachmessung riet die Schriftfarbe aus dem Bild: häufigste Farbe gleich
+Hintergrund, häufigste deutlich abweichende gleich Schrift. Bei einem Knopf mit
+abgerundeten Ecken sind die Eckpunkte aber der Seitenhintergrund und nicht die
+Schrift. Das Verfahren hielt das Weiß der Ecken für die Schrift und gab
+Entwarnung.
+
+Mit der Schriftfarbe aus dem Stylesheet gemessen:
+
+| Schema | Schrift auf Grund | Verhältnis |
+|---|---|---|
+| hell | `#16232a` auf `#43667a` | **2,61:1** |
+| dunkel | `#e4ebee` auf `#88a9b9` | **2,07:1** |
+
+Beides fällt unter WCAG 2.2 AA durch.
+
+**Die Ursache ist dieselbe wie bei den Dialogen, nur an einer anderen
+Eigenschaft.** In `app.css` stand `a { color: inherit }` **ungeschichtet**;
+daisyUIs `.btn { color: var(--btn-fg) }` liegt in `@layer utilities`. Und
+ungeschichtetes CSS schlägt geschichtetes unabhängig von der Spezifität. Auf dem
+Element stand `--btn-fg` korrekt auf `#ffffff` und wurde nie benutzt. Die Regel
+gilt jetzt als `a:not(.btn)`: hell 5,48:1, dunkel 6,96:1.
+
+Das erklärt, warum Stefans Liste ausgerechnet „Edit", „Map", „Start mapping" und
+„Assign" nannte: Das sind **Links**, die wie Knöpfe aussehen. Die echten
+`<button>` — „Konto anlegen", „Namen speichern" — waren mit 5,48:1 in Ordnung.
+
+Richtiggestellt gegenüber der Runde am 01.09.2026 (`c810461`).
+
+### Die Nachmessung musste dreimal berichtigt werden
+
+Weil sie sonst Schweigen durch Lärm ersetzt hätte, und das ist kein Fortschritt:
+
+1. **Schriftfarbe aus dem Bild geraten** → siehe oben. Sie kommt jetzt aus
+   `getComputedStyle`. axe scheitert am *Hintergrund*, nie am Vordergrund.
+2. **Häufigste Farbe als Hintergrund.** Auf einem Farbverlauf sind die zwei
+   häufigsten Bildfarben beide Hintergrund; der Abstand zwischen zwei
+   Verlaufsstufen ist kein Textkontrast. Gewertet wird jetzt der **ungünstigste**
+   Bildpunkt: Steht Text auf einem Verlauf, entscheidet die Stelle, an der er am
+   schlechtesten steht.
+3. **Bis an den Rand gemessen.** Die Kantenglättung an runden Ecken mischt
+   Knopf- und Seitenfarbe; diese Mischfarben wurden als ungünstigster
+   Hintergrund gewählt — 1,93:1 für einen Knopf, der 5,48:1 hat. Der Rand wird
+   jetzt weggeschnitten.
+
+Dazu: Farbübergänge sind während der Prüfung abgeschaltet, sonst wird nach einem
+Themenwechsel eine Zwischenstufe abgelichtet, die es in keinem Thema gibt.
+Zierzeichen bleiben außen vor — was unter `aria-hidden` liegt oder keinen Text
+enthält, wird nicht als Textkontrast gewertet; dafür gilt 3:1 nach WCAG 1.4.11.
+
+### Von der neuen Prüfung selbst gefunden: der Anmelde-Hero
+
+Nicht gemeldet, sondern von der berichtigten Nachmessung entdeckt. Der Verlauf
+der Anmeldeseite nimmt `--primary`; im dunklen Schema ist das `#80a3b5`, und die
+Schrift darin ist fest weiß — **2,68:1**. Der Verlauf steht jetzt fest und folgt
+dem Thema nicht mehr: Er ist Zierde, seine Schrift ist es nicht. (`f5893e5`)
 
 *Abnahmebezug: „Tastaturbedienung, sichtbarer Fokus, Labels sowie Status- und
 Fehlermeldungen nach WCAG 2.2 AA".*
