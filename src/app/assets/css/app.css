@@ -446,6 +446,14 @@ textarea.ui-input{resize:vertical;line-height:1.5}
 .val-list{display:flex;flex-direction:column;gap:7px;font-size:12.5px}
 .val-list .vi{display:flex;gap:8px;align-items:flex-start}
 .val-list .vi .m{margin-top:1px}
+/* Der Loesungshinweis zu einer Beanstandung. Er steht einmal je Kennung, an
+   der ersten Meldung; ein linker Balken trennt ihn von der Meldung selbst,
+   ohne eine zweite Flaeche aufzumachen. Farbe aus --ink statt --faint: Der
+   Hinweis ist zu lesen, nicht zu ueberfliegen. */
+.issue-advice{display:block;margin-top:6px;padding:6px 0 6px 10px;
+  border-left:2px solid var(--border-strong);color:var(--ink);font-size:12px;line-height:1.5}
+.issue-advice strong{font-weight:600}
+.issue-advice a{margin-left:4px;white-space:nowrap}
 
 @media (max-width:820px){
   .editor{grid-template-columns:1fr}

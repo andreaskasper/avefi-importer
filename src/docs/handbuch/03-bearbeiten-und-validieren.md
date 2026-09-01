@@ -65,6 +65,97 @@ das **echte av-efi-schema** (Klassen WorkVariant / Manifestation / Item) und zei
 So lässt sich auch ein **bereits als AVefi eingereichtes, aber fehlerhaftes** Schema
 gezielt prüfen: Der Report benennt jeden beanstandeten Record einzeln.
 
+Jede Meldung nennt, soweit bekannt, die Zeile der Quelldatei, die Nummer des
+Prüfsatzes, die Quellspalte und das Schemafeld. Zwei dieser Angaben sind Links:
+Die Zeile führt zu dem Datensatz, der aus ihr entstanden ist; die Quellspalte führt
+in die Zuordnung und klappt die Spalte dort auf.
+
+Die Nummer des Prüfsatzes ist nicht die Datensatznummer der Oberfläche. Geprüft wird
+das ausgelieferte Record-Set, und darin steht je Zeile ein Werk, eine Manifestation und
+ein Exemplar. Aus Zeile 53 werden also die Prüfsätze 157 bis 159. Für den Abgleich mit
+`efi-conv check` auf der Kommandozeile ist die Nummer nützlich, zum Auffinden im
+Importer die Zeile.
+
+## Beanstandungen und ihre Behebung
+
+Beim ersten Auftreten einer Beanstandung steht im Bericht ein kurzer Hinweis, was zu
+tun ist. Hier stehen dieselben Fälle ausführlich.
+
+### Kennung ist nicht eindeutig
+
+Zwei Sätze der Lieferung tragen dieselbe Kennung. Die Schemaprüfung lässt das nicht
+durch, und `efi-conv check` weist die Lieferung ebenfalls ab.
+
+Zwei Ursachen kommen in Frage. Entweder beschreiben die Zeilen wirklich dasselbe Objekt,
+dann gehört im Zuordnungs-Editor die Werkbildung darauf eingestellt, damit sie zu einem
+Satz zusammenfallen. Oder die Spalte, die auf `has_identifier` zeigt, ist gar keine
+Kennung — eine Signaturgruppe etwa oder eine Bestandsnummer, die für mehrere Objekte
+gilt. Dann gehört sie einem anderen Ziel zugeordnet, und die Kennung kommt aus einer
+anderen Spalte.
+
+### Exemplarkennung doppelt in der Quelldatei
+
+Dasselbe, eine Stufe früher bemerkt: Schon beim Zuordnen fällt auf, dass zwei Zeilen
+dieselbe Exemplarkennung tragen. Die Meldung nennt beide Zeilen. Sind es zwei Exemplare,
+braucht jedes eine eigene Kennung. Ist es eines, das versehentlich zweimal erfasst wurde,
+gehört eine der Zeilen aus der Quelldatei entfernt.
+
+### Verweis zeigt ins Leere
+
+Ein Satz verweist über `is_manifestation_of` oder `is_item_of` auf einen anderen, den
+die Lieferung nicht enthält. In aller Regel liegt es daran, dass die Spalte, aus der die
+Kennung des Ziels gebildet wird, in dieser Zeile leer war. Prüfe die genannte Zeile in
+der Quelldatei; in der Zuordnung hilft ein Festwert oder ein `default`-Konverter, damit
+auch leere Zellen eine Kennung ergeben.
+
+### Kein Exemplar zur Manifestation
+
+Zu einer Manifestation gehört kein Exemplar. AVefi verlangt zu jeder Manifestation
+mindestens eines, sonst wird die Lieferung abgelehnt. Meist fehlt in der Zuordnung das
+Ziel für die Exemplarkennung, oder die Werkbildung fasst Zeilen so zusammen, dass die
+Exemplare verlorengehen.
+
+### Normdatentreffer ist mehrdeutig
+
+Ein Name passt auf mehrere Normdatensätze — zwei Personen desselben Namens in der GND
+etwa. Der Importer trägt dann bewusst keine ID ein. Anreichern ist keine Umwandlung, und
+welcher der beiden gemeint ist, kann nur ein Mensch entscheiden.
+
+Der Befund blockiert nichts; er ist ein Hinweis. Über den Link auf die Spalte lässt sich
+in der Zuordnung einstellen, welche Normdatenquellen überhaupt befragt werden — wer nur
+GND zulässt, bekommt weniger Mehrdeutigkeiten. Die Auswahl selbst wird pro Datensatz
+getroffen: im Datensatz-Editor bei der betroffenen Entität unter `same_as`.
+
+### Verstoß gegen das AVefi-Schema
+
+Der Wert passt nicht zu dem, was das Schema an dieser Stelle erlaubt. Das Schemafeld in
+der Meldung nennt die Stelle, der Wert daneben zeigt, woran es lag.
+
+Häufig fehlt nur ein Konverter in der Zuordnung:
+
+| Was das Schema erwartet | Konverter |
+|---|---|
+| Datum nach ISO 8601 | `date` |
+| Laufzeit als Dauer | `duration` |
+| Zahl statt Zeichenkette | `number` |
+| Wert aus einer festen Liste | `map` mit Wertetabelle |
+| Sprachcode | `language` |
+| Ländercode | `country` |
+
+### Kennung fehlt
+
+Der Satz hat kein `has_identifier`. Ohne Kennung lässt sich später kein PID vergeben,
+und Verweise anderer Sätze können ihn nicht finden. In der Zuordnung muss eine Spalte
+auf eine Kennung zeigen; wo die Quelle keine hergibt, kann ein Festwert mit laufender
+Nummer einspringen.
+
+### Die Schemaprüfung war nicht möglich
+
+Der Prüfdienst war nicht erreichbar. Die Datei wurde erzeugt, aber nicht geprüft — der
+Bericht sagt in diesem Fall nichts über die Schemakonformität aus, auch wenn er sonst
+leer aussieht. Der Container `avefi_efi_conv` muss laufen; danach setzt
+**Neu konvertieren** die Prüfung erneut an.
+
 ## AVefi-Ausgabe & natives AVefi
 
 - Für CSV/TSV/JSON/MARC-XML/EAD wird intern gemappt und `avefi.v1.json` als echtes

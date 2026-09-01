@@ -24,6 +24,9 @@ const report = computed(() => data.value?.report ?? null)
 const summary = computed(() => data.value?.summary ?? null)
 const counts = computed(() => data.value?.counts ?? { error: 0, warning: 0, info: 0 })
 const issues = computed(() => data.value?.issues ?? [])
+// Quellzeile -> Datensatz, vom Server abgeleitet. Damit wird aus der Angabe
+// „Zeile 53" ein Weg zum Satz und nicht nur eine Beschreibung.
+const rowRecords = computed(() => data.value?.rowRecords ?? {})
 
 useHead({ title: () => (item.value ? `${item.value.filename} · ${t('imports.report.crumb')}` : t('imports.report.crumb')) })
 
@@ -159,7 +162,8 @@ function percent(entry: { filled: number; total: number }): number {
           </div>
         </section>
 
-        <ImportsIssueList :issues="issues" :counts="counts" />
+        <ImportsIssueList :issues="issues" :counts="counts" :row-records="rowRecords"
+                          :import-id="item.id" :has-mapping="item.hasMapping" />
 
         <section style="margin-top:18px">
           <h2 class="side-h" style="margin:0 0 8px">{{ t('imports.report.meta.heading') }}</h2>

@@ -221,6 +221,8 @@ function toggleTheme() {
             <NuxtLink class="ui-menu-item" role="menuitem" to="/profile" @click="closeMenu()">{{ t('menu.profile') }}</NuxtLink>
             <NuxtLink v-if="user.is_admin" class="ui-menu-item" role="menuitem" to="/users"
                       @click="closeMenu()">{{ t('menu.users') }}</NuxtLink>
+            <NuxtLink class="ui-menu-item" role="menuitem" to="/dokumentation/handbuch"
+                      @click="closeMenu()">{{ t('menu.handbuch') }}</NuxtLink>
             <NuxtLink class="ui-menu-item" role="menuitem" to="/dokumentation/oberflaeche"
                       @click="closeMenu()">{{ t('menu.doku') }}</NuxtLink>
             <button class="ui-menu-item" role="menuitem" type="button" @click="logout()">{{ t('menu.logout') }}</button>

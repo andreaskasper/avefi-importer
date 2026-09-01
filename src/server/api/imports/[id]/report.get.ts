@@ -41,11 +41,25 @@ export default defineEventHandler(async (event) => {
     : (await sql<Array<{ version: number }>>`
         SELECT version FROM mapping_profiles WHERE id = ${row.mapping_profile_id}`)[0]?.version ?? null
 
+  // Quellzeile -> Datensatz, damit eine Beanstandung auf den erzeugten Satz
+  // zeigen kann. Bewusst hier abgeleitet und nicht in report_json abgelegt:
+  // Nach einem erneuten Konvertieren traegt derselbe Bericht sonst Nummern,
+  // die es nicht mehr gibt.
+  const zeilen = [...new Set(issues.map((i) => i.row).filter((r): r is number => typeof r === 'number'))]
+  const rowRecords: Record<number, number> = {}
+  if (zeilen.length > 0) {
+    const treffer = await sql<Array<{ id: number; source_row: number }>>`
+      SELECT id, source_row FROM records
+       WHERE import_id = ${row.id} AND source_row = ANY(${zeilen})`
+    for (const r of treffer) rowRecords[r.source_row] = r.id
+  }
+
   return {
     import: toListItem(row, await countEdited(sql, row.id), version),
     report,
     issues,
     counts,
+    rowRecords,
     summary: report?.summary ?? null,
     mapping: report?.mapping ?? null,
     coverage: report?.coverage ?? null

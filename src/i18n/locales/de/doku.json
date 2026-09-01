@@ -27,6 +27,15 @@
     "error": {
       "load": "Die Beschreibungen konnten nicht geladen werden.",
       "missing": "Diese Beschreibung gibt es nicht."
+    },
+    "handbuch": {
+      "crumb": "Handbuch",
+      "pageTitle": "Handbuch",
+      "heading": "Handbuch",
+      "lead": "Installation, Import, Bearbeitung und Zuordnungen — Schritt für Schritt.",
+      "page": {
+        "pageTitle": "{name} – Handbuch"
+      }
     }
   }
 }

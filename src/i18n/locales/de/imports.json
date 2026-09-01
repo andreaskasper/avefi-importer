@@ -251,13 +251,15 @@
         "info": "Hinweis"
       },
       "row": "Zeile {row}",
-      "record": "Datensatz {record}",
+      "record": "Prüfsatz {record}",
       "sourceField": "Quellfeld „{field}“",
       "targetField": "Schemafeld {field}",
       "value": "Wert: {value}",
       "code": "Kennung: {code}",
       "fix": "Vorschlag: Konverter „{op}“ einsetzen. Anwenden musst du ihn selbst — der Importer verändert keine Werte von sich aus.",
-      "noPosition": "ohne Zeilenbezug"
+      "noPosition": "ohne Zeilenbezug",
+      "gotoRecord": "Zum Datensatz aus Zeile {row} springen",
+      "gotoColumn": "Zur Spalte „{field}“ in der Zuordnung springen"
     },
     "sheets": {
       "crumb": "Tabellenblätter",
@@ -332,6 +334,18 @@
         "title": "Da ist etwas schiefgelaufen",
         "text": "Die Seite ließ sich nicht aufbauen. Der Fehler steht unten."
       }
+    },
+    "advice": {
+      "lead": "Was zu tun ist",
+      "doc": "Im Handbuch nachlesen",
+      "identifier_not_unique": "Zwei Sätze tragen dieselbe Kennung; die Schemaprüfung lässt das nicht durch. Entweder beschreiben die Zeilen dasselbe Objekt — dann gehört die Werkbildung darauf eingestellt — oder die zugeordnete Spalte taugt nicht als Kennung.",
+      "identifier_duplicate": "Die Quelldatei vergibt dieselbe Exemplarkennung zweimal. Sind es zwei Exemplare, braucht jedes eine eigene Kennung; ist es eines, gehören die Zeilen zusammengefasst.",
+      "dangling_reference": "Ein Satz verweist auf einen anderen, den die Lieferung nicht enthält. Meist fehlt das Werk zur Manifestation oder das Exemplar zum Werk, etwa weil die zugeordnete Spalte in dieser Zeile leer war.",
+      "no_items_associated": "Zu dieser Manifestation gehört kein Exemplar. AVefi verlangt zu jeder Manifestation mindestens eines; ohne Exemplar wird die Lieferung abgelehnt.",
+      "authority_ambiguous": "Der Name passt auf mehrere Normdatensätze. Der Importer trägt bewusst keine ID ein. Über die Spalte lässt sich die Normdatenquelle einschränken; welcher Satz gemeint ist, wählst du im Datensatz-Editor unter „same_as“.",
+      "schema": "Der Wert passt nicht zu dem, was das AVefi-Schema an dieser Stelle erlaubt. Oft hilft ein Konverter in der Zuordnung: „date“ für Datumsangaben, „duration“ für Laufzeiten, „number“ für Zahlen.",
+      "missing_identifier": "Der Satz hat keine Kennung. Ohne has_identifier lässt sich später kein PID vergeben. In der Zuordnung muss eine Spalte auf eine Kennung zeigen, oder ein Festwert muss sie liefern.",
+      "validation_unavailable": "Der Prüfdienst war nicht erreichbar. Die Datei wurde erzeugt, aber nicht geprüft — über die Schemakonformität sagt dieser Bericht also nichts. „Neu konvertieren“ startet die Prüfung erneut."
     }
   }
 }

@@ -251,13 +251,15 @@
         "info": "Note"
       },
       "row": "Row {row}",
-      "record": "Record {record}",
+      "record": "Checked record {record}",
       "sourceField": "Source field “{field}”",
       "targetField": "Schema field {field}",
       "value": "Value: {value}",
       "code": "Code: {code}",
       "fix": "Suggestion: apply the converter “{op}”. You have to apply it yourself — the importer never changes values on its own.",
-      "noPosition": "no row reference"
+      "noPosition": "no row reference",
+      "gotoRecord": "Jump to the record from row {row}",
+      "gotoColumn": "Jump to the column “{field}” in the mapping"
     },
     "sheets": {
       "crumb": "Sheets",
@@ -332,6 +334,18 @@
         "title": "Something went wrong",
         "text": "The page could not be built. The error is shown below."
       }
+    },
+    "advice": {
+      "lead": "What to do",
+      "doc": "Read up in the manual",
+      "identifier_not_unique": "Two records carry the same identifier, and the schema check will not pass that. Either the rows describe the same object — then adjust how works are formed — or the mapped column is not suitable as an identifier.",
+      "identifier_duplicate": "The source file assigns the same item identifier twice. If these are two items, each needs its own identifier; if it is one, the rows belong together.",
+      "dangling_reference": "A record points to another one that the delivery does not contain. Usually the work is missing for a manifestation, or the item for a work, because the mapped column was empty in that row.",
+      "no_items_associated": "This manifestation has no item. AVefi requires at least one item per manifestation; without it the delivery is rejected.",
+      "authority_ambiguous": "The name matches several authority records. The importer deliberately fills in no ID. The column lets you narrow the authority source; which record is meant you choose in the record editor under “same_as”.",
+      "schema": "The value does not match what the AVefi schema allows here. A converter in the mapping often helps: “date” for dates, “duration” for running times, “number” for numbers.",
+      "missing_identifier": "The record has no identifier. Without has_identifier no PID can be assigned later. In the mapping a column has to point at an identifier, or a fixed value has to supply one.",
+      "validation_unavailable": "The validation service could not be reached. The file was produced but not checked — this report says nothing about schema conformance. “Reconvert” starts the check again."
     }
   }
 }

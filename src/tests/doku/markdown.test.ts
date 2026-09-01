@@ -18,8 +18,24 @@ describe('markdownNachHtml', () => {
 
   it('behaelt die Stufen der uebrigen Ueberschriften', () => {
     const { html } = markdownNachHtml('# A\n\n## Teil 1\n\n### Landmarken\n')
-    expect(html).toContain('<h2>Teil 1</h2>')
-    expect(html).toContain('<h3>Landmarken</h3>')
+    expect(html).toContain('<h2 id="teil-1">Teil 1</h2>')
+    expect(html).toContain('<h3 id="landmarken">Landmarken</h3>')
+  })
+
+  it('gibt jeder Ueberschrift eine Kennung, mit umschriebenen Umlauten', () => {
+    // Umlaute umschreiben statt entfernen: Sonst bekaemen „Schemapruefung" und
+    // „Schemaprufung" dieselbe Kennung, und ein Verweis traefe die falsche Stelle.
+    const { html } = markdownNachHtml('# A\n\n## Verstoss gegen das Schema\n\n## Die Schemapruefung\n')
+    expect(html).toContain('<h2 id="verstoss-gegen-das-schema">')
+    expect(html).toContain('<h2 id="die-schemapruefung">')
+  })
+
+  it('zaehlt gleichlautende Ueberschriften durch', () => {
+    // Zwei gleiche id-Werte auf einer Seite sind ein Barrierefreiheitsfehler,
+    // und ein Verweis koennte nicht sagen, welche Stelle er meint.
+    const { html } = markdownNachHtml('# A\n\n## Hinweis\n\n## Hinweis\n')
+    expect(html).toContain('<h2 id="hinweis">')
+    expect(html).toContain('<h2 id="hinweis-2">')
   })
 
   it('setzt die Nummern der Liste ausdruecklich und verschachtelt nach Einzug', () => {

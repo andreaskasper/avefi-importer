@@ -43,6 +43,22 @@ function maskiere(text: string): string {
     .replace(/"/g, '&quot;')
 }
 
+/**
+ * Kennung einer Ueberschrift, damit sich auf sie verlinken laesst.
+ *
+ * Umlaute werden umschrieben statt entfernt: aus „Schemapruefung" und
+ * „Schemaprufung" wuerde sonst dieselbe Kennung, und ein Verweis traefe die
+ * falsche Stelle. Doppelte Ueberschriften bekommen eine laufende Nummer —
+ * zwei gleiche id-Werte auf einer Seite sind ein Barrierefreiheitsfehler.
+ */
+export function kennung(text: string): string {
+  return klartext(text)
+    .toLowerCase()
+    .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
 /** Auszeichnungen ohne Wirkung entfernen — fuer Ueberschriftentexte. */
 export function klartext(text: string): string {
   return text
@@ -107,6 +123,8 @@ export function markdownNachHtml(quelle: string, optionen: MarkdownOptionen = {}
   const listen: Array<{ einzug: number; geordnet: boolean }> = []
   let titel = ''
   let i = 0
+  /** Schon vergebene Ueberschriftenkennungen, damit keine zweimal vorkommt. */
+  const vergeben = new Map<string, number>()
 
   /** Alle Listen schliessen, die tiefer eingerueckt sind als angegeben. */
   function listenSchliessen(bis: number): void {
@@ -164,7 +182,12 @@ export function markdownNachHtml(quelle: string, optionen: MarkdownOptionen = {}
         i++
         continue
       }
-      aus.push(`<h${stufe}>${fliesstext(text, optionen)}</h${stufe}>`)
+      const roh = kennung(text)
+      const schon = vergeben.get(roh) ?? 0
+      vergeben.set(roh, schon + 1)
+      const id = roh === '' ? '' : schon === 0 ? roh : `${roh}-${schon + 1}`
+      const anker = id === '' ? '' : ` id="${id}"`
+      aus.push(`<h${stufe}${anker}>${fliesstext(text, optionen)}</h${stufe}>`)
       i++
       continue
     }

@@ -27,6 +27,15 @@
     "error": {
       "load": "The descriptions could not be loaded.",
       "missing": "This description does not exist."
+    },
+    "handbuch": {
+      "crumb": "Manual",
+      "pageTitle": "Manual",
+      "heading": "Manual",
+      "lead": "Installation, import, editing and mappings — step by step.",
+      "page": {
+        "pageTitle": "{name} – Manual"
+      }
     }
   }
 }

@@ -37,6 +37,7 @@ const props = defineProps<{
 
 const { t, te } = useI18n()
 const keepFocus = useKeepFocus()
+const route = useRoute()
 
 /* ---------------------------------------------------------------- Zustand */
 
@@ -283,6 +284,15 @@ function removeTarget(column: string, index: number) {
   spec(column).targets?.splice(index, 1)
   refresh()
 }
+
+/**
+ * Aus dem Pruefbericht kommt man mit ?spalte=… hierher. Die Beanstandung nennt
+ * eine Quellspalte; ohne diesen Einstieg muesste man sie in der Tabelle suchen.
+ */
+onMounted(() => {
+  const gewuenscht = String(route.query.spalte ?? '')
+  if (gewuenscht !== '') gotoColumn(gewuenscht)
+})
 
 function gotoColumn(column: string) {
   if (column === '') return

@@ -113,6 +113,8 @@ export interface ImportReportResponse {
   report: ExtendedReport | null
   issues: ValidationIssue[]
   counts: Record<Severity, number>
+  /** Quellzeile -> Datensatz-Nummer, fuer den Sprung aus einer Beanstandung. */
+  rowRecords: Record<number, number>
   summary: ReportSummary | null
   mapping: Record<string, unknown> | null
   coverage: Record<string, { filled: number; total: number }> | null

@@ -408,6 +408,38 @@ try {
     })
   }
 
+  /* ------------------------------------------------------------- Handbuch */
+  // Wie oben aus der Uebersicht gelesen. Das Handbuch ist seit dem 01.09.2026
+  // in der Anwendung lesbar, weil der Pruefbericht auf seine Abschnitte
+  // verweist — damit gehoert es in dieselbe Pruefung wie die Beschreibungen.
+  let handbuch = []
+  await abschnitt('/dokumentation/handbuch', async () => {
+    await seite.goto(`${BASIS}/dokumentation/handbuch`, { waitUntil: 'networkidle' })
+    await seite.waitForTimeout(1500)
+    handbuch = await seite.evaluate(() =>
+      Array.from(
+        document.querySelectorAll('.doku-body a[href^="/dokumentation/handbuch/"]'),
+        (a) => a.getAttribute('href') ?? ''
+      ).filter((h) => h !== ''))
+    for (const schema of SCHEMATA) {
+      await seite.evaluate((s) => document.documentElement.setAttribute('data-theme', s), schema)
+      await seite.waitForTimeout(400)
+      await pruefe(seite, `/dokumentation/handbuch [${schema}]`)
+    }
+  })
+
+  for (const pfad of handbuch) {
+    await abschnitt(pfad, async () => {
+      await seite.goto(BASIS + pfad, { waitUntil: 'networkidle' })
+      await seite.waitForTimeout(1200)
+      for (const schema of SCHEMATA) {
+        await seite.evaluate((s) => document.documentElement.setAttribute('data-theme', s), schema)
+        await seite.waitForTimeout(400)
+        await pruefe(seite, `${pfad} [${schema}]`)
+      }
+    })
+  }
+
   /* ------------------------------------------------------ Geoeffnete Zustaende */
   await abschnitt('Menues der Importliste', async () => {
     await seite.goto(`${BASIS}/`, { waitUntil: 'networkidle' })

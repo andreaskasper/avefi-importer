@@ -7,15 +7,33 @@
  * Hier liegt alles in einer Liste, nach Schweregrad sortiert und filterbar.
  *
  * Jede Meldung nennt, soweit bekannt: Zeile der Quelldatei, laufende Nummer
- * des Datensatzes, Quellspalte und Schemafeld. Der Vertrag verlangt genau das.
+ * des Pruefsatzes, Quellspalte und Schemafeld. Der Vertrag verlangt genau das.
+ *
+ * Zwei Angaben sind Sprungmarken, weil eine Beanstandung sonst nur beschreibt,
+ * wo etwas klemmt, statt dorthin zu fuehren:
+ *  - die Zeile fuehrt zum erzeugten Datensatz,
+ *  - die Quellspalte fuehrt in die Zuordnung, mit geoeffneter Spalte.
+ *
+ * Der Loesungshinweis steht einmal je Code, beim ersten Befund. Bei zwanzig
+ * gleichartigen Meldungen zwanzigmal denselben Satz zu wiederholen macht die
+ * Liste laenger, aber nicht verstaendlicher.
  */
 import type { Severity, ValidationIssue } from '#shared/types/domain'
 
 const props = withDefaults(
-  defineProps<{ issues: ValidationIssue[]; counts: Record<Severity, number>; pageSize?: number }>(),
-  { pageSize: 100 }
+  defineProps<{
+    issues: ValidationIssue[]
+    counts: Record<Severity, number>
+    /** Quellzeile -> Datensatz-Nummer. Leer, solange kein Satz erzeugt wurde. */
+    rowRecords?: Record<number, number>
+    importId?: string
+    /** Ob es zu diesem Import eine Zuordnung gibt, in die gesprungen werden kann. */
+    hasMapping?: boolean
+    pageSize?: number
+  }>(),
+  { pageSize: 100, rowRecords: () => ({}), importId: '', hasMapping: false }
 )
-const { t } = useI18n()
+const { t, te } = useI18n()
 
 type Filter = 'all' | Severity
 const filter = ref<Filter>('all')
@@ -34,13 +52,91 @@ watch(filter, () => {
 const BADGE: Record<Severity, string> = { error: 'b-danger', warning: 'b-warn', info: 'b-info' }
 const MARK: Record<Severity, string> = { error: '×', warning: '!', info: 'i' }
 
+/**
+ * Kapitel und Abschnitt im Handbuch je Beanstandung.
+ *
+ * Bewusst hier und nicht in den Uebersetzungen: Das ist die Gliederung des
+ * Handbuchs, keine Sprache. Sonst muesste jede Sprachfassung dieselben Anker
+ * mitpflegen und koennte auseinanderlaufen.
+ */
+const HANDBUCH: Record<string, string> = {
+  identifier_not_unique: '03-bearbeiten-und-validieren#kennung-ist-nicht-eindeutig',
+  identifier_duplicate: '03-bearbeiten-und-validieren#exemplarkennung-doppelt-in-der-quelldatei',
+  dangling_reference: '03-bearbeiten-und-validieren#verweis-zeigt-ins-leere',
+  no_items_associated: '03-bearbeiten-und-validieren#kein-exemplar-zur-manifestation',
+  authority_ambiguous: '03-bearbeiten-und-validieren#normdatentreffer-ist-mehrdeutig',
+  schema: '03-bearbeiten-und-validieren#verstoss-gegen-das-avefi-schema',
+  missing_identifier: '03-bearbeiten-und-validieren#kennung-fehlt',
+  validation_unavailable: '03-bearbeiten-und-validieren#die-schemapruefung-war-nicht-moeglich'
+}
+
+/** Punkt und Bindestrich sind in Codes zulaessig, in i18n-Schluesseln nicht. */
+function schluessel(issue: ValidationIssue): string {
+  return String(issue.code ?? '').replace(/[.-]/g, '_')
+}
+
+/** Adresse des Datensatzes zu einer Beanstandung, oder null. */
+function datensatzZiel(issue: ValidationIssue): string | null {
+  if (props.importId === '' || issue.row === undefined) return null
+  const nummer = props.rowRecords[issue.row]
+  return nummer === undefined ? null : `/imports/${props.importId}/records/${nummer}`
+}
+
+/** Adresse der Spalte in der Zuordnung, oder null. */
+function spaltenZiel(issue: ValidationIssue): string | null {
+  if (props.importId === '' || !props.hasMapping || !issue.sourceField) return null
+  return `/imports/${props.importId}/mapping?spalte=${encodeURIComponent(issue.sourceField)}`
+}
+
+/** Die Angaben ohne eigenes Sprungziel — sie bleiben Text. */
 function facets(issue: ValidationIssue): string[] {
   const out: string[] = []
-  if (issue.row !== undefined) out.push(t('imports.issue.row', { row: issue.row }))
+  if (issue.row !== undefined && datensatzZiel(issue) === null) {
+    out.push(t('imports.issue.row', { row: issue.row }))
+  }
   if (issue.record !== undefined) out.push(t('imports.issue.record', { record: issue.record }))
-  if (issue.sourceField) out.push(t('imports.issue.sourceField', { field: issue.sourceField }))
+  if (issue.sourceField && spaltenZiel(issue) === null) {
+    out.push(t('imports.issue.sourceField', { field: issue.sourceField }))
+  }
   if (issue.targetField) out.push(t('imports.issue.targetField', { field: issue.targetField }))
   return out
+}
+
+/** Ob die Beanstandung ueberhaupt eine Stelle nennt — gleich ob als Link oder als Text. */
+function hatStelle(issue: ValidationIssue): boolean {
+  return issue.row !== undefined || issue.record !== undefined
+    || Boolean(issue.sourceField) || Boolean(issue.targetField)
+}
+
+/**
+ * Beim wievielten Befund eines Codes der Hinweis steht.
+ *
+ * Gerechnet wird auf der gefilterten Liste: Wer nur die Fehler ansieht, soll
+ * den Hinweis am ersten sichtbaren Fehler finden und nicht an einer Meldung,
+ * die der Filter gerade ausblendet.
+ */
+const ersteFundstelle = computed(() => {
+  const stellen = new Map<string, number>()
+  filtered.value.forEach((issue, index) => {
+    const key = schluessel(issue)
+    if (key !== '' && !stellen.has(key)) stellen.set(key, index)
+  })
+  return stellen
+})
+
+function zeigtHinweis(issue: ValidationIssue, index: number): boolean {
+  const key = schluessel(issue)
+  if (key === '' || !te(`imports.advice.${key}`)) return false
+  return ersteFundstelle.value.get(key) === index
+}
+
+function hinweis(issue: ValidationIssue): string {
+  return t(`imports.advice.${schluessel(issue)}`)
+}
+
+function handbuchZiel(issue: ValidationIssue): string | null {
+  const ziel = HANDBUCH[schluessel(issue)]
+  return ziel === undefined ? null : `/dokumentation/handbuch/${ziel}`
 }
 
 function setFilter(value: Filter) {
@@ -86,7 +182,19 @@ function setFilter(value: Filter) {
             </span>
             <span style="min-width:0">
               <span class="fn">{{ issue.message }}</span>
-              <span v-if="facets(issue).length > 0" class="dim small">
+              <span v-if="hatStelle(issue)" class="dim small">
+                <template v-if="datensatzZiel(issue) !== null">
+                  ·
+                  <NuxtLink :to="datensatzZiel(issue) ?? ''"
+                            :title="t('imports.issue.gotoRecord', { row: issue.row })">
+                    {{ t('imports.issue.row', { row: issue.row }) }}</NuxtLink>
+                </template>
+                <template v-if="spaltenZiel(issue) !== null">
+                  ·
+                  <NuxtLink :to="spaltenZiel(issue) ?? ''"
+                            :title="t('imports.issue.gotoColumn', { field: issue.sourceField })">
+                    {{ t('imports.issue.sourceField', { field: issue.sourceField }) }}</NuxtLink>
+                </template>
                 <template v-for="(facet, i) in facets(issue)" :key="i"> · {{ facet }}</template>
               </span>
               <span v-else class="dim small"> · {{ t('imports.issue.noPosition') }}</span>
@@ -95,6 +203,12 @@ function setFilter(value: Filter) {
               </span>
               <span v-if="issue.fix" class="dim small" style="display:block;margin-top:2px">
                 {{ t('imports.issue.fix', { op: String(issue.fix.op) }) }}
+              </span>
+              <span v-if="zeigtHinweis(issue, index)" class="issue-advice">
+                <strong>{{ t('imports.advice.lead') }}:</strong>
+                {{ hinweis(issue) }}
+                <NuxtLink v-if="handbuchZiel(issue) !== null" :to="handbuchZiel(issue) ?? ''">
+                  {{ t('imports.advice.doc') }}</NuxtLink>
               </span>
             </span>
           </li>
