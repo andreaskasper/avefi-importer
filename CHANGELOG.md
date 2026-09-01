@@ -210,6 +210,62 @@ Hauptnavigation vollständig.
 War mit `8dbc060` am selben Vormittag behoben. Stefans Mail (09:25) und die
 Antwort an Elias (11:55) haben sich gekreuzt.
 
+### `aria-prohibited-attr`: das Abzeichen „veraltet" hieß anders, als es aussah
+
+Nicht gemeldet, sondern von der erweiterten Prüfung sichtbar gemacht — es stand
+bis zu 39-mal je Seite als „nicht beurteilt" im Protokoll, seit die Prüfung
+`incomplete` überhaupt ausgibt.
+
+Das Abzeichen trug seine Erklärung in `aria-label` auf einem `<span>`. Ein
+`<span>` ohne Rolle ist `generic`, und dort ist ein Name unzulässig:
+Vorlesewerkzeuge ignorieren ihn — dann war die Erklärung für sie gar nicht da —
+oder sie lesen ihn **statt** des sichtbaren Wortes „veraltet". Dann heißt das
+Abzeichen anders, als es aussieht, und wer die Oberfläche mit der Stimme
+bedient, findet es unter seiner Beschriftung nicht mehr. *Abnahmebezug: WCAG
+2.5.3, Label in Name.*
+
+Die Erklärung steht jetzt als sichtbar verborgener Text daneben.
+`aria-describedby` war der erste Versuch und ist wieder entfernt: Im Barrierebaum
+von Chromium nachgesehen steht ein `<span>` ohne Rolle gar nicht als eigener
+Knoten drin, eine Beschreibung daran geht ins Leere. Nachgemessen statt
+angenommen — sonst wäre eine Verdrahtung stehen geblieben, die gut aussieht und
+nichts tut.
+
+Der Preis ist Umständlichkeit: Die Erklärung gehört jetzt zum Text der
+Tabellenzelle und wird beim Durchgehen mitgelesen. Das ist den Zustand davor
+wert, in dem sie nur im `title` stand und mit der Tastatur unerreichbar war; für
+die Maus bleibt der `title` stehen. Danach 0 Verstöße und 0 nicht beurteilte
+Stellen. (`d7fe60e`)
+
+### Lucas zwei Frontend-Fehler: nicht reproduzierbar, Ursache trotzdem entschärft
+
+**Gemeldet von Luca Wollny:** ein Vue-Codegen-Fehler in `users/index.vue` und
+`useRuntimeConfig` außerhalb des Nuxt-Kontexts beim Laden — beide traten am Ende
+seines Tests schon nicht mehr auf.
+
+Nachgestellt: sechs Seiten, je beim Neuladen und beim Navigieren im Browser,
+**keine einzige Konsolenmeldung**. Die Zeitachse erklärt es: Er testete, während
+`8dbc060` (10:28) und `34c2be1` (10:32) ausgerollt wurden, und die Testinstanz
+läuft im Entwicklungsmodus mit laufendem Neuladen.
+
+Das ist keine Entwarnung, sondern eine Prozessfrage: **Ein Tester auf einer
+Instanz im Entwicklungsmodus sieht Fehler, die es nicht gibt**, und kann sie
+nicht von echten unterscheiden. Für den Nutzertest der Abnahme gehört ein
+gebauter Stand her.
+
+Die Ursache hinter der zweiten Meldung ist echt und jetzt entschärft: `useApi()`
+las die API-Basis über `useRuntimeConfig()`, das außerhalb des Nuxt-Kontexts
+wirft. Der Zugriff läuft über `tryUseNuxtApp()`, das `null` zurückgibt statt zu
+werfen. Nebenbefund, unangetastet und hier notiert: In 16 Dateien steht
+`useHead()` nach einem `await` auf oberster Ebene — dieselbe Familie von
+Kontextproblemen, gemessen ohne Meldung.
+
+### Der Auslieferungsbau ist geprüft
+
+`nuxt build` läuft durch, und `db/schema.sql` liegt als
+`.output/server/chunks/raw/schema.mjs` im Bündel. Damit ist die Schema-Änderung
+oben auch außerhalb des Entwicklungsmodus belegt und nicht nur behauptet.
+
 ### Offen geblieben aus dieser Runde
 
 - **i18n.** Die Vokabular-Beschriftungen werden noch nicht überall genutzt,
@@ -221,10 +277,6 @@ Antwort an Elias (11:55) haben sich gekreuzt.
   für die spätere Integration gedacht ist, ist eine Vertrags-, keine Codefrage.
 - **Zielgruppe und vorausgesetztes Vorwissen.** Offen, und Voraussetzung für
   jede weitere Vereinfachung von Importübersicht, Zuordnung und Format-Review.
-- **Zwei Frontend-Fehler von Luca Wollny** — ein Vue-Codegen-Fehler in
-  `users/index.vue` und `useRuntimeConfig` außerhalb des Nuxt-Kontexts beim
-  Laden — sind nicht mehr reproduzierbar und **nicht untersucht**. Sie gelten
-  hier ausdrücklich nicht als behoben.
 - **Rückmeldungen von Matti Stöhr** aus dem Pad: Beanstandungen direkt
   ansteuerbar, flexible Sortierung und Filterung, kontextsensitive Hilfe,
   Wording „Fassung" → „Manifestation" und „die Auswahl gehoert einem Menschen" →
