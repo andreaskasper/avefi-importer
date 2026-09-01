@@ -24,6 +24,7 @@ PostgreSQL 16, Docker.
 | [`src/docs/architecture.md`](src/docs/architecture.md) | Verzeichnisaufbau, Ablauf, alle API-Endpunkte |
 | [`src/docs/frontend-pruefen.md`](src/docs/frontend-pruefen.md) | Durchgang zur Pruefung der Oberflaeche von Hand |
 | [`src/.env.example`](src/.env.example) | Beispielkonfiguration ohne Zugangsdaten |
+| [`CHANGELOG.md`](CHANGELOG.md) | Was gemeldet wurde, von wem, und was daraus wurde |
 
 ## Schnellstart
 
