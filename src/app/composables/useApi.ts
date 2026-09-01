@@ -15,9 +15,22 @@
  *   const api = useApi()
  *   await $fetch(api('/imports'))
  *   await useFetch<T>(() => api(`/mappings/${id.value}`))
+ *
+ * `useRuntimeConfig()` braucht den Nuxt-Kontext und wirft ausserhalb davon —
+ * etwa wenn diese Funktion nach einem `await` auf oberster Ebene eines
+ * `<script setup>` gerufen wird oder aus einem Ereignisbehandler heraus. Ein
+ * Tester hat am 01.09.2026 genau diese Meldung gesehen, waehrend hier
+ * ausgerollt wurde. Deshalb wird der Zugriff abgesichert und die einmal
+ * gelesene Basis behalten: Sie ist fuer alle Anfragen dieselbe.
  */
+let basis: string | null = null
+
 export function useApi(): (path: string) => string {
-  const configured = useRuntimeConfig().public.apiBase
-  const base = (typeof configured === 'string' && configured !== '' ? configured : '/api').replace(/\/+$/, '')
+  if (basis === null) {
+    // tryUseNuxtApp() gibt null zurueck statt zu werfen.
+    const konfiguriert = tryUseNuxtApp()?.$config?.public?.apiBase
+    if (typeof konfiguriert === 'string' && konfiguriert !== '') basis = konfiguriert.replace(/\/+$/, '')
+  }
+  const base = basis ?? '/api'
   return (path: string): string => `${base}${path.startsWith('/') ? path : `/${path}`}`
 }
