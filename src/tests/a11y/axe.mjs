@@ -70,8 +70,16 @@ function melden(stand, ergebnis) {
  * haeufigste deutlich abweichende als Schrift.
  */
 async function kontrastMessen(seite, element) {
+  // Die Schriftfarbe kommt aus dem Stylesheet, nicht aus dem Bild. axe scheitert
+  // am HINTERGRUND, nie am Vordergrund — und auf einem Farbverlauf sind die zwei
+  // haeufigsten Bildfarben beide Hintergrund. Wer die dunklere fuer Schrift
+  // haelt, meldet den Abstand zwischen zwei Verlaufsstufen als Kontrastfehler.
+  const schrift = await element.evaluate((n) => getComputedStyle(n).color)
   const bild = await element.screenshot({ timeout: 5000 })
-  return seite.evaluate(async (datenUrl) => {
+  return seite.evaluate(async ([datenUrl, schriftfarbe]) => {
+    const zahlen = schriftfarbe.match(/[\d.]+/g) ?? []
+    const schrift = ((+zahlen[0] || 0) << 16) | ((+zahlen[1] || 0) << 8) | (+zahlen[2] || 0)
+
     const bild = new Image()
     bild.src = datenUrl
     await bild.decode()
@@ -81,12 +89,7 @@ async function kontrastMessen(seite, element) {
     const stift = flaeche.getContext('2d')
     stift.drawImage(bild, 0, 0)
     const punkte = stift.getImageData(0, 0, flaeche.width, flaeche.height).data
-    const haeufigkeit = new Map()
-    for (let i = 0; i < punkte.length; i += 4) {
-      const farbe = (punkte[i] << 16) | (punkte[i + 1] << 8) | punkte[i + 2]
-      haeufigkeit.set(farbe, (haeufigkeit.get(farbe) ?? 0) + 1)
-    }
-    const gesamt = punkte.length / 4
+
     const kanal = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }
     const helligkeit = (f) => 0.2126 * kanal(f >> 16 & 255) + 0.7152 * kanal(f >> 8 & 255) + 0.0722 * kanal(f & 255)
     const verhaeltnis = (a, b) => {
@@ -94,19 +97,35 @@ async function kontrastMessen(seite, element) {
       const tief = Math.min(helligkeit(a), helligkeit(b))
       return (hoch + 0.05) / (tief + 0.05)
     }
-    const sortiert = [...haeufigkeit.entries()].sort((a, b) => b[1] - a[1])
-    const grund = sortiert[0][0]
-    let schrift = grund
-    let bestes = 0
-    for (const [farbe, anzahl] of sortiert) {
-      // Unter einem halben Prozent Flaeche ist es Kantenglaettung, nicht Schrift.
-      if (anzahl / gesamt < 0.005) break
-      const k = verhaeltnis(grund, farbe)
-      if (k > bestes) { bestes = k; schrift = farbe }
+    const abstand = (a, b) => Math.abs((a >> 16 & 255) - (b >> 16 & 255)) +
+      Math.abs((a >> 8 & 255) - (b >> 8 & 255)) + Math.abs((a & 255) - (b & 255))
+
+    const haeufigkeit = new Map()
+    for (let i = 0; i < punkte.length; i += 4) {
+      const farbe = (punkte[i] << 16) | (punkte[i + 1] << 8) | punkte[i + 2]
+      haeufigkeit.set(farbe, (haeufigkeit.get(farbe) ?? 0) + 1)
     }
+    const gesamt = punkte.length / 4
+
+    // Hintergrund ist alles, was nicht die Schrift und nicht ihre Kantenglaettung
+    // ist. Gewertet wird der unguenstigste Punkt darunter: Steht Text auf einem
+    // Verlauf, entscheidet die Stelle, an der er am schlechtesten steht.
+    let grund = null
+    let schlechtestes = Infinity
+    let hatSchrift = false
+    for (const [farbe, anzahl] of haeufigkeit) {
+      if (abstand(farbe, schrift) < 90) { if (anzahl / gesamt > 0.002) hatSchrift = true; continue }
+      if (anzahl / gesamt < 0.02) continue
+      const k = verhaeltnis(schrift, farbe)
+      if (k < schlechtestes) { schlechtestes = k; grund = farbe }
+    }
+
     const hex = (f) => '#' + f.toString(16).padStart(6, '0')
-    return { grund: hex(grund), schrift: hex(schrift), verhaeltnis: Math.round(bestes * 100) / 100 }
-  }, 'data:image/png;base64,' + bild.toString('base64'))
+    // Ohne erkennbare Schriftpunkte im Bild ist nichts zu messen — etwa wenn das
+    // Element nur ein Bild oder eine leere Flaeche umschliesst.
+    if (!hatSchrift || grund === null) return { grund: '-', schrift: hex(schrift), verhaeltnis: 0 }
+    return { grund: hex(grund), schrift: hex(schrift), verhaeltnis: Math.round(schlechtestes * 100) / 100 }
+  }, ['data:image/png;base64,' + bild.toString('base64'), schrift])
 }
 
 /**
@@ -117,10 +136,19 @@ async function kontrastMessen(seite, element) {
  * Protokoll unlesbar, ohne etwas hinzuzufuegen.
  */
 async function offeneKontraste(seite, ergebnis, stand) {
+  // Nur die Faelle, in denen axe den HINTERGRUND nicht bestimmen konnte. axe
+  // laesst Kontraste auch aus einem zweiten Grund offen: „content contains only
+  // non-text characters". Das sind Zierzeichen — Pfeile, Auslassungspunkte,
+  // Symbole —, und fuer die gilt nicht die Schwelle 4,5:1 fuer Text, sondern
+  // 3:1 fuer Nicht-Text (WCAG 1.4.11). Sie hier mitzumessen hat beim ersten
+  // Lauf prompt zwei Befunde erzeugt, die keine waren.
   const knoten = ergebnis.incomplete
     .filter((regel) => regel.id === 'color-contrast')
-    .flatMap((regel) => regel.nodes.map((n) => n.target.join(' ')))
+    .flatMap((regel) => regel.nodes)
+    .filter((n) => /background/i.test(n.any?.[0]?.message ?? ''))
+    .map((n) => n.target.join(' '))
   const gemessen = []
+  const nichtMessbar = []
   const gesehen = new Set()
   for (const auswahl of knoten) {
     if (gemessen.length >= 60) break
@@ -129,20 +157,32 @@ async function offeneKontraste(seite, ergebnis, stand) {
       element = await seite.locator(auswahl).first()
       if (!(await element.isVisible())) continue
     } catch { continue }
-    let kennung
+    let merkmale
     try {
-      kennung = await element.evaluate((n) => `${n.tagName}.${n.className}|${(n.innerText ?? '').trim().slice(0, 20)}`)
+      merkmale = await element.evaluate((n) => ({
+        kennung: `${n.tagName}.${n.className}|${(n.innerText ?? '').trim().slice(0, 20)}`,
+        verborgen: n.closest('[aria-hidden="true"]') !== null,
+        text: (n.innerText ?? '').trim()
+      }))
     } catch { continue }
-    if (gesehen.has(kennung)) continue
-    gesehen.add(kennung)
+    // Was vor Vorlesewerkzeugen verborgen ist, ist Zierat; und wo kein Text
+    // steht, gibt es keinen Textkontrast zu messen.
+    if (merkmale.verborgen || merkmale.text === '') continue
+    if (gesehen.has(merkmale.kennung)) continue
+    gesehen.add(merkmale.kennung)
     try {
       const mass = await kontrastMessen(seite, element)
-      gemessen.push({ auswahl, kennung, ...mass })
+      // Genau 1:1 heisst: In der Aufnahme kam nur eine Farbe vor. Dann ist
+      // nichts gemessen worden, und „1:1" als Befund zu melden waere eine
+      // Behauptung ueber ein Bild, auf dem nichts zu sehen war.
+      if (mass.verhaeltnis <= 0) { nichtMessbar.push(auswahl); continue }
+      gemessen.push({ auswahl, kennung: merkmale.kennung, ...mass })
     } catch { /* Element ist weg oder nicht abzulichten */ }
   }
   const zuWenig = gemessen.filter((m) => m.verhaeltnis < 4.5)
   if (knoten.length > 0) {
-    console.log(`         offener Kontrast: ${knoten.length} Stellen, ${gemessen.length} Arten nachgemessen, ${zuWenig.length} zu schwach`)
+    const rest = nichtMessbar.length > 0 ? `, ${nichtMessbar.length} nicht messbar` : ''
+    console.log(`         offener Kontrast: ${knoten.length} Stellen, ${gemessen.length} Arten nachgemessen, ${zuWenig.length} zu schwach${rest}`)
   }
   for (const m of zuWenig) {
     console.log(`           NACHGEMESSEN ${m.verhaeltnis}:1  ${m.schrift} auf ${m.grund}  ${m.auswahl}`)
