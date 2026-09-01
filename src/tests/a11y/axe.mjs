@@ -88,7 +88,18 @@ async function kontrastMessen(seite, element) {
     flaeche.height = bild.height
     const stift = flaeche.getContext('2d')
     stift.drawImage(bild, 0, 0)
-    const punkte = stift.getImageData(0, 0, flaeche.width, flaeche.height).data
+    // Den Rand wegschneiden. Ein Knopf hat abgerundete Ecken; dort steht der
+    // Seitenhintergrund, und dazwischen liegt die Kantenglaettung - eine
+    // Mischung aus Knopffarbe und Seitenfarbe. Genau diese Mischfarben haben
+    // wenig Abstand zur Schrift und wurden sonst als "unguenstigster
+    // Hintergrund" gewaehlt: Am 01.09.2026 meldete die Pruefung so 1,93:1 fuer
+    // einen Knopf, der in Wahrheit 5,48:1 hat.
+    const rand = Math.min(4, Math.floor(Math.min(flaeche.width, flaeche.height) / 4))
+    const punkte = stift.getImageData(
+      rand, rand,
+      Math.max(1, flaeche.width - 2 * rand),
+      Math.max(1, flaeche.height - 2 * rand)
+    ).data
 
     const kanal = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }
     const helligkeit = (f) => 0.2126 * kanal(f >> 16 & 255) + 0.7152 * kanal(f >> 8 & 255) + 0.0722 * kanal(f & 255)
@@ -237,6 +248,15 @@ async function browserStarten() {
   browser = await chromium.launch({ args: ['--ignore-certificate-errors', '--disable-dev-shm-usage'] })
   kontext = await browser.newContext({ viewport: { width: 1500, height: 1100 }, locale: 'de-DE', ignoreHTTPSErrors: true })
   seite = await kontext.newPage()
+  // Farbuebergaenge aus: Nach einem Themenwechsel wandert die Farbe eines
+  // Knopfes ueber 300 ms von alt nach neu. Wer in dieser Zeit misst, misst eine
+  // Zwischenstufe, die es in keinem Thema gibt - und meldet sie als Befund.
+  await kontext.addInitScript(() => {
+    const stil = document.createElement('style')
+    stil.textContent = '*,*::before,*::after{transition:none !important;animation:none !important}'
+    if (document.head) document.head.appendChild(stil)
+    else document.addEventListener('DOMContentLoaded', () => document.head.appendChild(stil))
+  })
 }
 
 /**

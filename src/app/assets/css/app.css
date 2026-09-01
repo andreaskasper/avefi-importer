@@ -328,7 +328,11 @@ tbody tr:hover{background:var(--surface-2)}
 .login-card{width:100%;max-width:960px;background:var(--surface);border:1px solid var(--border);border-radius:16px;
   overflow:hidden;box-shadow:var(--shadow)}
 .login-wrap{display:grid;grid-template-columns:1.05fr .95fr;min-height:520px}
-.login-hero{background:radial-gradient(120% 120% at 15% 10%,var(--primary) 0%,var(--primary-600) 46%,#243c48 100%);
+/* Der Verlauf steht fest und folgt nicht dem Thema. Die Schrift darin ist
+   fest weiss; im dunklen Schema ist --primary aber hell (#80a3b5), und weiss
+   darauf ergibt 2,68:1. Gemessen am 01.09.2026, nachdem die Pruefung gelernt
+   hatte, Text auf Verlaeufen zu beurteilen. */
+.login-hero{background:radial-gradient(120% 120% at 15% 10%,#486e83 0%,#3a5a6c 46%,#243c48 100%);
   color:#fff;padding:44px;display:flex;flex-direction:column;gap:18px;position:relative;overflow:hidden}
 .login-hero .net{position:absolute;inset:0;opacity:.22;
   background-image:radial-gradient(circle at 20% 30%,#fff 1.5px,transparent 2px),
