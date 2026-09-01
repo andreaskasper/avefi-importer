@@ -125,6 +125,20 @@ docker run -d --name oberflaeche --ipc=host --shm-size=1g --network host \
 docker logs -f oberflaeche
 ```
 
+Das ergibt den breiten Durchlauf. Der schmale kommt aus demselben Skript mit
+`OBF_WIDTH=800` und `OBF_OUT=/tmp/obf-schmal`; sein Abschnitt „Tab-Reihenfolge"
+wird anschliessend in die Beschreibungen uebernommen, sodass jede Seite beide
+Reihenfolgen nennt.
+
+Zwei Breiten, weil eine Beschreibung sonst mehr behauptet, als sie weiss. Die
+Beschreibungen entstanden bis zum 01.09.2026 aus einem einzigen Durchlauf bei
+1500 Pixeln und nannten damit eine Tab-Reihenfolge, die unterhalb von 820 Pixeln
+nie gegolten hat — dort lag die Hauptnavigation hinter einem Aufklappknopf, und
+davor war sie ganz ausgeblendet. Ein Test mit Vorlesewerkzeug hat genau diese
+Abweichung gefunden, und die Beschreibung war daran mitschuldig. Wer die
+Darstellung vergroessert, bekommt uebrigens die schmale Fassung, auch am grossen
+Bildschirm.
+
 Der Durchlauf dauert rund vier Minuten. `--ipc=host` und `--shm-size=1g` sind
 nicht schmueckendes Beiwerk: ohne sie beendet sich der Browser mitten im Lauf.
 Der Container laeuft im Hintergrund, weil er sonst mit der Sitzung endet, aus

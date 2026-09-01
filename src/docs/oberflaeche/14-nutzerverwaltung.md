@@ -24,13 +24,21 @@ In Dokumentreihenfolge, also so, wie sie beim Wandern ueber die Bereiche kommen:
 
 ### Tab-Reihenfolge
 
-So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die Zahl der Tastendruecke ab Seitenanfang.
+So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer
+ist die Zahl der Tastendruecke ab Seitenanfang.
+
+Die Reihenfolge haengt von der Fensterbreite ab, deshalb stehen hier zwei
+Durchlaeufe. Unterhalb von 820 Pixeln liegt die Hauptnavigation hinter einem
+Aufklappknopf; darueber steht sie offen in der Kopfzeile. Wer die Darstellung
+vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
+
+#### Breites Fenster (1500 Pixel)
 
 1. „Zum Inhalt springen" — Link
 2. „Zur Startseite" — Link, im banner
 3. „Importe" — Link, im navigation „Hauptnavigation". als aktuell ausgezeichnet
 4. „Zuordnungen" — Link, im navigation „Hauptnavigation"
-5. „Format-Review 10 offene Aufgaben" — Link, im navigation „Hauptnavigation"
+5. „Format-Review 9 offene Aufgaben" — Link, im navigation „Hauptnavigation"
 6. „Design wechseln" — Schaltflaeche, im banner
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 8. „E-Mail" — Eingabefeld, im region „Neues Konto anlegen"
@@ -40,6 +48,27 @@ So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die
 12. „Administrator" — Kontrollkaestchen, im region „Neues Konto anlegen"
 13. „Konto anlegen" — Schaltflaeche, im region „Neues Konto anlegen"
 14. „Konto „admin@av-efi.net“ bearbeiten" — Link, im main
+15. „Konto „contact@av-efi.net“ bearbeiten" — Link, im main
+16. „Konto „contact@av-efi.net“ sperren" — Schaltflaeche, im main
+17. „Konto „contact@av-efi.net“ löschen" — Schaltflaeche, im main
+
+#### Schmales Fenster (800 Pixel)
+
+1. „Zum Inhalt springen" — Link
+2. „Zur Startseite" — Link, im banner
+3. „Navigation aufklappen" — Schaltflaeche, im banner. aufklappbar, derzeit zu
+4. „Design wechseln" — Schaltflaeche, im banner
+5. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
+6. „E-Mail" — Eingabefeld, im region „Neues Konto anlegen"
+7. „Name" — Eingabefeld, im region „Neues Konto anlegen"
+8. „Institution" — Auswahlfeld, im region „Neues Konto anlegen"
+9. „Einmalpasswort erzeugen lassen" — Kontrollkaestchen, im region „Neues Konto anlegen"
+10. „Administrator" — Kontrollkaestchen, im region „Neues Konto anlegen"
+11. „Konto anlegen" — Schaltflaeche, im region „Neues Konto anlegen"
+12. „Konto „admin@av-efi.net“ bearbeiten" — Link, im main
+13. „Konto „contact@av-efi.net“ bearbeiten" — Link, im main
+14. „Konto „contact@av-efi.net“ sperren" — Schaltflaeche, im main
+15. „Konto „contact@av-efi.net“ löschen" — Schaltflaeche, im main
 
 ### Formularfelder
 
@@ -61,7 +90,7 @@ So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die
 
 ### Tabellen
 
-- Tabelle mit 7 Spalten und 1 Datenzeilen, im main.
+- Tabelle mit 7 Spalten und 2 Datenzeilen, im main.
   Beschriftung: caption „Nutzerkonten mit Rolle, Zustand, Institution und letzter Anmeldung".
   Spaltenueberschriften: 1. „E-Mail", 2. „Name", 3. „Rolle", 4. „Zustand", 5. „Institution", 6. „Letzte Anmeldung", 7. „Aktion".
 
@@ -69,6 +98,12 @@ So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die
 
 Das wird angesagt, ohne dass die Seite wechselt:
 
+- Statusbereich (status), Ansageart polite.
+  Aktueller Inhalt: leer, meldet also gerade nichts.
+- Meldungsbereich (alert), Ansageart assertive.
+  Aktueller Inhalt: leer, meldet also gerade nichts.
+- Meldungsbereich (alert), Ansageart assertive.
+  Aktueller Inhalt: leer, meldet also gerade nichts.
 - Statusbereich (status), Ansageart polite.
   Aktueller Inhalt: leer, meldet also gerade nichts.
 
@@ -84,7 +119,7 @@ Nichts, was beim Bedienen im Weg steht.
 
 ## Teil 2 — Wie es raeumlich angeordnet ist
 
-Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1100 Pixel hoch und passt damit ohne Scrollen. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Der Bereich „Neues Konto anlegen" liegt oben mittig und ist 1084 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungen", „Format-Review 10 offene Aufgaben". Die breiten Schaltflaechen im Inhalt sind „Konto anlegen" (auf halber Hoehe links).
+Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1100 Pixel hoch und passt damit ohne Scrollen. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Der Bereich „Neues Konto anlegen" liegt oben mittig und ist 1084 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungen", „Format-Review 9 offene Aufgaben". Die breiten Schaltflaechen im Inhalt sind „Konto anlegen" (auf halber Hoehe links).
 
 Der Bildschirmabzug `14-nutzerverwaltung.png` im selben Verzeichnis zeigt denselben Stand fuer alle, die in einer Besprechung auf denselben Bildschirm schauen wollen.
 

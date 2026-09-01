@@ -24,18 +24,37 @@ In Dokumentreihenfolge, also so, wie sie beim Wandern ueber die Bereiche kommen:
 
 ### Tab-Reihenfolge
 
-So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die Zahl der Tastendruecke ab Seitenanfang.
+So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer
+ist die Zahl der Tastendruecke ab Seitenanfang.
+
+Die Reihenfolge haengt von der Fensterbreite ab, deshalb stehen hier zwei
+Durchlaeufe. Unterhalb von 820 Pixeln liegt die Hauptnavigation hinter einem
+Aufklappknopf; darueber steht sie offen in der Kopfzeile. Wer die Darstellung
+vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
+
+#### Breites Fenster (1500 Pixel)
 
 1. „Zum Inhalt springen" — Link
 2. „Zur Startseite" — Link, im banner
 3. „Importe" — Link, im navigation „Hauptnavigation"
 4. „Zuordnungen" — Link, im navigation „Hauptnavigation". als aktuell ausgezeichnet
-5. „Format-Review 10 offene Aufgaben" — Link, im navigation „Hauptnavigation"
+5. „Format-Review 9 offene Aufgaben" — Link, im navigation „Hauptnavigation"
 6. „Design wechseln" — Schaltflaeche, im banner
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 8. „Zuordnungen" — Link, im navigation „Neue Zuordnung"
 9. „Beispieldatei auswählen" — Dateiauswahl, im main
 10. „Abbrechen" — Link, im main
+
+#### Schmales Fenster (800 Pixel)
+
+1. „Zum Inhalt springen" — Link
+2. „Zur Startseite" — Link, im banner
+3. „Navigation aufklappen" — Schaltflaeche, im banner. aufklappbar, derzeit zu
+4. „Design wechseln" — Schaltflaeche, im banner
+5. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
+6. „Zuordnungen" — Link, im navigation „Neue Zuordnung"
+7. „Beispieldatei auswählen" — Dateiauswahl, im main
+8. „Abbrechen" — Link, im main
 
 ### Formularfelder
 
@@ -51,6 +70,8 @@ Keine Tabellen.
 
 Das wird angesagt, ohne dass die Seite wechselt:
 
+- Meldungsbereich (alert), Ansageart assertive.
+  Aktueller Inhalt: leer, meldet also gerade nichts.
 - Statusbereich (status), Ansageart polite.
   Aktueller Inhalt: leer, meldet also gerade nichts.
 

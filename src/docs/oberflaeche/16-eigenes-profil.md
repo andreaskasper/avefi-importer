@@ -27,13 +27,21 @@ In Dokumentreihenfolge, also so, wie sie beim Wandern ueber die Bereiche kommen:
 
 ### Tab-Reihenfolge
 
-So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die Zahl der Tastendruecke ab Seitenanfang.
+So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer
+ist die Zahl der Tastendruecke ab Seitenanfang.
+
+Die Reihenfolge haengt von der Fensterbreite ab, deshalb stehen hier zwei
+Durchlaeufe. Unterhalb von 820 Pixeln liegt die Hauptnavigation hinter einem
+Aufklappknopf; darueber steht sie offen in der Kopfzeile. Wer die Darstellung
+vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
+
+#### Breites Fenster (1500 Pixel)
 
 1. „Zum Inhalt springen" — Link
 2. „Zur Startseite" — Link, im banner
 3. „Importe" — Link, im navigation „Hauptnavigation". als aktuell ausgezeichnet
 4. „Zuordnungen" — Link, im navigation „Hauptnavigation"
-5. „Format-Review 10 offene Aufgaben" — Link, im navigation „Hauptnavigation"
+5. „Format-Review 9 offene Aufgaben" — Link, im navigation „Hauptnavigation"
 6. „Design wechseln" — Schaltflaeche, im banner
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 8. „Importe" — Link, im navigation „Mein Profil"
@@ -43,6 +51,21 @@ So werden die Bedienelemente mit der Tabulatortaste erreicht. Die Nummer ist die
 12. „Neues Passwort" — Passwortfeld, im region „Passwort ändern". Hinweis: „Mindestens 12 Zeichen."
 13. „Neues Passwort bestätigen" — Passwortfeld, im region „Passwort ändern"
 14. „Passwort ändern" — Schaltflaeche, im region „Passwort ändern"
+
+#### Schmales Fenster (800 Pixel)
+
+1. „Zum Inhalt springen" — Link
+2. „Zur Startseite" — Link, im banner
+3. „Navigation aufklappen" — Schaltflaeche, im banner. aufklappbar, derzeit zu
+4. „Design wechseln" — Schaltflaeche, im banner
+5. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
+6. „Importe" — Link, im navigation „Mein Profil"
+7. „Anzeigename" — Eingabefeld, im region „Anzeigename"
+8. „Namen speichern" — Schaltflaeche, im region „Anzeigename"
+9. „Aktuelles Passwort" — Passwortfeld, im region „Passwort ändern"
+10. „Neues Passwort" — Passwortfeld, im region „Passwort ändern". Hinweis: „Mindestens 12 Zeichen."
+11. „Neues Passwort bestätigen" — Passwortfeld, im region „Passwort ändern"
+12. „Passwort ändern" — Schaltflaeche, im region „Passwort ändern"
 
 ### Formularfelder
 
@@ -72,6 +95,14 @@ Das wird angesagt, ohne dass die Seite wechselt:
 
 - Statusbereich (status), Ansageart polite.
   Aktueller Inhalt: leer, meldet also gerade nichts.
+- Meldungsbereich (alert), Ansageart assertive.
+  Aktueller Inhalt: leer, meldet also gerade nichts.
+- Statusbereich (status), Ansageart polite.
+  Aktueller Inhalt: leer, meldet also gerade nichts.
+- Meldungsbereich (alert), Ansageart assertive.
+  Aktueller Inhalt: leer, meldet also gerade nichts.
+- Statusbereich (status), Ansageart polite.
+  Aktueller Inhalt: leer, meldet also gerade nichts.
 
 ### Bilder und Symbole
 
@@ -85,7 +116,7 @@ Nichts, was beim Bedienen im Weg steht.
 
 ## Teil 2 — Wie es raeumlich angeordnet ist
 
-Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1100 Pixel hoch und passt damit ohne Scrollen. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 640 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 430 Pixel frei. Der Bereich „Anzeigename" liegt oben mittig und ist 604 Pixel breit. Der Bereich „Passwort ändern" liegt auf halber Hoehe mittig und ist 604 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungen", „Format-Review 10 offene Aufgaben". Die breiten Schaltflaechen im Inhalt sind „Namen speichern" (auf halber Hoehe mittig), „Passwort ändern" (unten mittig).
+Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1100 Pixel hoch und passt damit ohne Scrollen. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 640 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 430 Pixel frei. Der Bereich „Anzeigename" liegt oben mittig und ist 604 Pixel breit. Der Bereich „Passwort ändern" liegt auf halber Hoehe mittig und ist 604 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungen", „Format-Review 9 offene Aufgaben". Die breiten Schaltflaechen im Inhalt sind „Namen speichern" (auf halber Hoehe mittig), „Passwort ändern" (unten mittig).
 
 Der Bildschirmabzug `16-eigenes-profil.png` im selben Verzeichnis zeigt denselben Stand fuer alle, die in einer Besprechung auf denselben Bildschirm schauen wollen.
 
