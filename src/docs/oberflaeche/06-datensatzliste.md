@@ -1,7 +1,7 @@
 # Datensatzliste
 
-Adresse: `/imports/0d85bdc8-a395-40ca-85cf-44d4a6989835/records`  
-Seitentitel im Browser: „neu_UPB_Archiv_Test_Kopie.csv · Datensätze · AVefi Importer"  
+Adresse: `/imports/0a67d79e-cd12-4b0f-bdd2-a196c6d3bb91/records`  
+Seitentitel im Browser: „UPB_Archivliste_Lehrfilme_Auswahl_AVefi_2026-08-04.csv · Datensätze · AVefi Importer"  
 Sprache des Dokuments: `de`
 
 Die aus einem Import entstandenen Datensaetze als Liste.
@@ -20,7 +20,7 @@ In Dokumentreihenfolge, also so, wie sie beim Wandern ueber die Bereiche kommen:
 
 ### Ueberschriften
 
-- Stufe 1: „neu_UPB_Archiv_Test_Kopie.csv"
+- Stufe 1: „UPB_Archivliste_Lehrfilme_Auswahl_AVefi_2026-08-04.csv"
 
 ### Tab-Reihenfolge
 
@@ -42,7 +42,7 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 6. „Design wechseln" — Schaltflaeche, im banner
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 8. „Importe" — Link, im navigation „Datensätze"
-9. „neu_UPB_Archiv_Test_Kopie.csv" — Link, im navigation „Datensätze"
+9. „UPB_Archivliste_Lehrfilme_Auswahl_AVefi_2026-08-04.csv" — Link, im navigation „Datensätze"
 10. „Zum Import" — Link, im main
 11. „AVefi-JSON herunterladen" — Link, im main
 12. „Datensätze nach Titel oder AVefi-PID durchsuchen" — Suchfeld, im search
@@ -107,7 +107,7 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 4. „Design wechseln" — Schaltflaeche, im banner
 5. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 6. „Importe" — Link, im navigation „Datensätze"
-7. „neu_UPB_Archiv_Test_Kopie.csv" — Link, im navigation „Datensätze"
+7. „UPB_Archivliste_Lehrfilme_Auswahl_AVefi_2026-08-04.csv" — Link, im navigation „Datensätze"
 8. „Zum Import" — Link, im main
 9. „AVefi-JSON herunterladen" — Link, im main
 10. „Datensätze nach Titel oder AVefi-PID durchsuchen" — Suchfeld, im search
@@ -181,7 +181,7 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 Das wird angesagt, ohne dass die Seite wechselt:
 
 - Statusbereich (status), Ansageart polite (aus role).
-  Aktueller Inhalt: „1–50 von 75".
+  Aktueller Inhalt: „1–50 von 77".
 - Statusbereich (status), Ansageart polite.
   Aktueller Inhalt: leer, meldet also gerade nichts.
 
@@ -197,7 +197,7 @@ Nichts, was beim Bedienen im Weg steht.
 
 ## Teil 2 — Wie es raeumlich angeordnet ist
 
-Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 4070 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Der Suchbereich liegt oben mittig und ist 1084 Pixel breit. Oben rechts stehen, von links nach rechts: „Zum Import" (Link), „AVefi-JSON herunterladen" (Link), „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungen", „Importe". Die breiten Schaltflaechen im Inhalt sind „Nächste Seite" (links, erst nach dem Scrollen sichtbar).
+Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 3974 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Der Suchbereich liegt oben mittig und ist 1084 Pixel breit. Oben rechts stehen, von links nach rechts: „Zum Import" (Link), „AVefi-JSON herunterladen" (Link), „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungen", „Importe". Die breiten Schaltflaechen im Inhalt sind „Nächste Seite" (links, erst nach dem Scrollen sichtbar).
 
 Der Bildschirmabzug `06-datensatzliste.png` im selben Verzeichnis zeigt denselben Stand fuer alle, die in einer Besprechung auf denselben Bildschirm schauen wollen.
 

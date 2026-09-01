@@ -126,9 +126,21 @@ docker logs -f oberflaeche
 ```
 
 Das ergibt den breiten Durchlauf. Der schmale kommt aus demselben Skript mit
-`OBF_WIDTH=800` und `OBF_OUT=/tmp/obf-schmal`; sein Abschnitt „Tab-Reihenfolge"
-wird anschliessend in die Beschreibungen uebernommen, sodass jede Seite beide
-Reihenfolgen nennt.
+`OBF_WIDTH=800` und `OBF_OUT=/tmp/obf-schmal`. Zusammengefuehrt wird danach:
+
+```bash
+docker cp oberflaeche-schmal:/tmp/obf-schmal /var/www/avefi-importer/src/obf-schmal
+docker exec avefi_web sh -c 'cd /app && node tests/a11y/tabreihenfolge.mjs docs/oberflaeche obf-schmal'
+rm -rf /var/www/avefi-importer/src/obf-schmal
+```
+
+`tabreihenfolge.mjs` ersetzt in jeder Beschreibung den Abschnitt
+„Tab-Reihenfolge" durch beide Fassungen und meldet mit Rueckgabewert 1, wenn zu
+einer Seite die schmale fehlt. Bis zum 01.09.2026 war das ein Handgriff von
+Hand, und beim ersten Neuerzeugen danach war die schmale Fassung wieder weg,
+ohne dass es auffiel — ein Schritt, an den man sich erinnern muss, ist kein
+Verfahren. Wer den breiten Durchlauf ohne den schmalen laufen laesst, hat
+seitdem eine Beschreibung, die zu wenig sagt, und muss nachziehen.
 
 Zwei Breiten, weil eine Beschreibung sonst mehr behauptet, als sie weiss. Die
 Beschreibungen entstanden bis zum 01.09.2026 aus einem einzigen Durchlauf bei

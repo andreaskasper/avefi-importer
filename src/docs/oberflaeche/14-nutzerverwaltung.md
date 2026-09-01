@@ -36,7 +36,7 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 
 1. „Zum Inhalt springen" — Link
 2. „Zur Startseite" — Link, im banner
-3. „Importe" — Link, im navigation „Hauptnavigation". als aktuell ausgezeichnet
+3. „Importe" — Link, im navigation „Hauptnavigation"
 4. „Zuordnungen" — Link, im navigation „Hauptnavigation"
 5. „Format-Review 9 offene Aufgaben" — Link, im navigation „Hauptnavigation"
 6. „Design wechseln" — Schaltflaeche, im banner

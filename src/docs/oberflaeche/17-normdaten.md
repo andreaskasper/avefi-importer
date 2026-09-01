@@ -1,7 +1,7 @@
 # Normdaten zuordnen
 
 Adresse: `/mappings/8/normdaten`  
-Seitentitel im Browser: „Test Luca 31.08. · Normdaten zuordnen · AVefi Importer"  
+Seitentitel im Browser: „Test Matti auf Basis - Test Luca 31.08. · Normdaten zuordnen · AVefi Importer"  
 Sprache des Dokuments: `de`
 
 Alle Werte eines Profils, zu denen Normdaten gesucht werden, als Arbeitsliste.
@@ -31,6 +31,7 @@ In Dokumentreihenfolge, also so, wie sie beim Wandern ueber die Bereiche kommen:
 - Stufe 2: „Spalte „Musik“ → VIAF"
 - Stufe 2: „Spalte „Regie“ → WIKIDATA"
 - Stufe 2: „Spalte „Regie“ → GND"
+- Stufe 2: „Spalte „Regie“ → VIAF"
 - Stufe 2: „Spalte „Kamera“ → GND"
 - Stufe 2: „Spalte „Kamera“ → WIKIDATA"
 - Stufe 2: „Spalte „Kamera“ → VIAF"
@@ -62,7 +63,7 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 6. „Design wechseln" — Schaltflaeche, im banner
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 8. „Zuordnungen" — Link, im navigation „Normdaten zuordnen"
-9. „Test Luca 31.08." — Link, im navigation „Normdaten zuordnen"
+9. „Test Matti auf Basis - Test Luca 31.08." — Link, im navigation „Normdaten zuordnen"
 10. „Nur offene zeigen" — Kontrollkaestchen, im main
 11. „Zuordnungen speichern" — Schaltflaeche, im main
 12. „Zurück zum Zuordnungseditor" — Link, im main
@@ -242,192 +243,218 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 186. „„Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
 187. „„Sheldon Renan“ zuordnen" — Schaltflaeche, im main
 188. „„Surani Antal“ zuordnen" — Schaltflaeche, im main
-189. „17 Werte dieser Gruppe überspringen" — Link, im main
+189. „33 Werte dieser Gruppe überspringen" — Link, im main
 190. „„Heinz Sielmann“ zuordnen" — Schaltflaeche, im main
-191. „„Georg Schimanski“ zuordnen" — Schaltflaeche, im main
-192. „„A.v. Portrowski“ zuordnen" — Schaltflaeche, im main
-193. „„B. König“ zuordnen" — Schaltflaeche, im main
-194. „„Fehler“ zuordnen" — Schaltflaeche, im main
-195. „„Fredrik Hettich“ zuordnen" — Schaltflaeche, im main
-196. „„Gerd Beissert“ zuordnen" — Schaltflaeche, im main
-197. „„Herbert Appelt“ zuordnen" — Schaltflaeche, im main
-198. „„Ikaros Film Berlin“ zuordnen" — Schaltflaeche, im main
-199. „„Jürgen Kraul“ zuordnen" — Schaltflaeche, im main
-200. „„K. Manke“ zuordnen" — Schaltflaeche, im main
-201. „„Karl-Heinz Blöhm“ zuordnen" — Schaltflaeche, im main
-202. „„Kirzeder“ zuordnen" — Schaltflaeche, im main
-203. „„Leen Laan“ zuordnen" — Schaltflaeche, im main
-204. „„Paco Joan“ zuordnen" — Schaltflaeche, im main
-205. „„Stanley Sayer“ zuordnen" — Schaltflaeche, im main
-206. „„Walter Umlauf“ zuordnen" — Schaltflaeche, im main
-207. „17 Werte dieser Gruppe überspringen" — Link, im main
-208. „„Heinz Sielmann“ zuordnen" — Schaltflaeche, im main
-209. „„Georg Schimanski“ zuordnen" — Schaltflaeche, im main
-210. „„A.v. Portrowski“ zuordnen" — Schaltflaeche, im main
-211. „„B. König“ zuordnen" — Schaltflaeche, im main
-212. „„Fehler“ zuordnen" — Schaltflaeche, im main
-213. „„Fredrik Hettich“ zuordnen" — Schaltflaeche, im main
-214. „„Gerd Beissert“ zuordnen" — Schaltflaeche, im main
-215. „„Herbert Appelt“ zuordnen" — Schaltflaeche, im main
-216. „„Ikaros Film Berlin“ zuordnen" — Schaltflaeche, im main
-217. „„Jürgen Kraul“ zuordnen" — Schaltflaeche, im main
-218. „„K. Manke“ zuordnen" — Schaltflaeche, im main
-219. „„Karl-Heinz Blöhm“ zuordnen" — Schaltflaeche, im main
-220. „„Kirzeder“ zuordnen" — Schaltflaeche, im main
-221. „„Leen Laan“ zuordnen" — Schaltflaeche, im main
-222. „„Paco Joan“ zuordnen" — Schaltflaeche, im main
-223. „„Stanley Sayer“ zuordnen" — Schaltflaeche, im main
-224. „„Walter Umlauf“ zuordnen" — Schaltflaeche, im main
-225. „17 Werte dieser Gruppe überspringen" — Link, im main
-226. „„Heinz Sielmann“ zuordnen" — Schaltflaeche, im main
-227. „„Georg Schimanski“ zuordnen" — Schaltflaeche, im main
-228. „„A.v. Portrowski“ zuordnen" — Schaltflaeche, im main
-229. „„B. König“ zuordnen" — Schaltflaeche, im main
-230. „„Fehler“ zuordnen" — Schaltflaeche, im main
-231. „„Fredrik Hettich“ zuordnen" — Schaltflaeche, im main
-232. „„Gerd Beissert“ zuordnen" — Schaltflaeche, im main
-233. „„Herbert Appelt“ zuordnen" — Schaltflaeche, im main
-234. „„Ikaros Film Berlin“ zuordnen" — Schaltflaeche, im main
-235. „„Jürgen Kraul“ zuordnen" — Schaltflaeche, im main
-236. „„K. Manke“ zuordnen" — Schaltflaeche, im main
-237. „„Karl-Heinz Blöhm“ zuordnen" — Schaltflaeche, im main
-238. „„Kirzeder“ zuordnen" — Schaltflaeche, im main
-239. „„Leen Laan“ zuordnen" — Schaltflaeche, im main
-240. „„Paco Joan“ zuordnen" — Schaltflaeche, im main
-241. „„Stanley Sayer“ zuordnen" — Schaltflaeche, im main
-242. „„Walter Umlauf“ zuordnen" — Schaltflaeche, im main
-243. „2 Werte dieser Gruppe überspringen" — Link, im main
-244. „„bessere Kopie“ zuordnen" — Schaltflaeche, im main
-245. „„Johanna von Koczians“ zuordnen" — Schaltflaeche, im main
-246. „2 Werte dieser Gruppe überspringen" — Link, im main
-247. „„bessere Kopie“ zuordnen" — Schaltflaeche, im main
-248. „„Johanna von Koczians“ zuordnen" — Schaltflaeche, im main
-249. „2 Werte dieser Gruppe überspringen" — Link, im main
-250. „„bessere Kopie“ zuordnen" — Schaltflaeche, im main
-251. „„Johanna von Koczians“ zuordnen" — Schaltflaeche, im main
-252. „30 Werte dieser Gruppe überspringen" — Link, im main
-253. „„FWU“ zuordnen" — Schaltflaeche, im main
-254. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
-255. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
-256. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
-257. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
-258. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
-259. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
-260. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
-261. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
-262. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
-263. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
-264. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
-265. „„HFF“ zuordnen" — Schaltflaeche, im main
-266. „„ICIAC“ zuordnen" — Schaltflaeche, im main
-267. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
-268. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
-269. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
-270. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
-271. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
-272. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
-273. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
-274. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
-275. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
-276. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
-277. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
-278. „„RKF“ zuordnen" — Schaltflaeche, im main
-279. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
-280. „„Televersa“ zuordnen" — Schaltflaeche, im main
-281. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
-282. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
-283. „30 Werte dieser Gruppe überspringen" — Link, im main
-284. „„FWU“ zuordnen" — Schaltflaeche, im main
-285. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
-286. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
-287. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
-288. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
-289. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
-290. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
-291. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
-292. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
-293. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
-294. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
-295. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
-296. „„HFF“ zuordnen" — Schaltflaeche, im main
-297. „„ICIAC“ zuordnen" — Schaltflaeche, im main
-298. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
-299. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
-300. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
-301. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
-302. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
-303. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
-304. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
-305. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
-306. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
-307. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
-308. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
-309. „„RKF“ zuordnen" — Schaltflaeche, im main
-310. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
-311. „„Televersa“ zuordnen" — Schaltflaeche, im main
-312. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
-313. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
-314. „30 Werte dieser Gruppe überspringen" — Link, im main
-315. „„FWU“ zuordnen" — Schaltflaeche, im main
-316. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
-317. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
-318. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
-319. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
-320. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
-321. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
-322. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
-323. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
-324. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
-325. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
-326. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
-327. „„HFF“ zuordnen" — Schaltflaeche, im main
-328. „„ICIAC“ zuordnen" — Schaltflaeche, im main
-329. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
-330. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
-331. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
-332. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
-333. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
-334. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
-335. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
-336. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
-337. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
-338. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
-339. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
-340. „„RKF“ zuordnen" — Schaltflaeche, im main
-341. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
-342. „„Televersa“ zuordnen" — Schaltflaeche, im main
-343. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
-344. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
-345. „„FWU“ zuordnen" — Schaltflaeche, im main
-346. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
-347. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
-348. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
-349. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
-350. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
-351. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
-352. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
-353. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
-354. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
-355. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
-356. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
-357. „„HFF“ zuordnen" — Schaltflaeche, im main
-358. „„ICIAC“ zuordnen" — Schaltflaeche, im main
-359. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
-360. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
-361. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
-362. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
-363. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
-364. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
-365. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
-366. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
-367. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
-368. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
-369. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
-370. „„RKF“ zuordnen" — Schaltflaeche, im main
-371. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
-372. „„Televersa“ zuordnen" — Schaltflaeche, im main
-373. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
-374. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
+191. „„Wolfgang Kiepenheuer“ zuordnen" — Schaltflaeche, im main
+192. „„Anita Ueba“ zuordnen" — Schaltflaeche, im main
+193. „„Berit Nesheim“ zuordnen" — Schaltflaeche, im main
+194. „„Bert Hanstraa“ zuordnen" — Schaltflaeche, im main
+195. „„Borge Ring“ zuordnen" — Schaltflaeche, im main
+196. „„Ceskoslovensko Statny Film“ zuordnen" — Schaltflaeche, im main
+197. „„Christopher Sommerkorn“ zuordnen" — Schaltflaeche, im main
+198. „„Dr. H.J. Hossfeld“ zuordnen" — Schaltflaeche, im main
+199. „„Dr. Hans Marthaler“ zuordnen" — Schaltflaeche, im main
+200. „„Dr. HJ Saechtling“ zuordnen" — Schaltflaeche, im main
+201. „„Dr. U.K T. Schulz“ zuordnen" — Schaltflaeche, im main
+202. „„E.K. Beltzig“ zuordnen" — Schaltflaeche, im main
+203. „„Friedrich Klütsch“ zuordnen" — Schaltflaeche, im main
+204. „„Georg Stingl“ zuordnen" — Schaltflaeche, im main
+205. „„Günter Höver“ zuordnen" — Schaltflaeche, im main
+206. „„Günther Wolf“ zuordnen" — Schaltflaeche, im main
+207. „„H. A. Lettow“ zuordnen" — Schaltflaeche, im main
+208. „„Helga Kurth“ zuordnen" — Schaltflaeche, im main
+209. „„Herbert Lander“ zuordnen" — Schaltflaeche, im main
+210. „„Horst Philipp“ zuordnen" — Schaltflaeche, im main
+211. „„Joachim Faulstich“ zuordnen" — Schaltflaeche, im main
+212. „„John C. Stevens“ zuordnen" — Schaltflaeche, im main
+213. „„Lotte Reininger“ zuordnen" — Schaltflaeche, im main
+214. „„Manfried Jähre“ zuordnen" — Schaltflaeche, im main
+215. „„Marion Rasche“ zuordnen" — Schaltflaeche, im main
+216. „„Marisol Trujilo“ zuordnen" — Schaltflaeche, im main
+217. „„Michael Leutz“ zuordnen" — Schaltflaeche, im main
+218. „„Miriam Talavera“ zuordnen" — Schaltflaeche, im main
+219. „„Perin Rodriguez“ zuordnen" — Schaltflaeche, im main
+220. „„Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
+221. „„Sheldon Renan“ zuordnen" — Schaltflaeche, im main
+222. „„Surani Antal“ zuordnen" — Schaltflaeche, im main
+223. „17 Werte dieser Gruppe überspringen" — Link, im main
+224. „„Heinz Sielmann“ zuordnen" — Schaltflaeche, im main
+225. „„Georg Schimanski“ zuordnen" — Schaltflaeche, im main
+226. „„A.v. Portrowski“ zuordnen" — Schaltflaeche, im main
+227. „„B. König“ zuordnen" — Schaltflaeche, im main
+228. „„Fehler“ zuordnen" — Schaltflaeche, im main
+229. „„Fredrik Hettich“ zuordnen" — Schaltflaeche, im main
+230. „„Gerd Beissert“ zuordnen" — Schaltflaeche, im main
+231. „„Herbert Appelt“ zuordnen" — Schaltflaeche, im main
+232. „„Ikaros Film Berlin“ zuordnen" — Schaltflaeche, im main
+233. „„Jürgen Kraul“ zuordnen" — Schaltflaeche, im main
+234. „„K. Manke“ zuordnen" — Schaltflaeche, im main
+235. „„Karl-Heinz Blöhm“ zuordnen" — Schaltflaeche, im main
+236. „„Kirzeder“ zuordnen" — Schaltflaeche, im main
+237. „„Leen Laan“ zuordnen" — Schaltflaeche, im main
+238. „„Paco Joan“ zuordnen" — Schaltflaeche, im main
+239. „„Stanley Sayer“ zuordnen" — Schaltflaeche, im main
+240. „„Walter Umlauf“ zuordnen" — Schaltflaeche, im main
+241. „17 Werte dieser Gruppe überspringen" — Link, im main
+242. „„Heinz Sielmann“ zuordnen" — Schaltflaeche, im main
+243. „„Georg Schimanski“ zuordnen" — Schaltflaeche, im main
+244. „„A.v. Portrowski“ zuordnen" — Schaltflaeche, im main
+245. „„B. König“ zuordnen" — Schaltflaeche, im main
+246. „„Fehler“ zuordnen" — Schaltflaeche, im main
+247. „„Fredrik Hettich“ zuordnen" — Schaltflaeche, im main
+248. „„Gerd Beissert“ zuordnen" — Schaltflaeche, im main
+249. „„Herbert Appelt“ zuordnen" — Schaltflaeche, im main
+250. „„Ikaros Film Berlin“ zuordnen" — Schaltflaeche, im main
+251. „„Jürgen Kraul“ zuordnen" — Schaltflaeche, im main
+252. „„K. Manke“ zuordnen" — Schaltflaeche, im main
+253. „„Karl-Heinz Blöhm“ zuordnen" — Schaltflaeche, im main
+254. „„Kirzeder“ zuordnen" — Schaltflaeche, im main
+255. „„Leen Laan“ zuordnen" — Schaltflaeche, im main
+256. „„Paco Joan“ zuordnen" — Schaltflaeche, im main
+257. „„Stanley Sayer“ zuordnen" — Schaltflaeche, im main
+258. „„Walter Umlauf“ zuordnen" — Schaltflaeche, im main
+259. „17 Werte dieser Gruppe überspringen" — Link, im main
+260. „„Heinz Sielmann“ zuordnen" — Schaltflaeche, im main
+261. „„Georg Schimanski“ zuordnen" — Schaltflaeche, im main
+262. „„A.v. Portrowski“ zuordnen" — Schaltflaeche, im main
+263. „„B. König“ zuordnen" — Schaltflaeche, im main
+264. „„Fehler“ zuordnen" — Schaltflaeche, im main
+265. „„Fredrik Hettich“ zuordnen" — Schaltflaeche, im main
+266. „„Gerd Beissert“ zuordnen" — Schaltflaeche, im main
+267. „„Herbert Appelt“ zuordnen" — Schaltflaeche, im main
+268. „„Ikaros Film Berlin“ zuordnen" — Schaltflaeche, im main
+269. „„Jürgen Kraul“ zuordnen" — Schaltflaeche, im main
+270. „„K. Manke“ zuordnen" — Schaltflaeche, im main
+271. „„Karl-Heinz Blöhm“ zuordnen" — Schaltflaeche, im main
+272. „„Kirzeder“ zuordnen" — Schaltflaeche, im main
+273. „„Leen Laan“ zuordnen" — Schaltflaeche, im main
+274. „„Paco Joan“ zuordnen" — Schaltflaeche, im main
+275. „„Stanley Sayer“ zuordnen" — Schaltflaeche, im main
+276. „„Walter Umlauf“ zuordnen" — Schaltflaeche, im main
+277. „2 Werte dieser Gruppe überspringen" — Link, im main
+278. „„bessere Kopie“ zuordnen" — Schaltflaeche, im main
+279. „„Johanna von Koczians“ zuordnen" — Schaltflaeche, im main
+280. „2 Werte dieser Gruppe überspringen" — Link, im main
+281. „„bessere Kopie“ zuordnen" — Schaltflaeche, im main
+282. „„Johanna von Koczians“ zuordnen" — Schaltflaeche, im main
+283. „2 Werte dieser Gruppe überspringen" — Link, im main
+284. „„bessere Kopie“ zuordnen" — Schaltflaeche, im main
+285. „„Johanna von Koczians“ zuordnen" — Schaltflaeche, im main
+286. „30 Werte dieser Gruppe überspringen" — Link, im main
+287. „„FWU“ zuordnen" — Schaltflaeche, im main
+288. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
+289. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
+290. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
+291. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
+292. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
+293. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
+294. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
+295. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
+296. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
+297. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
+298. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
+299. „„HFF“ zuordnen" — Schaltflaeche, im main
+300. „„ICIAC“ zuordnen" — Schaltflaeche, im main
+301. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
+302. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
+303. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
+304. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
+305. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
+306. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
+307. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
+308. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
+309. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
+310. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
+311. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
+312. „„RKF“ zuordnen" — Schaltflaeche, im main
+313. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
+314. „„Televersa“ zuordnen" — Schaltflaeche, im main
+315. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
+316. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
+317. „30 Werte dieser Gruppe überspringen" — Link, im main
+318. „„FWU“ zuordnen" — Schaltflaeche, im main
+319. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
+320. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
+321. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
+322. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
+323. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
+324. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
+325. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
+326. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
+327. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
+328. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
+329. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
+330. „„HFF“ zuordnen" — Schaltflaeche, im main
+331. „„ICIAC“ zuordnen" — Schaltflaeche, im main
+332. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
+333. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
+334. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
+335. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
+336. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
+337. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
+338. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
+339. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
+340. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
+341. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
+342. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
+343. „„RKF“ zuordnen" — Schaltflaeche, im main
+344. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
+345. „„Televersa“ zuordnen" — Schaltflaeche, im main
+346. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
+347. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
+348. „30 Werte dieser Gruppe überspringen" — Link, im main
+349. „„FWU“ zuordnen" — Schaltflaeche, im main
+350. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
+351. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
+352. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
+353. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
+354. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
+355. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
+356. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
+357. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
+358. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
+359. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
+360. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
+361. „„HFF“ zuordnen" — Schaltflaeche, im main
+362. „„ICIAC“ zuordnen" — Schaltflaeche, im main
+363. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
+364. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
+365. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
+366. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
+367. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
+368. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
+369. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
+370. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
+371. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
+372. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
+373. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
+374. „„RKF“ zuordnen" — Schaltflaeche, im main
+375. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
+376. „„Televersa“ zuordnen" — Schaltflaeche, im main
+377. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
+378. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
+379. „„FWU“ zuordnen" — Schaltflaeche, im main
+380. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
+381. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
+382. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
+383. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
+384. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
+385. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
+386. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
+387. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
+388. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
+389. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
+390. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
+391. „„HFF“ zuordnen" — Schaltflaeche, im main
+392. „„ICIAC“ zuordnen" — Schaltflaeche, im main
+393. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
+394. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
+395. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
+396. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
+397. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
+398. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
+399. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
+400. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
 
 #### Schmales Fenster (800 Pixel)
 
@@ -437,7 +464,7 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 4. „Design wechseln" — Schaltflaeche, im banner
 5. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 6. „Zuordnungen" — Link, im navigation „Normdaten zuordnen"
-7. „Test Luca 31.08." — Link, im navigation „Normdaten zuordnen"
+7. „Test Matti auf Basis - Test Luca 31.08." — Link, im navigation „Normdaten zuordnen"
 8. „Nur offene zeigen" — Kontrollkaestchen, im main
 9. „Zuordnungen speichern" — Schaltflaeche, im main
 10. „Zurück zum Zuordnungseditor" — Link, im main
@@ -617,192 +644,220 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 184. „„Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
 185. „„Sheldon Renan“ zuordnen" — Schaltflaeche, im main
 186. „„Surani Antal“ zuordnen" — Schaltflaeche, im main
-187. „17 Werte dieser Gruppe überspringen" — Link, im main
+187. „33 Werte dieser Gruppe überspringen" — Link, im main
 188. „„Heinz Sielmann“ zuordnen" — Schaltflaeche, im main
-189. „„Georg Schimanski“ zuordnen" — Schaltflaeche, im main
-190. „„A.v. Portrowski“ zuordnen" — Schaltflaeche, im main
-191. „„B. König“ zuordnen" — Schaltflaeche, im main
-192. „„Fehler“ zuordnen" — Schaltflaeche, im main
-193. „„Fredrik Hettich“ zuordnen" — Schaltflaeche, im main
-194. „„Gerd Beissert“ zuordnen" — Schaltflaeche, im main
-195. „„Herbert Appelt“ zuordnen" — Schaltflaeche, im main
-196. „„Ikaros Film Berlin“ zuordnen" — Schaltflaeche, im main
-197. „„Jürgen Kraul“ zuordnen" — Schaltflaeche, im main
-198. „„K. Manke“ zuordnen" — Schaltflaeche, im main
-199. „„Karl-Heinz Blöhm“ zuordnen" — Schaltflaeche, im main
-200. „„Kirzeder“ zuordnen" — Schaltflaeche, im main
-201. „„Leen Laan“ zuordnen" — Schaltflaeche, im main
-202. „„Paco Joan“ zuordnen" — Schaltflaeche, im main
-203. „„Stanley Sayer“ zuordnen" — Schaltflaeche, im main
-204. „„Walter Umlauf“ zuordnen" — Schaltflaeche, im main
-205. „17 Werte dieser Gruppe überspringen" — Link, im main
-206. „„Heinz Sielmann“ zuordnen" — Schaltflaeche, im main
-207. „„Georg Schimanski“ zuordnen" — Schaltflaeche, im main
-208. „„A.v. Portrowski“ zuordnen" — Schaltflaeche, im main
-209. „„B. König“ zuordnen" — Schaltflaeche, im main
-210. „„Fehler“ zuordnen" — Schaltflaeche, im main
-211. „„Fredrik Hettich“ zuordnen" — Schaltflaeche, im main
-212. „„Gerd Beissert“ zuordnen" — Schaltflaeche, im main
-213. „„Herbert Appelt“ zuordnen" — Schaltflaeche, im main
-214. „„Ikaros Film Berlin“ zuordnen" — Schaltflaeche, im main
-215. „„Jürgen Kraul“ zuordnen" — Schaltflaeche, im main
-216. „„K. Manke“ zuordnen" — Schaltflaeche, im main
-217. „„Karl-Heinz Blöhm“ zuordnen" — Schaltflaeche, im main
-218. „„Kirzeder“ zuordnen" — Schaltflaeche, im main
-219. „„Leen Laan“ zuordnen" — Schaltflaeche, im main
-220. „„Paco Joan“ zuordnen" — Schaltflaeche, im main
-221. „„Stanley Sayer“ zuordnen" — Schaltflaeche, im main
-222. „„Walter Umlauf“ zuordnen" — Schaltflaeche, im main
-223. „17 Werte dieser Gruppe überspringen" — Link, im main
-224. „„Heinz Sielmann“ zuordnen" — Schaltflaeche, im main
-225. „„Georg Schimanski“ zuordnen" — Schaltflaeche, im main
-226. „„A.v. Portrowski“ zuordnen" — Schaltflaeche, im main
-227. „„B. König“ zuordnen" — Schaltflaeche, im main
-228. „„Fehler“ zuordnen" — Schaltflaeche, im main
-229. „„Fredrik Hettich“ zuordnen" — Schaltflaeche, im main
-230. „„Gerd Beissert“ zuordnen" — Schaltflaeche, im main
-231. „„Herbert Appelt“ zuordnen" — Schaltflaeche, im main
-232. „„Ikaros Film Berlin“ zuordnen" — Schaltflaeche, im main
-233. „„Jürgen Kraul“ zuordnen" — Schaltflaeche, im main
-234. „„K. Manke“ zuordnen" — Schaltflaeche, im main
-235. „„Karl-Heinz Blöhm“ zuordnen" — Schaltflaeche, im main
-236. „„Kirzeder“ zuordnen" — Schaltflaeche, im main
-237. „„Leen Laan“ zuordnen" — Schaltflaeche, im main
-238. „„Paco Joan“ zuordnen" — Schaltflaeche, im main
-239. „„Stanley Sayer“ zuordnen" — Schaltflaeche, im main
-240. „„Walter Umlauf“ zuordnen" — Schaltflaeche, im main
-241. „2 Werte dieser Gruppe überspringen" — Link, im main
-242. „„bessere Kopie“ zuordnen" — Schaltflaeche, im main
-243. „„Johanna von Koczians“ zuordnen" — Schaltflaeche, im main
-244. „2 Werte dieser Gruppe überspringen" — Link, im main
-245. „„bessere Kopie“ zuordnen" — Schaltflaeche, im main
-246. „„Johanna von Koczians“ zuordnen" — Schaltflaeche, im main
-247. „2 Werte dieser Gruppe überspringen" — Link, im main
-248. „„bessere Kopie“ zuordnen" — Schaltflaeche, im main
-249. „„Johanna von Koczians“ zuordnen" — Schaltflaeche, im main
-250. „30 Werte dieser Gruppe überspringen" — Link, im main
-251. „„FWU“ zuordnen" — Schaltflaeche, im main
-252. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
-253. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
-254. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
-255. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
-256. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
-257. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
-258. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
-259. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
-260. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
-261. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
-262. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
-263. „„HFF“ zuordnen" — Schaltflaeche, im main
-264. „„ICIAC“ zuordnen" — Schaltflaeche, im main
-265. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
-266. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
-267. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
-268. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
-269. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
-270. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
-271. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
-272. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
-273. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
-274. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
-275. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
-276. „„RKF“ zuordnen" — Schaltflaeche, im main
-277. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
-278. „„Televersa“ zuordnen" — Schaltflaeche, im main
-279. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
-280. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
-281. „30 Werte dieser Gruppe überspringen" — Link, im main
-282. „„FWU“ zuordnen" — Schaltflaeche, im main
-283. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
-284. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
-285. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
-286. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
-287. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
-288. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
-289. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
-290. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
-291. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
-292. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
-293. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
-294. „„HFF“ zuordnen" — Schaltflaeche, im main
-295. „„ICIAC“ zuordnen" — Schaltflaeche, im main
-296. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
-297. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
-298. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
-299. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
-300. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
-301. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
-302. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
-303. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
-304. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
-305. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
-306. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
-307. „„RKF“ zuordnen" — Schaltflaeche, im main
-308. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
-309. „„Televersa“ zuordnen" — Schaltflaeche, im main
-310. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
-311. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
-312. „30 Werte dieser Gruppe überspringen" — Link, im main
-313. „„FWU“ zuordnen" — Schaltflaeche, im main
-314. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
-315. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
-316. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
-317. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
-318. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
-319. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
-320. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
-321. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
-322. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
-323. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
-324. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
-325. „„HFF“ zuordnen" — Schaltflaeche, im main
-326. „„ICIAC“ zuordnen" — Schaltflaeche, im main
-327. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
-328. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
-329. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
-330. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
-331. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
-332. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
-333. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
-334. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
-335. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
-336. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
-337. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
-338. „„RKF“ zuordnen" — Schaltflaeche, im main
-339. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
-340. „„Televersa“ zuordnen" — Schaltflaeche, im main
-341. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
-342. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
-343. „„FWU“ zuordnen" — Schaltflaeche, im main
-344. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
-345. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
-346. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
-347. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
-348. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
-349. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
-350. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
-351. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
-352. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
-353. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
-354. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
-355. „„HFF“ zuordnen" — Schaltflaeche, im main
-356. „„ICIAC“ zuordnen" — Schaltflaeche, im main
-357. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
-358. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
-359. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
-360. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
-361. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
-362. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
-363. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
-364. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
-365. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
-366. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
-367. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
-368. „„RKF“ zuordnen" — Schaltflaeche, im main
-369. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
-370. „„Televersa“ zuordnen" — Schaltflaeche, im main
-371. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
-372. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
+189. „„Wolfgang Kiepenheuer“ zuordnen" — Schaltflaeche, im main
+190. „„Anita Ueba“ zuordnen" — Schaltflaeche, im main
+191. „„Berit Nesheim“ zuordnen" — Schaltflaeche, im main
+192. „„Bert Hanstraa“ zuordnen" — Schaltflaeche, im main
+193. „„Borge Ring“ zuordnen" — Schaltflaeche, im main
+194. „„Ceskoslovensko Statny Film“ zuordnen" — Schaltflaeche, im main
+195. „„Christopher Sommerkorn“ zuordnen" — Schaltflaeche, im main
+196. „„Dr. H.J. Hossfeld“ zuordnen" — Schaltflaeche, im main
+197. „„Dr. Hans Marthaler“ zuordnen" — Schaltflaeche, im main
+198. „„Dr. HJ Saechtling“ zuordnen" — Schaltflaeche, im main
+199. „„Dr. U.K T. Schulz“ zuordnen" — Schaltflaeche, im main
+200. „„E.K. Beltzig“ zuordnen" — Schaltflaeche, im main
+201. „„Friedrich Klütsch“ zuordnen" — Schaltflaeche, im main
+202. „„Georg Stingl“ zuordnen" — Schaltflaeche, im main
+203. „„Günter Höver“ zuordnen" — Schaltflaeche, im main
+204. „„Günther Wolf“ zuordnen" — Schaltflaeche, im main
+205. „„H. A. Lettow“ zuordnen" — Schaltflaeche, im main
+206. „„Helga Kurth“ zuordnen" — Schaltflaeche, im main
+207. „„Herbert Lander“ zuordnen" — Schaltflaeche, im main
+208. „„Horst Philipp“ zuordnen" — Schaltflaeche, im main
+209. „„Joachim Faulstich“ zuordnen" — Schaltflaeche, im main
+210. „„John C. Stevens“ zuordnen" — Schaltflaeche, im main
+211. „„Lotte Reininger“ zuordnen" — Schaltflaeche, im main
+212. „„Manfried Jähre“ zuordnen" — Schaltflaeche, im main
+213. „„Marion Rasche“ zuordnen" — Schaltflaeche, im main
+214. „„Marisol Trujilo“ zuordnen" — Schaltflaeche, im main
+215. „„Michael Leutz“ zuordnen" — Schaltflaeche, im main
+216. „„Miriam Talavera“ zuordnen" — Schaltflaeche, im main
+217. „„Perin Rodriguez“ zuordnen" — Schaltflaeche, im main
+218. „„Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
+219. „„Sheldon Renan“ zuordnen" — Schaltflaeche, im main
+220. „„Surani Antal“ zuordnen" — Schaltflaeche, im main
+221. „17 Werte dieser Gruppe überspringen" — Link, im main
+222. „„Heinz Sielmann“ zuordnen" — Schaltflaeche, im main
+223. „„Georg Schimanski“ zuordnen" — Schaltflaeche, im main
+224. „„A.v. Portrowski“ zuordnen" — Schaltflaeche, im main
+225. „„B. König“ zuordnen" — Schaltflaeche, im main
+226. „„Fehler“ zuordnen" — Schaltflaeche, im main
+227. „„Fredrik Hettich“ zuordnen" — Schaltflaeche, im main
+228. „„Gerd Beissert“ zuordnen" — Schaltflaeche, im main
+229. „„Herbert Appelt“ zuordnen" — Schaltflaeche, im main
+230. „„Ikaros Film Berlin“ zuordnen" — Schaltflaeche, im main
+231. „„Jürgen Kraul“ zuordnen" — Schaltflaeche, im main
+232. „„K. Manke“ zuordnen" — Schaltflaeche, im main
+233. „„Karl-Heinz Blöhm“ zuordnen" — Schaltflaeche, im main
+234. „„Kirzeder“ zuordnen" — Schaltflaeche, im main
+235. „„Leen Laan“ zuordnen" — Schaltflaeche, im main
+236. „„Paco Joan“ zuordnen" — Schaltflaeche, im main
+237. „„Stanley Sayer“ zuordnen" — Schaltflaeche, im main
+238. „„Walter Umlauf“ zuordnen" — Schaltflaeche, im main
+239. „17 Werte dieser Gruppe überspringen" — Link, im main
+240. „„Heinz Sielmann“ zuordnen" — Schaltflaeche, im main
+241. „„Georg Schimanski“ zuordnen" — Schaltflaeche, im main
+242. „„A.v. Portrowski“ zuordnen" — Schaltflaeche, im main
+243. „„B. König“ zuordnen" — Schaltflaeche, im main
+244. „„Fehler“ zuordnen" — Schaltflaeche, im main
+245. „„Fredrik Hettich“ zuordnen" — Schaltflaeche, im main
+246. „„Gerd Beissert“ zuordnen" — Schaltflaeche, im main
+247. „„Herbert Appelt“ zuordnen" — Schaltflaeche, im main
+248. „„Ikaros Film Berlin“ zuordnen" — Schaltflaeche, im main
+249. „„Jürgen Kraul“ zuordnen" — Schaltflaeche, im main
+250. „„K. Manke“ zuordnen" — Schaltflaeche, im main
+251. „„Karl-Heinz Blöhm“ zuordnen" — Schaltflaeche, im main
+252. „„Kirzeder“ zuordnen" — Schaltflaeche, im main
+253. „„Leen Laan“ zuordnen" — Schaltflaeche, im main
+254. „„Paco Joan“ zuordnen" — Schaltflaeche, im main
+255. „„Stanley Sayer“ zuordnen" — Schaltflaeche, im main
+256. „„Walter Umlauf“ zuordnen" — Schaltflaeche, im main
+257. „17 Werte dieser Gruppe überspringen" — Link, im main
+258. „„Heinz Sielmann“ zuordnen" — Schaltflaeche, im main
+259. „„Georg Schimanski“ zuordnen" — Schaltflaeche, im main
+260. „„A.v. Portrowski“ zuordnen" — Schaltflaeche, im main
+261. „„B. König“ zuordnen" — Schaltflaeche, im main
+262. „„Fehler“ zuordnen" — Schaltflaeche, im main
+263. „„Fredrik Hettich“ zuordnen" — Schaltflaeche, im main
+264. „„Gerd Beissert“ zuordnen" — Schaltflaeche, im main
+265. „„Herbert Appelt“ zuordnen" — Schaltflaeche, im main
+266. „„Ikaros Film Berlin“ zuordnen" — Schaltflaeche, im main
+267. „„Jürgen Kraul“ zuordnen" — Schaltflaeche, im main
+268. „„K. Manke“ zuordnen" — Schaltflaeche, im main
+269. „„Karl-Heinz Blöhm“ zuordnen" — Schaltflaeche, im main
+270. „„Kirzeder“ zuordnen" — Schaltflaeche, im main
+271. „„Leen Laan“ zuordnen" — Schaltflaeche, im main
+272. „„Paco Joan“ zuordnen" — Schaltflaeche, im main
+273. „„Stanley Sayer“ zuordnen" — Schaltflaeche, im main
+274. „„Walter Umlauf“ zuordnen" — Schaltflaeche, im main
+275. „2 Werte dieser Gruppe überspringen" — Link, im main
+276. „„bessere Kopie“ zuordnen" — Schaltflaeche, im main
+277. „„Johanna von Koczians“ zuordnen" — Schaltflaeche, im main
+278. „2 Werte dieser Gruppe überspringen" — Link, im main
+279. „„bessere Kopie“ zuordnen" — Schaltflaeche, im main
+280. „„Johanna von Koczians“ zuordnen" — Schaltflaeche, im main
+281. „2 Werte dieser Gruppe überspringen" — Link, im main
+282. „„bessere Kopie“ zuordnen" — Schaltflaeche, im main
+283. „„Johanna von Koczians“ zuordnen" — Schaltflaeche, im main
+284. „30 Werte dieser Gruppe überspringen" — Link, im main
+285. „„FWU“ zuordnen" — Schaltflaeche, im main
+286. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
+287. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
+288. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
+289. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
+290. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
+291. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
+292. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
+293. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
+294. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
+295. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
+296. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
+297. „„HFF“ zuordnen" — Schaltflaeche, im main
+298. „„ICIAC“ zuordnen" — Schaltflaeche, im main
+299. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
+300. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
+301. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
+302. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
+303. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
+304. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
+305. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
+306. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
+307. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
+308. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
+309. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
+310. „„RKF“ zuordnen" — Schaltflaeche, im main
+311. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
+312. „„Televersa“ zuordnen" — Schaltflaeche, im main
+313. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
+314. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
+315. „30 Werte dieser Gruppe überspringen" — Link, im main
+316. „„FWU“ zuordnen" — Schaltflaeche, im main
+317. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
+318. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
+319. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
+320. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
+321. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
+322. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
+323. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
+324. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
+325. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
+326. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
+327. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
+328. „„HFF“ zuordnen" — Schaltflaeche, im main
+329. „„ICIAC“ zuordnen" — Schaltflaeche, im main
+330. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
+331. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
+332. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
+333. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
+334. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
+335. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
+336. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
+337. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
+338. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
+339. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
+340. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
+341. „„RKF“ zuordnen" — Schaltflaeche, im main
+342. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
+343. „„Televersa“ zuordnen" — Schaltflaeche, im main
+344. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
+345. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
+346. „30 Werte dieser Gruppe überspringen" — Link, im main
+347. „„FWU“ zuordnen" — Schaltflaeche, im main
+348. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
+349. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
+350. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
+351. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
+352. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
+353. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
+354. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
+355. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
+356. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
+357. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
+358. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
+359. „„HFF“ zuordnen" — Schaltflaeche, im main
+360. „„ICIAC“ zuordnen" — Schaltflaeche, im main
+361. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
+362. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
+363. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
+364. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
+365. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
+366. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
+367. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
+368. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
+369. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
+370. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
+371. „„Reincarnation Centre“ zuordnen" — Schaltflaeche, im main
+372. „„RKF“ zuordnen" — Schaltflaeche, im main
+373. „„Studio für Trickfilme“ zuordnen" — Schaltflaeche, im main
+374. „„Televersa“ zuordnen" — Schaltflaeche, im main
+375. „„Träger des Vaterländischen Verdiensordens Dresden DEFA“ zuordnen" — Schaltflaeche, im main
+376. „„ZDF (Mainz)“ zuordnen" — Schaltflaeche, im main
+377. „„FWU“ zuordnen" — Schaltflaeche, im main
+378. „„Ikaros Film“ zuordnen" — Schaltflaeche, im main
+379. „„RKF-Film“ zuordnen" — Schaltflaeche, im main
+380. „„Churchill Films“ zuordnen" — Schaltflaeche, im main
+381. „„Cilia van Dijk“ zuordnen" — Schaltflaeche, im main
+382. „„Defa-Studios“ zuordnen" — Schaltflaeche, im main
+383. „„Eka-Film“ zuordnen" — Schaltflaeche, im main
+384. „„Encyclopedia Britannica Productions“ zuordnen" — Schaltflaeche, im main
+385. „„Film+ TV Produktion Hamburg“ zuordnen" — Schaltflaeche, im main
+386. „„FWU, G. Vernaillen, Brüssel“ zuordnen" — Schaltflaeche, im main
+387. „„FWU, Wilhelm Siem“ zuordnen" — Schaltflaeche, im main
+388. „„Hessischer Rundfunk“ zuordnen" — Schaltflaeche, im main
+389. „„HFF“ zuordnen" — Schaltflaeche, im main
+390. „„ICIAC“ zuordnen" — Schaltflaeche, im main
+391. „„Ikaros-Film, FWU“ zuordnen" — Schaltflaeche, im main
+392. „„IMATEL-Film GmbH“ zuordnen" — Schaltflaeche, im main
+393. „„Kultura-Film“ zuordnen" — Schaltflaeche, im main
+394. „„Kulturfilm-Institut“ zuordnen" — Schaltflaeche, im main
+395. „„Kulturfilmproduktion Rudolf Stölting“ zuordnen" — Schaltflaeche, im main
+396. „„Landespolizei Bayern“ zuordnen" — Schaltflaeche, im main
+397. „„Niemeier-Kulturfilm“ zuordnen" — Schaltflaeche, im main
+398. „„Oase Film GmbH“ zuordnen" — Schaltflaeche, im main
+399. „„Pasch-Film“ zuordnen" — Schaltflaeche, im main
+400. „„Primrose Productions Ltd. London“ zuordnen" — Schaltflaeche, im main
 
 ### Formularfelder
 
@@ -819,7 +874,7 @@ Keine Tabellen.
 Das wird angesagt, ohne dass die Seite wechselt:
 
 - Element (generic), Ansageart polite.
-  Aktueller Inhalt: „330 von 336 Werten warten auf eine Entscheidung.".
+  Aktueller Inhalt: „363 von 369 Werten warten auf eine Entscheidung.".
 - Statusbereich (status), Ansageart polite.
   Aktueller Inhalt: leer, meldet also gerade nichts.
 - Statusbereich (status), Ansageart polite.
@@ -836,15 +891,15 @@ Mit Alternativtext:
 Was beim Bedienen stoert. Das ist eine Beschreibung, keine Wertung nach WCAG — die maschinelle Pruefung steht in `tests/a11y/axe.mjs`.
 
 - Der Name „„Dr. F. Terveen“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Dr. H.J. Hossfeld“ zuordnen" beginnt mit einem Zierzeichen und kommt 5 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Dr. Hans Marthaler“ zuordnen" beginnt mit einem Zierzeichen und kommt 5 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Dr. H.J. Hossfeld“ zuordnen" beginnt mit einem Zierzeichen und kommt 6 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Dr. Hans Marthaler“ zuordnen" beginnt mit einem Zierzeichen und kommt 6 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
 - Der Name „„Dr. Helmut Kistler“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Dr. HJ Saechtling“ zuordnen" beginnt mit einem Zierzeichen und kommt 5 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Dr. HJ Saechtling“ zuordnen" beginnt mit einem Zierzeichen und kommt 6 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
 - Der Name „„Dr. Klaus Gallwitz“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
 - Der Name „„Dr. Rudolf Kühn“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
 - Der Name „„Dr. U.K.T. Schulz“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„H. A. Lettow“ zuordnen" beginnt mit einem Zierzeichen und kommt 5 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Heinz Sielmann“ zuordnen" beginnt mit einem Zierzeichen und kommt 8 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„H. A. Lettow“ zuordnen" beginnt mit einem Zierzeichen und kommt 6 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Heinz Sielmann“ zuordnen" beginnt mit einem Zierzeichen und kommt 9 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
 - Der Name „„Irmard Pohl, Auguste Schlarb“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
 - Der Name „„Prof. Dr. Franz Bukatsch“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
 - Der Name „„Deutschland“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
@@ -866,34 +921,34 @@ Was beim Bedienen stoert. Das ist eine Beschreibung, keine Wertung nach WCAG —
 - Der Name „„Helmut Geldmacher“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
 - Der Name „„Jan Mul“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
 - Der Name „„Wilm Brucker“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Wolfgang Kiepenheuer“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Anita Ueba“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Berit Nesheim“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Bert Hanstraa“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Borge Ring“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Ceskoslovensko Statny Film“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Christopher Sommerkorn“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Dr. U.K T. Schulz“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„E.K. Beltzig“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Friedrich Klütsch“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Georg Stingl“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Günter Höver“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Günther Wolf“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Helga Kurth“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Herbert Lander“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Horst Philipp“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Joachim Faulstich“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„John C. Stevens“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Lotte Reininger“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Manfried Jähre“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Marion Rasche“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Marisol Trujilo“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Michael Leutz“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Miriam Talavera“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Perin Rodriguez“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Rudolf Stölting“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Sheldon Renan“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
-- Der Name „„Surani Antal“ zuordnen" beginnt mit einem Zierzeichen und kommt 2 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Wolfgang Kiepenheuer“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Anita Ueba“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Berit Nesheim“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Bert Hanstraa“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Borge Ring“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Ceskoslovensko Statny Film“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Christopher Sommerkorn“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Dr. U.K T. Schulz“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„E.K. Beltzig“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Friedrich Klütsch“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Georg Stingl“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Günter Höver“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Günther Wolf“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Helga Kurth“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Herbert Lander“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Horst Philipp“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Joachim Faulstich“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„John C. Stevens“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Lotte Reininger“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Manfried Jähre“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Marion Rasche“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Marisol Trujilo“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Michael Leutz“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Miriam Talavera“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Perin Rodriguez“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Rudolf Stölting“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Sheldon Renan“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
+- Der Name „„Surani Antal“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
 - Der Name „„Georg Schimanski“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
 - Der Name „„A.v. Portrowski“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
 - Der Name „„B. König“ zuordnen" beginnt mit einem Zierzeichen und kommt 3 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
@@ -944,15 +999,15 @@ Was beim Bedienen stoert. Das ist eine Beschreibung, keine Wertung nach WCAG —
 - Der Name „„ZDF (Mainz)“ zuordnen" beginnt mit einem Zierzeichen und kommt 4 mal vor. Ein Vorlesewerkzeug spricht das Zeichen entweder aus oder verschluckt es; beides steht vor dem eigentlichen Namen.
 - 3 mal derselbe Name „12 Werte dieser Gruppe überspringen" als Link im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 3 mal derselbe Name „„Dr. F. Terveen“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 5 mal derselbe Name „„Dr. H.J. Hossfeld“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 5 mal derselbe Name „„Dr. Hans Marthaler“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 6 mal derselbe Name „„Dr. H.J. Hossfeld“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 6 mal derselbe Name „„Dr. Hans Marthaler“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 3 mal derselbe Name „„Dr. Helmut Kistler“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 5 mal derselbe Name „„Dr. HJ Saechtling“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 6 mal derselbe Name „„Dr. HJ Saechtling“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 3 mal derselbe Name „„Dr. Klaus Gallwitz“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 3 mal derselbe Name „„Dr. Rudolf Kühn“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 3 mal derselbe Name „„Dr. U.K.T. Schulz“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 5 mal derselbe Name „„H. A. Lettow“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 8 mal derselbe Name „„Heinz Sielmann“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 6 mal derselbe Name „„H. A. Lettow“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 9 mal derselbe Name „„Heinz Sielmann“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 3 mal derselbe Name „„Irmard Pohl, Auguste Schlarb“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 3 mal derselbe Name „„Prof. Dr. Franz Bukatsch“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 3 mal derselbe Name „13 Werte dieser Gruppe überspringen" als Link im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
@@ -976,35 +1031,35 @@ Was beim Bedienen stoert. Das ist eine Beschreibung, keine Wertung nach WCAG —
 - 3 mal derselbe Name „„Helmut Geldmacher“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 3 mal derselbe Name „„Jan Mul“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 3 mal derselbe Name „„Wilm Brucker“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „33 Werte dieser Gruppe überspringen" als Link im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Wolfgang Kiepenheuer“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Anita Ueba“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Berit Nesheim“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Bert Hanstraa“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Borge Ring“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Ceskoslovensko Statny Film“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Christopher Sommerkorn“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Dr. U.K T. Schulz“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„E.K. Beltzig“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Friedrich Klütsch“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Georg Stingl“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Günter Höver“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Günther Wolf“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Helga Kurth“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Herbert Lander“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Horst Philipp“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Joachim Faulstich“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„John C. Stevens“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Lotte Reininger“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Manfried Jähre“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Marion Rasche“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Marisol Trujilo“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Michael Leutz“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Miriam Talavera“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Perin Rodriguez“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Rudolf Stölting“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Sheldon Renan“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „„Surani Antal“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „33 Werte dieser Gruppe überspringen" als Link im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Wolfgang Kiepenheuer“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Anita Ueba“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Berit Nesheim“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Bert Hanstraa“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Borge Ring“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Ceskoslovensko Statny Film“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Christopher Sommerkorn“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Dr. U.K T. Schulz“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„E.K. Beltzig“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Friedrich Klütsch“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Georg Stingl“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Günter Höver“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Günther Wolf“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Helga Kurth“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Herbert Lander“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Horst Philipp“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Joachim Faulstich“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„John C. Stevens“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Lotte Reininger“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Manfried Jähre“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Marion Rasche“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Marisol Trujilo“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Michael Leutz“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Miriam Talavera“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Perin Rodriguez“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Rudolf Stölting“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Sheldon Renan“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
+- 3 mal derselbe Name „„Surani Antal“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 3 mal derselbe Name „17 Werte dieser Gruppe überspringen" als Link im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 3 mal derselbe Name „„Georg Schimanski“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 3 mal derselbe Name „„A.v. Portrowski“ zuordnen" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
@@ -1059,7 +1114,7 @@ Was beim Bedienen stoert. Das ist eine Beschreibung, keine Wertung nach WCAG —
 
 ## Teil 2 — Wie es raeumlich angeordnet ist
 
-Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 15842 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1480 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Zuordnungen", „Importe", „Test Luca 31.08.". Die breiten Schaltflaechen im Inhalt sind „Zuordnungen speichern" (oben mittig).
+Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 17280 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1480 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Zuordnungen", „Importe", „Test Matti auf Basis - Test Luca 31.08.". Die breiten Schaltflaechen im Inhalt sind „Zuordnungen speichern" (oben mittig).
 
 Der Bildschirmabzug `17-normdaten.png` im selben Verzeichnis zeigt denselben Stand fuer alle, die in einer Besprechung auf denselben Bildschirm schauen wollen.
 

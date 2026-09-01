@@ -42,21 +42,21 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 8. „Zuordnung beginnen" — Link, im main
 9. „Stattdessen ein exportiertes Profil einlesen" — aufklappbare Ueberschrift, im main
-10. „Zuordnung „Test Luca 31.08.“ bearbeiten" — Link, im main
-11. „Zuordnung „Test Luca 31.08.“ ansehen" — Link, im main
-12. „Zuordnung „Test Luca 31.08.“ als JSON exportieren" — Link, im main
-13. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ bearbeiten" — Link, im main
-14. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ ansehen" — Link, im main
-15. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ als JSON exportieren" — Link, im main
+10. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ bearbeiten" — Link, im main
+11. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ ansehen" — Link, im main
+12. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ als JSON exportieren" — Link, im main
+13. „Zuordnung „Test Matti auf Basis - Test Luca 31.08.“ bearbeiten" — Link, im main
+14. „Zuordnung „Test Matti auf Basis - Test Luca 31.08.“ ansehen" — Link, im main
+15. „Zuordnung „Test Matti auf Basis - Test Luca 31.08.“ als JSON exportieren" — Link, im main
 16. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ bearbeiten" — Link, im main
 17. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ ansehen" — Link, im main
 18. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ als JSON exportieren" — Link, im main
-19. „Zuordnung „fmdu_csv“ bearbeiten" — Link, im main
-20. „Zuordnung „fmdu_csv“ ansehen" — Link, im main
-21. „Zuordnung „fmdu_csv“ als JSON exportieren" — Link, im main
-22. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ bearbeiten" — Link, im main
-23. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ ansehen" — Link, im main
-24. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ als JSON exportieren" — Link, im main
+19. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ bearbeiten" — Link, im main
+20. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ ansehen" — Link, im main
+21. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ als JSON exportieren" — Link, im main
+22. „Zuordnung „fmdu_csv“ bearbeiten" — Link, im main
+23. „Zuordnung „fmdu_csv“ ansehen" — Link, im main
+24. „Zuordnung „fmdu_csv“ als JSON exportieren" — Link, im main
 25. „Zuordnung „Deutsches Filminstitut · mini“ bearbeiten" — Link, im main
 26. „Zuordnung „Deutsches Filminstitut · mini“ ansehen" — Link, im main
 27. „Zuordnung „Deutsches Filminstitut · mini“ als JSON exportieren" — Link, im main
@@ -75,21 +75,21 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 5. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 6. „Zuordnung beginnen" — Link, im main
 7. „Stattdessen ein exportiertes Profil einlesen" — aufklappbare Ueberschrift, im main
-8. „Zuordnung „Test Luca 31.08.“ bearbeiten" — Link, im main
-9. „Zuordnung „Test Luca 31.08.“ ansehen" — Link, im main
-10. „Zuordnung „Test Luca 31.08.“ als JSON exportieren" — Link, im main
-11. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ bearbeiten" — Link, im main
-12. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ ansehen" — Link, im main
-13. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ als JSON exportieren" — Link, im main
+8. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ bearbeiten" — Link, im main
+9. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ ansehen" — Link, im main
+10. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ als JSON exportieren" — Link, im main
+11. „Zuordnung „Test Matti auf Basis - Test Luca 31.08.“ bearbeiten" — Link, im main
+12. „Zuordnung „Test Matti auf Basis - Test Luca 31.08.“ ansehen" — Link, im main
+13. „Zuordnung „Test Matti auf Basis - Test Luca 31.08.“ als JSON exportieren" — Link, im main
 14. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ bearbeiten" — Link, im main
 15. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ ansehen" — Link, im main
 16. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ als JSON exportieren" — Link, im main
-17. „Zuordnung „fmdu_csv“ bearbeiten" — Link, im main
-18. „Zuordnung „fmdu_csv“ ansehen" — Link, im main
-19. „Zuordnung „fmdu_csv“ als JSON exportieren" — Link, im main
-20. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ bearbeiten" — Link, im main
-21. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ ansehen" — Link, im main
-22. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ als JSON exportieren" — Link, im main
+17. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ bearbeiten" — Link, im main
+18. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ ansehen" — Link, im main
+19. „Zuordnung „Deutsches Filminstitut · Erschließungsdaten_Expofilme_bearbeitet“ als JSON exportieren" — Link, im main
+20. „Zuordnung „fmdu_csv“ bearbeiten" — Link, im main
+21. „Zuordnung „fmdu_csv“ ansehen" — Link, im main
+22. „Zuordnung „fmdu_csv“ als JSON exportieren" — Link, im main
 23. „Zuordnung „Deutsches Filminstitut · mini“ bearbeiten" — Link, im main
 24. „Zuordnung „Deutsches Filminstitut · mini“ ansehen" — Link, im main
 25. „Zuordnung „Deutsches Filminstitut · mini“ als JSON exportieren" — Link, im main

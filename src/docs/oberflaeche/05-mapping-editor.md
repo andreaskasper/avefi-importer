@@ -1,7 +1,7 @@
 # Mapping-Editor
 
-Adresse: `/imports/0d85bdc8-a395-40ca-85cf-44d4a6989835/mapping`  
-Seitentitel im Browser: „neu_UPB_Archiv_Test_Kopie.csv · Zuordnung · AVefi Importer"  
+Adresse: `/imports/0a67d79e-cd12-4b0f-bdd2-a196c6d3bb91/mapping`  
+Seitentitel im Browser: „UPB_Archivliste_Lehrfilme_Auswahl_AVefi_2026-08-04.csv · Zuordnung · AVefi Importer"  
 Sprache des Dokuments: `de`
 
 Die wichtigste Seite. Hier wird jede Spalte der Quelldatei einem AVefi-Feld zugeordnet. Die Seite ist die komplexeste der Anwendung; hier verbringt ein Tester die meiste Zeit.
@@ -21,7 +21,7 @@ In Dokumentreihenfolge, also so, wie sie beim Wandern ueber die Bereiche kommen:
 
 ### Ueberschriften
 
-- Stufe 1: „neu_UPB_Archiv_Test_Kopie.csv"
+- Stufe 1: „UPB_Archivliste_Lehrfilme_Auswahl_AVefi_2026-08-04.csv"
 - Stufe 2: „Prüfung"
 - Stufe 2: „Ergebnis je Datensatz"
 - Stufe 3: „Werk"
@@ -50,7 +50,7 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 6. „Design wechseln" — Schaltflaeche, im banner
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 8. „Importe" — Link, im navigation „Zuordnung"
-9. „neu_UPB_Archiv_Test_Kopie.csv" — Link, im navigation „Zuordnung"
+9. „UPB_Archivliste_Lehrfilme_Auswahl_AVefi_2026-08-04.csv" — Link, im navigation „Zuordnung"
 10. „Name des Profils" — Eingabefeld, im main
 11. „Beispiel und Ergebnis zusammen" — Schaltflaeche, im main
 12. „Speichern" — Schaltflaeche, im main
@@ -65,49 +65,49 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 21. „Land" — Schaltflaeche, im main
 22. „Land" — Schaltflaeche, im main
 23. „Musik" — Schaltflaeche, im main
-24. „Produktion" — Schaltflaeche, im main
-25. „Anzeigen" — Auswahlfeld, im main
-26. „Zuordnungstabelle überspringen (49 Zeilen)" — Link, im main
-27. „Werk › Titel › Haupttitel — Spalte „Titel“ bearbeiten" — Schaltflaeche, im main
-28. „Konverter und Zweige für „Titel“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-29. „Spalte „Titel“ ignorieren" — Schaltflaeche, im main
-30. „Spalte „Titel“ zurücksetzen" — Schaltflaeche, im main
-31. „Werk › Titel › Weiterer Titel — Spalte „Originaltitel“ bearbeiten" — Schaltflaeche, im main
-32. „Konverter und Zweige für „Originaltitel“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-33. „Spalte „Originaltitel“ ignorieren" — Schaltflaeche, im main
-34. „Spalte „Originaltitel“ zurücksetzen" — Schaltflaeche, im main
-35. „Werk › Titel › Weiterer Titel — Spalte „Diverse Titel“ bearbeiten" — Schaltflaeche, im main
-36. „Konverter und Zweige für „Diverse Titel“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-37. „Spalte „Diverse Titel“ ignorieren" — Schaltflaeche, im main
-38. „Spalte „Diverse Titel“ zurücksetzen" — Schaltflaeche, im main
-39. „Exemplar › Exemplar › Signatur — Spalte „Signatur“ bearbeiten" — Schaltflaeche, im main
-40. „Konverter und Zweige für „Signatur“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-41. „Spalte „Signatur“ ignorieren" — Schaltflaeche, im main
-42. „Spalte „Signatur“ zurücksetzen" — Schaltflaeche, im main
-43. „Konverter und Zweige für „Anzahl der Kopien“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-44. „Spalte „Anzahl der Kopien“ ignorieren" — Schaltflaeche, im main
-45. „Spalte „Anzahl der Kopien“ zurücksetzen" — Schaltflaeche, im main
-46. „Exemplar › Technik › Farbe — Spalte „Color“ bearbeiten" — Schaltflaeche, im main
-47. „Konverter und Zweige für „Color“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-48. „Spalte „Color“ ignorieren" — Schaltflaeche, im main
-49. „Spalte „Color“ zurücksetzen" — Schaltflaeche, im main
-50. „Exemplar › Technik › Ton — Spalte „Tontechnik“ bearbeiten" — Schaltflaeche, im main
-51. „Konverter und Zweige für „Tontechnik“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-52. „Spalte „Tontechnik“ ignorieren" — Schaltflaeche, im main
-53. „Spalte „Tontechnik“ zurücksetzen" — Schaltflaeche, im main
-54. „Exemplar › Technik › Laufzeit — Spalte „Länge“ bearbeiten" — Schaltflaeche, im main
-55. „Konverter und Zweige für „Länge“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-56. „Spalte „Länge“ ignorieren" — Schaltflaeche, im main
-57. „Spalte „Länge“ zurücksetzen" — Schaltflaeche, im main
-58. „Werk › Produktion › Produktionsjahr — Spalte „Produktionsjahr“ bearbeiten" — Schaltflaeche, im main
-59. „Konverter und Zweige für „Produktionsjahr“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-60. „Spalte „Produktionsjahr“ ignorieren" — Schaltflaeche, im main
-61. „Spalte „Produktionsjahr“ zurücksetzen" — Schaltflaeche, im main
-62. „Werk › Erschliessung › Ort (Thema) — Spalte „Land“ bearbeiten" — Schaltflaeche, im main
-63. „Konverter und Zweige für „Land“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-64. „Spalte „Land“ ignorieren" — Schaltflaeche, im main
-65. „Spalte „Land“ zurücksetzen" — Schaltflaeche, im main
-66. „Werk › Beteiligte › Regie — Spalte „Regie“ bearbeiten" — Schaltflaeche, im main
+24. „Regie" — Schaltflaeche, im main
+25. „Produktion" — Schaltflaeche, im main
+26. „Anzeigen" — Auswahlfeld, im main
+27. „Zuordnungstabelle überspringen (49 Zeilen)" — Link, im main
+28. „Werk › Titel › Haupttitel — Spalte „Titel“ bearbeiten" — Schaltflaeche, im main
+29. „Konverter und Zweige für „Titel“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+30. „Spalte „Titel“ ignorieren" — Schaltflaeche, im main
+31. „Spalte „Titel“ zurücksetzen" — Schaltflaeche, im main
+32. „Werk › Titel › Weiterer Titel — Spalte „Originaltitel“ bearbeiten" — Schaltflaeche, im main
+33. „Konverter und Zweige für „Originaltitel“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+34. „Spalte „Originaltitel“ ignorieren" — Schaltflaeche, im main
+35. „Spalte „Originaltitel“ zurücksetzen" — Schaltflaeche, im main
+36. „Werk › Titel › Weiterer Titel — Spalte „Diverse Titel“ bearbeiten" — Schaltflaeche, im main
+37. „Konverter und Zweige für „Diverse Titel“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+38. „Spalte „Diverse Titel“ ignorieren" — Schaltflaeche, im main
+39. „Spalte „Diverse Titel“ zurücksetzen" — Schaltflaeche, im main
+40. „Exemplar › Exemplar › Signatur — Spalte „Signatur“ bearbeiten" — Schaltflaeche, im main
+41. „Konverter und Zweige für „Signatur“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+42. „Spalte „Signatur“ ignorieren" — Schaltflaeche, im main
+43. „Spalte „Signatur“ zurücksetzen" — Schaltflaeche, im main
+44. „Konverter und Zweige für „Anzahl der Kopien“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+45. „Spalte „Anzahl der Kopien“ ignorieren" — Schaltflaeche, im main
+46. „Spalte „Anzahl der Kopien“ zurücksetzen" — Schaltflaeche, im main
+47. „Exemplar › Technik › Farbe — Spalte „Color“ bearbeiten" — Schaltflaeche, im main
+48. „Konverter und Zweige für „Color“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+49. „Spalte „Color“ ignorieren" — Schaltflaeche, im main
+50. „Spalte „Color“ zurücksetzen" — Schaltflaeche, im main
+51. „Exemplar › Technik › Ton — Spalte „Tontechnik“ bearbeiten" — Schaltflaeche, im main
+52. „Konverter und Zweige für „Tontechnik“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+53. „Spalte „Tontechnik“ ignorieren" — Schaltflaeche, im main
+54. „Spalte „Tontechnik“ zurücksetzen" — Schaltflaeche, im main
+55. „Exemplar › Technik › Laufzeit — Spalte „Länge“ bearbeiten" — Schaltflaeche, im main
+56. „Konverter und Zweige für „Länge“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+57. „Spalte „Länge“ ignorieren" — Schaltflaeche, im main
+58. „Spalte „Länge“ zurücksetzen" — Schaltflaeche, im main
+59. „Werk › Produktion › Produktionsjahr — Spalte „Produktionsjahr“ bearbeiten" — Schaltflaeche, im main
+60. „Konverter und Zweige für „Produktionsjahr“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+61. „Spalte „Produktionsjahr“ ignorieren" — Schaltflaeche, im main
+62. „Spalte „Produktionsjahr“ zurücksetzen" — Schaltflaeche, im main
+63. „Werk › Produktion › Produktionsland — Spalte „Land“ bearbeiten" — Schaltflaeche, im main
+64. „Konverter und Zweige für „Land“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+65. „Spalte „Land“ ignorieren" — Schaltflaeche, im main
+66. „Spalte „Land“ zurücksetzen" — Schaltflaeche, im main
 67. „Werk › Beteiligte › Regie — Spalte „Regie“ bearbeiten" — Schaltflaeche, im main
 68. „Konverter und Zweige für „Regie“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
 69. „Spalte „Regie“ ignorieren" — Schaltflaeche, im main
@@ -242,7 +242,7 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 198. „Gegen das AVefi-Schema prüfen" — Schaltflaeche, im complementary „Ergebnis und Einstellungen"
 199. „Festwert hinzufügen" — Schaltflaeche, im complementary „Ergebnis und Einstellungen"
 200. „Drehbuch" — Kontrollkaestchen, im complementary „Ergebnis und Einstellungen"
-201. „Ort (Thema)" — Kontrollkaestchen, im complementary „Ergebnis und Einstellungen"
+201. „Produktionsland" — Kontrollkaestchen, im complementary „Ergebnis und Einstellungen"
 202. „Musik" — Kontrollkaestchen, im complementary „Ergebnis und Einstellungen"
 203. „Regie" — Kontrollkaestchen, im complementary „Ergebnis und Einstellungen"
 204. „Haupttitel" — Kontrollkaestchen, im complementary „Ergebnis und Einstellungen"
@@ -310,7 +310,7 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 4. „Design wechseln" — Schaltflaeche, im banner
 5. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 6. „Importe" — Link, im navigation „Zuordnung"
-7. „neu_UPB_Archiv_Test_Kopie.csv" — Link, im navigation „Zuordnung"
+7. „UPB_Archivliste_Lehrfilme_Auswahl_AVefi_2026-08-04.csv" — Link, im navigation „Zuordnung"
 8. „Name des Profils" — Eingabefeld, im main
 9. „Beispiel und Ergebnis zusammen" — Schaltflaeche, im main
 10. „Speichern" — Schaltflaeche, im main
@@ -325,49 +325,49 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 19. „Land" — Schaltflaeche, im main
 20. „Land" — Schaltflaeche, im main
 21. „Musik" — Schaltflaeche, im main
-22. „Produktion" — Schaltflaeche, im main
-23. „Anzeigen" — Auswahlfeld, im main
-24. „Zuordnungstabelle überspringen (49 Zeilen)" — Link, im main
-25. „Werk › Titel › Haupttitel — Spalte „Titel“ bearbeiten" — Schaltflaeche, im main
-26. „Konverter und Zweige für „Titel“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-27. „Spalte „Titel“ ignorieren" — Schaltflaeche, im main
-28. „Spalte „Titel“ zurücksetzen" — Schaltflaeche, im main
-29. „Werk › Titel › Weiterer Titel — Spalte „Originaltitel“ bearbeiten" — Schaltflaeche, im main
-30. „Konverter und Zweige für „Originaltitel“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-31. „Spalte „Originaltitel“ ignorieren" — Schaltflaeche, im main
-32. „Spalte „Originaltitel“ zurücksetzen" — Schaltflaeche, im main
-33. „Werk › Titel › Weiterer Titel — Spalte „Diverse Titel“ bearbeiten" — Schaltflaeche, im main
-34. „Konverter und Zweige für „Diverse Titel“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-35. „Spalte „Diverse Titel“ ignorieren" — Schaltflaeche, im main
-36. „Spalte „Diverse Titel“ zurücksetzen" — Schaltflaeche, im main
-37. „Exemplar › Exemplar › Signatur — Spalte „Signatur“ bearbeiten" — Schaltflaeche, im main
-38. „Konverter und Zweige für „Signatur“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-39. „Spalte „Signatur“ ignorieren" — Schaltflaeche, im main
-40. „Spalte „Signatur“ zurücksetzen" — Schaltflaeche, im main
-41. „Konverter und Zweige für „Anzahl der Kopien“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-42. „Spalte „Anzahl der Kopien“ ignorieren" — Schaltflaeche, im main
-43. „Spalte „Anzahl der Kopien“ zurücksetzen" — Schaltflaeche, im main
-44. „Exemplar › Technik › Farbe — Spalte „Color“ bearbeiten" — Schaltflaeche, im main
-45. „Konverter und Zweige für „Color“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-46. „Spalte „Color“ ignorieren" — Schaltflaeche, im main
-47. „Spalte „Color“ zurücksetzen" — Schaltflaeche, im main
-48. „Exemplar › Technik › Ton — Spalte „Tontechnik“ bearbeiten" — Schaltflaeche, im main
-49. „Konverter und Zweige für „Tontechnik“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-50. „Spalte „Tontechnik“ ignorieren" — Schaltflaeche, im main
-51. „Spalte „Tontechnik“ zurücksetzen" — Schaltflaeche, im main
-52. „Exemplar › Technik › Laufzeit — Spalte „Länge“ bearbeiten" — Schaltflaeche, im main
-53. „Konverter und Zweige für „Länge“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-54. „Spalte „Länge“ ignorieren" — Schaltflaeche, im main
-55. „Spalte „Länge“ zurücksetzen" — Schaltflaeche, im main
-56. „Werk › Produktion › Produktionsjahr — Spalte „Produktionsjahr“ bearbeiten" — Schaltflaeche, im main
-57. „Konverter und Zweige für „Produktionsjahr“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-58. „Spalte „Produktionsjahr“ ignorieren" — Schaltflaeche, im main
-59. „Spalte „Produktionsjahr“ zurücksetzen" — Schaltflaeche, im main
-60. „Werk › Erschliessung › Ort (Thema) — Spalte „Land“ bearbeiten" — Schaltflaeche, im main
-61. „Konverter und Zweige für „Land“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
-62. „Spalte „Land“ ignorieren" — Schaltflaeche, im main
-63. „Spalte „Land“ zurücksetzen" — Schaltflaeche, im main
-64. „Werk › Beteiligte › Regie — Spalte „Regie“ bearbeiten" — Schaltflaeche, im main
+22. „Regie" — Schaltflaeche, im main
+23. „Produktion" — Schaltflaeche, im main
+24. „Anzeigen" — Auswahlfeld, im main
+25. „Zuordnungstabelle überspringen (49 Zeilen)" — Link, im main
+26. „Werk › Titel › Haupttitel — Spalte „Titel“ bearbeiten" — Schaltflaeche, im main
+27. „Konverter und Zweige für „Titel“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+28. „Spalte „Titel“ ignorieren" — Schaltflaeche, im main
+29. „Spalte „Titel“ zurücksetzen" — Schaltflaeche, im main
+30. „Werk › Titel › Weiterer Titel — Spalte „Originaltitel“ bearbeiten" — Schaltflaeche, im main
+31. „Konverter und Zweige für „Originaltitel“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+32. „Spalte „Originaltitel“ ignorieren" — Schaltflaeche, im main
+33. „Spalte „Originaltitel“ zurücksetzen" — Schaltflaeche, im main
+34. „Werk › Titel › Weiterer Titel — Spalte „Diverse Titel“ bearbeiten" — Schaltflaeche, im main
+35. „Konverter und Zweige für „Diverse Titel“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+36. „Spalte „Diverse Titel“ ignorieren" — Schaltflaeche, im main
+37. „Spalte „Diverse Titel“ zurücksetzen" — Schaltflaeche, im main
+38. „Exemplar › Exemplar › Signatur — Spalte „Signatur“ bearbeiten" — Schaltflaeche, im main
+39. „Konverter und Zweige für „Signatur“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+40. „Spalte „Signatur“ ignorieren" — Schaltflaeche, im main
+41. „Spalte „Signatur“ zurücksetzen" — Schaltflaeche, im main
+42. „Konverter und Zweige für „Anzahl der Kopien“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+43. „Spalte „Anzahl der Kopien“ ignorieren" — Schaltflaeche, im main
+44. „Spalte „Anzahl der Kopien“ zurücksetzen" — Schaltflaeche, im main
+45. „Exemplar › Technik › Farbe — Spalte „Color“ bearbeiten" — Schaltflaeche, im main
+46. „Konverter und Zweige für „Color“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+47. „Spalte „Color“ ignorieren" — Schaltflaeche, im main
+48. „Spalte „Color“ zurücksetzen" — Schaltflaeche, im main
+49. „Exemplar › Technik › Ton — Spalte „Tontechnik“ bearbeiten" — Schaltflaeche, im main
+50. „Konverter und Zweige für „Tontechnik“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+51. „Spalte „Tontechnik“ ignorieren" — Schaltflaeche, im main
+52. „Spalte „Tontechnik“ zurücksetzen" — Schaltflaeche, im main
+53. „Exemplar › Technik › Laufzeit — Spalte „Länge“ bearbeiten" — Schaltflaeche, im main
+54. „Konverter und Zweige für „Länge“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+55. „Spalte „Länge“ ignorieren" — Schaltflaeche, im main
+56. „Spalte „Länge“ zurücksetzen" — Schaltflaeche, im main
+57. „Werk › Produktion › Produktionsjahr — Spalte „Produktionsjahr“ bearbeiten" — Schaltflaeche, im main
+58. „Konverter und Zweige für „Produktionsjahr“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+59. „Spalte „Produktionsjahr“ ignorieren" — Schaltflaeche, im main
+60. „Spalte „Produktionsjahr“ zurücksetzen" — Schaltflaeche, im main
+61. „Werk › Produktion › Produktionsland — Spalte „Land“ bearbeiten" — Schaltflaeche, im main
+62. „Konverter und Zweige für „Land“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
+63. „Spalte „Land“ ignorieren" — Schaltflaeche, im main
+64. „Spalte „Land“ zurücksetzen" — Schaltflaeche, im main
 65. „Werk › Beteiligte › Regie — Spalte „Regie“ bearbeiten" — Schaltflaeche, im main
 66. „Konverter und Zweige für „Regie“ bearbeiten" — Schaltflaeche, im main. aufklappbar, derzeit zu
 67. „Spalte „Regie“ ignorieren" — Schaltflaeche, im main
@@ -502,7 +502,7 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 196. „Gegen das AVefi-Schema prüfen" — Schaltflaeche, im complementary „Ergebnis und Einstellungen"
 197. „Festwert hinzufügen" — Schaltflaeche, im complementary „Ergebnis und Einstellungen"
 198. „Drehbuch" — Kontrollkaestchen, im complementary „Ergebnis und Einstellungen"
-199. „Ort (Thema)" — Kontrollkaestchen, im complementary „Ergebnis und Einstellungen"
+199. „Produktionsland" — Kontrollkaestchen, im complementary „Ergebnis und Einstellungen"
 200. „Musik" — Kontrollkaestchen, im complementary „Ergebnis und Einstellungen"
 201. „Regie" — Kontrollkaestchen, im complementary „Ergebnis und Einstellungen"
 202. „Haupttitel" — Kontrollkaestchen, im complementary „Ergebnis und Einstellungen"
@@ -573,7 +573,7 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 - „Drehbuch" — Kontrollkaestchen, kein Pflichtfeld.
   Beschriftung kommt aus: umgebendes label.
   Kein verknuepfter Hinweis und keine verknuepfte Fehlermeldung.
-- „Ort (Thema)" — Kontrollkaestchen, kein Pflichtfeld.
+- „Produktionsland" — Kontrollkaestchen, kein Pflichtfeld.
   Beschriftung kommt aus: umgebendes label.
   Kein verknuepfter Hinweis und keine verknuepfte Fehlermeldung.
 - „Musik" — Kontrollkaestchen, kein Pflichtfeld.
@@ -786,46 +786,32 @@ Was beim Bedienen stoert. Das ist eine Beschreibung, keine Wertung nach WCAG —
 
 - 2 mal derselbe Name „Produktion" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 - 6 mal derselbe Name „Land" als Schaltflaeche im main. Beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
-- 2 mal derselbe Name „Werk › Beteiligte › Regie — Spalte „Regie“ bearbeiten" als Schaltflaeche im main. Es sind Zeilenaktionen einer Tabelle; beim Durchgehen der Bedienelemente sind sie nicht auseinanderzuhalten.
 
 ## Zusaetzlicher Zustand: die aufgeklappte Zuordnungszeile
 
-Jede Zeile der Zuordnungstabelle laesst sich aufklappen. Die Schaltflaeche dafuer heisst „Konverter und Zweige für „Regie“ bearbeiten" und ist der vorletzte Tabstopp der Zeile; sie traegt `aria-expanded` und zeigt damit an, ob die Zeile offen ist. Beschrieben ist hier die Zeile mit den meisten Zweigen — von 49 Zeilen der Tabelle hat sie 2.
+Jede Zeile der Zuordnungstabelle laesst sich aufklappen. Die Schaltflaeche dafuer heisst „Konverter und Zweige für „Titel“ bearbeiten" und ist der vorletzte Tabstopp der Zeile; sie traegt `aria-expanded` und zeigt damit an, ob die Zeile offen ist. Beschrieben ist hier die Zeile mit den meisten Zweigen — von 49 Zeilen der Tabelle hat sie 1.
 
 Aufgeklappt schiebt sich unter die Zeile eine zweite Tabellenzeile, die sich ueber alle Spalten zieht. Sie ist ueber `aria-controls` mit der Schaltflaeche verbunden. Der Inhalt ist keine Tabelle, sondern eine Abfolge von Bereichen.
 
 ### Aufbau von oben nach unten
 
-1. Die Quellspalte: „Regie gefüllt in 35 von 75 Zeilen". Das ist reiner Text, kein Bedienelement.
-2. Ein Bereich fuer die Konverter, die fuer **alle** Ziele dieser Spalte gelten — ueberschrieben mit „Konverter für alle Ziele dieser Spalte". Er enthaelt 2 Schritt(e): „1. Leerraum entfernen", „2. Aufteilen". Am Ende steht eine Schaltflaeche, die einen weiteren Konverter hinzufuegt.
-3. Danach folgt je Ziel ein Zweig. Es sind 2.
+1. Die Quellspalte: „Titel". Das ist reiner Text, kein Bedienelement.
+2. Ein Bereich fuer die Konverter, die fuer **alle** Ziele dieser Spalte gelten — ueberschrieben mit „Konverter für alle Ziele dieser Spalte". Er ist leer; der Wert geht unveraendert weiter. Am Ende steht eine Schaltflaeche, die einen weiteren Konverter hinzufuegt.
+3. Danach folgt je Ziel ein Zweig. Es sind 1.
 4. Zuletzt die Schaltflaeche „weiteres Ziel für diese Spalte", die einen weiteren Zweig anlegt.
 
 ### Die Zweige im Einzelnen
 
 **Zweig 1**
 
-- Zielauswahl: Eingabefeld „Ziel im AVefi-Schema für Zweig 1" mit `role="combobox"`. Der eingetragene Wert ist „Werk › Regie".
-- Unter dem Feld steht als Text: „WorkVariant.has_event[ProductionEvent].has_activity[DirectingActivity].has_agent[].has_name — Regieführende Person.nimmt mehrere Werte auf · kann Normdaten tr…". Dieser Text ist nicht mit dem Feld verknuepft und wird beim Betreten des Feldes nicht mit vorgelesen.
-- Konverter nur fuer dieses Ziel („Weitere Konverter nur für dieses Ziel"): „1. Normdaten nachschlagen".
+- Zielauswahl: Eingabefeld „Ziel im AVefi-Schema für Zweig 1" mit `role="combobox"`. Der eingetragene Wert ist „Werk › Haupttitel".
+- Unter dem Feld steht als Text: „WorkVariant.has_primary_title.has_name (PreferredTitle) — Bevorzugter Titel des Werks.nimmt genau einen Wert auf". Dieser Text ist nicht mit dem Feld verknuepft und wird beim Betreten des Feldes nicht mit vorgelesen.
+- Konverter nur fuer dieses Ziel („Weitere Konverter nur für dieses Ziel"): keine; der Wert geht unveraendert weiter.
 - Beispiele aus den Daten, jeweils Quellwert und Ergebnis:
-  - „Heinz Sielmann wird zu Heinz Sielmann · Heinz Sielmann"
-  - „H. A. Lettow wird zu H. A. Lettow · H. A. Lettow"
-  - „Dr. U.K T. Schulz wird zu Dr. U.K T. Schulz · Dr. U.K T. Schulz"
-- Eine Werteliste mit 33 Quellwert(en). Die ersten Zeilen lauten: „Heinz Sielmann 4× automatisch Zuordnen" — „Wolfgang Kiepenheuer 4× automatisch Zuordnen" — „Berit Nesheim 2× automatisch Zuordnen" — „Joachim Faulstich 2× automatisch Zuordnen" — „Anita Ueba 1× automatisch Zuordnen" — „Bert Hanstraa 1× automatisch Zuordnen".
-- Schaltflaechen in diesem Zweig: „Zweig 1 von „Regie“ entfernen", „Konverter „Normdaten nachschlagen“ entfernen", „Konverter hinzufügen", „Ziel entfernen", „„Heinz Sielmann“ zuordnen", „„Wolfgang Kiepenheuer“ zuordnen", „„Berit Nesheim“ zuordnen", „„Joachim Faulstich“ zuordnen", „„Anita Ueba“ zuordnen", „„Bert Hanstraa“ zuordnen", „„Borge Ring“ zuordnen", „„Ceskoslovensko Statny Film“ zuordnen", „„Christopher Sommerkorn“ zuordnen", „„Dr. H.J. Hossfeld“ zuordnen", „„Dr. Hans Marthaler“ zuordnen", „„Dr. HJ Saechtling“ zuordnen", „„Dr. U.K T. Schulz“ zuordnen", „„E.K. Beltzig“ zuordnen", „„Friedrich Klütsch“ zuordnen", „„Georg Stingl“ zuordnen", „„Günter Höver“ zuordnen", „„Günther Wolf“ zuordnen", „„H. A. Lettow“ zuordnen", „„Helga Kurth“ zuordnen", „„Herbert Lander“ zuordnen", „„Horst Philipp“ zuordnen", „„John C. Stevens“ zuordnen", „„Lotte Reininger“ zuordnen", „„Manfried Jähre“ zuordnen", „„Marion Rasche“ zuordnen", „„Marisol Trujilo“ zuordnen", „„Michael Leutz“ zuordnen", „„Miriam Talavera“ zuordnen", „„Perin Rodriguez“ zuordnen", „„Rudolf Stölting“ zuordnen", „„Sheldon Renan“ zuordnen", „„Surani Antal“ zuordnen".
-
-**Zweig 2**
-
-- Zielauswahl: Eingabefeld „Ziel im AVefi-Schema für Zweig 2" mit `role="combobox"`. Der eingetragene Wert ist „Werk › Regie".
-- Unter dem Feld steht als Text: „WorkVariant.has_event[ProductionEvent].has_activity[DirectingActivity].has_agent[].has_name — Regieführende Person.nimmt mehrere Werte auf · kann Normdaten tr…". Dieser Text ist nicht mit dem Feld verknuepft und wird beim Betreten des Feldes nicht mit vorgelesen.
-- Konverter nur fuer dieses Ziel („Weitere Konverter nur für dieses Ziel"): „1. Normdaten nachschlagen".
-- Beispiele aus den Daten, jeweils Quellwert und Ergebnis:
-  - „Heinz Sielmann wird zu Heinz Sielmann · Heinz Sielmann"
-  - „H. A. Lettow wird zu H. A. Lettow · H. A. Lettow"
-  - „Dr. U.K T. Schulz wird zu Dr. U.K T. Schulz · Dr. U.K T. Schulz"
-- Eine Werteliste mit 33 Quellwert(en). Die ersten Zeilen lauten: „Heinz Sielmann 4× 11861407X Sielmann, Heinz Zuordnen zurücksetzen" — „Wolfgang Kiepenheuer 4× automatisch Zuordnen" — „Berit Nesheim 2× automatisch Zuordnen" — „Joachim Faulstich 2× automatisch Zuordnen" — „Anita Ueba 1× automatisch Zuordnen" — „Bert Hanstraa 1× automatisch Zuordnen".
-- Schaltflaechen in diesem Zweig: „Zweig 2 von „Regie“ entfernen", „Konverter „Normdaten nachschlagen“ entfernen", „Konverter hinzufügen", „Ziel entfernen", „„Heinz Sielmann“ zuordnen", „Zuordnung für „Heinz Sielmann“ zurücksetzen", „„Wolfgang Kiepenheuer“ zuordnen", „„Berit Nesheim“ zuordnen", „„Joachim Faulstich“ zuordnen", „„Anita Ueba“ zuordnen", „„Bert Hanstraa“ zuordnen", „„Borge Ring“ zuordnen", „„Ceskoslovensko Statny Film“ zuordnen", „„Christopher Sommerkorn“ zuordnen", „„Dr. H.J. Hossfeld“ zuordnen", „„Dr. Hans Marthaler“ zuordnen", „„Dr. HJ Saechtling“ zuordnen", „„Dr. U.K T. Schulz“ zuordnen", „Zuordnung für „Dr. U.K T. Schulz“ zurücksetzen", „„E.K. Beltzig“ zuordnen", „„Friedrich Klütsch“ zuordnen", „„Georg Stingl“ zuordnen", „„Günter Höver“ zuordnen", „„Günther Wolf“ zuordnen", „„H. A. Lettow“ zuordnen", „Zuordnung für „H. A. Lettow“ zurücksetzen", „„Helga Kurth“ zuordnen", „„Herbert Lander“ zuordnen", „„Horst Philipp“ zuordnen", „„John C. Stevens“ zuordnen", „„Lotte Reininger“ zuordnen", „„Manfried Jähre“ zuordnen", „„Marion Rasche“ zuordnen", „„Marisol Trujilo“ zuordnen", „„Michael Leutz“ zuordnen", „„Miriam Talavera“ zuordnen", „„Perin Rodriguez“ zuordnen", „„Rudolf Stölting“ zuordnen", „„Sheldon Renan“ zuordnen", „„Surani Antal“ zuordnen".
+  - „Sicherheit im Haushalt wird zu Sicherheit im Haushalt"
+  - „Die deutsche Grönland Expedition A. Wegener wird zu Die deutsche Grönland Expedition A. Wegener"
+  - „Kakao von der Goldküste wird zu Kakao von der Goldküste"
+- Schaltflaechen in diesem Zweig: „Zweig 1 von „Titel“ entfernen", „Konverter hinzufügen", „Ziel entfernen".
 
 Am Ende steht der Hinweistext „Eine Spalte darf mehrfach landen: gemeinsame Kette oben, je Zweig eigene Kette und eigenes Ziel.".
 
@@ -833,106 +819,16 @@ Am Ende steht der Hinweistext „Eine Spalte darf mehrfach landen: gemeinsame Ke
 
 Sie kommen unmittelbar nach der Schaltflaeche, mit der aufgeklappt wurde:
 
-1. „Konverter „Leerraum entfernen“ entfernen" — Schaltflaeche
-2. „Zusätzliche Zeichen" — Eingabefeld
-3. „Konverter 1 nach hinten" — Schaltflaeche
-4. „Konverter „Aufteilen“ entfernen" — Schaltflaeche
-5. „Trennzeichen" — Eingabefeld
-6. „Doppelte entfernen" — Kontrollkaestchen
-7. „Konverter 2 nach vorn" — Schaltflaeche
-8. „Konverter hinzufügen" — Schaltflaeche
-9. „Zweig 1 von „Regie“ entfernen" — Schaltflaeche
-10. „Konverter „Normdaten nachschlagen“ entfernen" — Schaltflaeche
-11. „Quelle" — Auswahlfeld
-12. „Art" — Auswahlfeld
-13. „Konverter hinzufügen" — Schaltflaeche
-14. „Ziel im AVefi-Schema für Zweig 1" — Auswahlfeld
-15. „Ziel entfernen" — Schaltflaeche
-16. „Werte der Spalte „Regie“ für den Abgleich mit WIKIDATA" — Gruppe
-17. „„Heinz Sielmann“ zuordnen" — Schaltflaeche
-18. „„Wolfgang Kiepenheuer“ zuordnen" — Schaltflaeche
-19. „„Berit Nesheim“ zuordnen" — Schaltflaeche
-20. „„Joachim Faulstich“ zuordnen" — Schaltflaeche
-21. „„Anita Ueba“ zuordnen" — Schaltflaeche
-22. „„Bert Hanstraa“ zuordnen" — Schaltflaeche
-23. „„Borge Ring“ zuordnen" — Schaltflaeche
-24. „„Ceskoslovensko Statny Film“ zuordnen" — Schaltflaeche
-25. „„Christopher Sommerkorn“ zuordnen" — Schaltflaeche
-26. „„Dr. H.J. Hossfeld“ zuordnen" — Schaltflaeche
-27. „„Dr. Hans Marthaler“ zuordnen" — Schaltflaeche
-28. „„Dr. HJ Saechtling“ zuordnen" — Schaltflaeche
-29. „„Dr. U.K T. Schulz“ zuordnen" — Schaltflaeche
-30. „„E.K. Beltzig“ zuordnen" — Schaltflaeche
-31. „„Friedrich Klütsch“ zuordnen" — Schaltflaeche
-32. „„Georg Stingl“ zuordnen" — Schaltflaeche
-33. „„Günter Höver“ zuordnen" — Schaltflaeche
-34. „„Günther Wolf“ zuordnen" — Schaltflaeche
-35. „„H. A. Lettow“ zuordnen" — Schaltflaeche
-36. „„Helga Kurth“ zuordnen" — Schaltflaeche
-37. „„Herbert Lander“ zuordnen" — Schaltflaeche
-38. „„Horst Philipp“ zuordnen" — Schaltflaeche
-39. „„John C. Stevens“ zuordnen" — Schaltflaeche
-40. „„Lotte Reininger“ zuordnen" — Schaltflaeche
-41. „„Manfried Jähre“ zuordnen" — Schaltflaeche
-42. „„Marion Rasche“ zuordnen" — Schaltflaeche
-43. „„Marisol Trujilo“ zuordnen" — Schaltflaeche
-44. „„Michael Leutz“ zuordnen" — Schaltflaeche
-45. „„Miriam Talavera“ zuordnen" — Schaltflaeche
-46. „„Perin Rodriguez“ zuordnen" — Schaltflaeche
-47. „„Rudolf Stölting“ zuordnen" — Schaltflaeche
-48. „„Sheldon Renan“ zuordnen" — Schaltflaeche
-49. „„Surani Antal“ zuordnen" — Schaltflaeche
-50. „Alle Normdaten dieses Profils" — Link
-51. „Zweig 2 von „Regie“ entfernen" — Schaltflaeche
-52. „Konverter „Normdaten nachschlagen“ entfernen" — Schaltflaeche
-53. „Quelle" — Auswahlfeld
-54. „Art" — Auswahlfeld
-55. „Konverter hinzufügen" — Schaltflaeche
-56. „Ziel im AVefi-Schema für Zweig 2" — Auswahlfeld
-57. „Ziel entfernen" — Schaltflaeche
-58. „Werte der Spalte „Regie“ für den Abgleich mit GND" — Gruppe
-59. „„Heinz Sielmann“ zuordnen" — Schaltflaeche
-60. „Zuordnung für „Heinz Sielmann“ zurücksetzen" — Schaltflaeche
-61. „„Wolfgang Kiepenheuer“ zuordnen" — Schaltflaeche
-62. „„Berit Nesheim“ zuordnen" — Schaltflaeche
-63. „„Joachim Faulstich“ zuordnen" — Schaltflaeche
-64. „„Anita Ueba“ zuordnen" — Schaltflaeche
-65. „„Bert Hanstraa“ zuordnen" — Schaltflaeche
-66. „„Borge Ring“ zuordnen" — Schaltflaeche
-67. „„Ceskoslovensko Statny Film“ zuordnen" — Schaltflaeche
-68. „„Christopher Sommerkorn“ zuordnen" — Schaltflaeche
-69. „„Dr. H.J. Hossfeld“ zuordnen" — Schaltflaeche
-70. „„Dr. Hans Marthaler“ zuordnen" — Schaltflaeche
-71. „„Dr. HJ Saechtling“ zuordnen" — Schaltflaeche
-72. „„Dr. U.K T. Schulz“ zuordnen" — Schaltflaeche
-73. „Zuordnung für „Dr. U.K T. Schulz“ zurücksetzen" — Schaltflaeche
-74. „„E.K. Beltzig“ zuordnen" — Schaltflaeche
-75. „„Friedrich Klütsch“ zuordnen" — Schaltflaeche
-76. „„Georg Stingl“ zuordnen" — Schaltflaeche
-77. „„Günter Höver“ zuordnen" — Schaltflaeche
-78. „„Günther Wolf“ zuordnen" — Schaltflaeche
-79. „„H. A. Lettow“ zuordnen" — Schaltflaeche
-80. „Zuordnung für „H. A. Lettow“ zurücksetzen" — Schaltflaeche
-81. „„Helga Kurth“ zuordnen" — Schaltflaeche
-82. „„Herbert Lander“ zuordnen" — Schaltflaeche
-83. „„Horst Philipp“ zuordnen" — Schaltflaeche
-84. „„John C. Stevens“ zuordnen" — Schaltflaeche
-85. „„Lotte Reininger“ zuordnen" — Schaltflaeche
-86. „„Manfried Jähre“ zuordnen" — Schaltflaeche
-87. „„Marion Rasche“ zuordnen" — Schaltflaeche
-88. „„Marisol Trujilo“ zuordnen" — Schaltflaeche
-89. „„Michael Leutz“ zuordnen" — Schaltflaeche
-90. „„Miriam Talavera“ zuordnen" — Schaltflaeche
-91. „„Perin Rodriguez“ zuordnen" — Schaltflaeche
-92. „„Rudolf Stölting“ zuordnen" — Schaltflaeche
-93. „„Sheldon Renan“ zuordnen" — Schaltflaeche
-94. „„Surani Antal“ zuordnen" — Schaltflaeche
-95. „Alle Normdaten dieses Profils" — Link
-96. „Weiteres Ziel für diese Spalte hinzufügen" — Schaltflaeche
+1. „Konverter hinzufügen" — Schaltflaeche
+2. „Zweig 1 von „Titel“ entfernen" — Schaltflaeche
+3. „Konverter hinzufügen" — Schaltflaeche
+4. „Ziel im AVefi-Schema für Zweig 1" — Auswahlfeld
+5. „Ziel entfernen" — Schaltflaeche
+6. „Weiteres Ziel für diese Spalte hinzufügen" — Schaltflaeche
 
 ## Teil 2 — Wie es raeumlich angeordnet ist
 
-Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 4778 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1480 Pixel breit. Der Nebenbereich „Ergebnis und Einstellungen" liegt unten rechts und ist 340 Pixel breit. Der Bereich „Erzeugter AVefi-Datensatz (erste Zeile)" liegt rechts, erst nach dem Scrollen sichtbar und ist 304 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „neu_UPB_Archiv_Test_Kopie.csv", „Importe". Die breiten Schaltflaechen im Inhalt sind „Speichern" (oben rechts), „Speichern und konvertieren" (oben rechts), „Beispiel und Ergebnis zusammen" (oben rechts), „Vorschlag „Aufteilen“ übernehmen" (oben rechts).
+Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 4817 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1480 Pixel breit. Der Nebenbereich „Ergebnis und Einstellungen" liegt unten rechts und ist 340 Pixel breit. Der Bereich „Erzeugter AVefi-Datensatz (erste Zeile)" liegt rechts, erst nach dem Scrollen sichtbar und ist 304 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „UPB_Archivliste_Lehrfilme_Auswahl_AVefi_2026-08-04.csv", „Importe". Die breiten Schaltflaechen im Inhalt sind „Speichern" (oben rechts), „Speichern und konvertieren" (oben rechts), „Beispiel und Ergebnis zusammen" (oben rechts), „Vorschlag „Aufteilen“ übernehmen" (oben rechts).
 
 Der Bildschirmabzug `05-mapping-editor.png` im selben Verzeichnis zeigt denselben Stand fuer alle, die in einer Besprechung auf denselben Bildschirm schauen wollen.
 
