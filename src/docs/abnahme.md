@@ -7,13 +7,16 @@ ist dafuer da, dass niemand suchen muss.
 Stand: 02.09.2026. Wer eine Angabe hier nicht bestaetigt findet, hat einen
 Fehler in dieser Seite gefunden und nicht in der Anwendung — bitte melden.
 
+Zugang zu den Repositorien haben ausser dem Auftragnehmer bereits Elias
+Oltmanns, Jasper Stratil und Matti Stoehr mit Schreibrecht.
+
 ## Leistungspaket B — Liefergegenstaende
 
 | Liefergegenstand | Wo | Stand |
 |---|---|---|
 | Vollstaendiger Quellcode | `github.com/andreaskasper/avefi-importer`, Zweig `main` | liegt vor |
 | Eigenstaendiges Repository fuer den CSV-Importer | dasselbe Repository | liegt vor |
-| Pull Request fuer das LIDO-Modul | `github.com/andreaskasper/avefi-converter` | offen, siehe unten |
+| Pull Request fuer das LIDO-Modul | [AV-EFI/efi-conv#34](https://github.com/AV-EFI/efi-conv/pull/34) | liegt vor, offen seit 01.09.2026 |
 | Abhaengigkeits- und Lock-Dateien | `src/package.json`, `src/package-lock.json` | liegt vor |
 | Mockup fuer das Importer-UI | die laufende Anwendung selbst; der PHP-Prototyp liegt unter dem Tag `php-final` | liegt vor |
 | Automatisierte Tests der zentralen Funktionen | `src/tests/`, Aufruf `npm test` | 407 Tests, gruen |
@@ -55,8 +58,6 @@ woran er scheitert, damit ein Fehlschlag einzuordnen ist.
 
 ## Was noch offen ist
 
-* **Pull Request fuer das LIDO-Modul.** Vereinbart im Termin am 01.09.2026,
-  kurzfristig zu erstellen.
 * **Vokabularbeschriftungen.** 31 Beschriftungen stehen als Glossar zur
   Freigabe; bis dahin bleiben die bisherigen stehen. Die 33 unstrittigen kommen
   bereits aus dem Message-Katalog des Schemas.
