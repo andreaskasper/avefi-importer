@@ -113,7 +113,11 @@
       "goto": "Zu Spalte „{column}“ springen",
       "applyFix": "Vorschlag „{op}“ übernehmen",
       "policy": "Blockiert wird nur, was strukturell nicht geht. Vorschläge werden angeboten und nie von selbst angewendet.",
-      "applyFixShort": "Vorschlag übernehmen"
+      "applyFixShort": "Vorschlag übernehmen",
+      "dismiss": "Ablehnen",
+      "dismissTitle": "Diesen Vorschlag für „{column}“ ablehnen — er erscheint dann nicht mehr.",
+      "dismissedHeading": "Ein Vorschlag wurde abgelehnt: | {n} Vorschläge wurden abgelehnt:",
+      "undismiss": "wieder anzeigen"
     },
     "columns": {
       "heading": "Kopfzeile und Profil weichen ab.",

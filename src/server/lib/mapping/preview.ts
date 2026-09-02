@@ -315,6 +315,7 @@ export function dataChecks(mapping: MappingJson, columns: Record<string, Preview
     const examples = columns[col]?.examples ?? []
     if (examples.length === 0) continue
     const pre = Array.isArray(spec.pre) ? spec.pre : []
+    const abgelehnt = Array.isArray(spec.dismissed) ? spec.dismissed : []
 
     let reported = false
     for (const binding of spec.targets ?? []) {
@@ -328,6 +329,8 @@ export function dataChecks(mapping: MappingJson, columns: Record<string, Preview
       for (const [sep, name] of separators) {
         const hits = examples.filter((e) => e.raw.includes(sep)).length
         if (hits < Math.max(1, Math.ceil(examples.length / 2))) continue
+        // Wer den Vorschlag einmal abgelehnt hat, bekommt ihn nicht wieder.
+        if (abgelehnt.some((d) => d.code === 'data.separator' && d.target === target.key && d.sep === sep)) continue
         out.push({
           severity: 'warning', code: 'data.separator', sourceField: col, targetField: target.key,
           message: `Die Werte enthalten ein ${name}. "${target.label}" nimmt mehrere Werte auf — mit `

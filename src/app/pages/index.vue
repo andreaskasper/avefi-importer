@@ -45,6 +45,17 @@ onMounted(() => {
     notice.value = t('imports.sheets.started', { count: created }, created)
     announcement.value = notice.value
     navigateTo({ path: '/', query: {} }, { replace: true })
+    return
+  }
+  // Aus dem Zuordnungseditor mit "Speichern und konvertieren": Die Meldung
+  // ueber die neue Profilversion entstand dort und ging beim Seitenwechsel
+  // verloren. Sie kommt als Parameter mit und wird hier ausgesprochen.
+  const gespeichert = String(route.query.gespeichert ?? '')
+  const version = Number(route.query.version ?? 0)
+  if (gespeichert !== '' && version > 0) {
+    notice.value = t('imports.toast.savedAndConverting', { name: gespeichert, version })
+    announcement.value = notice.value
+    navigateTo({ path: '/', query: {} }, { replace: true })
   }
 })
 

@@ -190,6 +190,31 @@ export interface ColumnMapping {
   valuemap?: Record<string, string>
   /** Bestaetigte Normdaten-Treffer: Quellwert -> Ressource. */
   authorities?: Record<string, ConfirmedAuthorityEntry | ConfirmedAuthorityEntry[]>
+  /** Hinweise, die jemand fuer diese Spalte ausdruecklich abgelehnt hat. */
+  dismissed?: DismissedHint[]
+}
+
+/**
+ * Ein abgelehnter Hinweis.
+ *
+ * Der Aufteilungs-Vorschlag kam bei jedem Aufruf wieder, auch wenn jemand
+ * schon entschieden hatte, dass die Spalte nicht geteilt gehoert (gemeldet von
+ * Jasper Stratil am 01.09.2026). Die Ablehnung ist eine Entscheidung ueber das
+ * Mapping und steht deshalb im Profil, nicht im Browser: Sie erzeugt eine neue
+ * Profilversion, steht im Verlauf und wandert mit dem Profil zur naechsten
+ * Testperson — wie bestaetigte Normdaten auch.
+ *
+ * Der Hinweis verschwindet aus der Liste, aber nicht aus der Welt: Der
+ * Pruefbericht zaehlt ihn weiter, damit spaeter unterscheidbar bleibt, ob er
+ * nie kam oder abgelehnt wurde.
+ */
+export interface DismissedHint {
+  /** Code des Hinweises, etwa "data.separator". */
+  code: string
+  /** Zielschluessel, auf den er sich bezog. */
+  target?: string
+  /** Bei Aufteilungs-Vorschlaegen das vorgeschlagene Trennzeichen. */
+  sep?: string
 }
 
 export interface MappingDefault {

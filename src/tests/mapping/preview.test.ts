@@ -1,7 +1,7 @@
 /* Vorschau — gezielte Beispielsuche, Belegung, Datenhinweise. */
 
 import { describe, expect, it } from 'vitest'
-import { buildPreview, buildProfileSample, pickExamples, previewChain } from '../../server/lib/mapping/preview.js'
+import { buildPreview, buildProfileSample, dataChecks, pickExamples, previewChain } from '../../server/lib/mapping/preview.js'
 import { emptyMapping } from '../../server/lib/mapping/profile.js'
 import { runRow } from '../../server/lib/mapping/runner.js'
 import { lookupCountry } from '../../server/lib/authority/countries.js'
@@ -112,5 +112,37 @@ describe('Herkunft eines Werts', () => {
     const ergebnis = runRow(m, { Land: 'DE' }, 'r1', { schema: testSchema, lookupCountry })
     expect(ergebnis.cells['Land']?.raw).toBe('DE')
     expect(ergebnis.cells['Land']?.pre).toBe('Deutschland')
+  })
+})
+
+describe('Aufteilungs-Vorschlag', () => {
+  /* Eine Spalte, deren Werte ein Semikolon tragen, und ein Ziel, das mehrere
+   * Werte aufnimmt: genau die Lage, in der der Vorschlag erscheint. */
+  const zeilen = [
+    { Inhalt: 'eins; zwei' },
+    { Inhalt: 'drei; vier' },
+    { Inhalt: 'fuenf; sechs' }
+  ]
+  const spalten = pickExamples(['Inhalt'], zeilen)
+
+  function profil(dismissed?: Array<{ code: string; target?: string; sep?: string }>) {
+    const m = emptyMapping(['Inhalt'])
+    m.columns['Inhalt'] = { pre: [], targets: [{ target: 'manifestation.note', post: [] }], ...(dismissed ? { dismissed } : {}) }
+    return m
+  }
+
+  it('erscheint, solange niemand entschieden hat', () => {
+    const checks = dataChecks(profil(), spalten)
+    expect(checks.map((c) => c.code)).toContain('data.separator')
+  })
+
+  it('bleibt weg, wenn er abgelehnt wurde', () => {
+    const checks = dataChecks(profil([{ code: 'data.separator', target: 'manifestation.note', sep: ';' }]), spalten)
+    expect(checks.map((c) => c.code)).not.toContain('data.separator')
+  })
+
+  it('gilt nur fuer das abgelehnte Trennzeichen und Ziel', () => {
+    const checks = dataChecks(profil([{ code: 'data.separator', target: 'manifestation.note', sep: ',' }]), spalten)
+    expect(checks.map((c) => c.code)).toContain('data.separator')
   })
 })

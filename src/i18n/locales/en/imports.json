@@ -39,7 +39,7 @@
       "added": "The import was created. The file is fetched and processed in the background."
     },
     "table": {
-      "caption": "Imports of your institution with format, progress, processing state and actions",
+      "caption": "Imports of the institution with format, progress, processing state including schema validation, and actions",
       "file": "File",
       "format": "Format",
       "upload": "Upload",
@@ -111,7 +111,8 @@
     },
     "toast": {
       "deleted": "The import was deleted.",
-      "reconverting": "The import is being converted again."
+      "reconverting": "The import is being converted again.",
+      "savedAndConverting": "Mapping profile “{name}” saved (version {version}). Conversion is running in the background."
     },
     "detail": {
       "crumb": "Details",
@@ -346,6 +347,14 @@
       "schema": "The value does not match what the AVefi schema allows here. A converter in the mapping often helps: “date” for dates, “duration” for running times, “number” for numbers.",
       "missing_identifier": "The record has no identifier. Without has_identifier no PID can be assigned later. In the mapping a column has to point at an identifier, or a fixed value has to supply one.",
       "validation_unavailable": "The validation service could not be reached. The file was produced but not checked — this report says nothing about schema conformance. “Reconvert” starts the check again."
+    },
+    "validation": {
+      "laeuft": "validation running",
+      "ungeprueft": "not validated",
+      "beanstandet": "{n} finding | {n} findings",
+      "hinweise": "{n} hint | {n} hints",
+      "validiert": "no findings",
+      "gotoReport": "Open validation report for {file} — {state}"
     }
   }
 }

@@ -13,7 +13,7 @@
 import type { EditorTarget, MappingCheck } from './types'
 
 const props = defineProps<{ checks: MappingCheck[]; targets: EditorTarget[] }>()
-const emit = defineEmits<{ goto: [column: string]; fix: [check: MappingCheck] }>()
+const emit = defineEmits<{ goto: [column: string]; fix: [check: MappingCheck]; dismiss: [check: MappingCheck] }>()
 const { t, te } = useI18n()
 
 const blockers = computed(() => props.checks.filter((c) => c.severity === 'error'))
@@ -47,6 +47,17 @@ function message(check: MappingCheck): string {
   })
 }
 
+/**
+ * Ablehnbar ist ein Vorschlag, kein Befund.
+ *
+ * Ein Blocker verschwindet nicht dadurch, dass jemand ihn nicht sehen will.
+ * Ein Hinweis mit Vorschlag dagegen stellt eine Frage, und "nein" ist eine
+ * gueltige Antwort darauf.
+ */
+function ablehnbar(check: MappingCheck): boolean {
+  return check.severity !== 'error' && check.fix !== undefined && check.sourceField !== undefined
+}
+
 function fixLabel(check: MappingCheck): string {
   const op = String(check.fix?.op ?? '')
   const key = `mapping.op.${op}`
@@ -75,6 +86,11 @@ function fixLabel(check: MappingCheck): string {
         <span class="chk-msg">{{ message(check) }}</span>
         <button v-if="check.fix" type="button" class="btn btn-outline btn-sm" @click="emit('fix', check)">
           {{ fixLabel(check) }}
+        </button>
+        <button v-if="ablehnbar(check)" type="button" class="linkbtn chk-dismiss"
+                :title="t('mapping.check.dismissTitle', { column: check.sourceField })"
+                @click="emit('dismiss', check)">
+          {{ t('mapping.check.dismiss') }}
         </button>
       </li>
     </ul>

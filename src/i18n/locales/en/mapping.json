@@ -113,7 +113,11 @@
       "goto": "Jump to column “{column}”",
       "applyFix": "Apply suggestion “{op}”",
       "policy": "Only structurally impossible mappings are blocked. Suggestions are offered and never applied on their own.",
-      "applyFixShort": "Apply suggestion"
+      "applyFixShort": "Apply suggestion",
+      "dismiss": "Dismiss",
+      "dismissTitle": "Dismiss this suggestion for “{column}” — it will not appear again.",
+      "dismissedHeading": "One suggestion was dismissed: | {n} suggestions were dismissed:",
+      "undismiss": "show again"
     },
     "columns": {
       "heading": "Header and profile differ.",

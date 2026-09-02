@@ -39,7 +39,7 @@
       "added": "Der Import wurde angelegt. Die Datei wird im Hintergrund geladen und verarbeitet."
     },
     "table": {
-      "caption": "Importe der Institution mit Format, Fortschritt, Verarbeitungsstand und Aktionen",
+      "caption": "Importe der Institution mit Format, Fortschritt, Verarbeitungsstand samt Schemaprüfung und Aktionen",
       "file": "Datei",
       "format": "Format",
       "upload": "Upload",
@@ -111,7 +111,8 @@
     },
     "toast": {
       "deleted": "Der Import wurde gelöscht.",
-      "reconverting": "Der Import wird neu konvertiert."
+      "reconverting": "Der Import wird neu konvertiert.",
+      "savedAndConverting": "Zuordnungsprofil „{name}“ gespeichert (Version {version}). Die Konvertierung läuft im Hintergrund."
     },
     "detail": {
       "crumb": "Details",
@@ -346,6 +347,14 @@
       "schema": "Der Wert passt nicht zu dem, was das AVefi-Schema an dieser Stelle erlaubt. Oft hilft ein Konverter in der Zuordnung: „date“ für Datumsangaben, „duration“ für Laufzeiten, „number“ für Zahlen.",
       "missing_identifier": "Der Satz hat keine Kennung. Ohne has_identifier lässt sich später kein PID vergeben. In der Zuordnung muss eine Spalte auf eine Kennung zeigen, oder ein Festwert muss sie liefern.",
       "validation_unavailable": "Der Prüfdienst war nicht erreichbar. Die Datei wurde erzeugt, aber nicht geprüft — über die Schemakonformität sagt dieser Bericht also nichts. „Neu konvertieren“ startet die Prüfung erneut."
+    },
+    "validation": {
+      "laeuft": "Prüfung läuft",
+      "ungeprueft": "ungeprüft",
+      "beanstandet": "{n} Beanstandung | {n} Beanstandungen",
+      "hinweise": "{n} Hinweis | {n} Hinweise",
+      "validiert": "keine Beanstandungen",
+      "gotoReport": "Prüfbericht zu {file} öffnen — {state}"
     }
   }
 }

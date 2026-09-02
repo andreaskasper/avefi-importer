@@ -15,7 +15,7 @@
  * angefasst. Ohne den dritten speichert jemand ein halbes Profil und wundert
  * sich ueber leere Datensaetze.
  */
-import type { ColumnMapping, MappingJson, TransformStep } from '#shared/types/domain'
+import type { ColumnMapping, DismissedHint, MappingJson, TransformStep } from '#shared/types/domain'
 import { failureText, mappingFailure, type MappingFailure } from './errors'
 import type {
   AuthorityCandidate, AuthorityGroup, AuthorityRequest, AuthorityValue, AuthorityValuesResponse,
@@ -328,6 +328,45 @@ function applyFix(check: MappingCheck) {
   refresh()
 }
 
+/**
+ * Einen Vorschlag ablehnen.
+ *
+ * Der Hinweis verschwindet aus der Liste und die Ablehnung steht im Profil.
+ * Sie wird erst mit dem naechsten Speichern wirksam gespeichert — wie jede
+ * andere Aenderung am Mapping auch, und sie erzeugt dieselbe neue
+ * Profilversion. Rueckgaengig geht ueber die Liste darunter.
+ */
+function dismissCheck(check: MappingCheck) {
+  const column = check.sourceField ?? ''
+  const code = String(check.code ?? '')
+  if (column === '' || code === '') return
+  const s = spec(column)
+  if (!Array.isArray(s.dismissed)) s.dismissed = []
+  const eintrag: DismissedHint = { code }
+  if (check.targetField !== undefined) eintrag.target = check.targetField
+  const sep = check.fix?.sep
+  if (typeof sep === 'string') eintrag.sep = sep
+  const schon = s.dismissed.some((d) => d.code === eintrag.code && d.target === eintrag.target && d.sep === eintrag.sep)
+  if (!schon) s.dismissed.push(eintrag)
+  refresh()
+}
+
+/** Alle abgelehnten Hinweise, damit die Entscheidung sichtbar und umkehrbar bleibt. */
+const dismissedHints = computed(() => {
+  const out: Array<{ column: string; hint: DismissedHint }> = []
+  for (const [column, s] of Object.entries(mapping.value.columns ?? {})) {
+    for (const hint of s.dismissed ?? []) out.push({ column, hint })
+  }
+  return out
+})
+
+function undismiss(column: string, hint: DismissedHint) {
+  const s = spec(column)
+  s.dismissed = (s.dismissed ?? []).filter((d) => d !== hint)
+  if (s.dismissed.length === 0) delete s.dismissed
+  refresh()
+}
+
 /* -------------------------------------------------------------- Festwerte */
 
 function addDefault() {
@@ -503,7 +542,16 @@ async function saveInner(start: boolean) {
     profile.value = res.profile
     name.value = res.profile.name
     if (res.started) {
-      await navigateTo({ path: '/', query: { converting: res.profile.id } })
+      /* Der Seitenwechsel darf die Rueckmeldung nicht verschlucken. Beim
+       * Speichern ohne Konvertieren steht sie hier auf der Seite; beim
+       * Speichern MIT Konvertieren sprang die Seite bisher zurueck, und dass
+       * eine neue Profilversion entstanden ist, erfuhr niemand. Gemeldet von
+       * Jasper Stratil am 01.09.2026. Die Importliste macht daraus ihre
+       * eigene Meldung und raeumt die Parameter danach weg. */
+      await navigateTo({
+        path: '/',
+        query: { converting: res.profile.id, gespeichert: res.profile.name, version: String(res.profile.version) }
+      })
       return
     }
     message.value = t('mapping.save.done', { name: res.profile.name, version: res.profile.version })
@@ -564,10 +612,6 @@ const canonicalJson = computed(() => {
       </label>
 
       <div class="map-actions">
-        <button type="button" class="btn btn-outline btn-sm" :aria-pressed="merged ? 'true' : 'false'"
-                @click="toggleMerged">
-          {{ merged ? t('mapping.head.split') : t('mapping.head.merge') }}
-        </button>
         <button type="button" :class="payload.canStart ? 'btn btn-outline' : 'btn btn-primary'"
                 :disabled="saving" @click="save(false)">{{ t('mapping.head.save') }}</button>
         <button v-if="payload.canStart" type="button" class="btn btn-primary"
@@ -623,7 +667,25 @@ const canonicalJson = computed(() => {
       <p class="note" style="margin-top:6px">{{ t('mapping.adopt.copyHint') }}</p>
     </div>
 
-    <MappingChecks :checks="allChecks" :targets="targets" @goto="gotoColumn" @fix="applyFix" />
+    <MappingChecks :checks="allChecks" :targets="targets" @goto="gotoColumn" @fix="applyFix"
+                   @dismiss="dismissCheck" />
+
+    <!--
+      Abgelehnte Hinweise bleiben sichtbar. Ein Vorschlag, der spurlos
+      verschwindet, laesst spaeter niemanden mehr erkennen, ob er nie kam oder
+      abgelehnt wurde.
+    -->
+    <div v-if="dismissedHints.length > 0" class="note" style="margin:10px 0">
+      <p style="margin:0 0 4px">{{ t('mapping.check.dismissedHeading', { n: dismissedHints.length }, dismissedHints.length) }}</p>
+      <ul style="margin:0;padding-left:18px">
+        <li v-for="(d, i) in dismissedHints" :key="i">
+          {{ d.column }}
+          <button type="button" class="linkbtn" @click="undismiss(d.column, d.hint)">
+            {{ t('mapping.check.undismiss') }}
+          </button>
+        </li>
+      </ul>
+    </div>
 
     <div class="map-grid">
       <div>
@@ -635,6 +697,15 @@ const canonicalJson = computed(() => {
             <option value="mapped">{{ t('mapping.filter.mapped', { n: mappedCount }) }}</option>
             <option value="ignored">{{ t('mapping.filter.ignored', { n: ignoredCount }) }}</option>
           </select>
+          <!--
+            Der Knopf schaltet die Darstellung der Spaltenliste um und stand
+            trotzdem oben bei Speichern und Konvertieren. Er gehoert neben die
+            Auswahl, auf die er wirkt (Jasper Stratil, 01.09.2026).
+          -->
+          <button type="button" class="btn btn-outline btn-sm" :aria-pressed="merged ? 'true' : 'false'"
+                  @click="toggleMerged">
+            {{ merged ? t('mapping.head.split') : t('mapping.head.merge') }}
+          </button>
         </div>
 
         <!--
