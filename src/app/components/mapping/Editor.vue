@@ -186,9 +186,23 @@ function targetLabel(key: string): string {
 
 const groupLabel = useGroupLabel()
 
+/**
+ * Ebene, Gruppe und Feld — ohne dasselbe Wort zweimal.
+ *
+ * Auf der Manifestations- und der Werkebene heisst die Gruppe wie die Ebene,
+ * und der Pfad las sich als „Manifestation › Manifestation › Anmerkung zur
+ * Manifestation". Elias Oltmanns hat das am 31.08.2026 fuer die Zielauswahl
+ * gemeldet („woher die zweite Ebene Werk kommt, ist mir unklar"); dort wurde es
+ * behoben, an den Schaltflaechen der Spaltenliste stand es noch. Faellt beim
+ * Sehen kaum auf, kostet mit einem Vorlesewerkzeug jedes Mal drei Woerter.
+ */
 function targetPath(key: string): string {
   const target = targetByKey.value.get(key)
-  return target === undefined ? key : `${t(`mapping.level.${target.level}`)} › ${groupLabel(target.group)} › ${targetLabel(key)}`
+  if (target === undefined) return key
+  const ebene = t(`mapping.level.${target.level}`)
+  const gruppe = groupLabel(target.group)
+  const teile = gruppe === ebene ? [ebene] : [ebene, gruppe]
+  return [...teile, targetLabel(key)].join(' › ')
 }
 
 /* --------------------------------------------------------------- Bedienung */

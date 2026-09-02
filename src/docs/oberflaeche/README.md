@@ -4,7 +4,7 @@ Diese Sammlung beschreibt jede Seite des AVefi Importers so, dass man sie ohne B
 
 Die Beschreibungen sind aus der laufenden Anwendung ausgelesen, nicht aus dem Quelltext abgeschrieben. Was hier steht, ist also der Stand, den ein Browser tatsaechlich aufbaut.
 
-**Stand:** 2026-09-01, Commit `8c947c7`. Erzeugt gegen `https://avefiimporter.goo1.de`, gemessen in einem Fenster von 1500 mal 1100 Pixeln.
+**Stand:** 2026-09-02, Commit `79772c2`. Erzeugt gegen `https://avefiimporter.goo1.de`, gemessen in einem Fenster von 1500 mal 1100 Pixeln.
 
 Zu jeder Beschreibung liegt ein Bildschirmabzug mit demselben Dateinamen und der Endung `.png` im selben Verzeichnis. Der ist nicht Teil der Beschreibung, sondern dafuer da, dass Sehende in einer Runde denselben Stand vor Augen haben.
 
@@ -12,11 +12,11 @@ Zu jeder Beschreibung liegt ein Bildschirmabzug mit demselben Dateinamen und der
 
 - [Anmeldung](01-anmeldung.md) — `/login`. Der Einstieg. Ohne Kopfzeile und ohne Navigation.
 - [Importliste](02-importliste.md) — `/`. Die Startseite nach der Anmeldung. Liste aller Importe und der Weg, eine neue Datei hochzuladen.
-- [Importdetails](03-importdetails.md) — `/imports/0a67d79e-cd12-4b0f-bdd2-a196c6d3bb91`. Ein einzelner Import mit seinem Stand und den Wegen weiter zu Zuordnung, Datensaetzen und Bericht.
-- [Pruefbericht](04-pruefbericht.md) — `/imports/0a67d79e-cd12-4b0f-bdd2-a196c6d3bb91/report`. Was die Pruefung eines Imports ergeben hat.
-- [Mapping-Editor](05-mapping-editor.md) — `/imports/0a67d79e-cd12-4b0f-bdd2-a196c6d3bb91/mapping`. Die wichtigste Seite. Hier wird jede Spalte der Quelldatei einem AVefi-Feld zugeordnet. Die Seite ist die komplexeste der Anwendung; hier verbringt ein Tester die meiste Zeit.
-- [Datensatzliste](06-datensatzliste.md) — `/imports/0a67d79e-cd12-4b0f-bdd2-a196c6d3bb91/records`. Die aus einem Import entstandenen Datensaetze als Liste.
-- [Datensatz im Einzelnen](07-datensatz-detail.md) — `/imports/0a67d79e-cd12-4b0f-bdd2-a196c6d3bb91/records/16454`. Ein einzelner Datensatz mit Werk, Manifestationen und Exemplaren.
+- [Importdetails](03-importdetails.md) — `/imports/c91f8bd1-ff01-4dfd-a213-942686cb5fea`. Ein einzelner Import mit seinem Stand und den Wegen weiter zu Zuordnung, Datensaetzen und Bericht.
+- [Pruefbericht](04-pruefbericht.md) — `/imports/c91f8bd1-ff01-4dfd-a213-942686cb5fea/report`. Was die Pruefung eines Imports ergeben hat.
+- [Mapping-Editor](05-mapping-editor.md) — `/imports/c91f8bd1-ff01-4dfd-a213-942686cb5fea/mapping`. Die wichtigste Seite. Hier wird jede Spalte der Quelldatei einem AVefi-Feld zugeordnet. Die Seite ist die komplexeste der Anwendung; hier verbringt ein Tester die meiste Zeit.
+- [Datensatzliste](06-datensatzliste.md) — `/imports/c91f8bd1-ff01-4dfd-a213-942686cb5fea/records`. Die aus einem Import entstandenen Datensaetze als Liste.
+- [Datensatz im Einzelnen](07-datensatz-detail.md) — `/imports/c91f8bd1-ff01-4dfd-a213-942686cb5fea/records/21374`. Ein einzelner Datensatz mit Werk, Manifestationen und Exemplaren.
 - [Zuordnungsliste](08-zuordnungsliste.md) — `/mappings`. Alle gespeicherten Mappingprofile.
 - [Profil-Detail](09-profil-detail.md) — `/mappings/8`. Ein Mappingprofil zum Ansehen.
 - [Profil-Editor](10-profil-editor.md) — `/mappings/8/edit`. Ein Mappingprofil zum Bearbeiten.

@@ -35,14 +35,14 @@ ist die Zahl der Tastendruecke ab Seitenanfang.
 Die Reihenfolge haengt von der Fensterbreite ab, deshalb stehen hier zwei
 Durchlaeufe. Unterhalb von 820 Pixeln liegt die Hauptnavigation hinter einem
 Aufklappknopf; darueber steht sie offen in der Kopfzeile. Wer die Darstellung
-vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
+vergroessert, bekommt die schmale Variante, auch am grossen Bildschirm.
 
 #### Breites Fenster (1500 Pixel)
 
 1. „Zum Inhalt springen" — Link
 2. „Zur Startseite" — Link, im banner
 3. „Importe" — Link, im navigation „Hauptnavigation"
-4. „Zuordnungen" — Link, im navigation „Hauptnavigation"
+4. „Zuordnungsprofile" — Link, im navigation „Hauptnavigation"
 5. „Format-Review 9 offene Aufgaben" — Link, im navigation „Hauptnavigation"
 6. „Design wechseln" — Schaltflaeche, im banner
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
@@ -104,7 +104,7 @@ Nichts, was beim Bedienen im Weg steht.
 
 ## Teil 2 — Wie es raeumlich angeordnet ist
 
-Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1100 Pixel hoch und passt damit ohne Scrollen. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Der Bereich „Erkennung" liegt oben links und ist 535 Pixel breit. Der Bereich „Entscheidung" liegt oben rechts und ist 535 Pixel breit. Der Bereich „Strukturvorschau" liegt auf halber Hoehe mittig und ist 1084 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungen", „Formatprüfung". Die breiten Schaltflaechen im Inhalt sind „Zuordnen" (auf halber Hoehe mittig).
+Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1100 Pixel hoch und passt damit ohne Scrollen. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Der Bereich „Erkennung" liegt oben links und ist 535 Pixel breit. Der Bereich „Entscheidung" liegt oben rechts und ist 535 Pixel breit. Der Bereich „Strukturvorschau" liegt auf halber Hoehe mittig und ist 1084 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungsprofile", „Formatprüfung". Die breiten Schaltflaechen im Inhalt sind „Zuordnen" (auf halber Hoehe mittig).
 
 Der Bildschirmabzug `13-formatpruefung-detail.png` im selben Verzeichnis zeigt denselben Stand fuer alle, die in einer Besprechung auf denselben Bildschirm schauen wollen.
 

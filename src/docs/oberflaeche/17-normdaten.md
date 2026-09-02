@@ -51,18 +51,18 @@ ist die Zahl der Tastendruecke ab Seitenanfang.
 Die Reihenfolge haengt von der Fensterbreite ab, deshalb stehen hier zwei
 Durchlaeufe. Unterhalb von 820 Pixeln liegt die Hauptnavigation hinter einem
 Aufklappknopf; darueber steht sie offen in der Kopfzeile. Wer die Darstellung
-vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
+vergroessert, bekommt die schmale Variante, auch am grossen Bildschirm.
 
 #### Breites Fenster (1500 Pixel)
 
 1. „Zum Inhalt springen" — Link
 2. „Zur Startseite" — Link, im banner
 3. „Importe" — Link, im navigation „Hauptnavigation"
-4. „Zuordnungen" — Link, im navigation „Hauptnavigation". als aktuell ausgezeichnet
+4. „Zuordnungsprofile" — Link, im navigation „Hauptnavigation". als aktuell ausgezeichnet
 5. „Format-Review 9 offene Aufgaben" — Link, im navigation „Hauptnavigation"
 6. „Design wechseln" — Schaltflaeche, im banner
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
-8. „Zuordnungen" — Link, im navigation „Normdaten zuordnen"
+8. „Zuordnungsprofile" — Link, im navigation „Normdaten zuordnen"
 9. „Test Matti auf Basis - Test Luca 31.08." — Link, im navigation „Normdaten zuordnen"
 10. „Nur offene zeigen" — Kontrollkaestchen, im main
 11. „Zuordnungen speichern" — Schaltflaeche, im main
@@ -463,7 +463,7 @@ vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.
 3. „Navigation aufklappen" — Schaltflaeche, im banner. aufklappbar, derzeit zu
 4. „Design wechseln" — Schaltflaeche, im banner
 5. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
-6. „Zuordnungen" — Link, im navigation „Normdaten zuordnen"
+6. „Zuordnungsprofile" — Link, im navigation „Normdaten zuordnen"
 7. „Test Matti auf Basis - Test Luca 31.08." — Link, im navigation „Normdaten zuordnen"
 8. „Nur offene zeigen" — Kontrollkaestchen, im main
 9. „Zuordnungen speichern" — Schaltflaeche, im main
@@ -1114,7 +1114,7 @@ Was beim Bedienen stoert. Das ist eine Beschreibung, keine Wertung nach WCAG —
 
 ## Teil 2 — Wie es raeumlich angeordnet ist
 
-Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 17280 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1480 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Zuordnungen", „Importe", „Test Matti auf Basis - Test Luca 31.08.". Die breiten Schaltflaechen im Inhalt sind „Zuordnungen speichern" (oben mittig).
+Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 17280 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1480 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Zuordnungsprofile", „Importe", „Test Matti auf Basis - Test Luca 31.08.". Die breiten Schaltflaechen im Inhalt sind „Zuordnungen speichern" (oben mittig).
 
 Der Bildschirmabzug `17-normdaten.png` im selben Verzeichnis zeigt denselben Stand fuer alle, die in einer Besprechung auf denselben Bildschirm schauen wollen.
 
