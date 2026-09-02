@@ -198,3 +198,30 @@ describe('Export und Reimport', () => {
     expect(normalizeSample({ columns: [] })).toBeNull()
   })
 })
+
+describe('abgelehnte Hinweise', () => {
+  /* Der Grund fuer diesen Test: normalizeMapping baut den Spaltensatz neu auf
+   * und uebernimmt nur, was es kennt. Die Ablehnung war zuerst nur im Browser
+   * gesetzt, fiel beim ersten Aufruf der Vorschau wieder heraus, und der
+   * Vorschlag stand wieder da. Sichtbar wurde das erst beim Klicken. */
+  it('ueberleben das Einlesen', () => {
+    const { mapping } = normalizeMapping({
+      columns: {
+        Inhalt: {
+          pre: [], targets: [{ target: 'item.note', post: [] }],
+          dismissed: [{ code: 'data.separator', target: 'item.note', sep: ';' }]
+        }
+      }
+    })
+    expect(mapping.columns['Inhalt']?.dismissed).toEqual([
+      { code: 'data.separator', target: 'item.note', sep: ';' }
+    ])
+  })
+
+  it('werfen unbrauchbare Eintraege weg', () => {
+    const { mapping } = normalizeMapping({
+      columns: { Inhalt: { dismissed: [{ target: 'item.note' }, 'unsinn', { code: 'data.separator' }] } }
+    })
+    expect(mapping.columns['Inhalt']?.dismissed).toEqual([{ code: 'data.separator' }])
+  })
+})

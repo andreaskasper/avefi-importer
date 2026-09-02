@@ -867,7 +867,8 @@
       "data_separator": "Die Werte enthalten ein Trennzeichen. „{field}“ nimmt mehrere Werte auf — mit „Aufteilen“ wird daraus je Wert ein eigener Eintrag statt einer langen Zeichenkette.",
       "value_truncated": "„{field}“ nimmt nur einen Wert auf; weitere Werte dieser Zelle bleiben unberücksichtigt.",
       "chain_shorthand": "Ein Konverter lag als reine Zeichenkette vor und wurde in ein Objekt umgewandelt.",
-      "chain_unknown_op": "Ein unbekannter Konverter wurde entfernt."
+      "chain_unknown_op": "Ein unbekannter Konverter wurde entfernt.",
+      "authority_ambiguous": "„{value}“ passt auf {n} Normdatensätze. Es wurde keine ID eingetragen. Bitte manuell zuordnen."
     }
   }
 }

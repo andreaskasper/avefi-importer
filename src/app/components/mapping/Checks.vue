@@ -43,7 +43,8 @@ function message(check: MappingCheck): string {
   return t(key, {
     field: check.targetField !== undefined ? targetLabel(check.targetField) : '',
     column: check.sourceField ?? '',
-    value: check.value ?? ''
+    value: check.value ?? '',
+    n: check.count ?? 0
   })
 }
 

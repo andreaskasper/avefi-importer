@@ -118,6 +118,12 @@ export interface ValidationIssue {
   /** Stabiler Bezeichner fuer Uebersetzung und Gruppierung. */
   code?: string
   /**
+   * Anzahl, auf die sich der Befund bezieht, etwa die Zahl der Normdaten-
+   * Treffer. Sie steht getrennt, damit die Oberflaeche den Satz selbst bauen
+   * kann; sonst muesste sie den deutschen Serversatz stehen lassen.
+   */
+  count?: number
+  /**
    * Anwendbarer Vorschlag zur Behebung, etwa „Konverter duration einfuegen?".
    * Die Oberflaeche darf ihn anbieten, nie von selbst anwenden — automatische
    * Korrektur von Validierungsfehlern ist vertraglich ausgeschlossen.

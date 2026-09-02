@@ -14,7 +14,7 @@
  */
 
 import type {
-  BaseFormat, ColumnMapping, MappingJson, MappingProfileExport,
+  BaseFormat, ColumnMapping, DismissedHint, MappingJson, MappingProfileExport,
   ProfileSample, TransformStep, ValidationIssue
 } from '#shared/types/domain'
 import type { ColumnDiff } from './header.js'
@@ -252,6 +252,23 @@ export function normalizeMapping(
       }
     }
     if (Object.keys(authorities).length > 0) out.authorities = authorities
+
+    // Abgelehnte Hinweise. Sie muessen hier durch, sonst faellt die
+    // Entscheidung beim naechsten Einlesen wieder heraus: normalizeMapping baut
+    // den Spaltensatz neu auf und kennt nur, was hier steht.
+    if (Array.isArray(spec['dismissed'])) {
+      const dismissed: DismissedHint[] = []
+      for (const entry of spec['dismissed']) {
+        if (!isRecord(entry)) continue
+        const code = String(entry['code'] ?? '')
+        if (code === '') continue
+        const hint: DismissedHint = { code }
+        if (typeof entry['target'] === 'string') hint.target = entry['target']
+        if (typeof entry['sep'] === 'string') hint.sep = entry['sep']
+        dismissed.push(hint)
+      }
+      if (dismissed.length > 0) out.dismissed = dismissed
+    }
 
     columns[name] = out
   }

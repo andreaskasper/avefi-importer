@@ -867,7 +867,8 @@
       "data_separator": "The values contain a separator. “{field}” takes several values — with “Split” each value becomes its own entry instead of one long string.",
       "value_truncated": "“{field}” takes only one value; further values in this cell are left out.",
       "chain_shorthand": "A converter was stored as a plain string and has been turned into an object.",
-      "chain_unknown_op": "An unknown converter has been removed."
+      "chain_unknown_op": "An unknown converter has been removed.",
+      "authority_ambiguous": "“{value}” matches {n} authority records. No ID was entered. Please assign it manually."
     }
   }
 }

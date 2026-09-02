@@ -324,9 +324,9 @@ export async function resolveAuthorities(
         `"${value}" ist mehrdeutig (${r.candidates.length} Treffer) — keine ID uebernommen`,
         {
           severity: 'info', code: 'authority.ambiguous', sourceField: column,
-          value: value.slice(0, 120),
+          value: value.slice(0, 120), count: r.candidates.length,
           message: `"${value}" passt auf ${r.candidates.length} Normdatensaetze. `
-            + 'Es wurde bewusst keine ID eingetragen — die Auswahl gehoert einem Menschen.'
+            + 'Es wurde keine ID eingetragen. Bitte manuell zuordnen.'
         }
       )
     } else {
