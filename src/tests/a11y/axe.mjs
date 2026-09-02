@@ -160,6 +160,8 @@ async function offeneKontraste(seite, ergebnis, stand) {
     .map((n) => n.target.join(' '))
   const gemessen = []
   const nichtMessbar = []
+  const verdeckt = []
+  const ueberlagert = []
   const gesehen = new Set()
   for (const auswahl of knoten) {
     if (gemessen.length >= 60) break
@@ -170,15 +172,61 @@ async function offeneKontraste(seite, ergebnis, stand) {
     } catch { continue }
     let merkmale
     try {
-      merkmale = await element.evaluate((n) => ({
-        kennung: `${n.tagName}.${n.className}|${(n.innerText ?? '').trim().slice(0, 20)}`,
-        verborgen: n.closest('[aria-hidden="true"]') !== null,
-        text: (n.innerText ?? '').trim()
-      }))
+      merkmale = await element.evaluate((n) => {
+        /* Verdeckt? Das Bild kommt aus der gerenderten Seite, also faengt der
+         * Ausschnitt ein, was OBEN liegt. Ein Auswahlfeld, das sich ueber die
+         * Zweigliste legt, macht aus dem Text darunter eine Mischung aus
+         * Ueberlagerung und Schrift — am 02.09.2026 gemeldet als 1,71:1 fuer
+         * `.branch-no`, waehrend dieselbe Beschriftung ohne offenes Auswahlfeld
+         * bei 5,52:1 liegt. Gemessen wurde die Ueberlagerung, nicht die Seite.
+         *
+         * Playwright haelt so ein Element weiterhin fuer sichtbar, und das ist
+         * richtig: Es ist nicht ausgeblendet, es ist zugedeckt. Fuer WCAG
+         * zaehlt Text, den man sehen kann; was hinter einer Auswahlliste oder
+         * einem Dialog liegt, ist in diesem Zustand keiner. */
+        const r = n.getBoundingClientRect()
+        const proben = [[0.5, 0.5], [0.25, 0.5], [0.75, 0.5]]
+        let eigen = 0
+        let fremd = 0
+        for (const [px, py] of proben) {
+          const oben = document.elementFromPoint(r.left + r.width * px, r.top + r.height * py)
+          /* null heisst nicht "verdeckt", sondern "ausserhalb des Fensters".
+           * Der erste Versuch wertete das als verdeckt und verwarf damit 74 von
+           * 80 Stellen der Startseite — alles unterhalb des Umbruchs. Verdeckt
+           * ist nur, wo tatsaechlich etwas Fremdes obenauf liegt. */
+          if (oben === null) continue
+          if (oben === n || n.contains(oben) || oben.contains(n)) eigen++
+          else fremd++
+        }
+        /* Der Hintergrund, den das Stylesheet vorsieht: die erste Kette
+         * aufwaerts mit einer deckenden Farbe. Dazu die Frage, ob irgendwo in
+         * dieser Kette ein Hintergrundbild liegt — dann ist die gemalte Farbe
+         * berechtigterweise eine andere als die berechnete, und genau dafuer
+         * wird ja nachgemessen. */
+        let cssGrund = null
+        let hatBild = false
+        for (let e = n; e !== null; e = e.parentElement) {
+          const s = getComputedStyle(e)
+          if (s.backgroundImage !== 'none') hatBild = true
+          const b = s.backgroundColor
+          const teile = (b.match(/[\d.]+/g) ?? []).map(Number)
+          const deckend = teile.length < 4 || teile[3] > 0.9
+          if (b !== 'transparent' && deckend && !/rgba\(0, 0, 0, 0\)/.test(b)) { cssGrund = b; break }
+        }
+        return {
+          kennung: `${n.tagName}.${n.className}|${(n.innerText ?? '').trim().slice(0, 20)}`,
+          verborgen: n.closest('[aria-hidden="true"]') !== null,
+          verdeckt: fremd > 0 && eigen === 0,
+          cssGrund,
+          hatBild,
+          text: (n.innerText ?? '').trim()
+        }
+      })
     } catch { continue }
     // Was vor Vorlesewerkzeugen verborgen ist, ist Zierat; und wo kein Text
     // steht, gibt es keinen Textkontrast zu messen.
     if (merkmale.verborgen || merkmale.text === '') continue
+    if (merkmale.verdeckt) { verdeckt.push(auswahl); continue }
     if (gesehen.has(merkmale.kennung)) continue
     gesehen.add(merkmale.kennung)
     try {
@@ -187,12 +235,30 @@ async function offeneKontraste(seite, ergebnis, stand) {
       // nichts gemessen worden, und „1:1" als Befund zu melden waere eine
       // Behauptung ueber ein Bild, auf dem nichts zu sehen war.
       if (mass.verhaeltnis <= 0) { nichtMessbar.push(auswahl); continue }
+      /* Passt die gemessene Grundfarbe nicht zu der, die das Stylesheet
+       * vorsieht, dann liegt etwas dazwischen. Am 02.09.2026 meldete der Lauf
+       * 1,71:1 fuer `.branch-no` auf #869197, waehrend das Stylesheet dort
+       * #ffffff vorsieht: Waehrend eine Auswahlliste offen steht, dunkelt die
+       * Seite dahinter ab. Der Text ist dann nicht schlecht lesbar, sondern
+       * gar nicht gemeint — und ein Bildpunkt aus einer Abdunklung sagt nichts
+       * ueber die Farben der Seite. Wo ein Hintergrundbild im Spiel ist, gilt
+       * das nicht: Dort IST die gemalte Farbe die richtige Auskunft. */
+      if (!merkmale.hatBild && merkmale.cssGrund !== null) {
+        const soll = (merkmale.cssGrund.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number)
+        const ist = (mass.grund.match(/[0-9a-f]{2}/g) ?? []).map((h) => parseInt(h, 16))
+        if (soll.length === 3 && ist.length === 3) {
+          const abstand = Math.abs(soll[0] - ist[0]) + Math.abs(soll[1] - ist[1]) + Math.abs(soll[2] - ist[2])
+          if (abstand > 60) { ueberlagert.push(auswahl); continue }
+        }
+      }
       gemessen.push({ auswahl, kennung: merkmale.kennung, ...mass })
     } catch { /* Element ist weg oder nicht abzulichten */ }
   }
   const zuWenig = gemessen.filter((m) => m.verhaeltnis < 4.5)
   if (knoten.length > 0) {
-    const rest = nichtMessbar.length > 0 ? `, ${nichtMessbar.length} nicht messbar` : ''
+    const rest = (nichtMessbar.length > 0 ? `, ${nichtMessbar.length} nicht messbar` : '')
+      + (verdeckt.length > 0 ? `, ${verdeckt.length} verdeckt` : '')
+      + (ueberlagert.length > 0 ? `, ${ueberlagert.length} ueberlagert` : '')
     console.log(`         offener Kontrast: ${knoten.length} Stellen, ${gemessen.length} Arten nachgemessen, ${zuWenig.length} zu schwach${rest}`)
   }
   for (const m of zuWenig) {

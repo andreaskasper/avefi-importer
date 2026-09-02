@@ -274,8 +274,11 @@ tbody tr:hover{background:var(--surface-2)}
   box-shadow:var(--shadow);overflow:hidden}
 .ui-modal-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
 .ui-modal-head h3{font-size:15px;flex:1}
-.ui-modal-x{border:0;background:none;font-size:20px;line-height:1;color:var(--muted);cursor:pointer;padding:0 4px}
-.ui-modal-x:hover{color:var(--ink)}
+/* Der Schliessknopf trug --muted. Auf einem 20-Pixel-Zeichen ohne Flaeche
+   liegt das an der Schwelle; gemessen wurden 3,96:1. Ein Knopf, der einen
+   Dialog schliesst, soll ohnehin zu finden sein. */
+.ui-modal-x{border:0;background:none;font-size:20px;line-height:1;color:var(--ink);cursor:pointer;padding:0 4px}
+.ui-modal-x:hover{color:var(--danger)}
 .ui-modal-body{padding:16px;font-size:14px;color:var(--ink);line-height:1.55}
 .ui-modal-foot{padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
 
