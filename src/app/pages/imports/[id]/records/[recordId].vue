@@ -14,7 +14,6 @@
  *  - Leere Wertelisten werden als solche benannt statt als leere Auswahl.
  */
 import { apiFailure, failureText } from '~/components/records/errors'
-import { formatDateTime } from '~/components/imports/format'
 import {
   addSameAs, emptyActivity, emptyEntity, emptyEvent, emptyIdentifier, emptyItem,
   emptyLanguage, emptyManifestation, emptyTitle, emptyValue, nextKey, parseRecord,
@@ -30,7 +29,8 @@ const api = useApi()
 
 const route = useRoute()
 const router = useRouter()
-const { t, te, locale } = useI18n()
+const { t, te } = useI18n()
+const zeit = useDateTime()
 const keepFocus = useKeepFocus()
 
 const importId = computed(() => String(route.params.id ?? ''))
@@ -436,7 +436,7 @@ function backToList() {
         <span v-if="detail.record.sourceRow !== null">
           {{ t('records.editor.sourceRow', { row: detail.record.sourceRow }) }}
         </span>
-        <span v-if="editedAt"> · {{ t('records.editor.editedAt', { when: formatDateTime(editedAt, locale) }) }}</span>
+        <span v-if="editedAt"> · {{ t('records.editor.editedAt', { when: zeit(editedAt) }) }}</span>
       </p>
 
       <div class="live-region" role="alert" aria-live="assertive">

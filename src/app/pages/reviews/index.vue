@@ -10,7 +10,6 @@
  * Zahl im Kopfzeilen-Abzeichen erklaerbar bleibt.
  */
 import { apiFailure, failureText } from '~/components/records/errors'
-import { formatDateTime } from '~/components/imports/format'
 
 const api = useApi()
 
@@ -37,7 +36,7 @@ interface ReviewTask {
   files: ReviewFile[]
 }
 
-const { t, te, locale } = useI18n()
+const { t, te } = useI18n()
 const route = useRoute()
 
 const { data, error } = await useFetch<{ tasks: ReviewTask[]; rows: number; duplicates: number }>(api('/reviews'))
@@ -115,7 +114,7 @@ const rejected = computed(() => Number(route.query.rejected ?? 0))
               <td>{{ task.institutionName ?? t('admin.reviews.table.none') }}</td>
               <td class="mono small dim">{{ task.shortFingerprint }}…</td>
               <td class="tnum small">{{ task.columns > 0 ? task.columns : t('admin.reviews.table.none') }}</td>
-              <td class="dim small tnum">{{ formatDateTime(task.uploadedAt, locale) }}</td>
+              <td class="dim small tnum"><ImportsTimeStamp :value="task.uploadedAt" /></td>
               <td class="tnum small">
                 <span :class="task.waiting > 1 ? 'badge b-wait' : 'dim'">
                   {{ t('admin.reviews.waiting', { count: task.waiting }, task.waiting) }}

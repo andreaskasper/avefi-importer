@@ -11,21 +11,16 @@
  * Durchgang im Browser rechnet noch in UTC, damit er zum gelieferten Aufbau
  * passt; erst danach wird umgestellt.
  */
-import { formatDateTime, parseTimestamp } from './format'
+import { parseTimestamp } from './format'
 
 const props = defineProps<{ value: string | null | undefined; fallback?: string }>()
-const { locale } = useI18n()
 
-const local = ref(false)
-onMounted(() => {
-  local.value = true
-})
+/* Die Zweiteilung steht in useDateTime(); hier bleibt nur die Auszeichnung als
+ * <time> mit maschinenlesbarem Wert. */
+const zeit = useDateTime()
 
 const iso = computed(() => parseTimestamp(props.value)?.toISOString())
-const text = computed(() => {
-  const out = formatDateTime(props.value, locale.value, local.value ? undefined : 'UTC')
-  return out === '' ? (props.fallback ?? '') : out
-})
+const text = computed(() => zeit.value(props.value, props.fallback ?? ''))
 </script>
 
 <template>

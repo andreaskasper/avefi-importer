@@ -8,7 +8,6 @@
  * das ausdruecklich sagt, dass es sie kein zweites Mal gibt.
  */
 import { apiFailure, failureText } from '~/components/records/errors'
-import { formatDateTime } from '~/components/imports/format'
 import type { InstitutionRow, UserRow } from '#shared/types/domain'
 
 const api = useApi()
@@ -24,7 +23,7 @@ interface UsersResponse {
   minPasswordLength: number
 }
 
-const { t, te, locale } = useI18n()
+const { t, te } = useI18n()
 const { data, error, refresh } = await useFetch<UsersResponse>(api('/users'))
 
 const loadError = computed(() => (error.value ? failureText(t, te, apiFailure(error.value), ['admin', 'imports']) : ''))
@@ -215,7 +214,7 @@ async function remove(user: UserWithInstitution) {
               </td>
               <td class="dim small">{{ u.institution_name ?? t('admin.users.table.none') }}</td>
               <td class="dim small tnum">
-                {{ u.last_login_at ? formatDateTime(u.last_login_at, locale) : t('admin.users.table.never') }}
+                <ImportsTimeStamp :value="u.last_login_at" :fallback="t('admin.users.table.never')" />
               </td>
               <td style="text-align:right">
                 <div class="rowactions">

@@ -7,12 +7,12 @@
  * sagen, was fehlt — und die Kernfelder sind das, woran der Abgleich mit
  * anderen Bestaenden haengt, nicht ein Anteil belegter Felder.
  */
-import { formatDateTime } from '~/components/imports/format'
 import type { RecordListItem } from './types'
 
 defineProps<{ records: RecordListItem[]; importId: string }>()
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
+const zeit = useDateTime()
 
 /** Beschriftung eines Kernfelds — die Schluessel kommen vom Server. */
 function coreLabel(key: string): string {
@@ -55,7 +55,7 @@ function coreTitle(r: RecordListItem): string {
                     :title="t('records.table.missingTitle', { list: r.missing.join(', ') })">
                 {{ t('records.table.missing') }}</span>
               <span v-if="r.editedAt" class="badge b-info" style="padding:1px 7px;margin-left:6px"
-                    :title="t('records.table.editedAt', { when: formatDateTime(r.editedAt, locale) })">
+                    :title="t('records.table.editedAt', { when: zeit(r.editedAt) })">
                 {{ t('records.table.edited') }}</span>
             </div>
             <div v-if="r.contributors.length > 0" class="dim small">{{ r.contributors.join(', ') }}</div>

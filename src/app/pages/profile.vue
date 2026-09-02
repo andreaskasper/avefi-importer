@@ -8,7 +8,6 @@
  * ein Tester legte deshalb ein Profil neu an.
  */
 import { apiFailure, failureText } from '~/components/records/errors'
-import { formatDateTime } from '~/components/imports/format'
 import type { UserRow } from '#shared/types/domain'
 
 const api = useApi()
@@ -18,7 +17,7 @@ interface ProfileResponse {
   minPasswordLength: number
 }
 
-const { t, te, locale } = useI18n()
+const { t, te } = useI18n()
 const { refresh: refreshAuth } = useAuth()
 const { data, error, refresh } = await useFetch<ProfileResponse>(api('/profile'))
 
@@ -120,7 +119,7 @@ async function changePassword() {
             {{ t('admin.profile.role') }}:
             <b>{{ user.is_admin ? t('admin.profile.admin') : t('admin.profile.user') }}</b> ·
             {{ t('admin.profile.lastLogin') }}:
-            <b>{{ user.last_login_at ? formatDateTime(user.last_login_at, locale) : t('admin.profile.never') }}</b>
+            <b><ImportsTimeStamp :value="user.last_login_at" :fallback="t('admin.profile.never')" /></b>
           </p>
           <button class="btn btn-primary" type="submit" :disabled="savingName">
             {{ savingName ? t('admin.profile.savingName') : t('admin.profile.saveName') }}

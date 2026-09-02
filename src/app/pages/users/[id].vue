@@ -6,7 +6,6 @@
  * gesperrt und der Grund steht daneben. Der Server prueft es noch einmal.
  */
 import { apiFailure, failureText } from '~/components/records/errors'
-import { formatDateTime } from '~/components/imports/format'
 import type { InstitutionRow, UserRow } from '#shared/types/domain'
 
 const api = useApi()
@@ -23,7 +22,8 @@ interface UserResponse {
 }
 
 const route = useRoute()
-const { t, te, locale } = useI18n()
+const { t, te } = useI18n()
+const zeit = useDateTime()
 const id = computed(() => String(route.params.id ?? ''))
 
 const { data, error, refresh } = await useFetch<UserResponse>(() => api(`/users/${id.value}`))
@@ -154,9 +154,9 @@ async function reset() {
           </label>
           <p v-if="isSelf" class="note" style="margin:0">{{ t('admin.users.detail.selfNote') }}</p>
           <p class="note" style="margin:0">
-            {{ t('admin.users.detail.created', { when: formatDateTime(user.created_at, locale) }) }} ·
+            {{ t('admin.users.detail.created', { when: zeit(user.created_at) }) }} ·
             {{ user.last_login_at
-              ? t('admin.users.detail.lastLogin', { when: formatDateTime(user.last_login_at, locale) })
+              ? t('admin.users.detail.lastLogin', { when: zeit(user.last_login_at) })
               : t('admin.users.table.never') }}
           </p>
           <button class="btn btn-primary" type="submit" :disabled="saving">

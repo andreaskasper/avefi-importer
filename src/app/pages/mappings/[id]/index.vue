@@ -11,7 +11,7 @@ import { failureText, mappingFailure, type MappingFailure } from '~/components/m
 const api = useApi()
 
 const route = useRoute()
-const { t, te, locale } = useI18n()
+const { t, te } = useI18n()
 const id = computed(() => String(route.params.id ?? ''))
 
 interface Detail {
@@ -129,14 +129,6 @@ function opLabel(op: string): string {
   return te(key) ? t(key) : op
 }
 
-function formatDateTime(value: string): string {
-  const normalised = value.trim().replace(' ', 'T').replace(/([+-]\d{2})$/, '$1:00')
-  const date = new Date(normalised)
-  if (Number.isNaN(date.getTime())) return ''
-  return new Intl.DateTimeFormat(locale.value, {
-    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
-  }).format(date)
-}
 </script>
 
 <template>
@@ -268,7 +260,7 @@ function formatDateTime(value: string): string {
               <div>
                 <div class="fn">{{ t('mapping.list.version', { n: entry.version }) }}</div>
                 <div class="dim small">
-                  {{ formatDateTime(entry.created_at) }}
+                  <ImportsTimeStamp :value="entry.created_at" />
                   <template v-if="entry.user_name"> · {{ entry.user_name }}</template>
                 </div>
               </div>

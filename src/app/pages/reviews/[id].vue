@@ -7,7 +7,6 @@
  * ausdruecklich auf eine Datei begrenzen.
  */
 import { apiFailure, failureText } from '~/components/records/errors'
-import { formatDateTime } from '~/components/imports/format'
 
 const api = useApi()
 
@@ -37,7 +36,7 @@ interface ReviewDetail {
 
 const route = useRoute()
 const router = useRouter()
-const { t, te, locale } = useI18n()
+const { t, te } = useI18n()
 
 const id = computed(() => String(route.params.id ?? ''))
 const { data, error } = await useFetch<ReviewDetail>(() => api(`/reviews/${id.value}`))
@@ -112,7 +111,7 @@ async function reject() {
         <span class="badge b-wait"><span class="bd"></span>{{ t('admin.reviews.detail.heading') }}</span>
         <span class="dim small">
           {{ review.institutionName ?? t('admin.reviews.table.none') }} ·
-          {{ formatDateTime(review.uploadedAt, locale) }}
+          <ImportsTimeStamp :value="review.uploadedAt" />
         </span>
       </div>
 
@@ -210,7 +209,7 @@ async function reject() {
             <tbody>
               <tr v-for="f in waiting" :key="f.reviewId">
                 <td class="fn">{{ f.filename }}</td>
-                <td class="dim small tnum">{{ formatDateTime(f.uploadedAt, locale) }}</td>
+                <td class="dim small tnum"><ImportsTimeStamp :value="f.uploadedAt" /></td>
                 <td><ImportsStatusBadge :status="f.importStatus" /></td>
               </tr>
             </tbody>
