@@ -464,6 +464,41 @@ anderen sehen nur ihren Wert.
 Zwei aeltere Namen werden zur Laufzeit uebersetzt: `ucfirst` wird zu
 `titlecase`, `valuemap` zu `map`.
 
+## `dismissed` — abgelehnte Vorschlaege
+
+Die Vorschau meldet Hinweise, die sich erst an den Daten zeigen. Der haeufigste
+ist der Aufteilungs-Vorschlag: Die Werte einer Spalte tragen ein Trennzeichen,
+und das Ziel nimmt mehrere Werte auf. Der Hinweis wird angeboten, nie von
+selbst angewandt.
+
+Wer ihn ablehnt, trifft eine Entscheidung ueber das Mapping, und die steht
+deshalb im Profil:
+
+```json
+"Inhalt": {
+  "targets": [ { "target": "item.note", "post": [] } ],
+  "dismissed": [
+    { "code": "data.separator", "target": "item.note", "sep": ";" }
+  ]
+}
+```
+
+`code` nennt den Hinweis, `target` das Ziel, auf das er sich bezog, `sep` bei
+Aufteilungs-Vorschlaegen das vorgeschlagene Trennzeichen. Die Ablehnung gilt
+genau fuer diese Kombination: Steht in derselben Spalte ein anderes
+Trennzeichen zur Debatte, wird wieder gefragt.
+
+Die Angabe wandert mit dem Profil — wer es exportiert und woanders einliest,
+bekommt die Entscheidung mit, wie bei bestaetigten Normdaten auch. Sie ist
+nicht ergebnisrelevant: Dieselbe Datei mit demselben Profil erzeugt dasselbe
+AVefi-JSON, ob der Hinweis nun abgelehnt wurde oder nicht. Deshalb bleibt die
+Profilformat-Version bei 1; aeltere Leser ueberspringen das Feld, ohne dass
+sich am erzeugten Ergebnis etwas aendert.
+
+Die Oberflaeche fuehrt die abgelehnten Vorschlaege unter der Pruefleiste auf
+und laesst sie zurueckholen. Ein spurlos verschwundener Vorschlag waere spaeter
+nicht mehr von einem zu unterscheiden, der nie kam.
+
 ## `defaults`
 
 Festwerte, die fuer jede Zeile gelten, unabhaengig von den Spalten. Sie sind

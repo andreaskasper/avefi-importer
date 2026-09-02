@@ -251,6 +251,11 @@ werden: `DB_*` und `SESSION_SECRET`. Alles andere liest der Code direkt aus
 | `EFI_CONV_REPO` | nein (Bauzeit) | `github.com/AV-EFI/efi-conv.git` | Herkunft von efi-conv beim Bauen des Sidecars. |
 | `EFI_CONV_REF` | nein (Bauzeit) | `main` | Zweig oder Commit von efi-conv. Fuer reproduzierbare Ergebnisse einen Commit eintragen. |
 | `APP_DOMAIN` | nein | `avefiimporter.goo1.de` | Nur fuer die Traefik-Regel in `docker-compose.dev.yml`. Die Anwendung selbst kennt keine feste Domain. |
+| `DB_SCHEMA_AUTO` | nein | an | Beim Start wird `db/schema.sql` angewandt. Mit `0` unterbleibt das; dann ist `npm run migrate` der Weg. Fuer eine fremdverwaltete Datenbank gedacht, in der die Anwendung nichts anlegen darf. |
+| `SEED_EMAIL` | nein (nur `npm run seed`) | `admin@av-efi.net` | Anmeldename des ersten Kontos. |
+| `SEED_PASSWORD` | nein (nur `npm run seed`) | zufaellig | Passwort des ersten Kontos. Fehlt die Angabe, wird eines erzeugt und auf der Konsole ausgegeben — genau einmal. |
+| `SEED_INSTITUTION` | nein (nur `npm run seed`) | `AVefi Testinstitution` | Name der ersten Institution. |
+| `SEED_FORCE` | nein (nur `npm run seed`) | aus | Mit `1` wird ein vorhandenes Konto ueberschrieben. Ohne die Angabe bricht der Lauf ab, statt ein bestehendes Passwort stillschweigend zu ersetzen. |
 
 | Variable | Stand |
 |---|---|
