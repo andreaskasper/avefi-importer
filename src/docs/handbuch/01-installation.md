@@ -1,10 +1,10 @@
 # 1 · Installation & Start
 
-Dieses Kapitel beschrieb die PHP-Fassung und ist überholt. Es nannte drei
+Dieses Kapitel beschrieb die PHP-Version und ist überholt. Es nannte drei
 Container statt fünf, rief `php app/bot.php -t seed` auf und verwies auf
 Port 8080.
 
-Für die aktuelle Fassung gilt **[`src/docs/deployment.md`](../src/docs/deployment.md)**.
+Für die aktuelle Version gilt **[`src/docs/deployment.md`](../src/docs/deployment.md)**.
 Dort stehen Installation, Initialisierung, Start, Bau, Tests, alle
 Umgebungsvariablen und die fünf Container (`web`, `worker`, `efi-conv`, `db`,
 `adminer`).

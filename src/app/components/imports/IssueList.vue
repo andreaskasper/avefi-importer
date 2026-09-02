@@ -56,7 +56,7 @@ const MARK: Record<Severity, string> = { error: '×', warning: '!', info: 'i' }
  * Kapitel und Abschnitt im Handbuch je Beanstandung.
  *
  * Bewusst hier und nicht in den Uebersetzungen: Das ist die Gliederung des
- * Handbuchs, keine Sprache. Sonst muesste jede Sprachfassung dieselben Anker
+ * Handbuchs, keine Sprache. Sonst muesste jede Sprachversion dieselben Anker
  * mitpflegen und koennte auseinanderlaufen.
  */
 const HANDBUCH: Record<string, string> = {

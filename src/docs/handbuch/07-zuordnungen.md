@@ -74,7 +74,7 @@ Unter dem Spaltennamen steht die Belegung („gefüllt in 57 von 77 Zeilen"), so
 Lücken gibt. Ist eine Spalte in der ganzen Stichprobe leer, sagt der Editor das
 ausdrücklich — dann weiß man, dass nicht die Zuordnung schuld ist.
 
-Rechts steht der **Ergebnisbaum**: Werk, Fassung, Exemplar mit den belegten Feldern.
+Rechts steht der **Ergebnisbaum**: Werk, Manifestation, Exemplar mit den belegten Feldern.
 Er zeigt die Struktur, die entsteht, und woher jeder Wert kommt.
 
 Jede Spalte hat einen von drei Zuständen: zugeordnet, ausdrücklich **ignoriert**, oder
@@ -237,8 +237,8 @@ Der Menüpunkt **Zuordnungen** listet alle Profile, eigene zuerst: Name, Einrich
 Basisformat, Zustand, Zahl der damit verarbeiteten Importe.
 
 Auf der Detailseite stehen alle Zuordnungen, der **Versionsverlauf** und die
-Möglichkeit, eine frühere Fassung wiederherzustellen. Jedes Speichern erhöht die
-Version; jeder Import merkt sich, mit welchem Profil und welcher Fassung er entstanden
+Möglichkeit, eine frühere Version wiederherzustellen. Jedes Speichern erhöht die
+Version; jeder Import merkt sich, mit welchem Profil und welcher Version er entstanden
 ist.
 
 Ein geändertes Profil konvertiert **bestehende Importe nicht automatisch neu** — bei

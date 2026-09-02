@@ -18,7 +18,7 @@
  * Tabelle der laufenden Instanz: Dort liegen 134 zwischengespeicherte
  * GND-Personen, von denen 17 eine ID haben — 13 Prozent. Bei VIAF sind es 41.
  * Das ist der Abdruck des alten Zeichenvergleichs, der invertierte Namen nie
- * traf. Wuerde die neue Fassung dieselben Schluessel lesen, bekaeme sie 117
+ * traf. Wuerde die neue Version dieselben Schluessel lesen, bekaeme sie 117
  * festgeschriebene Nicht-Treffer zurueck und der behobene Fehler bliebe
  * unsichtbar. Die alten Zeilen bleiben unangetastet liegen und koennen bei
  * Gelegenheit geloescht werden.

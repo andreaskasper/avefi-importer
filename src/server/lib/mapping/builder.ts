@@ -274,7 +274,7 @@ export class AvefiBuilder {
     return this.work['has_primary_title'] !== undefined
   }
 
-  /** Uebernimmt einen Titel aus Fassung oder Exemplar, wenn das Werk keinen hat. */
+  /** Uebernimmt einen Titel aus Manifestation oder Exemplar, wenn das Werk keinen hat. */
   borrowWorkTitle(): void {
     if (this.hasWorkTitle()) return
     for (const n of [this.item, this.manif]) {
@@ -305,8 +305,8 @@ export class AvefiBuilder {
     const manifestations: AvefiNode[] = []
     const items: AvefiNode[] = []
 
-    // Eine Fassung entsteht auch dann, wenn nur Exemplarangaben vorliegen:
-    // ein Exemplar ohne Fassung waere im Schema nicht anschliessbar.
+    // Eine Manifestation entsteht auch dann, wenn nur Exemplarangaben vorliegen:
+    // ein Exemplar ohne Manifestation waere im Schema nicht anschliessbar.
     if (this.touchedManif || this.touchedItem) {
       const manif = this.manif
       const manifId = this.localIds.manifestation ?? `${baseId}_manifestation`

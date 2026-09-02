@@ -5,14 +5,14 @@
   "userMenu": "Benutzermenü: {name}",
   "nav": {
     "imports": "Importe",
-    "mappings": "Zuordnungen",
+    "mappings": "Zuordnungsprofile",
     "reviews": "Format-Review",
     "reviewsTitle": "Offene Zuordnungsaufgaben: {count}",
     "reviewsBadge": "offene Aufgaben",
     "toggle": "Navigation aufklappen"
   },
   "menu": {
-    "profile": "Mein Profil",
+    "profile": "Mein Nutzerprofil",
     "users": "Nutzer verwalten",
     "doku": "Oberfläche in Worten",
     "handbuch": "Handbuch",

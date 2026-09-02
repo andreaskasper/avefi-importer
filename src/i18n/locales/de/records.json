@@ -18,12 +18,12 @@
       "hint": "Gesucht wird über alle Datensätze des Imports, nicht nur über die angezeigte Seite."
     },
     "table": {
-      "caption": "Erzeugte AVefi-Werke mit Jahr, Werkart, PID, Anzahl Fassungen und Exemplaren sowie Vollständigkeit",
+      "caption": "Erzeugte AVefi-Werke mit Jahr, Werkart, PID, Anzahl Manifestationen und Exemplaren sowie Vollständigkeit",
       "title": "Titel",
       "year": "Jahr",
       "type": "Werkart",
       "pid": "AVefi-PID",
-      "counts": "Fassungen / Exemplare",
+      "counts": "Manifestationen / Exemplare",
       "completeness": "Vollständigkeit",
       "action": "Aktion",
       "edit": "Bearbeiten",
@@ -88,9 +88,9 @@
       "editedAt": "Zuletzt von Hand bearbeitet am {when}",
       "tabs": {
         "work": "Werk",
-        "manifestations": "Fassungen ({count})",
+        "manifestations": "Manifestationen ({count})",
         "items": "Exemplare ({count})",
-        "structure": "Fassungen ({manifestations}) und Exemplare ({items})"
+        "structure": "Manifestationen ({manifestations}) und Exemplare ({items})"
       },
       "check": {
         "heading": "Prüfung gegen das AVefi-Schema",
@@ -116,7 +116,7 @@
       "work": {
         "basics": "Grunddaten",
         "type": "Werkart",
-        "variantType": "Fassungsart",
+        "variantType": "Variantentyp",
         "productionYear": "Produktionsjahr oder -datum",
         "productionYearHint": "EDTF, zum Beispiel 1966, 1966-05 oder 1966-05-21~",
         "productionPlace": "Produktionsland oder -ort",
@@ -166,11 +166,11 @@
         "removeNote": "Notiz {index} entfernen"
       },
       "manifestation": {
-        "heading": "Fassung {index}",
-        "title": "Titel der Fassung",
-        "add": "Fassung hinzufügen",
-        "remove": "Fassung {index} entfernen",
-        "empty": "Zu diesem Werk ist keine Fassung erfasst.",
+        "heading": "Manifestation {index}",
+        "title": "Titel der Manifestation",
+        "add": "Manifestation hinzufügen",
+        "remove": "Manifestation {index} entfernen",
+        "empty": "Zu diesem Werk ist keine Manifestation erfasst.",
         "kept": "Felder, die dieser Editor nicht anzeigt, bleiben beim Speichern erhalten."
       },
       "item": {
@@ -260,13 +260,13 @@
       "removeEntry": "Eintrag {index} entfernen",
       "close": "Schließen",
       "structure": {
-        "lead": "Ein Exemplar gehört zu genau einer Fassung. Die Exemplare stehen deshalb unter ihrer Fassung.",
-        "itemsOf": "Exemplare der Fassung {manifestation} ({count})",
-        "itemHeading": "Exemplar {index} der Fassung {manifestation}",
-        "orphanHeading": "Exemplare ohne Fassung ({count})",
-        "orphanLead": "Für diese Exemplare gibt die Quelldatei keine Fassung her. Sie werden keiner zugeordnet, solange niemand entscheidet, zu welcher sie gehören.",
-        "orphanItemHeading": "Exemplar {index} ohne Fassung",
-        "assign": "Einer Fassung zuordnen",
+        "lead": "Ein Exemplar gehört zu genau einer Manifestation. Die Exemplare stehen deshalb unter ihrer Manifestation.",
+        "itemsOf": "Exemplare der Manifestation {manifestation} ({count})",
+        "itemHeading": "Exemplar {index} der Manifestation {manifestation}",
+        "orphanHeading": "Exemplare ohne Manifestation ({count})",
+        "orphanLead": "Für diese Exemplare gibt die Quelldatei keine Manifestation her. Sie werden keiner zugeordnet, solange niemand entscheidet, zu welcher sie gehören.",
+        "orphanItemHeading": "Exemplar {index} ohne Manifestation",
+        "assign": "Einer Manifestation zuordnen",
         "assignNone": "– bitte wählen –"
       }
     },

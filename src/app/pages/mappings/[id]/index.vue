@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Ein Mappingprofil: Zuordnungen, Fassungen, Verwaltung.
+ * Ein Zuordnungsprofil: Zuordnungen, Versionen, Verwaltung.
  *
  * Fremde Profile sind sichtbar, aber nicht aenderbar. Fehlen Beispieldaten,
  * steht hier der Weg, sie nachzureichen — samt Begruendung, warum der Editor
@@ -276,7 +276,7 @@ function formatDateTime(value: string): string {
                 <span class="bd" />{{ t('mapping.detail.active') }}
               </span>
               <!--
-                Der Verlauf hat je Fassung einen Knopf. Ohne die Fassungsnummer
+                Der Verlauf hat je Version einen Knopf. Ohne die Versionsnummer
                 im Namen steht im Vorlesewerkzeug eine lange Reihe gleich
                 lautender Eintraege, die nichts unterscheidet.
               -->

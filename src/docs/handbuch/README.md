@@ -2,7 +2,7 @@
 
 Anleitungen für die Nutzung des AVefi Importers.
 
-> **Stand:** Diese Handreichung stammt aus der PHP-Fassung. Die Bedienung hat
+> **Stand:** Diese Handreichung stammt aus der PHP-Version. Die Bedienung hat
 > sich mit der Neufassung nicht geändert, die technischen Angaben schon.
 > **Kapitel 1 (Installation) ist überholt** — für Installation, Start, Bau,
 > Tests und Umgebungsvariablen gilt [`src/docs/deployment.md`](../src/docs/deployment.md).

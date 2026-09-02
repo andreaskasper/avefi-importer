@@ -26,7 +26,7 @@ alle `Up`, `db` und `efi-conv` `healthy`), ein Konto besteht (siehe
    Unbeteiligte ausliefern — genau das ist schon vorgekommen.
 4. Sprache umschalten (Deutsch/Englisch). Erwartung: Die Oberflaeche wechselt,
    und das `lang`-Attribut des Dokuments wechselt mit. Steht es fest auf `de`,
-   liest ein Screenreader die englische Fassung mit deutscher Aussprache vor.
+   liest ein Screenreader die englische Version mit deutscher Aussprache vor.
 
 ## 2. Upload
 
@@ -88,15 +88,15 @@ Das ist der Teil mit den meisten beweglichen Stellen; hier lohnt Sorgfalt.
 11. Ein fremdes Dokument als Profil einlesen. Erwartung: Abweisung mit
     Begruendung.
 
-## 5. Fassungen
+## 5. Versionen
 
-1. Ein Profil zweimal aendern und speichern. Erwartung: zwei Fassungen im
+1. Ein Profil zweimal aendern und speichern. Erwartung: zwei Versionen im
    Verlauf.
-2. Eine fruehere Fassung wiederherstellen. Erwartung: Der bisherige Stand geht
-   nicht verloren, sondern wird selbst als Fassung abgelegt.
-3. Umbenennen. Erwartung: keine neue Fassung.
+2. Eine fruehere Version wiederherstellen. Erwartung: Der bisherige Stand geht
+   nicht verloren, sondern wird selbst als Version abgelegt.
+3. Umbenennen. Erwartung: keine neue Version.
 4. Ein Profil aendern, das ein bereits konvertierter Import benutzt hat.
-   Erwartung: Der Import bleibt, wie er ist. Er merkt sich Profil und Fassung,
+   Erwartung: Der Import bleibt, wie er ist. Er merkt sich Profil und Version,
    mit denen er entstanden ist.
 
 ## 6. Datensaetze und Pruefbericht

@@ -89,12 +89,12 @@ let versionCache: { value: string | null; at: number } | null = null
 const VERSION_TTL_MS = 10 * 60 * 1000
 
 /**
- * Kennung der AVefi-Schemafassung, gegen die gemappt wird. Sie wandert ins
+ * Kennung der AVefi-Schemaversion, gegen die gemappt wird. Sie wandert ins
  * Profil und in den Export, damit spaeter nachvollziehbar bleibt, welche
  * Wertelisten galten.
  *
  * Das lokale Schemadokument fuehrt kein version-Feld; efi-conv nennt in seiner
- * Gesundheitsauskunft die Pruefsumme der benutzten Fassung. Die ist als
+ * Gesundheitsauskunft die Pruefsumme der benutzten Version. Die ist als
  * Kennung brauchbar und wird bevorzugt. Faellt der Dienst aus, bleibt null —
  * ein erfundener Wert waere schlimmer als keiner.
  */
@@ -336,7 +336,7 @@ export async function createProfile(
 }
 
 /**
- * Neue Fassung eines Profils. Die alte bleibt im Verlauf stehen — ein
+ * Neue Version eines Profils. Die alte bleibt im Verlauf stehen — ein
  * verungluecktes Mapping muss zurueckholbar sein, und ein Import muss belegen
  * koennen, mit welchem Stand er entstanden ist.
  */

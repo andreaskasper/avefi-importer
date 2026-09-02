@@ -222,7 +222,7 @@
       },
       "mapping": {
         "heading": "Mapping",
-        "profile": "Profile",
+        "profile": "Mapping profile",
         "version": "Version {version}",
         "grouping": "Work grouping",
         "rows": "Rows and works",

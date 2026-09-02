@@ -176,17 +176,20 @@ export class ProfileTableConverter implements Converter {
    * bliebe unentdeckt. Die Entscheidung, ob zwei Zeilen dasselbe Exemplar
    * meinen, kann nur das Archiv treffen.
    *
-   * Geprueft werden Fassung und Exemplar, nicht das Werk: Auf Werkebene ist
+   * Geprueft werden Manifestation und Exemplar, nicht das Werk: Auf Werkebene ist
    * eine gemeinsame Kennung bei der Werkbildung gerade der Zweck.
    */
   private checkIdentifiers(canonical: CanonicalRecord, rowNumber: number): ValidationIssue[] {
     const out: ValidationIssue[] = []
-    const ebenen: Array<[string, readonly Record<string, unknown>[]]> = [
-      ['Fassung', canonical.manifestations],
-      ['Exemplar', canonical.items]
+    /* Genitiv und Plural stehen ausgeschrieben da. Zusammengesetzt ergab
+     * "Manifestationkennung" und "Zwei Manifestatione" — der Fugenlaut und die
+     * Mehrzahl folgen im Deutschen keiner Regel, die sich anhaengen laesst. */
+    const ebenen: Array<[string, string, readonly Record<string, unknown>[]]> = [
+      ['Manifestationskennung', 'Manifestationen', canonical.manifestations],
+      ['Exemplarkennung', 'Exemplare', canonical.items]
     ]
 
-    for (const [label, nodes] of ebenen) {
+    for (const [kennung, mehrzahl, nodes] of ebenen) {
       for (const node of nodes) {
         const ids = Array.isArray(node['has_identifier']) ? node['has_identifier'] : []
         for (const raw of ids) {
@@ -194,7 +197,7 @@ export class ProfileTableConverter implements Converter {
           const entry = raw as Record<string, unknown>
           const id = String(entry['id'] ?? '').trim()
           if (id === '') continue
-          const key = `${label}|${String(entry['category'] ?? '')}|${id}`
+          const key = `${kennung}|${String(entry['category'] ?? '')}|${id}`
           const first = this.seenIds.get(key)
           if (first === undefined) {
             this.seenIds.set(key, rowNumber)
@@ -206,7 +209,7 @@ export class ProfileTableConverter implements Converter {
             code: 'identifier.duplicate',
             row: rowNumber,
             value: id.slice(0, 120),
-            message: `Die ${label}kennung „${id}" steht schon in Zeile ${first}. Zwei ${label}e mit `
+            message: `Die ${kennung} „${id}" steht schon in Zeile ${first}. Zwei ${mehrzahl} mit `
               + 'derselben Kennung bestehen die Schemapruefung nicht. Entweder meinen die Zeilen '
               + 'dasselbe Objekt — dann gehoert die Werkbildung darauf eingestellt — oder die Spalte '
               + 'taugt nicht als Kennung und sollte einem anderen Ziel zugeordnet werden.'

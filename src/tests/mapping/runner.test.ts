@@ -37,7 +37,7 @@ describe('runRow', () => {
     expect(r.cells['Notiz']).toBeUndefined()
   })
 
-  it('verknuepft Exemplar, Fassung und Werk ueber lokale Kennungen', () => {
+  it('verknuepft Exemplar, Manifestation und Werk ueber lokale Kennungen', () => {
     const r = runRow(demoMapping(), demoRows[0]!, 'zeile1', services)
     const manifId = (r.canonical.manifestations[0]?.['has_identifier'] as any[])[0].id
     expect((r.canonical.items[0]?.['is_item_of'] as any).id).toBe(manifId)

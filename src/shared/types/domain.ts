@@ -49,14 +49,14 @@ export interface ImportRow {
  * Der reproduzierbare Zustand eines Konvertierungslaufs.
  *
  * Nicht alles, was das Ergebnis bestimmt, steckt im Mappingprofil: das
- * Trennzeichen der Datei, die Fassung des AVefi-Schemas, die
+ * Trennzeichen der Datei, die Version des AVefi-Schemas, die
  * Normdateneinstellungen. Wer nachvollziehen will, warum ein Ergebnis so
- * aussieht, braucht diese Angaben zusammen mit der Profilfassung.
+ * aussieht, braucht diese Angaben zusammen mit der Profilversion.
  */
 export interface RunConfig {
   profileId: number | null
   profileVersion: number | null
-  /** Fassung des Profilformats, nicht des Profils. */
+  /** Version des Profilformats, nicht des Profils. */
   profileFormatVersion: string | null
   avefiSchemaVersion: string | null
   delimiter: string | null

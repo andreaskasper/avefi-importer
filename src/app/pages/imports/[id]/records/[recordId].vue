@@ -286,17 +286,17 @@ function inItem(index: number, text: string) {
   return t('records.editor.aria.inScope', { scope, text })
 }
 
-/* ------------------------------------------- Fassung, Exemplar, Zugehoerigkeit */
+/* ------------------------------------ Manifestation, Exemplar, Zugehoerigkeit */
 
 /*
- * Ein Exemplar gehoert zu genau einer Fassung. Das AVefi-Schema haelt diese
+ * Ein Exemplar gehoert zu genau einer Manifestation. Das AVefi-Schema haelt diese
  * Beziehung in is_item_of fest, und der Import setzt sie auch — sichtbar war
- * sie nur nirgends, weil Werk, Fassung und Exemplar als drei gleichrangige
+ * sie nur nirgends, weil Werk, Manifestation und Exemplar als drei gleichrangige
  * Reiter nebeneinander standen. Gelesen und geschrieben wird hier deshalb
  * genau dieses Feld; erfunden wird nichts.
  */
 
-/** Die lokale Kennung einer Fassung — daran haengen ihre Exemplare. */
+/** Die lokale Kennung einer Manifestation — daran haengen ihre Exemplare. */
 function manifestationId(m: UiManifestation): string {
   const local = m.identifiers.find((x) => x.resourceType === 'LocalResource' && x.id.trim() !== '')
   if (local !== undefined) return local.id.trim()
@@ -312,7 +312,7 @@ function manifestationId(m: UiManifestation): string {
   return ''
 }
 
-/** Zu welcher Fassung gehoert dieses Exemplar? Leer heisst: zu keiner. */
+/** Zu welcher Manifestation gehoert dieses Exemplar? Leer heisst: zu keiner. */
 function itemParent(it: UiItem): string {
   const link = (it.raw as Record<string, unknown>).is_item_of
   if (typeof link !== 'object' || link === null) return ''
@@ -328,9 +328,9 @@ function itemsOf(m: UiManifestation): UiItem[] {
 }
 
 /**
- * Exemplare ohne erkennbare Fassung.
+ * Exemplare ohne erkennbare Manifestation.
  *
- * Sie werden nicht stillschweigend der ersten Fassung untergeschoben: Wo die
+ * Sie werden nicht stillschweigend der ersten Manifestation untergeschoben: Wo die
  * Quelldatei keine Zuordnung hergibt, ist das eine Aussage ueber die Daten und
  * keine, die die Oberflaeche treffen darf.
  */
@@ -342,7 +342,7 @@ const orphanItems = computed<UiItem[]>(() => {
   })
 })
 
-/** Ein neues Exemplar entsteht unter der Fassung, unter der man es anlegt. */
+/** Ein neues Exemplar entsteht unter der Manifestation, unter der man es anlegt. */
 function addItemTo(m: UiManifestation) {
   if (ui.value === null) return
   const neu = emptyItem(ui.value.work.titles[0]?.has_name ?? '')
@@ -351,7 +351,7 @@ function addItemTo(m: UiManifestation) {
   ui.value.items.push(neu)
 }
 
-/** Ein Exemplar einer Fassung zuordnen. */
+/** Ein Exemplar einer Manifestation zuordnen. */
 function assignItem(it: UiItem, index: string) {
   const m = ui.value?.manifestations[Number(index)]
   if (m === undefined) return
@@ -695,7 +695,7 @@ function backToList() {
         </div>
       </section>
 
-      <!-- FASSUNGEN -->
+      <!-- MANIFESTATIONEN -->
       <section v-show="tab === 'structure'" id="panel-structure" class="ed-tabpanel" role="tabpanel"
                aria-labelledby="tab-structure" tabindex="0">
         <p class="note">{{ t('records.editor.structure.lead') }}</p>
@@ -743,8 +743,8 @@ function backToList() {
           </button>
           <p class="note">{{ t('records.editor.manifestation.kept') }}</p>
 
-          <!-- Die Exemplare DIESER Fassung, eingerueckt darunter. Ein Exemplar
-               gehoert zu genau einer Fassung; als gleichrangiger Reiter war
+          <!-- Die Exemplare DIESER Manifestation, eingerueckt darunter. Ein Exemplar
+               gehoert zu genau einer Manifestation; als gleichrangiger Reiter war
                diese Beziehung unsichtbar. -->
           <div class="ed-children">
             <h3 class="ed-childhead">
@@ -769,7 +769,7 @@ function backToList() {
           <span aria-hidden="true">+</span> {{ t('records.editor.manifestation.add') }}
         </button>
 
-        <!-- Exemplare ohne Fassung: nicht verstecken, sondern benennen. Sie
+        <!-- Exemplare ohne Manifestation: nicht verstecken, sondern benennen. Sie
              entstehen, wenn eine Quelldatei keine Zuordnung hergibt. -->
         <section v-if="orphanItems.length > 0" class="ed-orphans">
           <h2>{{ t('records.editor.structure.orphanHeading', { count: orphanItems.length }) }}</h2>

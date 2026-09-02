@@ -26,7 +26,7 @@ ist die Zahl der Tastendruecke ab Seitenanfang.
 Die Reihenfolge haengt von der Fensterbreite ab, deshalb stehen hier zwei
 Durchlaeufe. Unterhalb von 820 Pixeln liegt die Hauptnavigation hinter einem
 Aufklappknopf; darueber steht sie offen in der Kopfzeile. Wer die Darstellung
-vergroessert, bekommt die schmale Fassung, auch am grossen Bildschirm.`
+vergroessert, bekommt die schmale Variante, auch am grossen Bildschirm.`
 
 /** Den Abschnitt „Tab-Reihenfolge" herausschneiden, ohne seinen Vorspann. */
 function liste(text) {
@@ -76,6 +76,6 @@ for (const name of dateien) {
 
 console.log(`\n${geaendert} Beschreibungen tragen jetzt beide Reihenfolgen.`)
 if (fehlend.length > 0) {
-  console.log(`OHNE schmale Fassung: ${fehlend.join(', ')}`)
+  console.log(`OHNE schmale Variante: ${fehlend.join(', ')}`)
   process.exit(1)
 }

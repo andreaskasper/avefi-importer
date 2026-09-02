@@ -9,7 +9,7 @@ gespeichert. Beim naechsten Mal erkennt der Importer dieselbe Kopfzeile wieder
 und schlaegt das Profil vor. Geprueft wird mit dem echten `efi-conv` in einem
 eigenen Container, nicht mit einer nachgebauten Pruefung.
 
-Diese Fassung loest die PHP-Fassung ab; deren letzter Stand liegt im Tag
+Diese Version loest die PHP-Version ab; deren letzter Stand liegt im Tag
 `php-final`. Stack: Nuxt 4.5, Vue 3.5, TypeScript, Nitro,
 PostgreSQL 16, Docker.
 
@@ -121,7 +121,7 @@ Gelesen wird `.xlsx` (und CSV/TSV). Fuer `.xls` (BIFF8, bis Excel 2003) und
 npm-Hauptregistry vorhanden und frei von offenen Sicherheitsmeldungen ist:
 `exceljs` (MIT, npm) kann beides nicht, und das einzige Paket, das beides kann
 (SheetJS), liegt seit 2023 nicht mehr im npm-Hauptregistry; die dort verbliebene
-Fassung stammt von 2022 und hat zwei ungepatchte Schwachstellen hoher Schwere.
+Version stammt von 2022 und hat zwei ungepatchte Schwachstellen hoher Schwere.
 
 Der Vertrag verlangt CSV und XLSX; beide funktionieren. `.xls` und `.ods` waren
 Zugabe. Statt still zu scheitern, sagt der Importer beim Hochladen im Klartext,
@@ -142,7 +142,7 @@ eine Inhaltsangabe mit Zeilenumbruechen in einem Feld in Anfuehrungszeichen und
 belegt dadurch mehrere Dateizeilen. Wer die Datei korrigiert, sucht besser nach
 der Signatur als nach der Zeilennummer.
 
-Nachgestellt am erzeugten `avefi.v1.json` (231 Knoten: 77 Werke, 77 Fassungen,
+Nachgestellt am erzeugten `avefi.v1.json` (231 Knoten: 77 Werke, 77 Manifestationen,
 77 Exemplare):
 
 ```
@@ -163,7 +163,7 @@ Signaturen eindeutig gemacht, meldet dieselbe Kommandozeile
 `POST /check` nennt also die Ursache, `POST /check-cli` zusaetzlich deren
 Auswirkung.
 
-Das war in der PHP-Fassung genauso. Neu ist, dass der Importer es **meldet**,
+Das war in der PHP-Version genauso. Neu ist, dass der Importer es **meldet**,
 statt „validiert" zu behaupten. Zwei Auswege:
 
 * die Signatur in der Quelldatei eindeutig machen (etwa `3000040K-1`,
@@ -196,7 +196,7 @@ Angereichert wird nie von selbst: Der Importer liefert Kandidaten, ein Mensch
 bestaetigt. Bestaetigte Zuordnungen stehen im Profil und schlagen die Automatik.
 
 Wenn angereichert wird, aendert das den Wert nicht — der Name bleibt der Name,
-die gefundene ID haengt als `same_as` an der Entitaet. In einer frueheren Fassung
+die gefundene ID haengt als `same_as` an der Entitaet. In einer frueheren Version
 wurde der Name mit der ID ueberschrieben, sodass bei einem Regie-Feld die
 GND-Nummer im Namen stand.
 
@@ -218,11 +218,11 @@ Wer einen anderen vorgelagerten Server einsetzt, prueft das nach.
 
 * **Eine Zeile ist ein Exemplar.** Das ist die Vorgabe (`row.represents: "item"`)
   und der haeufige Fall bei Archivlisten. Aus einer Zeile entstehen trotzdem
-  drei Knoten, weil das AVefi-Schema die Kette Werk → Fassung → Exemplar
+  drei Knoten, weil das AVefi-Schema die Kette Werk → Manifestation → Exemplar
   verlangt; die Verbindung laeuft ueber lokale Kennungen `r<n>_work` und
   `r<n>_manifestation`.
 * **Keine Zusammenfassung von Zeilen**, solange `grouping.work.by` leer ist.
-  Jede Zeile wird ein eigenes Werk. Wer Fassungen eines Werks in mehreren Zeilen
+  Jede Zeile wird ein eigenes Werk. Wer Manifestationen eines Werks in mehreren Zeilen
   hat, stellt die Zusammenfassung ein.
 * **Passwoerter** werden mit argon2id gehasht, mit denselben Vorgaben wie PHPs
   `PASSWORD_ARGON2ID`, damit Bestandskonten sich weiter anmelden koennen. bcrypt
@@ -274,12 +274,12 @@ lassen; einen Dienst, der neue vergibt, gibt es nicht.
 
 ```
 README.md · LICENSE
-handbuch/                Handreichung fuer Anwenderinnen (Stand PHP-Fassung, s. u.)
+handbuch/                Handreichung fuer Anwenderinnen (Stand PHP-Version, s. u.)
 samples/                 Beispieldateien (CSV, JSON, MARC-XML, EAD, AVefi nativ)
 src/                     die Anwendung  (siehe src/docs/architecture.md)
 ```
 
-`handbuch/` beschreibt noch die PHP-Fassung: Es nennt drei Container statt
+`handbuch/` beschreibt noch die PHP-Version: Es nennt drei Container statt
 fuenf, kennt weder den Worker noch den efi-conv-Dienst, nennt XLSX nicht unter
 den Formaten und fuehrt eine PID-Registrierung auf, die es nicht gibt. Kapitel 1
 (Installation) ist durchgehend ueberholt — es ruft `php app/bot.php` auf und
@@ -287,7 +287,7 @@ nennt Port 8080. Fuer Betrieb und Technik gelten die Dateien unter `src/docs/`;
 die Kapitel 2 bis 5 und 7 beschreiben Ablaeufe, die sich in der Bedienung nicht
 geaendert haben.
 
-Die PHP-Fassung ist im Tag `php-final` erhalten und wird nicht mehr
+Die PHP-Version ist im Tag `php-final` erhalten und wird nicht mehr
 weiterentwickelt. Ein `git switch -c php php-final` holt sie zurueck; die
 Startkonfiguration fehlt dabei, weil `docker-compose.dev.yml` nie im Repository
 lag.

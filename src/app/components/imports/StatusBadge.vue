@@ -3,7 +3,7 @@
  * Verarbeitungsstand als Abzeichen. Farbe aus app.css, Text aus i18n.
  *
  * "Veraltet" ist kein Wert der Datenbank, sondern eine Ableitung: Das Ergebnis
- * stammt aus einer aelteren Fassung des Mappingprofils. Ein gespeicherter
+ * stammt aus einer aelteren Version des Zuordnungsprofils. Ein gespeicherter
  * Zustand koennte hier luegen, sobald jemand ein Profil aendert, ohne dass
  * Importcode laeuft — der abgeleitete kann es nicht.
  */
@@ -11,7 +11,7 @@ import { STATUS_BADGE } from './types'
 
 const props = defineProps<{
   status: string
-  /** Ergebnis aus einer aelteren Profilfassung. */
+  /** Ergebnis aus einer aelteren Profilversion. */
   stale?: boolean
   ranWithVersion?: number | null
   profileVersion?: number | null

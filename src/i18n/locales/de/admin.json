@@ -162,9 +162,9 @@
       }
     },
     "profile": {
-      "pageTitle": "Mein Profil",
-      "heading": "Mein Profil",
-      "crumb": "Mein Profil",
+      "pageTitle": "Mein Nutzerprofil",
+      "heading": "Mein Nutzerprofil",
+      "crumb": "Mein Nutzerprofil",
       "nameHeading": "Anzeigename",
       "name": "Anzeigename",
       "email": "E-Mail",

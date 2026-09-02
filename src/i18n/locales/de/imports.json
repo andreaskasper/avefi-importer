@@ -68,7 +68,7 @@
       "error": "Fehler",
       "unknown": "Unbekannt",
       "stale": "veraltet",
-      "staleHint": "Das Ergebnis stammt aus Fassung {ran} des Mappingprofils, das Profil steht heute auf Fassung {now}. Neu konvertieren bringt es auf Stand."
+      "staleHint": "Das Ergebnis stammt aus Version {ran} des Zuordnungsprofils, das Profil steht heute auf Version {now}. Neu konvertieren bringt es auf Stand."
     },
     "action": {
       "details": "Details",
@@ -222,8 +222,8 @@
       },
       "mapping": {
         "heading": "Zuordnung",
-        "profile": "Profil",
-        "version": "Fassung {version}",
+        "profile": "Zuordnungsprofil",
+        "version": "Version {version}",
         "grouping": "Werkbildung",
         "rows": "Zeilen und Werke",
         "rowsValue": "{rows} Zeilen → {works} Werke"

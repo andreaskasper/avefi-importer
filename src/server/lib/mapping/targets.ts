@@ -94,7 +94,7 @@ export function authorityKindLabel(kind: string): string {
 export function levelLabel(level: TargetLevel): string {
   switch (level) {
     case 'work': return 'Werk'
-    case 'manifestation': return 'Fassung'
+    case 'manifestation': return 'Manifestation'
     case 'item': return 'Exemplar'
     default: return level
   }
@@ -184,7 +184,7 @@ function buildCatalog(): Map<string, TargetDefinition> {
 
   list.push(entry('work.type', 'Werkart', 'work', 'Werk', 'enum:WorkVariantTypeEnum', false,
     { kind: 'prop', prop: 'type' }))
-  list.push(entry('work.variant_type', 'Fassungsart', 'work', 'Werk', 'enum:VariantTypeEnum', false,
+  list.push(entry('work.variant_type', 'Variantentyp', 'work', 'Werk', 'enum:VariantTypeEnum', false,
     { kind: 'prop', prop: 'variant_type' }))
   list.push(entry('work.form', 'Form (Dokumentarfilm, Kurzfilm …)', 'work', 'Werk', 'enum:WorkFormEnum', true,
     { kind: 'strlist', prop: 'has_form' }))
@@ -220,16 +220,16 @@ function buildCatalog(): Map<string, TargetDefinition> {
       { kind: 'sameas', resource }))
   }
 
-  /* ---------------- Fassung ---------------- */
-  list.push(entry('manifestation.title.primary', 'Titel der Fassung', 'manifestation', 'Fassung', 'text', false,
+  /* ------------- Manifestation ------------- */
+  list.push(entry('manifestation.title.primary', 'Titel der Manifestation', 'manifestation', 'Manifestation', 'text', false,
     { kind: 'title', titleType: 'TitleProper', primary: true }))
-  list.push(entry('manifestation.publication.date', 'Veroeffentlichungsdatum', 'manifestation', 'Fassung', 'date', false,
+  list.push(entry('manifestation.publication.date', 'Veroeffentlichungsdatum', 'manifestation', 'Manifestation', 'date', false,
     { kind: 'eventdate', category: 'avefi:PublicationEvent', type: 'ReleaseEvent' }))
-  list.push(entry('manifestation.note', 'Anmerkung zur Fassung', 'manifestation', 'Fassung', 'text', true,
+  list.push(entry('manifestation.note', 'Anmerkung zur Manifestation', 'manifestation', 'Manifestation', 'text', true,
     { kind: 'strlist', prop: 'has_note' }))
-  list.push(entry('manifestation.webresource', 'Weblink zur Fassung', 'manifestation', 'Fassung', 'text', true,
+  list.push(entry('manifestation.webresource', 'Weblink zur Manifestation', 'manifestation', 'Manifestation', 'text', true,
     { kind: 'strlist', prop: 'has_webresource' }))
-  list.push(entry('manifestation.identifier.local', 'Lokale Fassungs-ID', 'manifestation', 'Fassung', 'id:LocalResource', true,
+  list.push(entry('manifestation.identifier.local', 'Lokale Manifestations-ID', 'manifestation', 'Manifestation', 'id:LocalResource', true,
     { kind: 'identifier', resource: 'LocalResource' }))
 
   /* ---------------- Exemplar ---------------- */

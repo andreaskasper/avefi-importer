@@ -37,7 +37,7 @@ docker run --rm --network host \
 
 Voraussetzung sind die Entwicklungsabhaengigkeiten `axe-core` und
 `playwright-core` (`npm install`). Der Browser kommt aus dem Abbild;
-`playwright-core` ist deshalb auf `1.50.0` festgenagelt — eine andere Fassung
+`playwright-core` ist deshalb auf `1.50.0` festgenagelt — eine andere Version
 sucht eine Chromium-Ausgabe, die im Abbild nicht liegt.
 
 Stellschrauben:
@@ -135,9 +135,9 @@ rm -rf /var/www/avefi-importer/src/obf-schmal
 ```
 
 `tabreihenfolge.mjs` ersetzt in jeder Beschreibung den Abschnitt
-„Tab-Reihenfolge" durch beide Fassungen und meldet mit Rueckgabewert 1, wenn zu
+„Tab-Reihenfolge" durch beide Varianten und meldet mit Rueckgabewert 1, wenn zu
 einer Seite die schmale fehlt. Bis zum 01.09.2026 war das ein Handgriff von
-Hand, und beim ersten Neuerzeugen danach war die schmale Fassung wieder weg,
+Hand, und beim ersten Neuerzeugen danach war die schmale Variante wieder weg,
 ohne dass es auffiel — ein Schritt, an den man sich erinnern muss, ist kein
 Verfahren. Wer den breiten Durchlauf ohne den schmalen laufen laesst, hat
 seitdem eine Beschreibung, die zu wenig sagt, und muss nachziehen.
@@ -148,7 +148,7 @@ Beschreibungen entstanden bis zum 01.09.2026 aus einem einzigen Durchlauf bei
 nie gegolten hat — dort lag die Hauptnavigation hinter einem Aufklappknopf, und
 davor war sie ganz ausgeblendet. Ein Test mit Vorlesewerkzeug hat genau diese
 Abweichung gefunden, und die Beschreibung war daran mitschuldig. Wer die
-Darstellung vergroessert, bekommt uebrigens die schmale Fassung, auch am grossen
+Darstellung vergroessert, bekommt uebrigens die schmale Variante, auch am grossen
 Bildschirm.
 
 Der Durchlauf dauert rund vier Minuten. `--ipc=host` und `--shm-size=1g` sind
@@ -158,7 +158,7 @@ der er gestartet wurde. `OBF_COMMIT` wird von aussen gesetzt, weil `.git` eine
 Ebene oberhalb von `src/` liegt und im Container nicht sichtbar ist; ohne die
 Angabe fehlt in der Uebersicht nur der Commit.
 
-Voraussetzung ist dieselbe wie bei `axe.mjs`: `playwright-core` in der Fassung
+Voraussetzung ist dieselbe wie bei `axe.mjs`: `playwright-core` in der Version
 `1.50.0` aus `npm install`, der Browser kommt aus dem Abbild.
 
 ### In der Anwendung lesbar

@@ -18,7 +18,7 @@ describe('Die Fehler der alten Heuristik bleiben behoben', () => {
   })
 
   it('"Deutschland" traegt kein Land mitten im Wort', () => {
-    // Die alte Fassung traf hier ueber "enthaelt"; ein Treffer am Wortende zaehlt nicht mehr.
+    // Die alte Version traf hier ueber "enthaelt"; ein Treffer am Wortende zaehlt nicht mehr.
     expect(best('Deutschland')).not.toBe('work.production.place')
   })
 

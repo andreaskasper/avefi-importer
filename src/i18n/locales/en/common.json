@@ -5,14 +5,14 @@
   "userMenu": "User menu: {name}",
   "nav": {
     "imports": "Imports",
-    "mappings": "Mappings",
+    "mappings": "Mapping profiles",
     "reviews": "Format review",
     "reviewsTitle": "Open mapping tasks: {count}",
     "reviewsBadge": "open tasks",
     "toggle": "Open navigation"
   },
   "menu": {
-    "profile": "My profile",
+    "profile": "My user profile",
     "users": "Manage users",
     "doku": "The interface in words",
     "handbuch": "Manual",

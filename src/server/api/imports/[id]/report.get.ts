@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
   const counts: Record<Severity, number> = { error: 0, warning: 0, info: 0 }
   for (const i of issues) counts[i.severity] = (counts[i.severity] ?? 0) + 1
 
-  // Die heutige Fassung des Profils: Nur damit laesst sich sagen, ob dieses
+  // Die heutige Version des Profils: Nur damit laesst sich sagen, ob dieses
   // Ergebnis noch zum aktuellen Stand passt.
   const sql = db()
   const version = row.mapping_profile_id === null

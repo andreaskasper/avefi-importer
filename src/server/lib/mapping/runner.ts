@@ -245,7 +245,7 @@ export function staticCheck(mapping: MappingJson, schema: SchemaModel = getSchem
   if (!hasWorkTitle) {
     out.push({
       severity: 'warning', code: 'work.no-title',
-      message: 'Keine Spalte auf "Werk > Haupttitel" gemappt. Ersatzweise wird der Titel der Fassung '
+      message: 'Keine Spalte auf "Werk > Haupttitel" gemappt. Ersatzweise wird der Titel der Manifestation '
         + 'oder des Exemplars uebernommen.'
     })
   }
@@ -769,7 +769,7 @@ export function readTarget(canonical: AvefiRecord, key: string): string {
 
 /**
  * Fuehrt zwei kanonische Datensaetze desselben Werks zusammen: Werkangaben werden
- * ergaenzt (nicht ueberschrieben), Fassungen und Exemplare angehaengt.
+ * ergaenzt (nicht ueberschrieben), Manifestationen und Exemplare angehaengt.
  */
 export function mergeRecords(base: AvefiRecord, add: AvefiRecord): AvefiRecord {
   const work = mergeNode(base.work, add.work)

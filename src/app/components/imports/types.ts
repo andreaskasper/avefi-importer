@@ -29,7 +29,7 @@ export interface ImportListItem {
   canReconvert: boolean
   hasAvefi: boolean
   validated: boolean
-  /** Ergebnis aus einer aelteren Fassung des Mappingprofils — abgeleitet, nicht gespeichert. */
+  /** Ergebnis aus einer aelteren Version des Zuordnungsprofils — abgeleitet, nicht gespeichert. */
   stale: boolean
   ranWithVersion: number | null
   profileVersion: number | null

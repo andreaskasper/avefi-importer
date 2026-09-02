@@ -851,7 +851,7 @@ ul.tight li{margin-bottom:3px;font-size:13px}
   border-top:1px solid var(--border);font-size:13.5px}
 .doku-nav a{color:var(--primary);font-weight:600}
 
-/* Aufbau: Exemplare stehen unter ihrer Fassung. Die Einrueckung samt Linie
+/* Aufbau: Exemplare stehen unter ihrer Manifestation. Die Einrueckung samt Linie
    zeigt die Zugehoerigkeit, ohne dass man sie lesen muss. */
 .ed-children{margin-top:14px;padding-left:14px;border-left:3px solid var(--border)}
 .ed-childhead{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 8px}

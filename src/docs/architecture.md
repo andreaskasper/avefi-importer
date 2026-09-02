@@ -76,7 +76,7 @@ src/
 ```
 
 `shared/types/domain.ts` liegt bewusst in `shared/`, damit ein Feldname nicht an
-zwei Stellen gepflegt wird. In der PHP-Fassung ist genau daran der Profil-Export
+zwei Stellen gepflegt wird. In der PHP-Version ist genau daran der Profil-Export
 ohne Stichprobe gescheitert.
 
 Aus demselben Grund gibt es `server/lib/authority/pipeline.ts` und
@@ -114,7 +114,7 @@ liesse sich hinterher nicht mehr belegen, was geliefert wurde.
 <FILES_PATH>/<import-uuid>/avefi.v1.json          Ergebnis
 ```
 
-Jeder Schreibvorgang wird geprueft. In der PHP-Fassung liefen `copy()` und
+Jeder Schreibvorgang wird geprueft. In der PHP-Version liefen `copy()` und
 `file_put_contents()` mit vorangestelltem `@`, und der Rueckgabewert wurde nicht
 ausgewertet; im Dateibestand steht deshalb ein Import mit Status „konvertiert"
 und 2738 Datensaetzen, dessen `avefi.v1.json` null Byte gross ist. Eine leere
@@ -132,12 +132,12 @@ Zehn Tabellen (`db/schema.sql`):
 |---|---|
 | `institutions` | Haeuser; jeder Import und jedes Profil gehoert einem. |
 | `users` | Konten, Passwort als argon2id. bcrypt wird nur noch gelesen. |
-| `imports` | Ein Upload mit Status, Kopfzeilen-Hash, gewaehltem Blatt, benutztem Profil samt Fassung, festgelegtem Trennzeichen, Laufkonfiguration (`run_config`) und Pruefbericht. |
+| `imports` | Ein Upload mit Status, Kopfzeilen-Hash, gewaehltem Blatt, benutztem Profil samt Version, festgelegtem Trennzeichen, Laufkonfiguration (`run_config`) und Pruefbericht. |
 | `records` | Erzeugte Datensaetze mit `data_json`, Vollstaendigkeit, Quellzeile und `edited_at`. |
 | `format_profiles` | Im Code vorhandene Konverter. |
 | `format_reviews` | Warteschlange fuer unbekannte Kopfzeilen. |
 | `mapping_profiles` | Zuordnungen je Kopfzeile, mit Stichprobe. |
-| `mapping_profile_versions` | Fassungsverlauf der Profile. |
+| `mapping_profile_versions` | Versionsverlauf der Profile. |
 | `authority_cache` | Normdaten-Zwischenspeicher. |
 | `worker_jobs` | Warteschlange des Hintergrundprozesses. |
 
@@ -222,8 +222,8 @@ erreichbar.
 | GET | `/api/mappings` | Alle Profile, eigene zuerst. |
 | POST | `/api/mappings` | Exportiertes Profil einlesen. |
 | POST | `/api/mappings/new?name=<Dateiname>` | Profil aus einer Beispieldatei anlegen, ohne Import. |
-| GET | `/api/mappings/:id` | Ein Profil mit Fassungsverlauf. |
-| PATCH | `/api/mappings/:id` | Umbenennen. Erzeugt keine neue Fassung. |
+| GET | `/api/mappings/:id` | Ein Profil mit Versionsverlauf. |
+| PATCH | `/api/mappings/:id` | Umbenennen. Erzeugt keine neue Version. |
 | DELETE | `/api/mappings/:id` | Loeschen. Bereits konvertierte Importe bleiben unveraendert. |
 | GET | `/api/mappings/:id/editor` | Startnutzlast des Editors, gerechnet auf der Stichprobe. |
 | GET | `/api/mappings/:id/export` | Profil als JSON, Stichprobe inbegriffen. |
@@ -231,8 +231,8 @@ erreichbar.
 | POST | `/api/mappings/:id/schema` | Entwurf gegen das AVefi-Schema pruefen. |
 | POST | `/api/mappings/:id/candidates` | Normdaten-Kandidaten zu einem Wert. |
 | POST | `/api/mappings/:id/sample?name=<Dateiname>` | Beispieldaten nachreichen. |
-| POST | `/api/mappings/:id/save` | Entwurf als neue Fassung speichern. |
-| POST | `/api/mappings/:id/restore` | Fruehere Fassung wieder aktivieren. |
+| POST | `/api/mappings/:id/save` | Entwurf als neue Version speichern. |
+| POST | `/api/mappings/:id/restore` | Fruehere Version wieder aktivieren. |
 
 ### Datensatz-Werkzeuge
 
@@ -282,15 +282,15 @@ gehoert mehr als das Mappingprofil:
   Datei konnte nach einer Aenderung an der Heuristik anders zerfallen, ohne dass
   sich Datei oder Profil geaendert haetten.
 * **Laufkonfiguration** (`imports.run_config`). Haelt fest, mit welcher
-  Profilfassung, welcher Profilformat- und AVefi-Schemaversion, welchem
+  Profilversion, welcher Profilformat- und AVefi-Schemaversion, welchem
   Trennzeichen und welchen Normdateneinstellungen ein Ergebnis entstanden ist.
 
 Daraus faellt die Frage „ist dieses Ergebnis noch aktuell?" ab. Sie wird
-**abgeleitet**, nicht gespeichert: Verglichen wird die Fassung, mit der
-konvertiert wurde, mit der Fassung, die das Profil heute hat. Ein gespeichertes
+**abgeleitet**, nicht gespeichert: Verglichen wird die Version, mit der
+konvertiert wurde, mit der Version, die das Profil heute hat. Ein gespeichertes
 Kennzeichen wuerde driften, sobald jemand ein Profil aendert, ohne dass
 Importcode laeuft — und Profile sind institutionsuebergreifend sichtbar. Die
-Importliste zeigt das als „veraltet" samt beiden Fassungsnummern; ein
+Importliste zeigt das als „veraltet" samt beiden Versionsnummern; ein
 `reconvert` bringt den Import auf Stand. Bestehende Importe werden **nie**
 automatisch nachgezogen.
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Die Sprache des Dokuments muss der Sprache der Oberflaeche folgen. Stand sie
-// fest auf "de", las ein Screenreader die englische Fassung mit deutscher
+// fest auf "de", las ein Screenreader die englische Version mit deutscher
 // Aussprache vor. nuxt.config setzt nur den Anfangswert.
 const { locale } = useI18n()
 

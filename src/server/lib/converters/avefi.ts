@@ -95,7 +95,7 @@ export function buildFromInternal(record: InternalRecord, baseId: string, record
 
   // Felder ohne sichere Entsprechung: melden statt verwerfen.
   if (w.language !== null && w.language.trim() !== '') {
-    note('info', 'language', 'Die Sprachangabe wurde nicht uebernommen: Ohne Mappingprofil ist nicht entscheidbar, ob sie Fassungs- oder Untertitelsprache meint.', w.language)
+    note('info', 'language', 'Die Sprachangabe wurde nicht uebernommen: Ohne Mappingprofil ist nicht entscheidbar, ob sie die Sprache der Manifestation oder die der Untertitel meint.', w.language)
   }
   if (w.workType !== null && w.workType.trim() !== '') {
     note('info', 'work_type', 'Die Werkart wurde nicht uebernommen: Sie muss auf ein AVefi-Vokabular abgebildet werden, wofuer ein Mappingprofil noetig ist.', w.workType)

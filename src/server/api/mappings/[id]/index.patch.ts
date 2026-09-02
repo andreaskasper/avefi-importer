@@ -1,7 +1,7 @@
 /*
  * PATCH /api/mappings/:id — Profil umbenennen.
  *
- * Umbenennen erzeugt keine neue Fassung: Der Name ist keine Zuordnung, und ein
+ * Umbenennen erzeugt keine neue Version: Der Name ist keine Zuordnung, und ein
  * Verlaufseintrag ohne inhaltliche Aenderung waere nur Rauschen.
  */
 import { db } from '../../../db'

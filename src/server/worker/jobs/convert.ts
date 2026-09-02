@@ -291,7 +291,7 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
   await setCounts(sql, record.id, recordCount, rowErrors)
 
   // Womit dieses Ergebnis entstanden ist. Erst damit laesst sich spaeter sagen,
-  // ob es noch zum heutigen Stand passt — die Profilfassung allein reicht
+  // ob es noch zum heutigen Stand passt — die Profilversion allein reicht
   // nicht, weil auch Schemaversion, Trennzeichen und Normdateneinstellungen ins
   // Ergebnis eingehen.
   await setRunConfig(sql, record.id, {

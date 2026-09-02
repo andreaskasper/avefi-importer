@@ -50,7 +50,7 @@ describe('Bestand', () => {
     expect(t('work.form').path).toBe('Werk › Form (Dokumentarfilm, Kurzfilm …)')
     expect(t('item.colour_type').path).toBe('Exemplar › Farbe')
     expect(allTargets().every((x) => x.path.split('›').length === 2)).toBe(true)
-    expect(levelLabel('manifestation')).toBe('Fassung')
+    expect(levelLabel('manifestation')).toBe('Manifestation')
   })
 
   it('meldet unbekannte Schluessel', () => {

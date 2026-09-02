@@ -28,7 +28,7 @@ import { sanitizeFilename } from '../storage'
  * Node gibt es dafuer keine Bibliothek, die zugleich gepflegt, im
  * npm-Hauptregistry vorhanden und frei von offenen Sicherheitsmeldungen ist:
  * exceljs (MIT) kann kein xls und kein ods, und das einzige Paket, das beides
- * kann, liegt im Register nur als Fassung von 2022 mit zwei ungepatchten
+ * kann, liegt im Register nur als Version von 2022 mit zwei ungepatchten
  * Meldungen hoher Schwere. Der Werkvertrag verlangt CSV und XLSX; xls und ods
  * waren Zugabe. Statt still zu scheitern, sagt der Importer, was zu tun ist.
  */

@@ -521,7 +521,7 @@ try {
       await seite.waitForTimeout(600)
     }
     // Seit dem 31.08. gibt es zwei Reiter: Werk und Aufbau. Die Exemplare
-    // stehen im Aufbau unter ihrer Fassung, nicht mehr in einem eigenen Reiter.
+    // stehen im Aufbau unter ihrer Manifestation, nicht mehr in einem eigenen Reiter.
     for (const reiter of ['structure']) {
       const knopf = seite.locator(`#tab-${reiter}`)
       if (await knopf.count()) {

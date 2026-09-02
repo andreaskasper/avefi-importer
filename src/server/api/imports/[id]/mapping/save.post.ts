@@ -1,11 +1,11 @@
 /*
  * POST /api/imports/:id/mapping/save — Profil speichern, auf Wunsch konvertieren.
  *
- * Gespeichert wird immer als Profil der eigenen Institution, mit Fassung und
+ * Gespeichert wird immer als Profil der eigenen Institution, mit Version und
  * Verlauf. Die Stichprobe wandert mit ins Profil — ohne sie liesse es sich
  * spaeter ohne die Datei nicht bearbeiten.
  *
- * Der Import merkt sich Profil-Id UND Fassung. Aendert jemand das Profil
+ * Der Import merkt sich Profil-Id UND Version. Aendert jemand das Profil
  * spaeter, wird der Import deshalb NICHT stillschweigend nachgezogen.
  */
 import { db } from '../../../../db'

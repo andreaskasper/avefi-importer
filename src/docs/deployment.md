@@ -311,7 +311,7 @@ curl -sI https://<host>/ | grep -i cache
 Zu sichern sind zwei Dinge:
 
 * die Datenbank (`pg_dump`) — Importe, Datensaetze, Mappingprofile samt
-  Fassungsverlauf, Konten;
+  Versionsverlauf, Konten;
 * das Verzeichnis aus `FILES_PATH` — Originaldateien und erzeugte
   `avefi.v1.json`.
 
@@ -326,8 +326,8 @@ laesst sich nicht erneut konvertieren.
   dieser Zeit und liegen ausserhalb des vertraglichen Kernablaufs; Tests und
   Build laufen unberuehrt durch. Siehe README.
 * **Der Kopfkommentar in `db/schema.sql`** verweist noch auf den Seed-Bot der
-  PHP-Fassung (`php app/bot.php -t seed`). Der Hinweis stimmt nicht mehr.
+  PHP-Version (`php app/bot.php -t seed`). Der Hinweis stimmt nicht mehr.
 * **Die laufende Testdatenbank enthaelt eine Tabelle `jobs`**, die in
-  `db/schema.sql` nicht vorkommt. Sie stammt aus der PHP-Fassung, wird von
+  `db/schema.sql` nicht vorkommt. Sie stammt aus der PHP-Version, wird von
   dieser Anwendung nicht benutzt und fehlt einer frisch aufgesetzten Datenbank
   zu Recht.

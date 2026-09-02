@@ -186,7 +186,7 @@ export async function deleteImportFiles(id: string): Promise<void> {
  * aus demselben Grund wie bei writeAvefi().
  *
  * Eingerueckt wird mit zwei Leerzeichen, wie writeAvefi() es tut. Die
- * datenstromfaehige Fassung schrieb jeden Knoten in eine einzige Zeile; die
+ * datenstromfaehige Version schrieb jeden Knoten in eine einzige Zeile; die
  * Datei war damit maschinell gleichwertig, aber von Hand kaum noch zu lesen.
  * Die Ausgabe bleibt dabei zeichengenau wiederholbar: JSON.stringify behaelt
  * die Reihenfolge, in der der Builder die Felder gesetzt hat, und die haengt

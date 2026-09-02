@@ -8,7 +8,7 @@
  * andere von daisyUI weiter, ohne es zu merken.
  *
  * Genau das ist am 01.09.2026 passiert: `.modal-box` gab es zweimal. Unsere
- * Fassung setzte Breite, Hintergrund und Rahmen — zu `opacity` sagte sie
+ * Version setzte Breite, Hintergrund und Rahmen — zu `opacity` sagte sie
  * nichts, also galt daisyUIs `opacity: 0`. daisyUI blendet die Box nur dann
  * ein, wenn sie unter einem Element mit `.modal.modal-open` haengt; unsere
  * Dialoge hingen unter `.modal-overlay`. Ergebnis: Die Seite dunkelte ab, der

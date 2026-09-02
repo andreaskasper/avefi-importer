@@ -3,7 +3,7 @@
  *
  * Zwei Eigenschaften, auf die es ankommt:
  *
- *   lesbar        Zwei Leerzeichen Einrueckung. Die datenstromfaehige Fassung
+ *   lesbar        Zwei Leerzeichen Einrueckung. Die datenstromfaehige Version
  *                 schrieb jeden Knoten in eine einzige Zeile; maschinell
  *                 gleichwertig, von Hand aber kaum noch zu pruefen — vom
  *                 Anwender gemeldet.

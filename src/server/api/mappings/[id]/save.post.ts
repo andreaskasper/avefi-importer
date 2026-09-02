@@ -1,8 +1,8 @@
 /*
- * POST /api/mappings/:id/save — Entwurf als neue Fassung speichern.
+ * POST /api/mappings/:id/save — Entwurf als neue Version speichern.
  *
- * Die alte Fassung bleibt im Verlauf. Bestehende Importe werden NICHT
- * nachgezogen: Sie merken sich Profil und Fassung, mit der sie entstanden sind.
+ * Die alte Version bleibt im Verlauf. Bestehende Importe werden NICHT
+ * nachgezogen: Sie merken sich Profil und Version, mit der sie entstanden sind.
  * Ein stilles Nachkonvertieren wuerde geprueftes Material veraendern.
  */
 import { db } from '../../../db'

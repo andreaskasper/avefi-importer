@@ -3,7 +3,7 @@
  *
  * Nachfolger der Heuristik aus RecordMapper::classify, mit zwei Korrekturen:
  *
- *  1. Verglichen wird auf Wortebene statt auf Teilstrings. Die alte Fassung
+ *  1. Verglichen wird auf Wortebene statt auf Teilstrings. Die alte Version
  *     prueft mit "enthaelt", wodurch "min" in "Administration" und "Termin"
  *     traf, "sign" in "Design" und "land" in "Landkreis".
  *  2. Es gewinnt nicht der erste Treffer, sondern der beste: jeder Vorschlag

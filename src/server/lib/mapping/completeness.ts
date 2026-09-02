@@ -51,7 +51,7 @@ export function completenessChecks(record: AvefiRecord): Array<{ key: string; la
       key: 'genre', label: 'Genre oder Form',
       filled: asList(w['has_genre']).length > 0 || (Array.isArray(w['has_form']) && w['has_form'].length > 0)
     },
-    { key: 'manifestation', label: 'Fassung', filled: record.manifestations.length > 0 },
+    { key: 'manifestation', label: 'Manifestation', filled: record.manifestations.length > 0 },
     { key: 'item', label: 'Exemplar', filled: record.items.length > 0 }
   ]
 }
@@ -97,7 +97,7 @@ export function completenessIssues(record: AvefiRecord): Array<{ level: Severity
   if (!hasEventDate(w['has_event'])) out.push({ level: 'warning', text: 'Produktionsjahr empfohlen' })
   if (asList(w['has_subject']).length === 0) out.push({ level: 'warning', text: 'Schlagwoerter oder Personen empfohlen' })
   if (!hasActivities(w['has_event'])) out.push({ level: 'warning', text: 'Beteiligte (Regie o. Ae.) empfohlen' })
-  if (record.manifestations.length === 0) out.push({ level: 'warning', text: 'Keine Fassung erfasst' })
+  if (record.manifestations.length === 0) out.push({ level: 'warning', text: 'Keine Manifestation erfasst' })
   if (record.items.length === 0) out.push({ level: 'warning', text: 'Kein Exemplar erfasst' })
 
   if (out.length === 0) out.push({ level: 'ok', text: 'Grunddaten vollstaendig' })

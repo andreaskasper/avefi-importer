@@ -3,9 +3,9 @@
  * Ein Exemplar im Datensatz-Editor.
  *
  * Herausgeloest, damit die Karte dort stehen kann, wo sie hingehoert: unter
- * ihrer Fassung. Solange Werk, Fassung und Exemplar drei gleichrangige Reiter
+ * ihrer Manifestation. Solange Werk, Manifestation und Exemplar drei gleichrangige Reiter
  * waren, sah die Oberflaeche aus, als seien es drei unabhaengige Dinge — dabei
- * gehoert jedes Exemplar zu genau einer Fassung. Die Komponente kennt weder
+ * gehoert jedes Exemplar zu genau einer Manifestation. Die Komponente kennt weder
  * Seitenaufbau noch Reiter; sie bekommt ein Exemplar und meldet, was der
  * Benutzer will.
  */
@@ -15,7 +15,7 @@ const props = defineProps<{
   item: UiItem
   /** Laufende Nummer fuer Ueberschrift und zugaengliche Namen. */
   index: number
-  /** Ueberschrift der Karte — sie nennt die Fassung mit, zu der das Exemplar gehoert. */
+  /** Ueberschrift der Karte — sie nennt die Manifestation mit, zu der das Exemplar gehoert. */
   heading: string
   enums: (name: string) => string[]
   resourceTypes: string[]

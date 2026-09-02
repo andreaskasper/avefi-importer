@@ -37,16 +37,16 @@ export interface ImportListItem {
   /** false = der Stand ist nicht gegen das Schema geprueft und darf nur zur Fehlersuche herunter. */
   validated: boolean
   /**
-   * Das Ergebnis stammt aus einer aelteren Fassung des Mappingprofils.
+   * Das Ergebnis stammt aus einer aelteren Version des Zuordnungsprofils.
    *
-   * Abgeleitet, nicht gespeichert: verglichen wird die Fassung, mit der
-   * konvertiert wurde, mit der Fassung, die das Profil heute hat. Ein
+   * Abgeleitet, nicht gespeichert: verglichen wird die Version, mit der
+   * konvertiert wurde, mit der Version, die das Profil heute hat. Ein
    * gespeichertes Kennzeichen wuerde driften, sobald jemand ein Profil aendert,
    * ohne dass Importcode laeuft — und Profile sind hier institutionsuebergreifend
    * sichtbar. Ein abgeleiteter Zustand kann das nicht.
    */
   stale: boolean
-  /** Fassung, mit der konvertiert wurde, und die heutige Fassung des Profils. */
+  /** Version, mit der konvertiert wurde, und die heutige Version des Profils. */
   ranWithVersion: number | null
   profileVersion: number | null
 }
@@ -99,7 +99,7 @@ export default defineEventHandler(async (event) => {
     editedCounts(sql, user.institution_id)
   ])
 
-  // Die heutigen Fassungen der beteiligten Profile — daraus faellt ab, welche
+  // Die heutigen Versionen der beteiligten Profile — daraus faellt ab, welche
   // Ergebnisse noch zum aktuellen Stand passen.
   const ids = [...new Set(rows.map((r) => r.mapping_profile_id).filter((id): id is number => id !== null))]
   const versions = new Map<number, number>()

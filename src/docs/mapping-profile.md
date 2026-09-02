@@ -84,7 +84,7 @@ Konverter in `server/lib/mapping/transform.ts`.
     { "target": "item.access_status", "value": "OnSiteAccess" }
   ],
 
-  // Was eine Zeile darstellt: ein Exemplar, eine Fassung oder ein Werk.
+  // Was eine Zeile darstellt: ein Exemplar, eine Manifestation oder ein Werk.
   "row": { "represents": "item" },
 
   // Zusammenfassung mehrerer Zeilen. Leere Liste = keine Zusammenfassung.
@@ -441,7 +441,7 @@ vertraglich nicht geschuldet.
 
 ### Altlasten
 
-Diese Operationen stammen aus der PHP-Fassung. Sie werden weiterhin ausgefuehrt,
+Diese Operationen stammen aus der PHP-Version. Sie werden weiterhin ausgefuehrt,
 damit alte Profile nicht brechen, erscheinen im Editorkatalog aber nicht mehr.
 
 | `op` | Nachfolger | Parameter |
@@ -480,21 +480,21 @@ Zugangsstatus, eine Werkart, die fuer die ganze Lieferung gilt.
 Ein Festwert auf ein unbekanntes Ziel ist ein Fehler und blockiert das
 Speichern. Ist kein Ziel `work.title.primary` belegt — weder durch eine Spalte
 noch durch einen Festwert — warnt der Editor; ersatzweise wird der Titel der
-Fassung oder des Exemplars uebernommen.
+Manifestation oder des Exemplars uebernommen.
 
 ## `row.represents`
 
 Sagt, was **eine Zeile** darstellt: `item`, `manifestation` oder `work`.
 
 Der haeufige Fall ist `item`: Eine Zeile einer Archivliste ist ein physisches
-Exemplar. Aus ihr entstehen dann trotzdem drei Knoten — Werk, Fassung und
-Exemplar —, weil das AVefi-Schema diese Kette verlangt; Werk und Fassung werden
+Exemplar. Aus ihr entstehen dann trotzdem drei Knoten — Werk, Manifestation und
+Exemplar —, weil das AVefi-Schema diese Kette verlangt; Werk und Manifestation werden
 aus den Angaben der Zeile abgeleitet und ueber lokale Kennungen
 (`r<n>_work`, `r<n>_manifestation`) miteinander verbunden.
 
 ## `grouping`
 
-Fasst mehrere Zeilen zu einem Werk beziehungsweise einer Fassung zusammen. Eine
+Fasst mehrere Zeilen zu einem Werk beziehungsweise einer Manifestation zusammen. Eine
 leere Liste heisst: keine Zusammenfassung, jede Zeile ergibt ein eigenes Werk.
 Das ist die Vorgabe.
 
@@ -563,7 +563,7 @@ vollstaendige Liste liefert `GET /api/records/config`.
 
 Ohne Stichprobe verweigert der Editor den Dienst: Er kann dann keine Vorschau
 rechnen, und eine Zuordnung, deren Wirkung man nicht sieht, ist geraten. In der
-PHP-Fassung fehlte die Stichprobe in aelteren Exporten, und ein eingelesenes
+PHP-Version fehlte die Stichprobe in aelteren Exporten, und ein eingelesenes
 Profil liess sich nicht mehr bearbeiten. Fuer solche Faelle gibt es
 `POST /api/mappings/:id/sample`, womit sich Beispieldaten nachreichen lassen;
 die Kopfzeile muss dabei zum Profil passen.
@@ -601,15 +601,15 @@ Der `headerHash` ist der Anker: Beim Erkennen einer Datei berechnet der Importer
 denselben Hash und schlaegt das passende Profil vor. Ein Profil der eigenen
 Institution wird dabei bevorzugt.
 
-## Fassungen
+## Versionen
 
-Jedes Speichern erzeugt eine neue Fassung; die alte bleibt in
+Jedes Speichern erzeugt eine neue Version; die alte bleibt in
 `mapping_profile_versions` erhalten und laesst sich mit
 `POST /api/mappings/:id/restore` zurueckholen. Wiederherstellen loescht nichts —
-der aktuelle Stand wird vorher selbst als Fassung abgelegt.
+der aktuelle Stand wird vorher selbst als Version abgelegt.
 
 Ein Import merkt sich in `mapping_profile_id` und `mapping_version`, mit welchem
 Stand er entstanden ist. Aendert sich das Profil, aendern sich bestehende
 Importe **nicht**; wer das will, konvertiert mit
-`POST /api/imports/:id/reconvert` neu. Umbenennen erzeugt keine neue Fassung,
+`POST /api/imports/:id/reconvert` neu. Umbenennen erzeugt keine neue Version,
 weil der Name keine Zuordnung ist.

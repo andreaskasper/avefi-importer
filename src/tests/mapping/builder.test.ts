@@ -44,7 +44,7 @@ describe('Knotenbildung', () => {
     expect(b.build('x').items[0]?.['has_note']).toEqual(['Hinweis'])
   })
 
-  it('erzeugt eine Fassung auch dann, wenn nur Exemplarangaben vorliegen', () => {
+  it('erzeugt eine Manifestation auch dann, wenn nur Exemplarangaben vorliegen', () => {
     const b = new AvefiBuilder(testSchema)
     b.write(t('item.identifier.local'), 'Sig 1')
     const r = b.build('x')
@@ -65,9 +65,9 @@ describe('Knotenbildung', () => {
     expect(b.build('x').items[0]?.['has_note']).toEqual(['Farbe: sepia'])
   })
 
-  it('haengt sie an die Fassung, wenn es kein Exemplar gibt', () => {
+  it('haengt sie an die Manifestation, wenn es kein Exemplar gibt', () => {
     const b = new AvefiBuilder(testSchema)
-    b.write(t('manifestation.note'), 'Fassung A')
+    b.write(t('manifestation.note'), 'Manifestation A')
     b.addNote('Farbe', 'sepia')
     expect(b.build('x').manifestations[0]?.['has_note']).toContain('Farbe: sepia')
   })
@@ -118,9 +118,9 @@ describe('Pflichtangaben und Titelanleihe', () => {
     expect(new AvefiBuilder(testSchema).build('x').work['type']).toBe('Monographic')
   })
 
-  it('leiht den Titel der Fassung, wenn das Werk keinen hat', () => {
+  it('leiht den Titel der Manifestation, wenn das Werk keinen hat', () => {
     const b = new AvefiBuilder(testSchema)
-    b.write(t('manifestation.title.primary'), 'Fassungstitel')
+    b.write(t('manifestation.title.primary'), 'Manifestationstitel')
     expect((b.build('x').work['has_primary_title'] as any).type).toBe('SuppliedDevisedTitle')
   })
 
