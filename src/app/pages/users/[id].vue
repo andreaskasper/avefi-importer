@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usersService, type UserResponse } from '~/services/users'
 /**
  * Ein Nutzerkonto bearbeiten.
  *
@@ -8,25 +9,14 @@
 import { apiFailure, failureText } from '~/components/records/errors'
 import type { InstitutionRow, UserRow } from '#shared/types/domain'
 
-const api = useApi()
-
-interface UserWithInstitution extends UserRow {
-  institution_name: string | null
-}
-
-interface UserResponse {
-  user: UserWithInstitution
-  institutions: InstitutionRow[]
-  isSelf: boolean
-  minPasswordLength: number
-}
+const nutzerDienst = usersService()
 
 const route = useRoute()
 const { t, te } = useI18n()
 const zeit = useDateTime()
 const id = computed(() => String(route.params.id ?? ''))
 
-const { data, error, refresh } = await useFetch<UserResponse>(() => api(`/users/${id.value}`))
+const { data, error, refresh } = await useFetch<UserResponse>(() => nutzerDienst.einerPfad(id.value))
 
 const loadError = computed(() => (error.value ? failureText(t, te, apiFailure(error.value), ['admin', 'imports']) : ''))
 const user = computed(() => data.value?.user ?? null)
@@ -54,14 +44,11 @@ async function save() {
   saveError.value = ''
   message.value = ''
   try {
-    await $fetch(api(`/users/${id.value}`), {
-      method: 'PATCH',
-      body: {
-        name: form.name,
-        institutionId: form.institutionId === '' ? null : Number(form.institutionId),
-        isAdmin: form.isAdmin,
-        active: form.active
-      }
+    await nutzerDienst.aendern(id.value, {
+      name: form.name,
+      institutionId: form.institutionId === '' ? null : Number(form.institutionId),
+      isAdmin: form.isAdmin,
+      active: form.active
     })
     message.value = t('admin.users.detail.saved')
     await refresh()
@@ -87,10 +74,8 @@ async function reset() {
   resetError.value = ''
   message.value = ''
   try {
-    const res = await $fetch<{ ok: true; oneTimePassword: string; generated: boolean }>(
-      api(`/users/${id.value}/password`),
-      { method: 'POST', body: ownPassword.value ? { password: password.value } : {} }
-    )
+    const res = await nutzerDienst.passwortSetzen(
+      id.value, ownPassword.value ? { password: password.value } : {})
     confirmReset.value = false
     password.value = ''
     if (res.generated) otp.value = { email: user.value.email, password: res.oneTimePassword }

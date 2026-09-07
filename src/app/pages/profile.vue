@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usersService, type ProfileResponse } from '~/services/users'
 /**
  * Das eigene Profil: Anzeigename und Passwort.
  *
@@ -10,16 +11,11 @@
 import { apiFailure, failureText } from '~/components/records/errors'
 import type { UserRow } from '#shared/types/domain'
 
-const api = useApi()
-
-interface ProfileResponse {
-  user: UserRow & { institution_name: string | null }
-  minPasswordLength: number
-}
+const nutzerDienst = usersService()
 
 const { t, te } = useI18n()
 const { refresh: refreshAuth } = useAuth()
-const { data, error, refresh } = await useFetch<ProfileResponse>(api('/profile'))
+const { data, error, refresh } = await useFetch<ProfileResponse>(nutzerDienst.profilPfad())
 
 const loadError = computed(() => (error.value ? failureText(t, te, apiFailure(error.value), ['admin', 'imports']) : ''))
 const user = computed(() => data.value?.user ?? null)
@@ -42,7 +38,7 @@ async function saveName() {
   nameError.value = ''
   nameMessage.value = ''
   try {
-    await $fetch(api('/profile'), { method: 'PATCH', body: { name: name.value } })
+    await nutzerDienst.profilAendern({ name: name.value })
     nameMessage.value = t('admin.profile.nameSaved')
     await refresh()
     await refreshAuth()
@@ -66,10 +62,7 @@ async function changePassword() {
   passwordError.value = ''
   passwordMessage.value = ''
   try {
-    await $fetch(api('/profile/password'), {
-      method: 'POST',
-      body: { current: current.value, next: next.value, confirm: confirm.value }
-    })
+    await nutzerDienst.eigenesPasswort({ current: current.value, next: next.value, confirm: confirm.value })
     passwordMessage.value = t('admin.profile.passwordChanged')
     current.value = ''
     next.value = ''

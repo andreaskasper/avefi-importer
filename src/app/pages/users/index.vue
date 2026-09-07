@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usersService, type UsersResponse, type UserWithInstitution } from '~/services/users'
 /**
  * Nutzerverwaltung.
  *
@@ -10,21 +11,10 @@
 import { apiFailure, failureText } from '~/components/records/errors'
 import type { InstitutionRow, UserRow } from '#shared/types/domain'
 
-const api = useApi()
-
-interface UserWithInstitution extends UserRow {
-  institution_name: string | null
-}
-
-interface UsersResponse {
-  users: UserWithInstitution[]
-  institutions: InstitutionRow[]
-  selfId: number
-  minPasswordLength: number
-}
+const nutzerDienst = usersService()
 
 const { t, te } = useI18n()
-const { data, error, refresh } = await useFetch<UsersResponse>(api('/users'))
+const { data, error, refresh } = await useFetch<UsersResponse>(nutzerDienst.listePfad())
 
 const loadError = computed(() => (error.value ? failureText(t, te, apiFailure(error.value), ['admin', 'imports']) : ''))
 const users = computed(() => data.value?.users ?? [])
@@ -48,15 +38,12 @@ async function create() {
   formError.value = ''
   message.value = ''
   try {
-    const res = await $fetch<{ ok: true; oneTimePassword: string; generated: boolean }>(api('/users'), {
-      method: 'POST',
-      body: {
-        email: form.email,
-        name: form.name,
-        institutionId: form.institutionId === '' ? null : Number(form.institutionId),
-        isAdmin: form.isAdmin,
-        ...(form.ownPassword ? { password: form.password } : {})
-      }
+    const res = await nutzerDienst.anlegen({
+      email: form.email,
+      name: form.name,
+      institutionId: form.institutionId === '' ? null : Number(form.institutionId),
+      isAdmin: form.isAdmin,
+      ...(form.ownPassword ? { password: form.password } : {})
     })
     message.value = t('admin.users.create.done', { email: form.email })
     if (res.generated) otp.value = { email: form.email, password: res.oneTimePassword }
@@ -85,7 +72,7 @@ async function setActive(user: UserWithInstitution, active: boolean) {
   rowError.value = ''
   message.value = ''
   try {
-    await $fetch(api(`/users/${user.id}`), { method: 'PATCH', body: { active } })
+    await nutzerDienst.aendern(user.id, { active })
     message.value = active ? t('admin.users.done.unlocked') : t('admin.users.done.locked')
     confirmLock.value = null
     await refresh()
@@ -102,7 +89,7 @@ async function remove(user: UserWithInstitution) {
   rowError.value = ''
   message.value = ''
   try {
-    await $fetch(api(`/users/${user.id}`), { method: 'DELETE' })
+    await nutzerDienst.loeschen(user.id)
     message.value = t('admin.users.done.deleted', { email: user.email })
     confirmDelete.value = null
     await refresh()
