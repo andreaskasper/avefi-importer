@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { recordsService } from '~/services/records'
 /**
  * Der AVefi-Datensatz-Editor.
  *
@@ -25,7 +26,7 @@ import type {
   AuthoritySearchResponse, CheckResponse, EditorConfig, RecordDetailResponse, SaveResponse
 } from '~/components/records/types'
 
-const api = useApi()
+const datensaetze = recordsService()
 
 const route = useRoute()
 const router = useRouter()
@@ -37,9 +38,9 @@ const { hinweis } = useMeldungstext()
 const importId = computed(() => String(route.params.id ?? ''))
 const recordId = computed(() => String(route.params.recordId ?? ''))
 
-const { data: config, error: configError } = await useFetch<EditorConfig>(api('/records/config'))
+const { data: config, error: configError } = await useFetch<EditorConfig>(datensaetze.konfigurationPfad())
 const { data: detail, error: detailError } = await useFetch<RecordDetailResponse>(
-  () => api(`/imports/${importId.value}/records/${recordId.value}`)
+  () => datensaetze.datensatzPfad(importId.value, recordId.value)
 )
 
 const loadError = computed(() => {
@@ -111,15 +112,13 @@ async function runCheck() {
 }
 
 async function runCheckInner() {
+  if (output.value === null) return
   checking.value = true
   actionError.value = ''
   try {
     // Der Ring zeigt weiter den gespeicherten Wert: Sonst spraenge er beim
     // Tippen und wuerde etwas versprechen, was noch nirgends steht.
-    check.value = await $fetch<CheckResponse>(api('/records/validate'), {
-      method: 'POST',
-      body: output.value
-    })
+    check.value = await datensaetze.pruefen(output.value)
   } catch (e) {
     actionError.value = failureText(t, te, apiFailure(e))
   } finally {
@@ -133,14 +132,12 @@ async function save() {
 }
 
 async function saveInner() {
+  if (output.value === null) return
   saving.value = true
   saved.value = false
   actionError.value = ''
   try {
-    const res = await $fetch<SaveResponse>(api(`/imports/${importId.value}/records/${recordId.value}`), {
-      method: 'PUT',
-      body: output.value
-    })
+    const res = await datensaetze.speichern(importId.value, recordId.value, output.value)
     completeness.value = res.completeness
     core.value = res.core ?? null
     editedAt.value = res.editedAt
@@ -235,9 +232,7 @@ async function matchAllInner() {
   await Promise.all(open.map(async (entity) => {
     const name = entity.has_name.trim()
     try {
-      const res = await $fetch<AuthoritySearchResponse>(api('/records/authority/search'), {
-        query: { kind: entity.kind, q: name }
-      })
+      const res = await datensaetze.normdatenSuche(entity.kind, name)
       const split = splitMatches(name, res.results)
       if (split.confident.length > 0) {
         for (const found of split.confident) addSameAs(entity.same_as, found)

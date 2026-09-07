@@ -75,7 +75,7 @@ function stop() {
 }
 
 async function poll() {
-  const status = await $fetch<ImportStatusResponse>(importe.standPfad()).catch(() => null)
+  const status = await importe.stand<ImportStatusResponse>()
   if (status === null) {
     stop()
     return

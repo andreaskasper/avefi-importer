@@ -20,6 +20,7 @@ export interface BlattAuswahlAntwort {
 export function importsService(): {
   listePfad: () => string
   standPfad: () => string
+  stand: <T>() => Promise<T | null>
   einerPfad: (id: string) => string
   berichtPfad: (id: string) => string
   datensaetzePfad: (id: string) => string
@@ -37,6 +38,9 @@ export function importsService(): {
   return {
     listePfad: () => api('/imports'),
     standPfad: () => api('/imports/status'),
+    // Faellt die Abfrage aus, bleibt die Anzeige stehen statt zu blinken:
+    // Der Stand wird im Takt geholt, ein Aussetzer ist kein Ereignis.
+    stand: <T>() => $fetch(api('/imports/status')).then((d) => d as T).catch(() => null),
     einerPfad: (id) => api(`/imports/${id}`),
     berichtPfad: (id) => api(`/imports/${id}/report`),
     datensaetzePfad: (id) => api(`/imports/${id}/records`),

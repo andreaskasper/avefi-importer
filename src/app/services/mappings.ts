@@ -87,6 +87,12 @@ export function mappingsService(): {
   zuruecksetzen: (id: string | number, version: number) => Promise<unknown>
   beispielSetzen: (id: string | number, datei: File) => Promise<unknown>
   speichern: (id: string | number, mapping: unknown) => Promise<unknown>
+  /**
+   * Ein Schritt des Zuordnungseditors. Die Basisadresse kommt aus der
+   * Startnutzlast, weil derselbe Editor am Profil und am Import haengt und
+   * der Server entscheidet, wohin er schreiben darf.
+   */
+  editorAktion: <T>(endpoint: string, aktion: string, body: Record<string, unknown>) => Promise<T>
   normdatenWerte: (id: string | number, mapping: unknown) => Promise<AuthorityValuesResponse>
   kandidaten: (id: string | number, body: Record<string, unknown>) => Promise<CandidateResponse>
 } {
@@ -112,6 +118,8 @@ export function mappingsService(): {
         { method: 'POST', body: datei, ...ALS_DATEI }),
     speichern: (id, mapping) =>
       $fetch(api(`/mappings/${id}/save`), { method: 'POST', body: { mapping } }),
+    editorAktion: <T>(endpoint: string, aktion: string, body: Record<string, unknown>) =>
+      $fetch(`${endpoint}/${aktion}`, { method: 'POST', body }) as Promise<T>,
     normdatenWerte: (id, mapping) =>
       $fetch<AuthorityValuesResponse>(api(`/mappings/${id}/authority-values`), { method: 'POST', body: { mapping } }),
     kandidaten: (id, body) =>

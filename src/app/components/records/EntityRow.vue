@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { recordsService } from '~/services/records'
 /**
  * Eine Zeile der Erschliessung: Art, Name, Normdaten.
  *
@@ -10,7 +11,7 @@
 import { addSameAs, splitMatches, type UiEntity } from './model'
 import type { AuthorityHit, AuthoritySearchResponse, SubjectKind } from './types'
 
-const api = useApi()
+const datensaetze = recordsService()
 
 const props = defineProps<{
   entity: UiEntity
@@ -51,9 +52,7 @@ async function match() {
   }
   const mine = ++sequence
   try {
-    const res = await $fetch<AuthoritySearchResponse>(api('/records/authority/search'), {
-      query: { kind: props.entity.kind, q: name }
-    })
+    const res = await datensaetze.normdatenSuche(props.entity.kind, name)
     if (mine !== sequence) return
     const split = splitMatches(name, res.results)
     props.entity.suggest = split.confident

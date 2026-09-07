@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { recordsService } from '~/services/records'
 /**
  * Namensfeld mit Normdatensuche.
  *
@@ -9,7 +10,7 @@
 import { apiFailure, failureText } from './errors'
 import type { AuthorityHit, AuthoritySearchResponse } from './types'
 
-const api = useApi()
+const datensaetze = recordsService()
 
 const props = withDefaults(
   defineProps<{
@@ -55,9 +56,7 @@ async function search(value: string) {
   const mine = ++sequence
   problem.value = ''
   try {
-    const res = await $fetch<AuthoritySearchResponse>(api('/records/authority/search'), {
-      query: { kind: props.kind, q: value.trim() }
-    })
+    const res = await datensaetze.normdatenSuche(props.kind, value.trim())
     if (mine !== sequence) return
     results.value = res.results
     warnings.value = res.warnings

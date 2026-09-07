@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { recordsService } from '~/services/records'
 /**
  * Einzelheiten zu einer Normdaten-Kennung.
  *
@@ -7,7 +8,7 @@
  */
 import type { AuthorityDetailResponse } from './types'
 
-const api = useApi()
+const datensaetze = recordsService()
 
 const props = defineProps<{ source: string; id: string }>()
 const emit = defineEmits<{ close: [] }>()
@@ -21,9 +22,7 @@ let returnTo: HTMLElement | null = null
 
 async function load() {
   loading.value = true
-  data.value = await $fetch<AuthorityDetailResponse>(api('/records/authority/detail'), {
-    query: { source: props.source, id: props.id }
-  }).catch(() => null)
+  data.value = await datensaetze.normdatenDetail(props.source, props.id)
   loading.value = false
 }
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { mappingsService } from '~/services/mappings'
 /**
  * Der Mapping-Editor.
  *
@@ -37,6 +38,7 @@ const props = defineProps<{
 
 const { t, te } = useI18n()
 const { meldung } = useMeldungstext()
+const zuordnungen = mappingsService()
 const keepFocus = useKeepFocus()
 const route = useRoute()
 
@@ -218,7 +220,7 @@ function refresh() {
 }
 
 async function post<T>(action: string, body: Record<string, unknown>): Promise<T> {
-  return await $fetch(`${props.payload.endpoint}/${action}`, { method: 'POST', body }) as T
+  return zuordnungen.editorAktion<T>(props.payload.endpoint, action, body)
 }
 
 async function runPreview() {
