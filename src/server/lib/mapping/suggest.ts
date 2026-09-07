@@ -23,8 +23,22 @@ export interface TargetSuggestion {
 const KEYWORDS: Record<string, readonly string[]> = {
   'work.title.primary': ['titel', 'haupttitel', 'originaltitel', 'filmtitel', 'title', 'werktitel'],
   'work.title.alternative': ['alternativtitel', 'nebentitel', 'untertitel', 'verleihtitel', 'subtitle',
-    'alttitel', 'diverse', 'weitere', 'sonstige', 'zusatztitel', 'arbeitstitel'],
+    'alttitel', 'diverse', 'weitere', 'sonstige', 'zusatztitel'],
   'work.title.series': ['reihe', 'reihentitel', 'serie', 'serientitel', 'series'],
+  // Die uebrigen Titeltypen. Ihre Schluesselwoerter tragen die
+  // zusammengeschriebene Form, weil "Arbeitstitel" ein einziges Wort ist:
+  // scoreToken verwirft Treffer mitten im Wort, ein Schluesselwort "arbeits"
+  // allein faende die Spalte also nie.
+  'work.title.working': ['arbeitstitel', 'workingtitle'],
+  'work.title.translated': ['uebersetztertitel', 'uebersetzt', 'uebersetzung', 'englischertitel',
+    'translatedtitle', 'fremdsprachigertitel'],
+  'work.title.transliterated': ['transkribiertertitel', 'transkribiert', 'transliteriert',
+    'transliteratedtitle', 'umschrift'],
+  'work.title.abbreviated': ['abgekuerztertitel', 'abkuerzung', 'kurztitel', 'abbreviatedtitle'],
+  'work.title.acquisition': ['erwerbstitel', 'erwerbungstitel', 'acquisitiontitle'],
+  'work.title.corrected': ['korrigiertertitel', 'korrekturtitel', 'correctedtitle'],
+  'work.title.prerelease': ['vorabtitel', 'prereleasetitle'],
+  'work.title.search': ['suchtitel', 'searchtitle'],
   'work.production.date': ['jahr', 'year', 'produktionsjahr', 'entstehungsjahr', 'entstehung',
     'produktionsdatum', 'datierung', 'herstellungsjahr', 'erscheinungsjahr'],
   'work.production.place': ['land', 'produktionsland', 'herstellungsland', 'country', 'produktionsort', 'drehort'],
@@ -81,7 +95,15 @@ const KEYWORDS: Record<string, readonly string[]> = {
 
 /** Woerter, die einen Titel als Nebenform kennzeichnen. */
 const TITLE_QUALIFIERS: readonly string[] = ['diverse', 'weitere', 'sonstige', 'neben', 'alternativ',
-  'alternative', 'verleih', 'zusatz', 'unter', 'arbeits', 'serien', 'reihen', 'original']
+  'alternative', 'verleih', 'zusatz', 'unter', 'arbeits', 'serien', 'reihen', 'original',
+  // Nachgetragen am 08.09.2026 zusammen mit den uebrigen Titeltypen. Ohne sie
+  // bekam eine Spalte "Uebersetzter Titel" den Haupttitel mit voller Konfidenz
+  // vorgeschlagen: Der Qualifier stand nicht in dieser Liste, die Abwertung
+  // griff nicht, und "titel" traf work.title.primary mit 100. Wer den
+  // Vorschlag uebernahm, schrieb einen uebersetzten Titel als bevorzugten
+  // Titel ins Pflichtfeld.
+  'uebersetzt', 'transkribiert', 'transliteriert', 'abgekuerzt', 'abkuerzung', 'kurz',
+  'erwerb', 'korrigiert', 'korrektur', 'such', 'vorab', 'englisch', 'fremdsprachig', 'umschrift']
 
 /**
  * Bewertet ein Wort gegen ein Schluesselwort.
@@ -216,7 +238,20 @@ export function suggestForColumn(header: string, limit = 3): TargetSuggestion[] 
   // gewinnt der Haupttitel ueberall, wo das Wort "Titel" vorkommt.
   if (scores.has('work.title.primary') && hasQualifier(parts)) {
     scores.set('work.title.primary', 40)
-    scores.set('work.title.alternative', Math.max(scores.get('work.title.alternative') ?? 0, 90))
+    // Der allgemeine Nebentitel wird nur dann hochgezogen, wenn kein
+    // spezifischerer Titeltyp schon besser liegt. Sonst stuenden bei einer
+    // Spalte "Arbeitstitel" zwei Vorschlaege nebeneinander — der richtige und
+    // ein erzwungener Nebentitel —, und bei drei angezeigten Vorschlaegen
+    // koennte der erzwungene den richtigen aus der Liste draengen.
+    let spezifisch = 0
+    for (const [key, score] of scores) {
+      if (!key.startsWith('work.title.')) continue
+      if (key === 'work.title.primary' || key === 'work.title.alternative') continue
+      spezifisch = Math.max(spezifisch, score)
+    }
+    if (spezifisch < 90) {
+      scores.set('work.title.alternative', Math.max(scores.get('work.title.alternative') ?? 0, 90))
+    }
   }
 
   return [...scores.entries()]

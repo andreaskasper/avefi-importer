@@ -116,3 +116,48 @@ describe('Kopfzeilen, die sich selbst erklaeren', () => {
     expect(suggestForColumn('Form', 3)[0]?.target).toBe('work.form')
   })
 })
+
+describe('Die uebrigen Titeltypen, seit 08.09.2026', () => {
+  /*
+   * Vorher landeten diese Spalten falsch, und drei davon nicht nur ungenau,
+   * sondern schaedlich: "Uebersetzter Titel" bekam work.title.primary mit
+   * voller Konfidenz vorgeschlagen. Wer das uebernahm, schrieb einen
+   * uebersetzten Titel als bevorzugten Titel ins Pflichtfeld des Werks.
+   */
+  it.each([
+    ['Arbeitstitel', 'work.title.working'],
+    ['Uebersetzter Titel', 'work.title.translated'],
+    ['Übersetzter Titel', 'work.title.translated'],
+    ['Englischer Titel', 'work.title.translated'],
+    ['Transkribierter Titel', 'work.title.transliterated'],
+    ['Abgekürzter Titel', 'work.title.abbreviated'],
+    ['Kurztitel', 'work.title.abbreviated'],
+    ['Erwerbstitel', 'work.title.acquisition'],
+    ['Korrigierter Titel', 'work.title.corrected'],
+    ['Suchtitel', 'work.title.search'],
+    ['Vorabtitel', 'work.title.prerelease']
+  ])('"%s" wird zu %s', (header, target) => {
+    expect(best(header)).toBe(target)
+  })
+
+  it.each([
+    'Uebersetzter Titel', 'Transkribierter Titel', 'Abgekürzter Titel', 'Korrigierter Titel'
+  ])('"%s" schlaegt den Haupttitel nicht mehr vor', (header) => {
+    const primary = suggestForColumn(header, 5).find((s) => s.target === 'work.title.primary')
+    expect(primary === undefined || primary.score < 50).toBe(true)
+  })
+
+  it('draengt den spezifischen Typ nicht durch den erzwungenen Nebentitel weg', () => {
+    // Die Zwangsregel hebt work.title.alternative auf 90, sobald ein Qualifier
+    // im Kopf steht. Bei nur drei angezeigten Vorschlaegen kann das den
+    // richtigen Typ aus der Liste schieben.
+    const s = suggestForColumn('Arbeitstitel', 3)
+    expect(s[0]?.target).toBe('work.title.working')
+    expect(s.find((x) => x.target === 'work.title.alternative')).toBeUndefined()
+  })
+
+  it('laesst den allgemeinen Nebentitel, wo kein Typ genauer passt', () => {
+    expect(best('Weiterer Titel')).toBe('work.title.alternative')
+    expect(best('Sonstige Titel')).toBe('work.title.alternative')
+  })
+})
