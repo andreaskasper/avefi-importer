@@ -18,6 +18,7 @@ import type { SchemaModel } from './schema-model.js'
 import type { TargetDefinition, TargetWriter } from './targets.js'
 import { getSchemaModel } from './schema-model.js'
 import { validateTargetValue, writerAcceptsAuthority } from './targets.js'
+import { meldung } from './meldungen.js'
 
 /*
  * Knoten und Wertobjekte kommen aus shared/types/domain.ts. Bis zum
@@ -67,6 +68,11 @@ export class AvefiBuilder {
   private item: AvefiNode = { category: 'avefi:Item' }
   /** Aus dem Fallback "als Notiz behalten" der Werteliste. */
   private notes: string[] = []
+  /**
+   * Verdraengte Werte, die auf einem einwertigen Platz nicht mehr Platz
+   * fanden. Bis zum 08.09.2026 verschwanden sie kommentarlos.
+   */
+  private verdraengt: MappingMessage[] = []
   private touchedManif = false
   private touchedItem = false
   private localIds: Record<Level, string | null> = { work: null, manifestation: null, item: null }
@@ -104,7 +110,9 @@ export class AvefiBuilder {
     if (level === 'item') this.touchedItem = true
 
     this.apply(node, level, w, v, sameAs)
-    return []
+    const verdraengt = this.verdraengt
+    this.verdraengt = []
+    return verdraengt
   }
 
   private apply(node: AvefiNode, level: Level, w: TargetWriter, v: string, sameAs: readonly EnrichHit[]): void {
@@ -112,8 +120,22 @@ export class AvefiBuilder {
       case 'title': {
         if (w.primary) {
           // Einwertig: der erste Titel gewinnt, spaetere ueberschreiben nicht.
-          if (node['has_primary_title'] === undefined) {
+          //
+          // Welcher "der erste" ist, haengt an der Reihenfolge der Ziele im
+          // Profil — fuer den Bearbeiter also an nichts Erkennbarem. Seit es
+          // je Ebene zwei Ziele auf diesen Platz gibt (Haupttitel und
+          // Archivtitel), ist der Zusammenstoss nicht mehr theoretisch, und
+          // stillschweigend zu entscheiden waere hier das Falsche.
+          const vorhanden = node['has_primary_title']
+          if (vorhanden === undefined) {
             node['has_primary_title'] = { has_name: v, type: w.titleType }
+          } else {
+            const alt = typeof vorhanden === 'object' && vorhanden !== null
+              ? String((vorhanden as AvefiValue)['has_name'] ?? '')
+              : ''
+            if (alt !== v) {
+              this.verdraengt.push(meldung('target.primaryTitleTaken', { behalten: alt, verworfen: v }))
+            }
           }
         } else {
           nodeList(node, 'has_alternative_title').push({ has_name: v, type: w.titleType })

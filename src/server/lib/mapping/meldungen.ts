@@ -38,6 +38,7 @@ export const MELDUNGEN: Record<string, string> = {
   'transform.badDate': '"{wert}" konnte nicht als Datum gelesen werden',
   'transform.badDuration': '"{wert}" konnte nicht als Laufzeit gelesen werden',
   'transform.notInValuemap': 'Wert "{wert}" ist in der Zuordnung nicht enthalten',
+  'target.primaryTitleTaken': 'Der Primaertitel ist bereits mit "{behalten}" belegt; "{verworfen}" wurde nicht uebernommen',
   'target.valueNotAllowed': '"{wert}" ist kein zulaessiger Wert fuer "{ziel}"',
   'target.identifierPattern': '"{wert}" passt nicht zum Kennungsmuster von "{ziel}"',
   'target.badDuration': '"{wert}" ist keine schemakonforme Laufzeit (erwartet PT01H30M00S)',

@@ -281,7 +281,8 @@ export function buildPreview(
     ...staticCheck(mapping, options.schema),
     ...dedupeChecks(runtimeChecks),
     ...dataChecks(mapping, out),
-    ...bracketTitleChecks(mapping, out)
+    ...bracketTitleChecks(mapping, out),
+    ...branchBalance(mapping, evaluated)
   ]
 
   return { columns: out, canonical, schema, evaluatedRows: indices.length, checks, coverage }
@@ -339,6 +340,86 @@ function isBracketed(raw: string): boolean {
  *  - Gemischt: Nur ein Teil ist eingeklammert. Dann muss die Spalte sich
  *    aufteilen, und das geht erst mit dem Waechter "Nur wenn".
  */
+/**
+ * Bilanz der Zweige einer Spalte.
+ *
+ * Der Waechter "Nur wenn" verwirft still — anders liesse sich mit ihm keine
+ * Verzweigung bauen, denn in einem Zweigpaar passt eine Seite naturgemaess
+ * nie. Die Sichtbarkeit muss deshalb woanders herkommen, und zwar als
+ * Summe statt je Zeile.
+ *
+ * Gezaehlt wird ueber die Zeilen, die die Vorschau tatsaechlich rechnet, nicht
+ * ueber die ganze Datei — dieselbe Stichprobe, aus der auch die Beispiele
+ * stammen. Der Satz sagt das ausdruecklich, sonst laesen sich die Zahlen als
+ * Gesamtbilanz.
+ *
+ * Die dritte Zahl ist die wichtige. Sie ist null, solange die Muster
+ * komplementaer sind. Alles andere heisst: Es gibt Werte, die durch alle
+ * Zweige fallen, und die stehen hinterher nirgends im Datensatz. Genau der
+ * Verlust, den ein stiller Waechter sonst verstecken wuerde.
+ *
+ * Gezeigt wird die Bilanz nur, wo jemand tatsaechlich einen Waechter gesetzt
+ * hat. Eine gewoehnliche Verzweigung schreibt absichtlich in alle Ziele; dort
+ * waere die Aufstellung kein Befund, sondern Laerm.
+ */
+export function branchBalance(
+  mapping: MappingJson,
+  evaluated: ReadonlyMap<number, Record<string, CellResult>>
+): MappingCheck[] {
+  const out: MappingCheck[] = []
+
+  for (const [col, spec] of Object.entries(mapping.columns ?? {})) {
+    if (typeof spec !== 'object' || spec === null || spec.ignore === true) continue
+    const bindings = spec.targets ?? []
+    if (bindings.length < 2) continue
+
+    const pre = Array.isArray(spec.pre) ? spec.pre : []
+    const hatWaechter = bindings.some((b) => [...pre, ...(Array.isArray(b.post) ? b.post : [])]
+      .some((st) => canonicalOp(String(st?.op ?? '')) === 'only'))
+    if (!hatWaechter) continue
+
+    const treffer = new Map<string, number>()
+    let ohne = 0
+    let zeilen = 0
+    for (const cells of evaluated.values()) {
+      const cell = cells[col]
+      if (cell === undefined || cell.raw.trim() === '') continue
+      zeilen++
+      const ziele = new Set(
+        cell.outputs.filter((o) => String(o.value).trim() !== '').map((o) => o.target)
+      )
+      if (ziele.size === 0) {
+        ohne++
+        continue
+      }
+      for (const z of ziele) treffer.set(z, (treffer.get(z) ?? 0) + 1)
+    }
+    if (zeilen === 0) continue
+
+    const verteilung = bindings
+      .map((b) => {
+        const key = String(b.target ?? '')
+        return `${getTarget(key)?.label ?? key}: ${treffer.get(key) ?? 0}`
+      })
+      .join(', ')
+
+    out.push({
+      severity: ohne > 0 ? 'warning' : 'info',
+      code: ohne > 0 ? 'data.branchGap' : 'data.branchBalance',
+      sourceField: col,
+      params: { verteilung, ohne, zeilen },
+      message: ohne > 0
+        ? `Aufteilung der Spalte in den ${zeilen} betrachteten Zeilen: ${verteilung}. ${ohne} davon `
+          + 'haben keinen Zweig getroffen und stehen daher in keinem Datensatz. Die Muster decken '
+          + 'nicht alle Werte ab.'
+        : `Aufteilung der Spalte in den ${zeilen} betrachteten Zeilen: ${verteilung}. Jede davon `
+          + 'wurde einem Zweig zugeordnet.'
+    })
+  }
+
+  return out
+}
+
 export function bracketTitleChecks(
   mapping: MappingJson,
   columns: Record<string, PreviewColumn>
