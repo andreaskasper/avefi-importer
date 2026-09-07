@@ -116,3 +116,36 @@ describe('Verdraengter Primaertitel', () => {
     }
   })
 })
+
+describe('Entscheidungen des Zusammenbauens stehen im Bericht', () => {
+  const services = { schema: testSchema }
+
+  it('meldet die eingesetzte Werkart', () => {
+    const m = emptyMapping(['Titel'], '1.2.3')
+    m.columns['Titel'] = { pre: [], targets: [{ target: 'work.title.primary', post: [] }] }
+    const r = runRow(m, { Titel: 'M' }, 'z', services)
+    const h = r.issues.find((i) => i.code === 'record.workTypeDefaulted')
+    expect(h?.severity).toBe('info')
+    expect(h?.params?.wert).toBe('Monographic')
+  })
+
+  it('schweigt, wenn die Werkart aus der Quelle kommt', () => {
+    const m = emptyMapping(['Titel', 'Art'], '1.2.3')
+    m.columns['Titel'] = { pre: [], targets: [{ target: 'work.title.primary', post: [] }] }
+    m.columns['Art'] = { pre: [], targets: [{ target: 'work.type', post: [] }] }
+    const r = runRow(m, { Titel: 'M', Art: 'Serial' }, 'z', services)
+    expect(r.issues.map((i) => i.code)).not.toContain('record.workTypeDefaulted')
+  })
+
+  it('meldet den geborgten Titel samt Ebene', () => {
+    const m = emptyMapping(['Signatur'], '1.2.3')
+    m.columns['Signatur'] = { pre: [], targets: [{ target: 'item.title.primary', post: [] }] }
+    const r = runRow(m, { Signatur: 'Kopie A' }, 'z', services)
+    const h = r.issues.find((i) => i.code === 'record.titleBorrowed')
+    expect(h?.params?.titel).toBe('Kopie A')
+    expect(h?.params?.ebene).toBe('Exemplar')
+    // Die Umdeutung selbst bleibt, wie sie war — sie ist schemakonform.
+    expect(r.canonical.work['has_primary_title'])
+      .toEqual({ has_name: 'Kopie A', type: 'SuppliedDevisedTitle' })
+  })
+})

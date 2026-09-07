@@ -73,6 +73,11 @@ export class AvefiBuilder {
    * fanden. Bis zum 08.09.2026 verschwanden sie kommentarlos.
    */
   private verdraengt: MappingMessage[] = []
+  /**
+   * Entscheidungen, die erst beim Zusammenbauen fallen, weil das Schema etwas
+   * verlangt, was die Quelle nicht liefert. Erst nach build() gefuellt.
+   */
+  readonly aufbauHinweise: MappingMessage[] = []
   private touchedManif = false
   private touchedItem = false
   private localIds: Record<Level, string | null> = { work: null, manifestation: null, item: null }
@@ -294,11 +299,16 @@ export class AvefiBuilder {
   /** Uebernimmt einen Titel aus Manifestation oder Exemplar, wenn das Werk keinen hat. */
   borrowWorkTitle(): void {
     if (this.hasWorkTitle()) return
-    for (const n of [this.item, this.manif]) {
+    for (const [n, ebene] of [[this.item, 'Exemplar'], [this.manif, 'Manifestation']] as const) {
       const title = n['has_primary_title']
       const name = typeof title === 'object' && title !== null ? (title as AvefiValue)['has_name'] : undefined
       if (typeof name === 'string' && name.trim() !== '') {
+        // Der geborgte Titel wechselt dabei den Typ: An Manifestation und
+        // Exemplar ist er ein TitleProper, am Werk waere er das nicht — dort
+        // sieht das Schema fuer einen uebernommenen Titel SuppliedDevisedTitle
+        // vor. Die Umdeutung ist richtig, war aber nirgends nachzulesen.
         this.work['has_primary_title'] = { has_name: name, type: 'SuppliedDevisedTitle' }
+        this.aufbauHinweise.push(meldung('record.titleBorrowed', { titel: name, ebene }))
         return
       }
     }
@@ -312,7 +322,14 @@ export class AvefiBuilder {
     this.borrowWorkTitle()
 
     const work = this.work
-    if (work['type'] === undefined) work['type'] = 'Monographic' // Pflichtfeld im Schema
+    if (work['type'] === undefined) {
+      // Pflichtfeld im Schema. Der Vorgabewert ist vertretbar — die grosse
+      // Mehrheit der Bestaende ist monographisch —, aber es ist eine
+      // Entscheidung der Software ueber Daten, die niemand getroffen hat.
+      // Sie steht deshalb im Bericht, statt nur im Quelltext.
+      work['type'] = 'Monographic'
+      this.aufbauHinweise.push(meldung('record.workTypeDefaulted', { wert: 'Monographic' }))
+    }
 
     const workId = this.localIds.work ?? `${baseId}_work`
     if (this.localIds.work === null) {

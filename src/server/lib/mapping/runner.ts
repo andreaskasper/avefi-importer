@@ -634,7 +634,17 @@ export function runRow(
     builder.write(target, String(d.value ?? ''))
   }
 
-  return { canonical: builder.build(baseId), cells, errors, issues, idOrigins }
+  const canonical = builder.build(baseId)
+  // Was das Zusammenbauen selbst entschieden hat, gehoert in den Bericht.
+  for (const h of builder.aufbauHinweise) {
+    issues.push({
+      severity: 'info', code: h.code, message: meldungstext(h),
+      ...(h.params !== undefined ? { params: h.params } : {}),
+      ...(rowNumber !== undefined ? { row: rowNumber } : {})
+    })
+  }
+
+  return { canonical, cells, errors, issues, idOrigins }
 }
 
 function toValueList(value: TransformValue): Array<string | number> {

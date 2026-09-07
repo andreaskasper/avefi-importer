@@ -943,7 +943,9 @@
       "data_bracketTitleAll": "Every sampled value is enclosed in square brackets. In many catalogues that means a title supplied by the archive. As “{label}” they get the type {typ}; as an archive title they get SuppliedDevisedTitle, and the brackets are dropped.",
       "target_primaryTitleTaken": "The primary title is already set to “{behalten}”; “{verworfen}” was not applied",
       "data_branchBalance": "Column split across the {zeilen} sampled rows: {verteilung}. Every one of them was assigned to a branch.",
-      "data_branchGap": "Column split across the {zeilen} sampled rows: {verteilung}. {ohne} of them matched no branch and therefore appear in no record. The patterns do not cover every value."
+      "data_branchGap": "Column split across the {zeilen} sampled rows: {verteilung}. {ohne} of them matched no branch and therefore appear in no record. The patterns do not cover every value.",
+      "record_workTypeDefaulted": "The work type was not set; “{wert}” was entered because the schema requires it",
+      "record_titleBorrowed": "The work had no title of its own; “{titel}” was taken from the {ebene} level as an archive title"
     }
   }
 }

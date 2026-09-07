@@ -38,6 +38,8 @@ export const MELDUNGEN: Record<string, string> = {
   'transform.badDate': '"{wert}" konnte nicht als Datum gelesen werden',
   'transform.badDuration': '"{wert}" konnte nicht als Laufzeit gelesen werden',
   'transform.notInValuemap': 'Wert "{wert}" ist in der Zuordnung nicht enthalten',
+  'record.workTypeDefaulted': 'Die Werkart war nicht belegt; eingetragen wurde "{wert}", weil das Schema sie verlangt',
+  'record.titleBorrowed': 'Das Werk hatte keinen eigenen Titel; uebernommen wurde "{titel}" von der Ebene {ebene} als Archivtitel',
   'target.primaryTitleTaken': 'Der Primaertitel ist bereits mit "{behalten}" belegt; "{verworfen}" wurde nicht uebernommen',
   'target.valueNotAllowed': '"{wert}" ist kein zulaessiger Wert fuer "{ziel}"',
   'target.identifierPattern': '"{wert}" passt nicht zum Kennungsmuster von "{ziel}"',

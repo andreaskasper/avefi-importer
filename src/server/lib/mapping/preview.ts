@@ -508,9 +508,10 @@ export function dataChecks(mapping: MappingJson, columns: Record<string, Preview
     const pre = Array.isArray(spec.pre) ? spec.pre : []
     const abgelehnt = Array.isArray(spec.dismissed) ? spec.dismissed : []
 
-    let reported = false
+    // Je Ziel hoechstens ein Trennzeichen, aber nicht je Spalte hoechstens
+    // eines: Fuehrt eine Spalte auf zwei mehrwertige Ziele, und hat nur das
+    // zweite ein Trennerproblem, blieb es bis zum 08.09.2026 ungemeldet.
     for (const binding of spec.targets ?? []) {
-      if (reported) break
       const target = getTarget(String(binding.target ?? ''))
       if (target === undefined || !target.multi) continue
 
@@ -528,7 +529,6 @@ export function dataChecks(mapping: MappingJson, columns: Record<string, Preview
             + '"Aufteilen" wird daraus je Wert ein eigener Eintrag statt einer langen Zeichenkette.',
           fix: { op: 'split', sep }
         })
-        reported = true
         break
       }
     }
