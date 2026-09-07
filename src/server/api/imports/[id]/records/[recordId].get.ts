@@ -8,11 +8,12 @@
  */
 import { db } from '../../../../db'
 import { findRecord } from '../../../../lib/records'
-import { completenessIssues, ringClass } from '../../../../lib/mapping/index'
+import { completenessIssues, coreScore, ringClass } from '../../../../lib/mapping/index'
+import type { RecordDetailResponse } from '#shared/types/domain'
 import { fail, ownedImport } from '../../_lib'
 import { canonicalOf, contributorsOf } from '../../../records/_record'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<RecordDetailResponse> => {
   const { row } = await ownedImport(event)
 
   const recordId = Number(getRouterParam(event, 'recordId'))
@@ -46,6 +47,7 @@ export default defineEventHandler(async (event) => {
       type: record.work_type,
       pid: record.avefi_pid,
       completeness: record.completeness,
+      core: coreScore(avefi),
       ring: ringClass(record.completeness),
       sourceRow: record.source_row,
       editedAt: record.edited_at,

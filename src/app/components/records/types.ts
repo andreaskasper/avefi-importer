@@ -1,10 +1,20 @@
 /*
  * Was die Oberflaeche von den Datensatz-Endpunkten erwartet.
  */
-import type { AvefiNode, AvefiRecord, Severity, ValidationIssue } from '#shared/types/domain'
+import type { AvefiNode, AvefiRecord, CoreScore, ValidationIssue } from '#shared/types/domain'
 import type { TargetEntry } from '#shared/types/domain'
 
-export type { AvefiNode, AvefiRecord, ValidationIssue }
+/*
+ * Die Antwortformen der Datensatz-Endpunkte stehen seit dem 07.09.2026 in
+ * shared/types/domain.ts und werden hier nur weitergereicht. Solange sie hier
+ * standen, kannten sie nur die Oberflaeche — und `core` konnte aus der Antwort
+ * verschwinden, ohne dass es auffiel.
+ */
+export type { AvefiNode, AvefiRecord, CoreScore, ValidationIssue }
+export type {
+  CheckResponse, CompletenessHint, RecordDetailInfo, RecordDetailResponse,
+  RecordImportInfo, SaveResponse
+} from '#shared/types/domain'
 
 /* ------------------------------------------------------------------ Konfiguration */
 
@@ -56,22 +66,12 @@ export interface RecordListItem {
   items: number
   completeness: number
   /** Belegte Kernfelder statt eines Prozentwerts. */
-  core: { filled: number; total: number; missing: string[] }
+  core: CoreScore
   ring: string
   contributors: string[]
   sourceRow: number | null
   editedAt: string | null
   missing: string[]
-}
-
-export interface RecordImportInfo {
-  id: string
-  filename: string
-  base_format: string | null
-  detected_format?: string | null
-  status: string
-  sheet_name?: string | null
-  record_count?: number
 }
 
 export interface RecordListResponse {
@@ -86,51 +86,6 @@ export interface RecordListResponse {
 }
 
 /* --------------------------------------------------------------------- Editor */
-
-export interface CompletenessHint {
-  level: Severity | 'ok'
-  text: string
-}
-
-export interface RecordDetailResponse {
-  import: RecordImportInfo
-  record: {
-    id: number
-    title: string | null
-    year: number | null
-    type: string | null
-    pid: string | null
-    completeness: number
-    ring: string
-    sourceRow: number | null
-    editedAt: string | null
-    createdAt: string
-    contributors: string[]
-  }
-  avefi: AvefiRecord
-  hints: CompletenessHint[]
-  prev: number | null
-  next: number | null
-}
-
-export interface CheckResponse {
-  checked: number
-  valid: number
-  issues: ValidationIssue[]
-  schema?: { version?: string | null; source?: string | null } | null
-  unavailable: string | null
-  completeness?: number
-  hints: CompletenessHint[]
-}
-
-export interface SaveResponse extends CheckResponse {
-  ok: true
-  completeness: number
-  ring: string
-  editedAt: string | null
-  title: string | null
-  avefi: AvefiRecord
-}
 
 /* ----------------------------------------------------------------- Normdaten */
 

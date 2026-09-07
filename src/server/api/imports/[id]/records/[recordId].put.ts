@@ -16,7 +16,8 @@ import { z } from 'zod'
 import type { AvefiNode } from '#shared/types/domain'
 import { db } from '../../../../db'
 import { findRecord, saveRecord } from '../../../../lib/records'
-import { completenessIssues, ringClass } from '../../../../lib/mapping/index'
+import { completenessIssues, coreScore, ringClass } from '../../../../lib/mapping/index'
+import type { SaveResponse } from '#shared/types/domain'
 import { checkRecords } from '../../../../worker/validate'
 import { fail, ownedImport } from '../../_lib'
 import { authorityInNameIssues, canonicalOf, sourceOf } from '../../../records/_record'
@@ -29,7 +30,7 @@ const Body = z.object({
   items: z.array(Node).default([])
 })
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<SaveResponse> => {
   const { row } = await ownedImport(event)
 
   const recordId = Number(getRouterParam(event, 'recordId'))
@@ -72,6 +73,7 @@ export default defineEventHandler(async (event) => {
   return {
     ok: true,
     completeness: saved?.completeness ?? existing.completeness,
+    core: coreScore(record),
     ring: ringClass(saved?.completeness ?? existing.completeness),
     editedAt: saved?.edited_at ?? null,
     title: saved?.work_title ?? null,

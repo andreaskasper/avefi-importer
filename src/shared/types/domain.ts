@@ -355,6 +355,95 @@ export interface RecordRow {
   created_at: string
 }
 
+/* --------------------------------------- Antworten der Datensatz-Endpunkte */
+
+/*
+ * Die Antwortformen stehen hier und nicht in der Oberflaeche, weil sie ein
+ * Vertrag zwischen beiden Seiten sind. Bis zum 07.09.2026 standen sie in
+ * app/components/records/types.ts, also nur auf einer Seite — und genau
+ * deshalb konnte `core` aus der Antwort verschwinden, ohne dass irgendwo
+ * etwas rot wurde: Die Oberflaeche las `d.record.core ?? null`, der Endpunkt
+ * lieferte das Feld gar nicht, und die Kernfeld-Anzeige blieb dauerhaft leer
+ * — auch nach „Pruefen", denn /records/validate liefert es ebenfalls nicht.
+ *
+ * Ein Typ, der aus dem Handler abgeleitet wird, haette das nicht gefunden: Er
+ * haette schlicht gespiegelt, was der Handler zufaellig zurueckgibt. Ein Typ,
+ * den der Handler erfuellen muss, findet es. Deshalb tragen die Handler ihn
+ * als Rueckgabetyp.
+ */
+
+/** Belegte Kernfelder — „3 von 4" statt eines Prozentwerts. */
+export interface CoreScore {
+  filled: number
+  total: number
+  missing: string[]
+}
+
+/** Hinweis zur Belegung, wie ihn der Datensatz-Editor anzeigt. */
+export interface CompletenessHint {
+  level: Severity | 'ok'
+  text: string
+}
+
+/** Der Import, zu dem ein Datensatz gehoert, so weit die Oberflaeche ihn braucht. */
+export interface RecordImportInfo {
+  id: string
+  filename: string
+  base_format: string | null
+  detected_format?: string | null
+  status: string
+  sheet_name?: string | null
+  record_count?: number
+}
+
+/** Kopfdaten eines Datensatzes im Editor. */
+export interface RecordDetailInfo {
+  id: number
+  title: string | null
+  year: number | null
+  type: string | null
+  pid: string | null
+  completeness: number
+  core: CoreScore
+  ring: string
+  sourceRow: number | null
+  editedAt: string | null
+  createdAt: string
+  contributors: string[]
+}
+
+/** GET /api/imports/:id/records/:recordId */
+export interface RecordDetailResponse {
+  import: RecordImportInfo
+  record: RecordDetailInfo
+  avefi: AvefiRecord
+  hints: CompletenessHint[]
+  prev: number | null
+  next: number | null
+}
+
+/** POST /api/records/validate */
+export interface CheckResponse {
+  checked: number
+  valid: number
+  issues: ValidationIssue[]
+  schema?: { version?: string | null; source?: string | null } | null
+  unavailable: string | null
+  completeness?: number
+  hints: CompletenessHint[]
+}
+
+/** PUT /api/imports/:id/records/:recordId */
+export interface SaveResponse extends CheckResponse {
+  ok: true
+  completeness: number
+  core: CoreScore
+  ring: string
+  editedAt: string | null
+  title: string | null
+  avefi: AvefiRecord
+}
+
 /* ------------------------------------------------------ Nutzer, Institution */
 
 export interface UserRow {
