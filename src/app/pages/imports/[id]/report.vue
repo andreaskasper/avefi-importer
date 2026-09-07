@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { importsService } from '~/services/imports'
 /**
  * Pruefbericht eines Imports.
  *
@@ -10,13 +11,13 @@ import { apiFailure, failureText } from '~/components/imports/errors'
 import { formatNumber } from '~/components/imports/format'
 import type { ImportReportResponse } from '~/components/imports/types'
 
-const api = useApi()
+const importe = importsService()
 
 const route = useRoute()
 const { t, te, locale } = useI18n()
 const id = computed(() => String(route.params.id ?? ''))
 
-const { data, error } = await useFetch<ImportReportResponse>(() => api(`/imports/${id.value}/report`))
+const { data, error } = await useFetch<ImportReportResponse>(() => importe.berichtPfad(id.value))
 
 const loadError = computed(() => (error.value ? failureText(t, te, apiFailure(error.value)) : ''))
 const item = computed(() => data.value?.import ?? null)
@@ -71,7 +72,7 @@ function percent(entry: { filled: number; total: number }): number {
           <NuxtLink class="btn btn-outline btn-sm" :to="`/imports/${item.id}`">{{ t('imports.menu.detail') }}</NuxtLink>
           <NuxtLink v-if="item.status === 'converted'" class="btn btn-outline btn-sm"
                     :to="`/imports/${item.id}/records`">{{ t('imports.detail.openRecords') }}</NuxtLink>
-          <a v-if="item.hasAvefi" class="btn btn-outline btn-sm" :href="api(`/imports/${item.id}/avefi.json`)"
+          <a v-if="item.hasAvefi" class="btn btn-outline btn-sm" :href="importe.avefiJsonPfad(item.id)"
              :style="item.validated ? undefined : 'color:var(--warn);border-color:var(--warn)'">
             <span aria-hidden="true">⤓</span>
             {{ item.validated ? t('imports.menu.avefi') : t('imports.menu.avefiDraft') }}</a>

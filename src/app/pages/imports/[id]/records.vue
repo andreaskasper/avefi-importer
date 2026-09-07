@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { importsService } from '~/services/imports'
 /**
  * Datensaetze eines Imports.
  *
@@ -14,7 +15,7 @@ import { apiFailure, failureText } from '~/components/records/errors'
 import { formatNumber } from '~/components/imports/format'
 import type { RecordListResponse } from '~/components/records/types'
 
-const api = useApi()
+const importe = importsService()
 
 const route = useRoute()
 const { t, te, locale } = useI18n()
@@ -31,7 +32,7 @@ const limit = 50
 // bleibt beim Wechsel in den Editor stehen. Wuerde sie beim Einstieg ueber einen
 // Deeplink auf einen Datensatz nichts laden, waere die Liste danach leer.
 const { data, error, refresh } = await useFetch<RecordListResponse>(
-  () => api(`/imports/${importId.value}/records`),
+  () => importe.datensaetzePfad(importId.value),
   {
     query: { q: query, limit, offset },
     watch: [query, offset]
@@ -114,7 +115,7 @@ watch(isChild, (child) => {
         </span>
         <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
           <NuxtLink class="btn btn-outline btn-sm" :to="`/imports/${importId}`">{{ t('records.toImport') }}</NuxtLink>
-          <a class="btn btn-outline btn-sm" :href="api(`/imports/${importId}/avefi.json`)">
+          <a class="btn btn-outline btn-sm" :href="importe.avefiJsonPfad(importId)">
             <span aria-hidden="true">⤓</span> {{ t('records.download') }}</a>
         </div>
       </div>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { importsService } from '~/services/imports'
 /**
  * Datei hochladen — per Ablegen oder ueber ein gewoehnliches Dateifeld.
  *
@@ -13,7 +14,7 @@
  */
 import { apiFailure, failureText, type ApiFailure } from './errors'
 
-const api = useApi()
+const importe = importsService()
 
 const emit = defineEmits<{ uploaded: []; queued: [] }>()
 const { t, te } = useI18n()
@@ -89,7 +90,7 @@ function codeText(code: string, params: Record<string, unknown>): string {
 function send(file: File, job: Job): Promise<void> {
   return new Promise((resolve) => {
     const xhr = new XMLHttpRequest()
-    xhr.open('POST', api(`/imports/upload?name=${encodeURIComponent(file.name)}`), true)
+    xhr.open('POST', importe.hochladenPfad(file.name), true)
     xhr.setRequestHeader('content-type', 'application/octet-stream')
     xhr.withCredentials = true
 
@@ -176,7 +177,7 @@ async function submitUrlInner() {
   }
   urlBusy.value = true
   try {
-    await $fetch(api('/imports/url'), { method: 'POST', body: { url } })
+    await importe.vonAdresse(url)
     urlValue.value = ''
     urlDone.value = true
     emit('queued')

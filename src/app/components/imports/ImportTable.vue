@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { importsService } from '~/services/imports'
 /**
  * Die Importliste.
  *
@@ -11,7 +12,7 @@ import { apiFailure, failureText, type ApiFailure } from './errors'
 import { fileSize, formatDetailLabel, formatNumber } from './format'
 import type { ImportListItem } from './types'
 
-const api = useApi()
+const importe = importsService()
 
 const props = defineProps<{ items: ImportListItem[] }>()
 const emit = defineEmits<{ changed: []; message: [string] }>()
@@ -56,10 +57,10 @@ async function confirm() {
   failure.value = null
   try {
     if (job.kind === 'delete') {
-      await $fetch(api(`/imports/${job.item.id}`), { method: 'DELETE' })
+      await importe.loeschen(job.item.id)
       emit('message', t('imports.toast.deleted'))
     } else {
-      await $fetch(api(`/imports/${job.item.id}/reconvert`), { method: 'POST' })
+      await importe.neuKonvertieren(job.item.id)
       emit('message', t('imports.toast.reconverting'))
     }
     pending.value = null

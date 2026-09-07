@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { importsService } from '~/services/imports'
 /**
  * Detailseite eines Imports.
  *
@@ -12,13 +13,13 @@ import { apiFailure, failureText } from '~/components/imports/errors'
 import { fileSize, formatDetailLabel, formatNumber } from '~/components/imports/format'
 import { BUSY_STATES, type ImportDetailResponse } from '~/components/imports/types'
 
-const api = useApi()
+const importe = importsService()
 
 const route = useRoute()
 const { t, te, locale } = useI18n()
 const id = computed(() => String(route.params.id ?? ''))
 
-const { data, refresh, error } = await useFetch<ImportDetailResponse>(() => api(`/imports/${id.value}`))
+const { data, refresh, error } = await useFetch<ImportDetailResponse>(() => importe.einerPfad(id.value))
 
 const loadError = computed(() => (error.value ? failureText(t, te, apiFailure(error.value)) : ''))
 const item = computed(() => data.value?.import ?? null)
@@ -217,10 +218,10 @@ const formatLabel = computed(() => {
           {{ t('imports.detail.draftWarning') }}
         </p>
         <p style="display:flex;gap:8px;flex-wrap:wrap">
-          <a v-if="data?.hasOriginal" class="btn btn-outline btn-sm" :href="api(`/imports/${item.id}/original`)">
+          <a v-if="data?.hasOriginal" class="btn btn-outline btn-sm" :href="importe.originalPfad(item.id)">
             <span aria-hidden="true">⤓</span> {{ t('imports.menu.original') }}</a>
           <a v-if="item.hasAvefi" class="btn btn-sm" :class="item.validated ? 'btn-outline' : 'btn-outline'"
-             :href="api(`/imports/${item.id}/avefi.json`)"
+             :href="importe.avefiJsonPfad(item.id)"
              :style="item.validated ? undefined : 'color:var(--warn);border-color:var(--warn)'">
             <span aria-hidden="true">⤓</span>
             {{ item.validated ? t('imports.menu.avefi') : t('imports.menu.avefiDraft') }}</a>

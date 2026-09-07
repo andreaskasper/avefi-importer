@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { importsService } from '~/services/imports'
 /**
  * Auswahl der Tabellenblaetter einer Arbeitsmappe.
  *
@@ -10,13 +11,13 @@ import { apiFailure, failureText, type ApiFailure } from '~/components/imports/e
 import { formatNumber } from '~/components/imports/format'
 import type { SheetsResponse } from '~/components/imports/types'
 
-const api = useApi()
+const importe = importsService()
 
 const route = useRoute()
 const { t, te, locale } = useI18n()
 const id = computed(() => String(route.params.id ?? ''))
 
-const { data, error } = await useFetch<SheetsResponse>(() => api(`/imports/${id.value}/sheets`))
+const { data, error } = await useFetch<SheetsResponse>(() => importe.blaetterPfad(id.value))
 
 const loadFailure = computed<ApiFailure | null>(() => (error.value ? apiFailure(error.value) : null))
 const loadError = computed(() => failureText(t, te, loadFailure.value))
@@ -55,10 +56,7 @@ async function submit() {
   }
   busy.value = true
   try {
-    const res = await $fetch<{ ids: string[] }>(api(`/imports/${id.value}/sheets`), {
-      method: 'POST',
-      body: { sheets: chosen.value }
-    })
+    const res = await importe.blaetterWaehlen(id.value, chosen.value)
     await navigateTo({ path: '/', query: { sheets: String(res.ids.length) } })
   } catch (e) {
     failure.value = apiFailure(e)

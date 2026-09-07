@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { importsService } from '~/services/imports'
 /**
  * Importuebersicht: hochladen und sehen, was daraus geworden ist.
  *
@@ -10,13 +11,13 @@ import { apiFailure, failureText, type ApiFailure } from '~/components/imports/e
 import { formatNumber } from '~/components/imports/format'
 import { BUSY_STATES, type ImportListResponse, type ImportStatusResponse } from '~/components/imports/types'
 
-const api = useApi()
+const importe = importsService()
 
 const { t, te, locale } = useI18n()
 const route = useRoute()
 useHead({ title: () => t('imports.pageTitle') })
 
-const { data, refresh, error } = await useFetch<ImportListResponse>(api('/imports'), {
+const { data, refresh, error } = await useFetch<ImportListResponse>(importe.listePfad(), {
   default: () => ({ imports: [], kpi: { records: 0, awaiting: 0 } })
 })
 
@@ -74,7 +75,7 @@ function stop() {
 }
 
 async function poll() {
-  const status = await $fetch<ImportStatusResponse>(api('/imports/status')).catch(() => null)
+  const status = await $fetch<ImportStatusResponse>(importe.standPfad()).catch(() => null)
   if (status === null) {
     stop()
     return
