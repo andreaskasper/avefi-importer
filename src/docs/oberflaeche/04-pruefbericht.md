@@ -1,7 +1,7 @@
 # Pruefbericht
 
-Adresse: `/imports/c91f8bd1-ff01-4dfd-a213-942686cb5fea/report`  
-Seitentitel im Browser: „Expofilme_EN.xlsx · Prüfbericht · AVefi Importer"  
+Adresse: `/imports/52f6f7f6-72e5-4d45-ba29-48e16ab16806/report`  
+Seitentitel im Browser: „UPB_Test_Archivtitel.csv · Prüfbericht · AVefi Importer"  
 Sprache des Dokuments: `de`
 
 Was die Pruefung eines Imports ergeben hat.
@@ -44,7 +44,7 @@ vergroessert, bekommt die schmale Variante, auch am grossen Bildschirm.
 6. „Design wechseln" — Schaltflaeche, im banner
 7. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 8. „Importe" — Link, im navigation „Prüfbericht"
-9. „Expofilme_EN.xlsx" — Link, im navigation „Prüfbericht"
+9. „UPB_Test_Archivtitel.csv" — Link, im navigation „Prüfbericht"
 10. „Details ansehen" — Link, im main
 11. „Datensätze bearbeiten" — Link, im main
 12. „AVefi-JSON herunterladen" — Link, im main
@@ -57,7 +57,7 @@ vergroessert, bekommt die schmale Variante, auch am grossen Bildschirm.
 4. „Design wechseln" — Schaltflaeche, im banner
 5. „Benutzermenü: Administrator" — Schaltflaeche, im banner. aufklappbar, derzeit zu; oeffnet ein Menue
 6. „Importe" — Link, im navigation „Prüfbericht"
-7. „Expofilme_EN.xlsx" — Link, im navigation „Prüfbericht"
+7. „UPB_Test_Archivtitel.csv" — Link, im navigation „Prüfbericht"
 8. „Details ansehen" — Link, im main
 9. „Datensätze bearbeiten" — Link, im main
 10. „AVefi-JSON herunterladen" — Link, im main
@@ -75,7 +75,7 @@ Keine Tabellen.
 Das wird angesagt, ohne dass die Seite wechselt:
 
 - Statusbereich (status), Ansageart polite.
-  Aktueller Inhalt: „Alles in Ordnung — 132 AVefi-Datensätze entsprechen dem AVefi-Schema.".
+  Aktueller Inhalt: „Alles in Ordnung — 21 AVefi-Datensätze entsprechen dem AVefi-Schema.".
 - Statusbereich (status), Ansageart polite.
   Aktueller Inhalt: „Keine Fehler und keine Warnungen.".
 - Statusbereich (status), Ansageart polite.

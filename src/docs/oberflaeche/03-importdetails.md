@@ -1,7 +1,7 @@
 # Importdetails
 
-Adresse: `/imports/c91f8bd1-ff01-4dfd-a213-942686cb5fea`  
-Seitentitel im Browser: „Expofilme_EN.xlsx · Details · AVefi Importer"  
+Adresse: `/imports/52f6f7f6-72e5-4d45-ba29-48e16ab16806`  
+Seitentitel im Browser: „UPB_Test_Archivtitel.csv · Details · AVefi Importer"  
 Sprache des Dokuments: `de`
 
 Ein einzelner Import mit seinem Stand und den Wegen weiter zu Zuordnung, Datensaetzen und Bericht.
@@ -19,7 +19,7 @@ In Dokumentreihenfolge, also so, wie sie beim Wandern ueber die Bereiche kommen:
 
 ### Ueberschriften
 
-- Stufe 1: „Expofilme_EN.xlsx"
+- Stufe 1: „UPB_Test_Archivtitel.csv"
 - Stufe 2: „Was jetzt zu tun ist"
 - Stufe 2: „Eckdaten"
 - Stufe 2: „Herunterladen"
