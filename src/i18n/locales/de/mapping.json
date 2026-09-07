@@ -749,7 +749,8 @@
       "year": "Jahreszahl herauslösen",
       "concat": "Spalten verbinden",
       "valuemap": "Werteliste zuordnen",
-      "ucfirst": "Anfangsbuchstaben groß"
+      "ucfirst": "Anfangsbuchstaben groß",
+      "only": "Nur wenn"
     },
     "param": {
       "trim": {
@@ -825,6 +826,12 @@
       "concat": {
         "columns": "Weitere Spalten",
         "sep": "Trennzeichen"
+      },
+      "only": {
+        "pattern": "Muster",
+        "negate": "Umkehren: nur wenn das Muster NICHT passt",
+        "capture": "Nur diese Gruppe übernehmen",
+        "flags": "Zusatzangaben (i)"
       }
     },
     "choice": {
@@ -928,7 +935,8 @@
       "authority_unreachable": "Die Normdatenquelle {quelle} war nicht erreichbar — es wurde kein Treffer eingetragen.",
       "export_foreign": "Die Datei stammt nicht aus diesem Importer. Sie wird versuchsweise gelesen.",
       "export_unreadable": "Die Datei enthält kein Profil.",
-      "identifier_duplicate": "Die Kennung „{id}“ steht schon in Zeile {zeile}. Zwei Objekte mit derselben Kennung bestehen die Schemaprüfung nicht. Entweder meinen die Zeilen dasselbe Objekt — dann gehört die Werkbildung darauf eingestellt — oder die Spalte taugt nicht als Kennung und sollte einem anderen Ziel zugeordnet werden."
+      "identifier_duplicate": "Die Kennung „{id}“ steht schon in Zeile {zeile}. Zwei Objekte mit derselben Kennung bestehen die Schemaprüfung nicht. Entweder meinen die Zeilen dasselbe Objekt — dann gehört die Werkbildung darauf eingestellt — oder die Spalte taugt nicht als Kennung und sollte einem anderen Ziel zugeordnet werden.",
+      "transform_onlyNegateCapture": "Schritt {schritt}: „Nur wenn“ kann nicht gleichzeitig umkehren und eine Gruppe herauslösen"
     }
   }
 }

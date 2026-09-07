@@ -185,6 +185,15 @@ export const TRANSFORM_CATALOG: Record<string, TransformOpMeta> = {
       P('flags', 'Zusatzangaben (i, g)', 'text', { optional: true })
     ]
   },
+  only: {
+    op: 'only', label: 'Nur wenn', group: 'Text', in: 'any', out: 'same',
+    params: [
+      P('pattern', 'Muster', 'text'),
+      P('negate', 'Umkehren: nur wenn das Muster NICHT passt', 'bool', { optional: true }),
+      P('capture', 'Nur diese Gruppe uebernehmen', 'int', { optional: true }),
+      P('flags', 'Zusatzangaben (i)', 'text', { optional: true })
+    ]
+  },
   prefix: {
     op: 'prefix', label: 'Davorsetzen', group: 'Text', in: 'any', out: 'same',
     params: [P('value', 'Text', 'text')]
@@ -347,6 +356,12 @@ export function chainType(chain: readonly TransformStep[], inputType: ChainType 
     if (meta.in !== 'any' && meta.in !== t && !(meta.in === 'text' && t === 'number')) {
       errors.push(meldung('transform.typeMismatch', { schritt: i + 1, label: meta.label, erwartet: typeLabel(meta.in), bekommen: typeLabel(t) }))
     }
+    // negate und capture zusammen sind widerspruechlich: Was nicht passt, hat
+    // keine Klammergruppe, die sich herausloesen liesse.
+    if (canonicalOp(op) === 'only' && step['negate'] === true
+      && step['capture'] !== undefined && step['capture'] !== null && step['capture'] !== '') {
+      errors.push(meldung('transform.onlyNegateCapture', { schritt: i + 1 }))
+    }
     if (meta.out !== 'same') t = meta.out
   })
 
@@ -383,7 +398,7 @@ const RESOURCE_BY_SOURCE: Record<string, string> = {
  * stille Fehlbedienung ist eine Normdatenabfrage auf dem Rohwert.
  */
 export const OP_PHASE: Readonly<Record<string, number>> = {
-  trim: 1, lowercase: 1, uppercase: 1, titlecase: 1, replace: 1, regex: 1,
+  trim: 1, lowercase: 1, uppercase: 1, titlecase: 1, replace: 1, regex: 1, only: 1,
   substring: 1, number: 1, boolean: 1, year: 1, date: 1, duration: 1,
   split: 2,
   country: 3, language: 3, map: 3, authority: 3,
@@ -457,6 +472,7 @@ export function pickConfirmed(
 /** Operationen, die eine Liste elementweise bearbeiten. */
 const ELEMENTWISE = new Set([
   'trim', 'lowercase', 'uppercase', 'titlecase', 'replace', 'regex', 'prefix', 'suffix',
+  'only',
   'substring', 'template', 'number', 'year', 'date', 'duration', 'map', 'authority',
   'country', 'language', 'boolean'
 ])
@@ -593,6 +609,50 @@ function apply(
         return m[paramInt(p, 'capture', 0)] ?? ''
       }
       return s.replace(re, paramStr(p, 'with'))
+    }
+
+    /*
+     * Der Waechter: laesst den Wert durch oder macht ihn leer.
+     *
+     * Damit laesst sich eine Spalte auf zwei Ziele verzweigen, von denen je
+     * Zeile nur eines etwas bekommt — der Fall "Titel in eckigen Klammern ist
+     * ein Archivtitel, alle anderen sind Haupttitel". Ohne diesen Schritt
+     * bekaemen beide Ziele denselben Wert, und auf einem einwertigen Platz
+     * wuerde einer der beiden still verworfen.
+     *
+     * Ein nicht passender Wert wird bewusst NICHT beanstandet. In einem
+     * Zweigpaar passt eine Seite naturgemaess nie, das gaebe je Zeile eine
+     * korrekte und nutzlose Meldung. Sichtbar wird die Aufteilung stattdessen
+     * als Bilanz im Pruefbericht: wie viele Zeilen welchen Zweig genommen
+     * haben und wie viele durch alle gefallen sind.
+     */
+    case 'only': {
+      const pattern = paramStr(p, 'pattern')
+      if (pattern === '') return value
+      const rawFlags = paramStr(p, 'flags')
+      // Kein g: Hier wird geprueft, nicht ersetzt. Ein globales Muster traegt
+      // ausserdem lastIndex mit sich herum und liefert beim zweiten Aufruf ein
+      // anderes Ergebnis als beim ersten.
+      const flags = 'u' + (rawFlags.includes('i') ? 'i' : '')
+      let re: RegExp
+      try {
+        re = new RegExp(pattern, flags)
+      } catch {
+        errors.push(meldung('transform.badRegex', { muster: pattern }))
+        return value
+      }
+      const s = str(value)
+      // Ein leerer Wert bleibt leer, egal wie das Muster lautet. Sonst zoege
+      // ein umgekehrter Waechter jede leere Zelle in seinen Zweig.
+      if (s.trim() === '') return s
+      const treffer = s.match(re)
+      if (paramBool(p, 'negate')) return treffer === null ? s : ''
+      if (treffer === null) return ''
+      const capture = param(p, 'capture')
+      if (capture !== undefined && capture !== null && capture !== '') {
+        return treffer[paramInt(p, 'capture', 0)] ?? ''
+      }
+      return s
     }
 
     case 'prefix': {

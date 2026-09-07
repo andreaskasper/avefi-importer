@@ -29,6 +29,7 @@ export const MELDUNGEN: Record<string, string> = {
   'transform.opFailed': '{op}: {detail}',
   'transform.badRegex': 'Ungueltiger regulaerer Ausdruck: {muster}',
   'transform.noMatch': '"{wert}" passt nicht zum Muster {muster}',
+  'transform.onlyNegateCapture': 'Schritt {schritt}: "Nur wenn" kann nicht gleichzeitig umkehren und eine Gruppe herausloesen',
   'transform.notANumber': '"{wert}" ist keine Zahl',
   'transform.notABoolean': '"{wert}" ist weder ein Ja noch ein Nein',
   'transform.noYear': 'keine Jahreszahl in "{wert}" gefunden',

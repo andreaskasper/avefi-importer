@@ -749,7 +749,8 @@
       "year": "Extract year",
       "concat": "Concatenate columns",
       "valuemap": "Map controlled vocabulary",
-      "ucfirst": "Title case"
+      "ucfirst": "Title case",
+      "only": "Only if"
     },
     "param": {
       "trim": {
@@ -825,6 +826,12 @@
       "concat": {
         "columns": "Further columns",
         "sep": "Separator"
+      },
+      "only": {
+        "pattern": "Pattern",
+        "negate": "Invert: only if the pattern does NOT match",
+        "capture": "Keep only this group",
+        "flags": "Options (i)"
       }
     },
     "choice": {
@@ -928,7 +935,8 @@
       "export_foreign": "The file does not come from this importer. It is being read on a trial basis.",
       "export_unreadable": "The file contains no profile.",
       "identifier_duplicate": "The identifier “{id}” already appears in row {zeile}. Two objects with the same identifier fail the schema check. Either the rows mean the same object — in which case work grouping should be configured accordingly — or the column is unsuitable as an identifier and should be mapped to a different target.",
-      "target_unknown": "Unknown target “{ziel}”"
+      "target_unknown": "Unknown target “{ziel}”",
+      "transform_onlyNegateCapture": "Step {schritt}: “Only if” cannot invert and extract a group at the same time"
     }
   }
 }
