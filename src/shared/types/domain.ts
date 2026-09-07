@@ -159,7 +159,7 @@ export interface TransformStep {
 export type TransformOp =
   | 'trim' | 'lowercase' | 'uppercase' | 'titlecase'
   | 'split' | 'take' | 'join' | 'replace' | 'regex' | 'prefix' | 'suffix'
-  | 'date' | 'duration' | 'number' | 'boolean'
+  | 'date' | 'duration' | 'number' | 'boolean' | 'only'
   | 'map' | 'default' | 'country' | 'language' | 'authority'
   | LegacyTransformOp
 

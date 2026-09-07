@@ -117,7 +117,9 @@
       "dismiss": "Dismiss",
       "dismissTitle": "Dismiss this suggestion for “{column}” — it will not appear again.",
       "dismissedHeading": "One suggestion was dismissed: | {n} suggestions were dismissed:",
-      "undismiss": "show again"
+      "undismiss": "show again",
+      "fixBracketSplit": "Split the column",
+      "fixBracketAll": "Use as archive title"
     },
     "columns": {
       "heading": "Header and profile differ.",
@@ -936,7 +938,9 @@
       "export_unreadable": "The file contains no profile.",
       "identifier_duplicate": "The identifier “{id}” already appears in row {zeile}. Two objects with the same identifier fail the schema check. Either the rows mean the same object — in which case work grouping should be configured accordingly — or the column is unsuitable as an identifier and should be mapped to a different target.",
       "target_unknown": "Unknown target “{ziel}”",
-      "transform_onlyNegateCapture": "Step {schritt}: “Only if” cannot invert and extract a group at the same time"
+      "transform_onlyNegateCapture": "Step {schritt}: “Only if” cannot invert and extract a group at the same time",
+      "data_bracketTitle": "{n} of {von} sampled values are enclosed in square brackets, the others are not. In many catalogues a bracketed title is one the archive supplied itself. The column can be split: bracketed values become the archive title, all others stay where they are.",
+      "data_bracketTitleAll": "Every sampled value is enclosed in square brackets. In many catalogues that means a title supplied by the archive. As “{label}” they get the type {typ}; as an archive title they get SuppliedDevisedTitle, and the brackets are dropped."
     }
   }
 }

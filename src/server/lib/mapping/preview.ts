@@ -19,7 +19,7 @@ import { meldungstext } from './meldungen.js'
 import type { MappingMessage } from '#shared/types/domain'
 import type { SourceRow } from './header.js'
 import type { AvefiRecord } from './builder.js'
-import type { CellResult, MappingCheck, MappingServices } from './runner.js'
+import type { CellResult, MappingCheck, MappingFixPart, MappingServices } from './runner.js'
 import { canonicalOp, runChain } from './transform.js'
 import { getTarget } from './targets.js'
 import { runRow, staticCheck } from './runner.js'
@@ -280,7 +280,8 @@ export function buildPreview(
   const checks = [
     ...staticCheck(mapping, options.schema),
     ...dedupeChecks(runtimeChecks),
-    ...dataChecks(mapping, out)
+    ...dataChecks(mapping, out),
+    ...bracketTitleChecks(mapping, out)
   ]
 
   return { columns: out, canonical, schema, evaluatedRows: indices.length, checks, coverage }
@@ -304,6 +305,113 @@ function dedupeChecks(checks: readonly MappingCheck[]): MappingCheck[] {
  * die Werte nicht: Dass in "Land" ein Schraegstrich steht und damit zwei Laender
  * gemeint sind, sieht man erst hier.
  */
+/**
+ * Titel in eckigen Klammern.
+ *
+ * In der Katalogpraxis vieler Haeuser steht ein Titel in eckigen Klammern,
+ * wenn das Archiv ihn selbst vergeben hat, weil der Film keinen eigenen
+ * traegt. Im AVefi-Schema ist dafuer der Typ SuppliedDevisedTitle vorgesehen,
+ * und der LIDO-Konverter wertet die Klammer bereits so aus.
+ *
+ * Im CSV-Weg darf daraus keine feste Regel werden. Dort fehlt der Kontext des
+ * liefernden Hauses: Klammern stehen auch fuer Unsicherheit und fuer Zusaetze
+ * in einem sonst echten Titel. Deshalb ist das hier ein Vorschlag, den ein
+ * Mensch annimmt oder ablehnt — und der angenommen im Profil sichtbar bleibt
+ * und mit ihm zur naechsten Testperson reist.
+ *
+ * Das Muster ist auf den ganzen Wert verankert. "Der blaue Engel [Fragment]"
+ * ist ein Haupttitel mit einem Zusatz; ein unverankertes Muster wuerde ihn zum
+ * Archivtitel umdeuten.
+ */
+const KLAMMERTITEL = /^\[.*\]$/u
+
+function isBracketed(raw: string): boolean {
+  return KLAMMERTITEL.test(raw.trim())
+}
+
+/**
+ * Vorschlaege fuer eingeklammerte Titel.
+ *
+ * Zwei Lagen, zwei verschiedene Vorschlaege:
+ *
+ *  - Alle Werte eingeklammert: Die Spalte ist durchgehend ein Archivtitel.
+ *    Dann braucht es keine Verzweigung, sondern nur das richtige Ziel.
+ *  - Gemischt: Nur ein Teil ist eingeklammert. Dann muss die Spalte sich
+ *    aufteilen, und das geht erst mit dem Waechter "Nur wenn".
+ */
+export function bracketTitleChecks(
+  mapping: MappingJson,
+  columns: Record<string, PreviewColumn>
+): MappingCheck[] {
+  const out: MappingCheck[] = []
+
+  for (const [col, spec] of Object.entries(mapping.columns ?? {})) {
+    if (typeof spec !== 'object' || spec === null || spec.ignore === true) continue
+    const examples = columns[col]?.examples ?? []
+    const gefuellt = examples.filter((e) => e.raw.trim() !== '')
+    if (gefuellt.length < 2) continue
+    const geklammert = gefuellt.filter((e) => isBracketed(e.raw)).length
+    if (geklammert === 0) continue
+
+    const abgelehnt = Array.isArray(spec.dismissed) ? spec.dismissed : []
+    const pre = Array.isArray(spec.pre) ? spec.pre : []
+
+    for (const binding of spec.targets ?? []) {
+      const key = String(binding.target ?? '')
+      const target = getTarget(key)
+      // Nur der einwertige Primaerplatz ist betroffen. An einem mehrwertigen
+      // Ziel draengen sich zwei Titel nicht gegenseitig weg.
+      if (target === undefined || target.writer.kind !== 'title' || !target.writer.primary) continue
+      if (target.writer.titleType === 'SuppliedDevisedTitle') continue
+
+      const ersatz = `${target.level}.title.supplied`
+      if (getTarget(ersatz) === undefined) continue
+      const alle = geklammert === gefuellt.length
+      const code = alle ? 'data.bracketTitleAll' : 'data.bracketTitle'
+      if (abgelehnt.some((d) => d.code === code && d.target === key)) continue
+
+      // Wer schon einen Waechter oder eine Klammerbehandlung in der Kette hat,
+      // hat die Entscheidung getroffen.
+      const kette = [...pre, ...(Array.isArray(binding.post) ? binding.post : [])]
+      if (kette.some((st) => canonicalOp(String(st?.op ?? '')) === 'only')) continue
+      if (kette.some((st) => String(st?.pattern ?? '').includes('\\['))) continue
+
+      const fixPlan: MappingFixPart[] = alle
+        ? [{
+            target: ersatz,
+            replaces: key,
+            post: [{ op: 'regex', pattern: '^\\[(.*)\\]$', capture: 1 }]
+          }]
+        : [
+            { target: key, post: [{ op: 'only', pattern: '^\\[.*\\]$', negate: true }] },
+            { target: ersatz, post: [{ op: 'only', pattern: '^\\[(.*)\\]$', capture: 1 }] }
+          ]
+
+      out.push({
+        severity: 'warning',
+        code,
+        sourceField: col,
+        targetField: key,
+        params: { n: geklammert, von: gefuellt.length, label: target.label, typ: target.writer.titleType },
+        message: alle
+          ? `Alle betrachteten Werte stehen in eckigen Klammern. In vielen Katalogen heisst das: `
+            + `vom Archiv vergebener Titel. Als "${target.label}" bekommen sie den Typ `
+            + `${target.writer.titleType}; als Archivtitel bekommen sie SuppliedDevisedTitle, `
+            + 'und die Klammern fallen weg.'
+          : `${geklammert} von ${gefuellt.length} betrachteten Werten stehen in eckigen Klammern, `
+            + 'die uebrigen nicht. Eingeklammerte Titel sind in vielen Katalogen vom Archiv '
+            + 'vergeben. Die Spalte laesst sich aufteilen: eingeklammerte Werte als Archivtitel, '
+            + 'alle anderen bleiben, wo sie sind.',
+        fixLabel: alle ? 'mapping.check.fixBracketAll' : 'mapping.check.fixBracketSplit',
+        fixPlan
+      })
+      break
+    }
+  }
+
+  return out
+}
+
 export function dataChecks(mapping: MappingJson, columns: Record<string, PreviewColumn>): MappingCheck[] {
   const separators: ReadonlyArray<readonly [string, string]> = [
     [';', 'Semikolon'],

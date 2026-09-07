@@ -40,9 +40,20 @@ export interface TransformOpMeta {
   phase?: number
 }
 
+/** Ein Teil eines mehrteiligen Vorschlags. Spiegelt server/lib/mapping/runner.ts. */
+export interface MappingFixPart {
+  target: string
+  post?: TransformStep[]
+  replaces?: string
+}
+
 export interface MappingCheck extends ValidationIssue {
   /** Konverterschritt, der die Beanstandung ausraeumen wuerde — nur ein Vorschlag. */
   fix?: TransformStep
+  /** Mehrteiliger Vorschlag: mehrere Ziele auf einmal, auch neu anzulegende. */
+  fixPlan?: MappingFixPart[]
+  /** Uebersetzungsschluessel fuer die Knopfbeschriftung eines fixPlan. */
+  fixLabel?: string
 }
 
 export interface ProfileRef {

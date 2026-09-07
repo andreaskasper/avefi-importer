@@ -330,7 +330,12 @@ function gotoColumn(column: string) {
  */
 function applyFix(check: MappingCheck) {
   const column = check.sourceField ?? ''
-  if (column === '' || check.fix === undefined) return
+  if (column === '') return
+  if (Array.isArray(check.fixPlan) && check.fixPlan.length > 0) {
+    applyFixPlan(column, check)
+    return
+  }
+  if (check.fix === undefined) return
   const s = spec(column)
   const step = JSON.parse(JSON.stringify(check.fix)) as TransformStep
   const binding = (s.targets ?? []).find((b) => b.target === check.targetField) ?? s.targets?.[0]
@@ -340,6 +345,43 @@ function applyFix(check: MappingCheck) {
   } else {
     if (!Array.isArray(s.pre)) s.pre = []
     s.pre.push(step)
+  }
+  gotoColumn(column)
+  refresh()
+}
+
+/**
+ * Einen mehrteiligen Vorschlag uebernehmen.
+ *
+ * Anders als `fix` aendert ein Plan mehrere Zweige auf einmal und legt
+ * fehlende an. Anlass ist die Klammerregel: Sie haengt einen Waechter an den
+ * bestehenden Titelzweig und stellt einen zweiten daneben, der auf den
+ * Archivtitel zielt. Nacheinander liesse sich das nicht anbieten — nach dem
+ * ersten Schritt stuende ein halb umgebautes Profil da, in dem beide Zweige
+ * denselben Wert bekommen.
+ */
+function applyFixPlan(column: string, check: MappingCheck) {
+  const s = spec(column)
+  if (!Array.isArray(s.targets)) s.targets = []
+  for (const teil of check.fixPlan ?? []) {
+    const post = JSON.parse(JSON.stringify(teil.post ?? [])) as TransformStep[]
+    if (typeof teil.replaces === 'string' && teil.replaces !== '') {
+      // Ersetzen statt danebenstellen: Das alte Ziel verschwindet, seine
+      // gemeinsame Vorkette bleibt, weil sie an der Spalte haengt.
+      const alt = s.targets.find((b) => b.target === teil.replaces)
+      if (alt !== undefined) {
+        alt.target = teil.target
+        alt.post = post
+        continue
+      }
+    }
+    const vorhanden = s.targets.find((b) => b.target === teil.target)
+    if (vorhanden === undefined) {
+      s.targets.push({ target: teil.target, post })
+    } else {
+      if (!Array.isArray(vorhanden.post)) vorhanden.post = []
+      vorhanden.post.push(...post)
+    }
   }
   gotoColumn(column)
   refresh()

@@ -59,10 +59,16 @@ function message(check: MappingCheck): string {
  * gueltige Antwort darauf.
  */
 function ablehnbar(check: MappingCheck): boolean {
-  return check.severity !== 'error' && check.fix !== undefined && check.sourceField !== undefined
+  return check.severity !== 'error' && check.sourceField !== undefined
+    && (check.fix !== undefined || (Array.isArray(check.fixPlan) && check.fixPlan.length > 0))
 }
 
 function fixLabel(check: MappingCheck): string {
+  // Ein mehrteiliger Vorschlag bringt seine eigene Beschriftung mit: Aus dem
+  // Operationsnamen liesse sich fuer "zwei Zweige anlegen" keine bilden.
+  if (typeof check.fixLabel === 'string' && check.fixLabel !== '') {
+    return te(check.fixLabel) ? t(check.fixLabel) : check.fixLabel
+  }
   const op = String(check.fix?.op ?? '')
   const key = `mapping.op.${op}`
   return t('mapping.check.applyFix', { op: te(key) ? t(key) : op })
@@ -88,7 +94,7 @@ function fixLabel(check: MappingCheck): string {
                 :title="t('mapping.check.goto', { column: check.sourceField })"
                 @click="emit('goto', check.sourceField)">{{ check.sourceField }}</button>
         <span class="chk-msg">{{ message(check) }}</span>
-        <button v-if="check.fix" type="button" class="btn btn-outline btn-sm" @click="emit('fix', check)">
+        <button v-if="check.fix || check.fixPlan" type="button" class="btn btn-outline btn-sm" @click="emit('fix', check)">
           {{ fixLabel(check) }}
         </button>
         <button v-if="ablehnbar(check)" type="button" class="linkbtn chk-dismiss"

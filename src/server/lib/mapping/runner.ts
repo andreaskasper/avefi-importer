@@ -39,9 +39,30 @@ import { authorityKindLabel, expectedAuthorityKinds, expectedChainType, getTarge
  * Nachbessern; ein solches Feld gibt es in shared/types/domain.ts bisher nicht
  * (siehe Bericht).
  */
+/**
+ * Ein Teil eines mehrteiligen Vorschlags.
+ *
+ * `fix` traegt genau einen Schritt fuer genau eine Kette. Das reicht, solange
+ * ein Vorschlag eine Kette ergaenzt. Es reicht nicht, sobald er eine Spalte
+ * auf zwei Ziele verzweigen muss — dann sind zwei Ketten zu aendern, und eine
+ * davon gibt es noch gar nicht.
+ */
+export interface MappingFixPart {
+  /** Ziel, das die Schritte bekommt. Fehlt die Bindung, wird sie angelegt. */
+  target: string
+  /** Schritte fuer die Nachkette dieses Ziels. */
+  post?: TransformStep[]
+  /** Gesetzt, wenn dieses Ziel ein bestehendes ersetzt statt danebenzutreten. */
+  replaces?: string
+}
+
 export interface MappingCheck extends ValidationIssue {
   /** Konverterschritt, der die Beanstandung ausraeumen wuerde. */
   fix?: TransformStep
+  /** Mehrteiliger Vorschlag; schliesst sich mit fix gegenseitig aus. */
+  fixPlan?: MappingFixPart[]
+  /** Uebersetzungsschluessel fuer die Knopfbeschriftung eines fixPlan. */
+  fixLabel?: string
 }
 
 /** Nachschlagedienste, die von aussen hereingereicht werden. */

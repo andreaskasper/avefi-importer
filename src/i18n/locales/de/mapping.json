@@ -117,7 +117,9 @@
       "dismiss": "Ablehnen",
       "dismissTitle": "Diesen Vorschlag für „{column}“ ablehnen — er erscheint dann nicht mehr.",
       "dismissedHeading": "Ein Vorschlag wurde abgelehnt: | {n} Vorschläge wurden abgelehnt:",
-      "undismiss": "wieder anzeigen"
+      "undismiss": "wieder anzeigen",
+      "fixBracketSplit": "Spalte aufteilen",
+      "fixBracketAll": "Als Archivtitel übernehmen"
     },
     "columns": {
       "heading": "Kopfzeile und Profil weichen ab.",
@@ -936,7 +938,9 @@
       "export_foreign": "Die Datei stammt nicht aus diesem Importer. Sie wird versuchsweise gelesen.",
       "export_unreadable": "Die Datei enthält kein Profil.",
       "identifier_duplicate": "Die Kennung „{id}“ steht schon in Zeile {zeile}. Zwei Objekte mit derselben Kennung bestehen die Schemaprüfung nicht. Entweder meinen die Zeilen dasselbe Objekt — dann gehört die Werkbildung darauf eingestellt — oder die Spalte taugt nicht als Kennung und sollte einem anderen Ziel zugeordnet werden.",
-      "transform_onlyNegateCapture": "Schritt {schritt}: „Nur wenn“ kann nicht gleichzeitig umkehren und eine Gruppe herauslösen"
+      "transform_onlyNegateCapture": "Schritt {schritt}: „Nur wenn“ kann nicht gleichzeitig umkehren und eine Gruppe herauslösen",
+      "data_bracketTitle": "{n} von {von} betrachteten Werten stehen in eckigen Klammern, die übrigen nicht. Eingeklammerte Titel sind in vielen Katalogen vom Archiv vergeben. Die Spalte lässt sich aufteilen: eingeklammerte Werte als Archivtitel, alle anderen bleiben, wo sie sind.",
+      "data_bracketTitleAll": "Alle betrachteten Werte stehen in eckigen Klammern. In vielen Katalogen heißt das: vom Archiv vergebener Titel. Als „{label}“ bekommen sie den Typ {typ}; als Archivtitel bekommen sie SuppliedDevisedTitle, und die Klammern fallen weg."
     }
   }
 }
