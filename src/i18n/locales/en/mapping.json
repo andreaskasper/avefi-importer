@@ -509,8 +509,17 @@
       "work": {
         "title": {
           "primary": "Main title",
+          "supplied": "Archive title",
           "alternative": "Alternative title",
-          "series": "Series title"
+          "series": "Series title",
+          "working": "Working title",
+          "translated": "Translated title",
+          "transliterated": "Transliterated title",
+          "abbreviated": "Abbreviated title",
+          "acquisition": "Acquisition title",
+          "corrected": "Corrected title",
+          "prerelease": "Pre-release title",
+          "search": "Search title"
         },
         "type": "Work type",
         "variant_type": "Variant type",
@@ -553,7 +562,18 @@
       },
       "manifestation": {
         "title": {
-          "primary": "Title of the manifestation"
+          "primary": "Title of the manifestation",
+          "supplied": "Archive title of the manifestation",
+          "alternative": "Alternative title",
+          "series": "Series title",
+          "working": "Working title",
+          "translated": "Translated title",
+          "transliterated": "Transliterated title",
+          "abbreviated": "Abbreviated title",
+          "acquisition": "Acquisition title",
+          "corrected": "Corrected title",
+          "prerelease": "Pre-release title",
+          "search": "Search title"
         },
         "publication": {
           "date": "Publication date"
@@ -566,7 +586,18 @@
       },
       "item": {
         "title": {
-          "primary": "Title of the item"
+          "primary": "Title of the item",
+          "supplied": "Archive title of the item",
+          "alternative": "Alternative title",
+          "series": "Series title",
+          "working": "Working title",
+          "translated": "Translated title",
+          "transliterated": "Transliterated title",
+          "abbreviated": "Abbreviated title",
+          "acquisition": "Acquisition title",
+          "corrected": "Corrected title",
+          "prerelease": "Pre-release title",
+          "search": "Search title"
         },
         "identifier": {
           "local": "Shelfmark",
@@ -687,7 +718,10 @@
         "manufacture": {
           "date": "When this copy was manufactured."
         }
-      }
+      },
+      "work.title.supplied": "Title assigned by the archive for a film that carries none of its own.",
+      "manifestation.title.supplied": "Title assigned by the archive for a film that carries none of its own.",
+      "item.title.supplied": "Title assigned by the archive for a film that carries none of its own."
     },
     "op": {
       "trim": "Trim whitespace",

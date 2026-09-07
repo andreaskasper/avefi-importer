@@ -509,8 +509,17 @@
       "work": {
         "title": {
           "primary": "Haupttitel",
+          "supplied": "Archivtitel",
           "alternative": "Weiterer Titel",
-          "series": "Reihentitel"
+          "series": "Reihentitel",
+          "working": "Arbeitstitel",
+          "translated": "Übersetzter Titel",
+          "transliterated": "Transkribierter Titel",
+          "abbreviated": "Abgekürzter Titel",
+          "acquisition": "Erwerbstitel",
+          "corrected": "Korrigierter Titel",
+          "prerelease": "Titel vor der Veröffentlichung",
+          "search": "Suchtitel"
         },
         "type": "Werkart",
         "variant_type": "Variantentyp",
@@ -553,7 +562,18 @@
       },
       "manifestation": {
         "title": {
-          "primary": "Titel der Manifestation"
+          "primary": "Titel der Manifestation",
+          "supplied": "Archivtitel der Manifestation",
+          "alternative": "Weiterer Titel",
+          "series": "Reihentitel",
+          "working": "Arbeitstitel",
+          "translated": "Übersetzter Titel",
+          "transliterated": "Transkribierter Titel",
+          "abbreviated": "Abgekürzter Titel",
+          "acquisition": "Erwerbstitel",
+          "corrected": "Korrigierter Titel",
+          "prerelease": "Titel vor der Veröffentlichung",
+          "search": "Suchtitel"
         },
         "publication": {
           "date": "Veröffentlichungsdatum"
@@ -566,7 +586,18 @@
       },
       "item": {
         "title": {
-          "primary": "Titel des Exemplars"
+          "primary": "Titel des Exemplars",
+          "supplied": "Archivtitel des Exemplars",
+          "alternative": "Weiterer Titel",
+          "series": "Reihentitel",
+          "working": "Arbeitstitel",
+          "translated": "Übersetzter Titel",
+          "transliterated": "Transkribierter Titel",
+          "abbreviated": "Abgekürzter Titel",
+          "acquisition": "Erwerbstitel",
+          "corrected": "Korrigierter Titel",
+          "prerelease": "Titel vor der Veröffentlichung",
+          "search": "Suchtitel"
         },
         "identifier": {
           "local": "Signatur",
@@ -687,7 +718,10 @@
         "manufacture": {
           "date": "Wann wurde diese Kopie hergestellt."
         }
-      }
+      },
+      "work.title.supplied": "Vom Archiv vergebener Titel für einen Film, der keinen eigenen trägt.",
+      "manifestation.title.supplied": "Vom Archiv vergebener Titel für einen Film, der keinen eigenen trägt.",
+      "item.title.supplied": "Vom Archiv vergebener Titel für einen Film, der keinen eigenen trägt."
     },
     "op": {
       "trim": "Leerraum entfernen",

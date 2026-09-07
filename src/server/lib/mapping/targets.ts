@@ -173,16 +173,83 @@ function entry(
   }
 }
 
+/* ------------------------------------------------------------------ Titel */
+
+/*
+ * TitleTypeEnum (FIAF Moving Image Cataloguing Manual A.2) kennt dreizehn
+ * Typen. Sie verteilen sich auf zwei Schemaplaetze mit sehr verschiedenem
+ * Verhalten.
+ *
+ * has_primary_title ist einwertig und am Werk Pflicht. Welcher Typ dort stehen
+ * darf, sagt die Schemabeschreibung: PreferredTitle am Werk, TitleProper an
+ * Manifestation und Exemplar, und wo keiner von beiden vorliegt, stattdessen
+ * SuppliedDevisedTitle. Formal erzwungen ist das nicht — has_primary_title ist
+ * schlicht ein Title, und efi-conv check liesse auch einen Arbeitstitel durch.
+ * Der Katalog haelt sich trotzdem daran, und zwar aus einem praktischen Grund:
+ * Beim Bauen gewinnt der erste Titel, spaetere ueberschreiben nicht. Dreizehn
+ * Ziele auf einem einwertigen Platz hiesse, dass zwoelf davon je nach
+ * Reihenfolge im Profil stillschweigend verschwinden.
+ *
+ * has_alternative_title ist mehrwertig. Dort passen alle uebrigen Typen
+ * nebeneinander, ohne sich zu verdraengen.
+ */
+
+/** Primaertitel je Ebene: Typ laut Schemabeschreibung, dazu die Beschriftung. */
+const PRIMARY_TITLE: Record<TargetLevel, readonly [string, string]> = {
+  work: ['PreferredTitle', 'Haupttitel'],
+  manifestation: ['TitleProper', 'Titel der Manifestation'],
+  item: ['TitleProper', 'Titel des Exemplars']
+}
+
+/**
+ * Der Ersatzplatz, wenn der Film keinen eigenen Titel traegt.
+ *
+ * Beschriftet als "Archivtitel", nicht als "Gelieferter/Entworfener Titel".
+ * Die Katalogbeschriftungen sind unsere, die Enum-Beschriftungen sind AVefis;
+ * hier zaehlt das Wort, das eine Filmarchivarin benutzt.
+ */
+const SUPPLIED_TITLE: Record<TargetLevel, string> = {
+  work: 'Archivtitel',
+  manifestation: 'Archivtitel der Manifestation',
+  item: 'Archivtitel des Exemplars'
+}
+
+/** Schluesselteil, Typ und Beschriftung der mehrwertigen Titeltypen. */
+const ALTERNATIVE_TITLES: ReadonlyArray<readonly [string, string, string]> = [
+  ['alternative', 'AlternativeTitle', 'Weiterer Titel'],
+  ['series', 'SeriesTitle', 'Reihentitel'],
+  ['working', 'WorkingTitle', 'Arbeitstitel'],
+  ['translated', 'TranslatedTitle', 'Uebersetzter Titel'],
+  ['transliterated', 'TransliteratedTitle', 'Transkribierter Titel'],
+  ['abbreviated', 'AbbreviatedTitle', 'Abgekuerzter Titel'],
+  ['acquisition', 'AcquisitionTitle', 'Erwerbstitel'],
+  ['corrected', 'CorrectedTitle', 'Korrigierter Titel'],
+  ['prerelease', 'PreReleaseTitle', 'Titel vor der Veroeffentlichung'],
+  ['search', 'SearchTitle', 'Suchtitel']
+]
+
+/** Alle Titelziele einer Ebene: zwei einwertige, zehn mehrwertige. */
+function titleTargets(level: TargetLevel): TargetDefinition[] {
+  const [primaryType, primaryLabel] = PRIMARY_TITLE[level]
+  const out: TargetDefinition[] = [
+    entry(`${level}.title.primary`, primaryLabel, level, 'Titel', 'text', false,
+      { kind: 'title', titleType: primaryType, primary: true }),
+    entry(`${level}.title.supplied`, SUPPLIED_TITLE[level], level, 'Titel', 'text', false,
+      { kind: 'title', titleType: 'SuppliedDevisedTitle', primary: true },
+      'Vom Archiv vergebener Titel fuer einen Film, der keinen eigenen traegt.')
+  ]
+  for (const [part, titleType, label] of ALTERNATIVE_TITLES) {
+    out.push(entry(`${level}.title.${part}`, label, level, 'Titel', 'text', true,
+      { kind: 'title', titleType, primary: false }))
+  }
+  return out
+}
+
 function buildCatalog(): Map<string, TargetDefinition> {
   const list: TargetDefinition[] = []
 
   /* ---------------- Werk ---------------- */
-  list.push(entry('work.title.primary', 'Haupttitel', 'work', 'Titel', 'text', false,
-    { kind: 'title', titleType: 'PreferredTitle', primary: true }))
-  list.push(entry('work.title.alternative', 'Weiterer Titel', 'work', 'Titel', 'text', true,
-    { kind: 'title', titleType: 'AlternativeTitle', primary: false }))
-  list.push(entry('work.title.series', 'Reihentitel', 'work', 'Titel', 'text', true,
-    { kind: 'title', titleType: 'SeriesTitle', primary: false }))
+  list.push(...titleTargets('work'))
 
   list.push(entry('work.type', 'Werkart', 'work', 'Werk', 'enum:WorkVariantTypeEnum', false,
     { kind: 'prop', prop: 'type' }))
@@ -223,8 +290,7 @@ function buildCatalog(): Map<string, TargetDefinition> {
   }
 
   /* ------------- Manifestation ------------- */
-  list.push(entry('manifestation.title.primary', 'Titel der Manifestation', 'manifestation', 'Manifestation', 'text', false,
-    { kind: 'title', titleType: 'TitleProper', primary: true }))
+  list.push(...titleTargets('manifestation'))
   list.push(entry('manifestation.publication.date', 'Veroeffentlichungsdatum', 'manifestation', 'Manifestation', 'date', false,
     { kind: 'eventdate', category: 'avefi:PublicationEvent', type: 'ReleaseEvent' }))
   list.push(entry('manifestation.note', 'Anmerkung zur Manifestation', 'manifestation', 'Manifestation', 'text', true,
@@ -235,8 +301,7 @@ function buildCatalog(): Map<string, TargetDefinition> {
     { kind: 'identifier', resource: 'LocalResource' }))
 
   /* ---------------- Exemplar ---------------- */
-  list.push(entry('item.title.primary', 'Titel des Exemplars', 'item', 'Exemplar', 'text', false,
-    { kind: 'title', titleType: 'TitleProper', primary: true }))
+  list.push(...titleTargets('item'))
   list.push(entry('item.identifier.local', 'Signatur / lokale Exemplar-ID', 'item', 'Exemplar', 'id:LocalResource', true,
     { kind: 'identifier', resource: 'LocalResource' }))
   list.push(entry('item.identifier.avefi', 'AVefi-PID des Exemplars', 'item', 'Exemplar', 'id:AVefiResource', true,

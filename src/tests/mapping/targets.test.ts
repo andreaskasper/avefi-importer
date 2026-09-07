@@ -14,11 +14,29 @@ function t(key: string) {
 }
 
 describe('Bestand', () => {
-  it('kennt 60 Ziele auf drei Ebenen', () => {
-    expect(allTargets().length).toBe(60)
-    expect(allTargets().filter((x) => x.level === 'work').length).toBe(31)
-    expect(allTargets().filter((x) => x.level === 'manifestation').length).toBe(5)
-    expect(allTargets().filter((x) => x.level === 'item').length).toBe(24)
+  it('kennt 91 Ziele auf drei Ebenen', () => {
+    expect(allTargets().length).toBe(91)
+    expect(allTargets().filter((x) => x.level === 'work').length).toBe(40)
+    expect(allTargets().filter((x) => x.level === 'manifestation').length).toBe(16)
+    expect(allTargets().filter((x) => x.level === 'item').length).toBe(35)
+  })
+
+  it('bietet je Ebene zwoelf Titelziele an', () => {
+    for (const level of ['work', 'manifestation', 'item'] as const) {
+      const titel = allTargets().filter((x) => x.level === level && x.key.includes('.title.'))
+      expect(titel.length).toBe(12)
+      // Genau zwei duerfen auf den einwertigen Primaerplatz: der ebenentypische
+      // Titel und der Archivtitel als Ersatz. Die uebrigen zehn sind mehrwertig
+      // und koennen sich deshalb nicht gegenseitig verdraengen.
+      expect(titel.filter((x) => !x.multi).length).toBe(2)
+    }
+  })
+
+  it('setzt am Primaerplatz nur die vom Schema vorgesehenen Typen', () => {
+    expect(t('work.title.primary').path).toContain('Haupttitel')
+    for (const key of ['work.title.supplied', 'manifestation.title.supplied', 'item.title.supplied']) {
+      expect(t(key).multi).toBe(false)
+    }
   })
 
   it('bietet has_format je Traegerklasse an', () => {
