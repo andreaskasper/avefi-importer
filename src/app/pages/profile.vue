@@ -29,7 +29,7 @@ useHead({ title: () => t('admin.profile.pageTitle') })
 
 const name = ref('')
 watch(data, (d) => {
-  if (d !== null) name.value = d.user.name
+  if (d != null) name.value = d.user.name
 }, { immediate: true })
 
 const savingName = ref(false)

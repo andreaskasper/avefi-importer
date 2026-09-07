@@ -54,14 +54,14 @@ const tab = ref<'work' | 'structure'>('work')
 const showJson = ref(false)
 
 function build() {
-  if (detail.value === null || config.value === null) return
+  if (detail.value == null || config.value == null) return
   ui.value = parseRecord(detail.value.avefi, config.value)
   baseline.value = JSON.stringify(serializeRecord(ui.value, config.value))
 }
 watch([detail, config], build, { immediate: true })
 
 const output = computed(() =>
-  ui.value === null || config.value === null ? null : serializeRecord(ui.value, config.value))
+  ui.value === null || config.value == null ? null : serializeRecord(ui.value, config.value))
 const jsonText = computed(() => (output.value === null ? '' : JSON.stringify(output.value, null, 2)))
 const dirty = computed(() => output.value !== null && JSON.stringify(output.value) !== baseline.value)
 
@@ -97,7 +97,7 @@ const saved = ref(false)
 const actionError = ref('')
 
 watch(detail, (d) => {
-  if (d === null) return
+  if (d == null) return
   completeness.value = d.record.completeness
   core.value = d.record.core ?? null
   editedAt.value = d.record.editedAt
@@ -397,7 +397,7 @@ function backToList() {
       </p>
     </div>
 
-    <template v-else-if="ui !== null && detail !== null && config !== null">
+    <template v-else-if="ui !== null && detail != null && config != null">
       <div class="editbar">
         <h1 class="ed-title">{{ titleText }}</h1>
         <!-- Benannte Angaben statt eines Anteils, wie in der Datensatzliste

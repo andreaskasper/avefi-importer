@@ -37,7 +37,7 @@ useHead({ title: () => (user.value ? `${user.value.email} · ${t('admin.users.cr
 
 const form = reactive({ name: '', institutionId: '', isAdmin: false, active: true })
 watch(data, (d) => {
-  if (d === null) return
+  if (d == null) return
   form.name = d.user.name
   form.institutionId = d.user.institution_id === null ? '' : String(d.user.institution_id)
   form.isAdmin = d.user.is_admin

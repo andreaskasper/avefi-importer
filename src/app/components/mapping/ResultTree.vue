@@ -46,8 +46,8 @@ const byLevel = computed(() => {
         <span class="lvlbadge" :class="`lvl-${level}`" aria-hidden="true" />
         {{ t(`mapping.level.${level}`) }}
       </h3>
-      <ul v-if="byLevel[level].length" class="treelist">
-        <li v-for="node in byLevel[level]" :key="node.key">
+      <ul v-if="byLevel[level]?.length" class="treelist">
+        <li v-for="node in byLevel[level] ?? []" :key="node.key">
           <span class="tl-label">{{ node.label }}</span>
           <span class="dim small tl-from" :title="node.from.map((f) => f.source === 'default' ? t('mapping.tree.default') : f.column).join(', ')">
             <template v-for="(f, i) in node.from" :key="i">

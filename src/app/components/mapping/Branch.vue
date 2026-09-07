@@ -104,7 +104,7 @@ function postChain(index: number): TransformStep[] {
   return binding.post
 }
 
-function outputsFor(example: PreviewExample, key: string) {
+function outputsFor(example: PreviewExample, key: string | undefined) {
   return (example.outputs ?? []).filter((o) => o.target === key)
 }
 

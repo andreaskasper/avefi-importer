@@ -217,7 +217,7 @@ function refresh() {
 }
 
 async function post<T>(action: string, body: Record<string, unknown>): Promise<T> {
-  return $fetch<T>(`${props.payload.endpoint}/${action}`, { method: 'POST', body })
+  return await $fetch(`${props.payload.endpoint}/${action}`, { method: 'POST', body }) as T
 }
 
 async function runPreview() {

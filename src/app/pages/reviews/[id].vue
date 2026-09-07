@@ -54,7 +54,7 @@ const actionError = ref('')
 const rejectOpen = ref(false)
 
 watch(data, (d) => {
-  if (d !== null && converterKey.value === '') converterKey.value = d.converters[0]?.key ?? ''
+  if (d != null && converterKey.value === '') converterKey.value = d.converters[0]?.key ?? ''
 }, { immediate: true })
 
 async function assign() {
@@ -104,7 +104,7 @@ async function reject() {
 
     <div role="alert" aria-live="assertive" v-if="loadError !== ''" class="ui-alert">{{ loadError }}</div>
 
-    <template v-else-if="review !== null && data !== null">
+    <template v-else-if="review !== null && data != null">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
         <h1 style="font-size:19px">{{ review.filename }}</h1>
         <span v-if="review.baseFormat" class="fmt">{{ review.baseFormat.toUpperCase() }}</span>
