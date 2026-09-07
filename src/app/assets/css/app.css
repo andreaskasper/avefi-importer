@@ -475,7 +475,7 @@ textarea.ui-input{resize:vertical;line-height:1.5}
   .apphead nav{display:none}
   .apphead nav.open{display:flex;flex-direction:column;gap:2px;position:absolute;
     top:calc(100% + 8px);left:0;z-index:60;min-width:210px;padding:6px;
-    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    background:var(--surface);border:1px solid var(--border);border-radius:10px;
     box-shadow:0 10px 28px rgba(0,0,0,.18);margin-left:0}
   .apphead nav.open a{padding:9px 12px}
 }

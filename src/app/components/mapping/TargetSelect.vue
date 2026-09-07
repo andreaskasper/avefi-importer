@@ -297,6 +297,6 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
 .ac-group {
   margin: 0; padding: 7px 10px 3px; font-size: 11px; font-weight: 700;
   letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
-  position: sticky; top: 0; background: var(--card); z-index: 1;
+  position: sticky; top: 0; background: var(--surface); z-index: 1;
 }
 </style>
