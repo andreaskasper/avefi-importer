@@ -19,7 +19,7 @@
 
 import { createHash } from 'node:crypto'
 import type {
-  ColumnMapping, MappingJson, TransformStep, ValidationIssue
+  AvefiValue, ColumnMapping, MappingJson, TransformStep, ValidationIssue
 } from '#shared/types/domain'
 import type { SourceRow } from './header.js'
 import type { SchemaModel } from './schema-model.js'
@@ -696,12 +696,12 @@ export function workKey(mapping: MappingJson, row: SourceRow, canonical: AvefiRe
   return createHash('md5').update(joined).digest('hex')
 }
 
-function asNode(v: unknown): AvefiNode {
-  return typeof v === 'object' && v !== null && !Array.isArray(v) ? (v as AvefiNode) : {}
+function asNode(v: unknown): AvefiValue {
+  return typeof v === 'object' && v !== null && !Array.isArray(v) ? (v as AvefiValue) : {}
 }
 
-function asList(v: unknown): AvefiNode[] {
-  return Array.isArray(v) ? (v as AvefiNode[]) : []
+function asList(v: unknown): AvefiValue[] {
+  return Array.isArray(v) ? (v as AvefiValue[]) : []
 }
 
 function text(v: unknown): string {
@@ -713,7 +713,7 @@ export function readTarget(canonical: AvefiRecord, key: string): string {
   const target: TargetDefinition | undefined = getTarget(key)
   if (target === undefined) return ''
 
-  const node: AvefiNode = target.level === 'work'
+  const node: AvefiValue = target.level === 'work'
     ? canonical.work
     : target.level === 'manifestation'
       ? asNode(canonical.manifestations[0])

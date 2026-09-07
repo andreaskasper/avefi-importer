@@ -14,7 +14,7 @@
  * Tragen: Was nicht konvertiert werden konnte, wird gemeldet und nicht
  * stillschweigend verworfen.
  */
-import type { ValidationIssue } from '#shared/types/domain'
+import type { AvefiNode, AvefiRecord, ValidationIssue } from '#shared/types/domain'
 
 /** Herkunft eines Datensatzes — Datei und Zeile, damit Meldungen zeigen koennen, wo es klemmt. */
 export interface SourceInfo {
@@ -64,10 +64,25 @@ export interface InternalRecord {
 }
 
 /** Fertige AVefi-Struktur eines Datensatzes, wie das Mappingprofil sie liefert. */
-export interface CanonicalRecord {
-  work: Record<string, unknown>
-  manifestations: Record<string, unknown>[]
-  items: Record<string, unknown>[]
+/**
+ * Frueher ein eigener Typ mit demselben Aufbau wie AvefiRecord. Zwei Namen
+ * fuer dieselbe Sache haben genau das verhindert, wofuer sie da waren: Der
+ * Uebergang zwischen Konverter und Mapping ging nur ueber eine Umgehung.
+ */
+export type CanonicalRecord = AvefiRecord
+
+/**
+ * Ein Platzhalter fuer einen Satz, der kein Werk hat: verwaiste Knoten in
+ * avefiJson, eine Zeile, die profileTable nicht umsetzen konnte.
+ *
+ * Bewusst ohne category. flattenCanonical erkennt am leeren Objekt, dass es
+ * kein Werk auszugeben gibt (`Object.keys(work).length > 0`); eine category
+ * hineinzuschreiben wuerde aus dem Platzhalter einen ausgegebenen Knoten
+ * machen und die Ausgabe veraendern. Der Cast steht deshalb hier, an einer
+ * Stelle, mit dieser Begruendung — und nicht verstreut im Code.
+ */
+export function ohneWerk(): AvefiNode {
+  return {} as AvefiNode
 }
 
 export type ConvertedRecord =
@@ -87,7 +102,7 @@ export interface Converter {
 }
 
 /** Ein AVefi-Knoten der Ausgabedatei (WorkVariant, Manifestation oder Item). */
-export type AvefiNode = Record<string, unknown>
+export type { AvefiNode }
 
 /**
  * Sammelt Meldungen fuer den Pruefbericht.

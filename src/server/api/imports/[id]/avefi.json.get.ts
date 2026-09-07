@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
     : `avefi-${row.id}.NICHT-VALIDIERT.json`
 
   setHeader(event, 'content-type', 'application/json; charset=utf-8')
-  setHeader(event, 'content-length', String(info.size))
+  setHeader(event, 'content-length', info.size)
   setHeader(event, 'content-disposition', `attachment; filename="${name}"`)
   // Maschinenlesbare Kennzeichnung fuer alles, was die Datei weiterverarbeitet.
   setHeader(event, 'x-avefi-validated', validated ? 'true' : 'false')

@@ -316,6 +316,29 @@ export interface TargetEntry {
 
 /* -------------------------------------------------- Erzeugter AVefi-Satz */
 
+/*
+ * Zwei verschiedene Dinge trugen bis zum 07.09.2026 denselben Namen.
+ *
+ * AvefiNode meint die drei Ebenen — Werk, Manifestation, Exemplar. Die tragen
+ * immer eine category. Der Mappingkern nannte aber auch verschachtelte
+ * Wertobjekte so: einen Titel { has_name, type }, ein Schlagwort { has_name },
+ * eine Sprache { code, usage }. Die tragen keine category und sollen auch
+ * keine tragen.
+ *
+ * Weil ein Typ nicht beides sein kann, stand in server/lib/mapping/builder.ts
+ * und in server/lib/converters/types.ts je ein eigenes
+ * `type AvefiNode = Record<string, unknown>` — also der Verzicht auf
+ * Typisierung. Die Datei hier nannte sich derweil die einzige Wahrheit und
+ * wurde im Mappingkern von beiden Aliassen verdeckt. Sichtbar wurde das nur
+ * an einer Stelle: server/api/mappings/_run.ts konnte den lokalen Satz nicht
+ * an den geteilten uebergeben.
+ *
+ * Jetzt gibt es zwei Namen fuer die zwei Dinge.
+ */
+
+/** Ein Wertobjekt im Baum: Titel, Schlagwort, Sprache, Kennung. Ohne category. */
+export type AvefiValue = Record<string, unknown>
+
 /** Ein Knoten im AVefi-Schema (Work, Manifestation oder Item). */
 export interface AvefiNode {
   category: string

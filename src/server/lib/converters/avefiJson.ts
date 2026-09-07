@@ -8,6 +8,7 @@
 import { readFile } from 'node:fs/promises'
 import { basename } from 'node:path'
 import type { AvefiNode, CanonicalRecord, Converter, ConvertedRecord } from './types'
+import { ohneWerk } from './types'
 
 export const AVEFI_JSON_KEY = 'avefi_json_v1'
 
@@ -48,7 +49,7 @@ export function groupAvefiNodes(nodes: readonly AvefiNode[]): CanonicalRecord[] 
   const works: CanonicalRecord[] = []
   const workByRef = new Map<string, CanonicalRecord>()
   const recordByManifestationRef = new Map<string, CanonicalRecord>()
-  const orphans: CanonicalRecord = { work: {}, manifestations: [], items: [] }
+  const orphans: CanonicalRecord = { work: ohneWerk(), manifestations: [], items: [] }
 
   for (const node of nodes) {
     if (node.category !== 'avefi:WorkVariant') continue

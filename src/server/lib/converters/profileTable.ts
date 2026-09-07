@@ -11,6 +11,7 @@ import type { BaseFormat, MappingJson, MappingProfileRow, ValidationIssue } from
 import type { AuthorityRequest, MappingServices } from '../mapping/runner'
 import type { SourceRow } from '../mapping/header'
 import type { CanonicalRecord, Converter, ConvertedRecord } from './types'
+import { ohneWerk } from './types'
 import { streamTableRows } from './table'
 import type { Delimiter } from './csv'
 import { AuthorityNeeds, ProfileRun } from './mappingBridge'
@@ -110,7 +111,7 @@ export class ProfileTableConverter implements Converter {
         // wuerde sie nur den Zaehler verfaelschen.
         yield {
           kind: 'canonical',
-          canonical: { work: {}, manifestations: [], items: [] },
+          canonical: { work: ohneWerk(), manifestations: [], items: [] },
           source: { file, row: rowNumber, profile: this.profile.id },
           issues: [
             {

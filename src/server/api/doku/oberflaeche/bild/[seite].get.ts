@@ -15,6 +15,6 @@ export default defineEventHandler(async (event) => {
   if (pfad === null) throw createError({ statusCode: 404, statusMessage: 'Bildschirmabzug nicht vorhanden.' })
   const info = await stat(pfad)
   setHeader(event, 'content-type', 'image/png')
-  setHeader(event, 'content-length', String(info.size))
+  setHeader(event, 'content-length', info.size)
   return sendStream(event, createReadStream(pfad))
 })

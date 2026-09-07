@@ -19,33 +19,28 @@ import type { TargetDefinition, TargetWriter } from './targets.js'
 import { getSchemaModel } from './schema-model.js'
 import { validateTargetValue, writerAcceptsAuthority } from './targets.js'
 
-/** Knoten des kanonischen Datensatzes. Die Form gibt das av-efi-schema vor. */
-export type AvefiNode = Record<string, unknown>
-
-/**
- * Kanonischer Datensatz einer Quellzeile bzw. eines zusammengefassten Werks.
- * In shared/types/domain.ts gibt es dafuer bisher keinen Typ (RecordRow.data_json
- * ist unknown) — siehe Bericht.
+/*
+ * Knoten und Wertobjekte kommen aus shared/types/domain.ts. Bis zum
+ * 07.09.2026 stand hier ein eigenes `Record<string, unknown>` — der Verzicht
+ * auf Typisierung, weil ein Name zwei Dinge meinte. Jetzt gibt es zwei.
  */
-export interface AvefiRecord {
-  work: AvefiNode
-  manifestations: AvefiNode[]
-  items: AvefiNode[]
-}
+export type { AvefiNode, AvefiRecord, AvefiValue } from '#shared/types/domain'
+import type { AvefiNode, AvefiValue } from '#shared/types/domain'
+
 
 type Level = 'work' | 'manifestation' | 'item'
 
 /* ---------------------------------------------------------- Kleine Helfer */
 
-function nodeList(node: AvefiNode, key: string): AvefiNode[] {
+function nodeList(node: AvefiValue, key: string): AvefiValue[] {
   const existing = node[key]
-  if (Array.isArray(existing)) return existing as AvefiNode[]
-  const created: AvefiNode[] = []
+  if (Array.isArray(existing)) return existing as AvefiValue[]
+  const created: AvefiValue[] = []
   node[key] = created
   return created
 }
 
-function stringList(node: AvefiNode, key: string): string[] {
+function stringList(node: AvefiValue, key: string): string[] {
   const existing = node[key]
   if (Array.isArray(existing)) return existing as string[]
   const created: string[] = []
@@ -53,12 +48,12 @@ function stringList(node: AvefiNode, key: string): string[] {
   return created
 }
 
-function nameOf(entry: AvefiNode): string {
+function nameOf(entry: AvefiValue): string {
   const v = entry['has_name']
   return typeof v === 'string' ? v : ''
 }
 
-function categoryOf(entry: AvefiNode): string {
+function categoryOf(entry: AvefiValue): string {
   const v = entry['category']
   return typeof v === 'string' ? v : ''
 }
@@ -148,7 +143,7 @@ export class AvefiBuilder {
           this.mergeSameAs(found, sameAs, allowed)
           return
         }
-        const created: AvefiNode = { has_name: v }
+        const created: AvefiValue = { has_name: v }
         this.mergeSameAs(created, sameAs, allowed)
         list.push(created)
         return
@@ -163,7 +158,7 @@ export class AvefiBuilder {
           this.mergeSameAs(found, sameAs, allowed)
           return
         }
-        const created: AvefiNode = { category, has_name: v }
+        const created: AvefiValue = { category, has_name: v }
         if (w.agentType !== undefined) created['type'] = w.agentType
         this.mergeSameAs(created, sameAs, allowed)
         list.push(created)
@@ -182,7 +177,7 @@ export class AvefiBuilder {
           this.mergeSameAs(found, sameAs, allowed)
           return
         }
-        const agent: AvefiNode = { category: 'avefi:Agent', has_name: v, type: w.agentType }
+        const agent: AvefiValue = { category: 'avefi:Agent', has_name: v, type: w.agentType }
         this.mergeSameAs(agent, sameAs, allowed)
         agents.push(agent)
         return
@@ -203,7 +198,7 @@ export class AvefiBuilder {
           this.mergeSameAs(found, sameAs, allowed)
           return
         }
-        const place: AvefiNode = { category: 'avefi:GeographicName', has_name: v }
+        const place: AvefiValue = { category: 'avefi:GeographicName', has_name: v }
         this.mergeSameAs(place, sameAs, allowed)
         places.push(place)
         return
@@ -279,7 +274,7 @@ export class AvefiBuilder {
     if (this.hasWorkTitle()) return
     for (const n of [this.item, this.manif]) {
       const title = n['has_primary_title']
-      const name = typeof title === 'object' && title !== null ? (title as AvefiNode)['has_name'] : undefined
+      const name = typeof title === 'object' && title !== null ? (title as AvefiValue)['has_name'] : undefined
       if (typeof name === 'string' && name.trim() !== '') {
         this.work['has_primary_title'] = { has_name: name, type: 'SuppliedDevisedTitle' }
         return
@@ -346,22 +341,22 @@ export class AvefiBuilder {
   }
 
   /** Findet ein Ereignis der Kategorie im Knoten oder legt es an. */
-  private event(node: AvefiNode, category: string, type: string | undefined): AvefiNode {
+  private event(node: AvefiNode, category: string, type: string | undefined): AvefiValue {
     const list = nodeList(node, 'has_event')
     const found = list.find((e) => categoryOf(e) === category)
     if (found !== undefined) return found
-    const created: AvefiNode = { category }
+    const created: AvefiValue = { category }
     if (type !== undefined) created['type'] = type
     list.push(created)
     return created
   }
 
   /** Findet eine Taetigkeit im Ereignis oder legt sie an. */
-  private activity(event: AvefiNode, category: string, type: string): AvefiNode {
+  private activity(event: AvefiValue, category: string, type: string): AvefiValue {
     const list = nodeList(event, 'has_activity')
     const found = list.find((a) => categoryOf(a) === category && a['type'] === type)
     if (found !== undefined) return found
-    const created: AvefiNode = { category, type, has_agent: [] }
+    const created: AvefiValue = { category, type, has_agent: [] }
     list.push(created)
     return created
   }
@@ -371,7 +366,7 @@ export class AvefiBuilder {
    * Resource-Typen, die das Schema fuer diese Klasse vorsieht — eine Orts-ID an
    * einer Person waere schemawidrig.
    */
-  private mergeSameAs(entity: AvefiNode, sameAs: readonly EnrichHit[], allowedTypes: readonly string[]): void {
+  private mergeSameAs(entity: AvefiValue, sameAs: readonly EnrichHit[], allowedTypes: readonly string[]): void {
     if (sameAs.length === 0) return
     for (const r of sameAs) {
       if (allowedTypes.length > 0 && !allowedTypes.includes(r.resource)) continue

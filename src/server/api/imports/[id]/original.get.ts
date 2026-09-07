@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   const name = sanitizeFilename(row.filename)
   const ascii = name.replace(/[^\x20-\x7e]/g, '_').replace(/"/g, "'")
   setHeader(event, 'content-type', 'application/octet-stream')
-  setHeader(event, 'content-length', String(info.size))
+  setHeader(event, 'content-length', info.size)
   setHeader(
     event,
     'content-disposition',

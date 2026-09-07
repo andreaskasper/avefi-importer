@@ -9,14 +9,14 @@
  */
 
 import type { Severity } from '#shared/types/domain'
-import type { AvefiNode, AvefiRecord } from './builder.js'
+import type { AvefiRecord, AvefiValue } from './builder.js'
 
-function asNode(v: unknown): AvefiNode {
-  return typeof v === 'object' && v !== null && !Array.isArray(v) ? (v as AvefiNode) : {}
+function asNode(v: unknown): AvefiValue {
+  return typeof v === 'object' && v !== null && !Array.isArray(v) ? (v as AvefiValue) : {}
 }
 
-function asList(v: unknown): AvefiNode[] {
-  return Array.isArray(v) ? (v as AvefiNode[]) : []
+function asList(v: unknown): AvefiValue[] {
+  return Array.isArray(v) ? (v as AvefiValue[]) : []
 }
 
 function isEmpty(v: unknown): boolean {
