@@ -14,6 +14,8 @@
  */
 
 import type { TargetEntry, TargetLevel, TargetType } from '#shared/types/domain'
+import { meldung } from './meldungen.js'
+import type { MappingMessage } from '#shared/types/domain'
 import type { SchemaModel } from './schema-model.js'
 import { getSchemaModel } from './schema-model.js'
 
@@ -336,7 +338,7 @@ export function validateTargetValue(
   target: TargetDefinition,
   value: unknown,
   schema: SchemaModel = getSchemaModel()
-): string[] {
+): MappingMessage[] {
   const v = typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
     ? String(value).trim()
     : ''
@@ -347,7 +349,7 @@ export function validateTargetValue(
   if (type.startsWith('enum:')) {
     const values = schema.enum(type.slice(5))
     if (values.length > 0 && !values.includes(v)) {
-      return [`"${v}" ist kein zulaessiger Wert fuer "${target.label}"`]
+      return [meldung('target.valueNotAllowed', { wert: v, ziel: target.label })]
     }
     return []
   }
@@ -362,7 +364,7 @@ export function validateTargetValue(
         re = null
       }
       if (re !== null && !re.test(v)) {
-        return [`"${v}" passt nicht zum Kennungsmuster von "${target.label}"`]
+        return [meldung('target.identifierPattern', { wert: v, ziel: target.label })]
       }
     }
     return []
@@ -370,27 +372,27 @@ export function validateTargetValue(
 
   if (type === 'duration') {
     if (!/^PT\d{2,}H[0-5]\dM[0-5]\dS$/.test(v)) {
-      return [`"${v}" ist keine schemakonforme Laufzeit (erwartet PT01H30M00S)`]
+      return [meldung('target.badDuration', { wert: v })]
     }
     return []
   }
 
   if (type === 'date') {
     if (!/^-?\d{4}(-\d{2}(-\d{2})?)?[?~]?$/.test(v)) {
-      return [`"${v}" ist kein zulaessiges Datum (erwartet JJJJ, JJJJ-MM oder JJJJ-MM-TT)`]
+      return [meldung('target.badDate', { wert: v })]
     }
     return []
   }
 
   if (type === 'number') {
-    if (!Number.isFinite(Number(v))) return [`"${v}" ist keine Zahl`]
+    if (!Number.isFinite(Number(v))) return [meldung('target.notANumber', { wert: v })]
     return []
   }
 
   if (type === 'lang') {
     const codes = schema.enum('LanguageCodeEnum')
     if (codes.length > 0 && !codes.includes(v)) {
-      return [`"${v}" ist kein ISO-639-2-Sprachcode (erwartet z. B. "ger", "eng")`]
+      return [meldung('target.badLanguage', { wert: v })]
     }
     return []
   }

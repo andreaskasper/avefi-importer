@@ -22,6 +22,8 @@
  */
 
 import type { TransformOp, TransformStep } from '#shared/types/domain'
+import { meldung } from './meldungen.js'
+import type { MappingMessage } from '#shared/types/domain'
 import type { SourceRow } from './header.js'
 import type { SchemaModel } from './schema-model.js'
 
@@ -132,7 +134,7 @@ export interface TransformResult {
   value: TransformValue
   /** Werte, die der Fallback "als Notiz behalten" gerettet hat. */
   notes: string[]
-  errors: string[]
+  errors: MappingMessage[]
   enrich: EnrichHit[]
 }
 
@@ -326,24 +328,24 @@ export function typeLabel(t: ChainType): string {
 
 export interface ChainTypeResult {
   type: ChainType
-  errors: string[]
+  errors: MappingMessage[]
 }
 
 /** Ausgabetyp einer Kette, ohne sie auszufuehren. */
 export function chainType(chain: readonly TransformStep[], inputType: ChainType = 'text'): ChainTypeResult {
   let t: ChainType = inputType
-  const errors: string[] = []
+  const errors: MappingMessage[] = []
 
   chain.forEach((step, i) => {
     const op = typeof step?.op === 'string' ? step.op : ''
     const meta = transformMeta(op)
     if (meta === undefined) {
-      errors.push(`Schritt ${i + 1}: unbekannte Operation "${op}"`)
+      errors.push(meldung('transform.unknownOp', { schritt: i + 1, op }))
       return
     }
     // Eine Zahl darf ueberall dort stehen, wo ein Einzelwert erwartet wird.
     if (meta.in !== 'any' && meta.in !== t && !(meta.in === 'text' && t === 'number')) {
-      errors.push(`Schritt ${i + 1} (${meta.label}) erwartet ${typeLabel(meta.in)}, bekommt aber ${typeLabel(t)}`)
+      errors.push(meldung('transform.typeMismatch', { schritt: i + 1, label: meta.label, erwartet: typeLabel(meta.in), bekommen: typeLabel(t) }))
     }
     if (meta.out !== 'same') t = meta.out
   })
@@ -491,7 +493,7 @@ export function runChain(
   ctx: TransformContext = {}
 ): TransformResult {
   const notes: string[] = []
-  const errors: string[] = []
+  const errors: MappingMessage[] = []
   const enrich: EnrichHit[] = []
   let current: TransformValue = value
 
@@ -499,13 +501,13 @@ export function runChain(
     if (typeof step !== 'object' || step === null) continue
     const op = canonicalOp(typeof step.op === 'string' ? step.op : '')
     if (!(op in TRANSFORM_CATALOG)) {
-      errors.push(`Unbekannte Operation "${step.op}"`)
+      errors.push(meldung('transform.unknownOpPlain', { op: String(step.op) }))
       continue
     }
     try {
       current = apply(op, step, current, ctx, notes, errors, enrich)
     } catch (e) {
-      errors.push(`${op}: ${e instanceof Error ? e.message : String(e)}`)
+      errors.push(meldung('transform.opFailed', { op, detail: e instanceof Error ? e.message : String(e) }))
     }
   }
 
@@ -518,7 +520,7 @@ function apply(
   value: TransformValue,
   ctx: TransformContext,
   notes: string[],
-  errors: string[],
+  errors: MappingMessage[],
   enrich: EnrichHit[]
 ): TransformValue {
   // Listen elementweise behandeln, wo es sinnvoll ist. Leere Ergebnisse fallen weg.
@@ -576,7 +578,7 @@ function apply(
       try {
         re = new RegExp(pattern, flags)
       } catch {
-        errors.push(`Ungueltiger regulaerer Ausdruck: ${pattern}`)
+        errors.push(meldung('transform.badRegex', { muster: pattern }))
         return value
       }
       const s = str(value)
@@ -585,7 +587,7 @@ function apply(
         // Herausloesen statt ersetzen — Nachfolger der alten Operation "year".
         const m = s.match(new RegExp(pattern, flags.replace('g', '')))
         if (m === null) {
-          if (s.trim() !== '') errors.push(`"${s}" passt nicht zum Muster ${pattern}`)
+          if (s.trim() !== '') errors.push(meldung('transform.noMatch', { wert: s, muster: pattern }))
           return ''
         }
         return m[paramInt(p, 'capture', 0)] ?? ''
@@ -668,7 +670,7 @@ function apply(
       if (dec !== '.') s = s.split(dec).join('.')
       const n = Number(s)
       if (s === '' || !Number.isFinite(n)) {
-        if (raw.trim() !== '') errors.push(`"${raw}" ist keine Zahl`)
+        if (raw.trim() !== '') errors.push(meldung('transform.notANumber', { wert: raw }))
         return ''
       }
       return n
@@ -682,7 +684,7 @@ function apply(
       const no = ['nein', 'n', 'no', 'false', 'falsch', '0', '-', 'keine', 'nicht vorhanden']
       if (yes.includes(key)) return paramStr(p, 'whenTrue', 'true')
       if (no.includes(key)) return paramStr(p, 'whenFalse', 'false')
-      errors.push(`"${raw}" ist weder ein Ja noch ein Nein`)
+      errors.push(meldung('transform.notABoolean', { wert: raw }))
       return ''
     }
 
@@ -690,7 +692,7 @@ function apply(
       const s = str(value)
       const m = s.match(/(\d{4})/)
       if (m !== null) return m[1] ?? ''
-      if (s.trim() !== '') errors.push(`keine Jahreszahl in "${s}" gefunden`)
+      if (s.trim() !== '') errors.push(meldung('transform.noYear', { wert: s }))
       return ''
     }
 
@@ -705,7 +707,7 @@ function apply(
       // GND-ID des Landes wandert ueber den Anreicherungskanal mit.
       const raw = str(value)
       const hit = ctx.lookupCountry?.(raw) ?? null
-      if (hit === null) return unknownValue(raw, paramStr(p, 'unknown', 'keep'), 'ist keine bekannte Laenderangabe', errors)
+      if (hit === null) return unknownValue(raw, paramStr(p, 'unknown', 'keep'), 'transform.unknownCountry', errors)
       if (hit.gnd !== '') {
         enrich.push({
           value: hit.name,
@@ -721,7 +723,7 @@ function apply(
     case 'language': {
       const raw = str(value)
       const code = ctx.lookupLanguage?.(raw) ?? builtinLanguageCode(raw)
-      if (code === null) return unknownValue(raw, paramStr(p, 'unknown', 'keep'), 'ist keine bekannte Sprachangabe', errors)
+      if (code === null) return unknownValue(raw, paramStr(p, 'unknown', 'keep'), 'transform.unknownLanguage', errors)
       return code
     }
 
@@ -783,12 +785,12 @@ function apply(
 }
 
 /** Gemeinsame Behandlung nicht aufgeloester Vokabularwerte. */
-function unknownValue(raw: string, mode: string, reason: string, errors: string[]): string {
+function unknownValue(raw: string, mode: string, code: string, errors: MappingMessage[]): string {
   switch (mode) {
     case 'drop':
       return ''
     case 'error':
-      errors.push(`"${raw}" ${reason}`)
+      errors.push(meldung(code, { wert: raw }))
       return ''
     default:
       return raw
@@ -838,7 +840,7 @@ function parseWithFormat(v: string, format: string): string | null {
 }
 
 /** Datum nach ISO (JJJJ, JJJJ-MM oder JJJJ-MM-TT) — das ist zugleich EDTF-konform. */
-export function toIsoDate(input: string, from: string, errors: string[]): string {
+export function toIsoDate(input: string, from: string, errors: MappingMessage[]): string {
   const v = input.trim()
   if (v === '') return ''
 
@@ -862,7 +864,7 @@ export function toIsoDate(input: string, from: string, errors: string[]): string
   m = v.match(/(\d{4})/)
   if (m !== null) return m[1] ?? ''
 
-  errors.push(`"${v}" konnte nicht als Datum gelesen werden`)
+  errors.push(meldung('transform.badDate', { wert: v }))
   return ''
 }
 
@@ -871,7 +873,7 @@ export function toIsoDate(input: string, from: string, errors: string[]): string
  * mindestens zweistelligen Werten (Muster ^PT[1-9]*[0-9][0-9]H[0-5][0-9]M[0-5][0-9]S$);
  * einstellige Angaben sind nicht schemakonform.
  */
-export function toIsoDuration(input: string, unit: string, errors: string[]): string {
+export function toIsoDuration(input: string, unit: string, errors: MappingMessage[]): string {
   const v = input.trim()
   if (v === '') return ''
   if (/^PT\d{2,}H[0-5]\dM[0-5]\dS$/.test(v)) return v // schon schemakonform
@@ -896,7 +898,7 @@ export function toIsoDuration(input: string, unit: string, errors: string[]): st
   const num = v.replace(/[^\d,.]/g, '').replace(',', '.')
   const n = Number(num)
   if (num === '' || !Number.isFinite(n)) {
-    errors.push(`"${v}" konnte nicht als Laufzeit gelesen werden`)
+    errors.push(meldung('transform.badDuration', { wert: v }))
     return ''
   }
   switch (unit) {
@@ -914,7 +916,7 @@ export function secondsToIso(sec: number): string {
   return `PT${String(h).padStart(2, '0')}H${String(m).padStart(2, '0')}M${String(s % 60).padStart(2, '0')}S`
 }
 
-function valuemap(v: string, p: TransformStep, notes: string[], errors: string[]): string {
+function valuemap(v: string, p: TransformStep, notes: string[], errors: MappingMessage[]): string {
   const raw = param(p, 'map')
   const map: Record<string, unknown> =
     typeof raw === 'object' && raw !== null && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {}
@@ -935,7 +937,7 @@ function valuemap(v: string, p: TransformStep, notes: string[], errors: string[]
     case 'keep':
       return v
     case 'error':
-      errors.push(`Wert "${v}" ist in der Zuordnung nicht enthalten`)
+      errors.push(meldung('transform.notInValuemap', { wert: v }))
       return ''
     default:
       notes.push(v) // als Notiz erhalten statt wegwerfen

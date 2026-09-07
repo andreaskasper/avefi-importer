@@ -853,7 +853,7 @@
       "Sprache": "Sprache"
     },
     "checkMsg": {
-      "target_unknown": "Das Ziel „{field}“ gibt es im Katalog nicht (mehr).",
+      "target_unknown": "Unbekanntes Ziel „{ziel}“",
       "chain_list_in_single": "„{field}“ nimmt nur einen Wert auf, die Kette liefert aber eine Liste. Ergänze „Element auswählen“ oder „Zusammenfügen“.",
       "chain_number": "„{field}“ erwartet eine Zahl.",
       "chain_duration": "„{field}“ erwartet das ISO-Format PT01H30M00S. Konverter „Laufzeit nach ISO 8601“ einfügen?",
@@ -868,7 +868,33 @@
       "value_truncated": "„{field}“ nimmt nur einen Wert auf; weitere Werte dieser Zelle bleiben unberücksichtigt.",
       "chain_shorthand": "Ein Konverter lag als reine Zeichenkette vor und wurde in ein Objekt umgewandelt.",
       "chain_unknown_op": "Ein unbekannter Konverter wurde entfernt.",
-      "authority_ambiguous": "„{value}“ passt auf {n} Normdatensätze. Es wurde keine ID eingetragen. Bitte manuell zuordnen."
+      "authority_ambiguous": "„{value}“ passt auf {n} Normdatensätze. Es wurde keine ID eingetragen. Bitte manuell zuordnen.",
+      "transform_unknownOp": "Schritt {schritt}: unbekannte Operation „{op}“",
+      "transform_typeMismatch": "Schritt {schritt} ({label}) erwartet {erwartet}, bekommt aber {bekommen}",
+      "transform_unknownOpPlain": "Unbekannte Operation „{op}“",
+      "transform_opFailed": "{op}: {detail}",
+      "transform_badRegex": "Ungültiger regulärer Ausdruck: {muster}",
+      "transform_noMatch": "„{wert}“ passt nicht zum Muster {muster}",
+      "transform_notANumber": "„{wert}“ ist keine Zahl",
+      "transform_notABoolean": "„{wert}“ ist weder ein Ja noch ein Nein",
+      "transform_noYear": "Keine Jahreszahl in „{wert}“ gefunden",
+      "transform_unknownCountry": "„{wert}“ ist keine bekannte Länderangabe",
+      "transform_unknownLanguage": "„{wert}“ ist keine bekannte Sprachangabe",
+      "transform_badDate": "„{wert}“ konnte nicht als Datum gelesen werden",
+      "transform_badDuration": "„{wert}“ konnte nicht als Laufzeit gelesen werden",
+      "transform_notInValuemap": "Der Wert „{wert}“ steht nicht in der Zuordnung",
+      "target_valueNotAllowed": "„{wert}“ ist kein zulässiger Wert für „{ziel}“",
+      "target_identifierPattern": "„{wert}“ passt nicht zum Kennungsmuster von „{ziel}“",
+      "target_badDuration": "„{wert}“ ist keine schemakonforme Laufzeit (erwartet PT01H30M00S)",
+      "target_badDate": "„{wert}“ ist kein zulässiges Datum (erwartet JJJJ, JJJJ-MM oder JJJJ-MM-TT)",
+      "target_notANumber": "„{wert}“ ist keine Zahl",
+      "target_badLanguage": "„{wert}“ ist kein ISO-639-2-Sprachcode (erwartet z. B. „ger“, „eng“)",
+      "chain_order": "„{nachschlag}“ schlägt nach, bevor „{davor}“ den Wert fertig gebildet hat. Gesucht wird deshalb der unbearbeitete Wert, während die Kette am Ende einen anderen liefert — das sieht aus wie „nichts gefunden“. Empfohlen: erst normalisieren und aufteilen, dann nachschlagen.",
+      "authority_limit": "Obergrenze von {grenze} Normdatenabfragen je Import erreicht.",
+      "authority_unreachable": "Die Normdatenquelle {quelle} war nicht erreichbar — es wurde kein Treffer eingetragen.",
+      "export_foreign": "Die Datei stammt nicht aus diesem Importer. Sie wird versuchsweise gelesen.",
+      "export_unreadable": "Die Datei enthält kein Profil.",
+      "identifier_duplicate": "Die Kennung „{id}“ steht schon in Zeile {zeile}. Zwei Objekte mit derselben Kennung bestehen die Schemaprüfung nicht. Entweder meinen die Zeilen dasselbe Objekt — dann gehört die Werkbildung darauf eingestellt — oder die Spalte taugt nicht als Kennung und sollte einem anderen Ziel zugeordnet werden."
     }
   }
 }

@@ -44,7 +44,10 @@ function message(check: MappingCheck): string {
     field: check.targetField !== undefined ? targetLabel(check.targetField) : '',
     column: check.sourceField ?? '',
     value: check.value ?? '',
-    n: check.count ?? 0
+    n: check.count ?? 0,
+    // Bausteine, die der Mappingkern mitschickt — ohne sie muesste der
+    // deutsche Serversatz stehen bleiben.
+    ...(check.params ?? {})
   })
 }
 

@@ -8,7 +8,7 @@
  * jede Zusammenfuehrung zum Ratespiel.
  */
 
-import type { Severity } from '#shared/types/domain'
+import type { CompletenessHint, Severity } from '#shared/types/domain'
 import type { AvefiRecord, AvefiValue } from './builder.js'
 
 function asNode(v: unknown): AvefiValue {
@@ -88,20 +88,39 @@ export function coreScore(record: AvefiRecord): { filled: number; total: number;
 }
 
 /** Hinweise fuer den Datensatz-Editor. */
-export function completenessIssues(record: AvefiRecord): Array<{ level: Severity | 'ok'; text: string }> {
+export const HINWEISE: Record<string, string> = {
+  'hint.noPrimaryTitle': 'Haupttitel (has_primary_title) fehlt',
+  'hint.noWorkType': 'Werkart (type) fehlt',
+  'hint.noProductionYear': 'Produktionsjahr empfohlen',
+  'hint.noSubjects': 'Schlagwoerter oder Personen empfohlen',
+  'hint.noActivities': 'Beteiligte (Regie o. Ae.) empfohlen',
+  'hint.noManifestation': 'Keine Manifestation erfasst',
+  'hint.noItem': 'Kein Exemplar erfasst',
+  'hint.complete': 'Grunddaten vollstaendig'
+}
+
+/**
+ * Hinweise fuer den Datensatz-Editor.
+ *
+ * Bis zum 07.09.2026 standen hier acht fest verdrahtete deutsche Saetze, die
+ * die Oberflaeche unveraendert anzeigte — auch die englische. Jetzt traegt
+ * jeder Hinweis seinen Code; der deutsche Satz reist als Rueckfallebene mit,
+ * weil er auch dort gebraucht wird, wo keine Oberflaeche uebersetzt.
+ */
+export function completenessIssues(record: AvefiRecord): CompletenessHint[] {
   const w = record.work
-  const out: Array<{ level: Severity | 'ok'; text: string }> = []
+  const codes: Array<{ level: Severity | 'ok'; code: string }> = []
 
-  if (!hasName(w['has_primary_title'])) out.push({ level: 'error', text: 'Haupttitel (has_primary_title) fehlt' })
-  if (isEmpty(w['type'])) out.push({ level: 'error', text: 'Werkart (type) fehlt' })
-  if (!hasEventDate(w['has_event'])) out.push({ level: 'warning', text: 'Produktionsjahr empfohlen' })
-  if (asList(w['has_subject']).length === 0) out.push({ level: 'warning', text: 'Schlagwoerter oder Personen empfohlen' })
-  if (!hasActivities(w['has_event'])) out.push({ level: 'warning', text: 'Beteiligte (Regie o. Ae.) empfohlen' })
-  if (record.manifestations.length === 0) out.push({ level: 'warning', text: 'Keine Manifestation erfasst' })
-  if (record.items.length === 0) out.push({ level: 'warning', text: 'Kein Exemplar erfasst' })
+  if (!hasName(w['has_primary_title'])) codes.push({ level: 'error', code: 'hint.noPrimaryTitle' })
+  if (isEmpty(w['type'])) codes.push({ level: 'error', code: 'hint.noWorkType' })
+  if (!hasEventDate(w['has_event'])) codes.push({ level: 'warning', code: 'hint.noProductionYear' })
+  if (asList(w['has_subject']).length === 0) codes.push({ level: 'warning', code: 'hint.noSubjects' })
+  if (!hasActivities(w['has_event'])) codes.push({ level: 'warning', code: 'hint.noActivities' })
+  if (record.manifestations.length === 0) codes.push({ level: 'warning', code: 'hint.noManifestation' })
+  if (record.items.length === 0) codes.push({ level: 'warning', code: 'hint.noItem' })
 
-  if (out.length === 0) out.push({ level: 'ok', text: 'Grunddaten vollstaendig' })
-  return out
+  if (codes.length === 0) codes.push({ level: 'ok', code: 'hint.complete' })
+  return codes.map((h) => ({ ...h, text: HINWEISE[h.code] ?? h.code }))
 }
 
 /** Klasse fuer den Fortschrittsring: low (unter 50), mid (unter 80), sonst leer. */

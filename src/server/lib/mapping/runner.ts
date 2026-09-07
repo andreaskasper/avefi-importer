@@ -19,8 +19,9 @@
 
 import { createHash } from 'node:crypto'
 import type {
-  AvefiValue, ColumnMapping, MappingJson, TransformStep, ValidationIssue
+  AvefiValue, ColumnMapping, MappingJson, MappingMessage, TransformStep, ValidationIssue
 } from '#shared/types/domain'
+import { meldung, meldungstext } from './meldungen.js'
 import type { SourceRow } from './header.js'
 import type { SchemaModel } from './schema-model.js'
 import type { AuthorityHit, CountryHit, EnrichHit, TransformContext, TransformValue } from './transform.js'
@@ -115,7 +116,10 @@ export function staticCheck(mapping: MappingJson, schema: SchemaModel = getSchem
       const result = chainType(chain, 'text')
 
       for (const e of result.errors) {
-        out.push({ severity: 'warning', code: 'chain.type', sourceField: col, targetField: key, message: e })
+        out.push({
+          severity: 'warning', code: e.code, sourceField: col, targetField: key,
+          message: meldungstext(e), ...(e.params !== undefined ? { params: e.params } : {})
+        })
       }
 
       const want = expectedChainType(target)
@@ -162,12 +166,10 @@ export function staticCheck(mapping: MappingJson, schema: SchemaModel = getSchem
       // wird nichts — die Kette bleibt das, was laeuft. Aber die haeufigste
       // stille Fehlbedienung ist eine Normdatenabfrage auf dem Rohwert.
       for (const o of chainOrderIssues(chain)) {
+        const m = meldung('chain.order', { nachschlag: opLabel(o.after), davor: opLabel(o.op) })
         out.push({
-          severity: 'warning', code: 'chain.order', sourceField: col, targetField: key,
-          message: `"${opLabel(o.after)}" schlaegt nach, bevor "${opLabel(o.op)}" den Wert fertig `
-            + `gebildet hat. Gesucht wird deshalb der unbearbeitete Wert, waehrend die Kette am Ende `
-            + 'einen anderen liefert — das sieht aus wie "nichts gefunden". Empfohlen: erst '
-            + 'normalisieren und aufteilen, dann nachschlagen.'
+          severity: 'warning', code: m.code, sourceField: col, targetField: key,
+          message: meldungstext(m), ...(m.params !== undefined ? { params: m.params } : {})
         })
       }
 
@@ -497,7 +499,7 @@ export interface CellResult {
    */
   pre: string
   outputs: CellOutput[]
-  errors: string[]
+  errors: MappingMessage[]
 }
 
 export interface RunRowResult {
@@ -540,14 +542,14 @@ export function runRow(
 
     const raw = String(row[col] ?? '')
     const pre = runChain(chainOf(spec), raw, ctx)
-    const cellErrors: string[] = [...pre.errors]
+    const cellErrors: MappingMessage[] = [...pre.errors]
     const outputs: CellOutput[] = []
 
     for (const binding of targets) {
       const key = String(binding.target ?? '')
       const target = getTarget(key)
       if (target === undefined) {
-        cellErrors.push(`Unbekanntes Ziel "${key}"`)
+        cellErrors.push(meldung('target.unknown', { ziel: key }))
         continue
       }
 
@@ -584,8 +586,9 @@ export function runRow(
         cellErrors.push(...errs)
         for (const e of errs) {
           issues.push({
-            severity: 'warning', code: 'value.invalid', sourceField: col, targetField: key,
-            message: e, value: String(v).slice(0, 120),
+            severity: 'warning', code: e.code, sourceField: col, targetField: key,
+            message: meldungstext(e), value: String(v).slice(0, 120),
+            ...(e.params !== undefined ? { params: e.params } : {}),
             ...(rowNumber !== undefined ? { row: rowNumber } : {})
           })
         }
@@ -600,7 +603,7 @@ export function runRow(
     }
 
     cells[col] = { raw, pre: toValueList(pre.value).map((v) => String(v)).join(' · '), outputs, errors: cellErrors }
-    for (const e of cellErrors) errors.push(`${col}: ${e}`)
+    for (const e of cellErrors) errors.push(`${col}: ${meldungstext(e)}`)
   }
 
   // Festwerte zuletzt, damit sie nur fuellen, was die Quelle nicht liefert.
@@ -643,7 +646,10 @@ export function addToTally(tally: RunTally, result: RunRowResult): RunTally {
     const bucket = tally.columnIssues[col] ?? { errors: 0, samples: [] }
     bucket.errors += cell.errors.length
     for (const e of cell.errors) {
-      if (bucket.samples.length < 5 && !bucket.samples.includes(e)) bucket.samples.push(e)
+      // Die Stichproben stehen im Pruefbericht, der auch ohne offene
+      // Oberflaeche gelesen wird — deshalb hier der fertige Satz.
+      const satz = meldungstext(e)
+      if (bucket.samples.length < 5 && !bucket.samples.includes(satz)) bucket.samples.push(satz)
     }
     tally.columnIssues[col] = bucket
   }

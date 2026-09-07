@@ -34,8 +34,12 @@ describe('Vollstaendigkeit', () => {
 
   it('benennt, was fehlt', () => {
     const issues = completenessIssues(leer)
-    expect(issues.some((i) => i.level === 'error' && i.text.includes('Haupttitel'))).toBe(true)
-    expect(completenessIssues(voll)).toEqual([{ level: 'ok', text: 'Grunddaten vollstaendig' }])
+    expect(issues.some((i) => i.level === 'error' && i.code === 'hint.noPrimaryTitle')).toBe(true)
+    // Der deutsche Satz reist als Rueckfallebene mit, die Oberflaeche waehlt
+    // ihren eigenen ueber den Code.
+    expect(completenessIssues(voll)).toEqual([
+      { level: 'ok', code: 'hint.complete', text: 'Grunddaten vollstaendig' }
+    ])
   })
 
   it('stuft den Fortschrittsring ein', () => {

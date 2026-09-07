@@ -15,6 +15,8 @@
  */
 
 import type { MappingJson, ProfileSample } from '#shared/types/domain'
+import { meldungstext } from './meldungen.js'
+import type { MappingMessage } from '#shared/types/domain'
 import type { SourceRow } from './header.js'
 import type { AvefiRecord } from './builder.js'
 import type { CellResult, MappingCheck, MappingServices } from './runner.js'
@@ -136,7 +138,7 @@ export function buildProfileSample(
 /* ---------------------------------------------------------------- Vorschau */
 
 export interface PreviewColumn {
-  examples: Array<ColumnExample & { pre: string; outputs: CellResult['outputs']; errors: string[] }>
+  examples: Array<ColumnExample & { pre: string; outputs: CellResult['outputs']; errors: MappingMessage[] }>
   /** n von of betrachteten Zeilen gefuellt; total ist die Zeilenzahl der Datei. */
   filled: { n: number; of: number; total: number }
 }
@@ -262,7 +264,7 @@ export function buildPreview(
           ...e,
           pre: cell?.pre ?? '',
           outputs: cell?.outputs ?? [],
-          errors: cell?.errors ?? []
+          errors: (cell?.errors ?? []).map((e) => ({ ...e, text: meldungstext(e) }))
         }
       }),
       filled: { n: info.filled, of: rows.length, total }
@@ -354,7 +356,7 @@ export function previewChain(
   chain: Parameters<typeof runChain>[0],
   value: string,
   services: MappingServices = {}
-): { value: string; list: string[]; errors: string[]; notes: string[] } {
+): { value: string; list: string[]; errors: MappingMessage[]; notes: string[] } {
   const ctx = {
     ...(services.schema !== undefined ? { schema: services.schema } : {}),
     ...(services.resolveAuthority !== undefined ? { resolveAuthority: services.resolveAuthority } : {}),
@@ -363,5 +365,12 @@ export function previewChain(
   }
   const result = runChain(chain, value, ctx)
   const list = Array.isArray(result.value) ? result.value.map((v) => String(v)) : [String(result.value)]
-  return { value: list.join('; '), list, errors: result.errors, notes: result.notes }
+  return {
+    value: list.join('; '),
+    list,
+    // Der deutsche Satz reist mit, damit eine fehlende Uebersetzung nicht als
+    // Code in der Oberflaeche landet.
+    errors: result.errors.map((e) => ({ ...e, text: meldungstext(e) })),
+    notes: result.notes
+  }
 }

@@ -88,7 +88,7 @@ export interface RecordListItem {
 
 export function toListItem(row: RecordRow): RecordListItem {
   const record = canonicalOf(row)
-  const missing = completenessIssues(record).filter((i) => i.level === 'error').map((i) => i.text)
+  const missing = completenessIssues(record).filter((i) => i.level === 'error').map((i) => i.code)
   return {
     id: row.id,
     title: row.work_title,

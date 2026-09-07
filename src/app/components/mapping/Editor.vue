@@ -36,6 +36,7 @@ const props = defineProps<{
 }>()
 
 const { t, te } = useI18n()
+const { meldung } = useMeldungstext()
 const keepFocus = useKeepFocus()
 const route = useRoute()
 
@@ -791,8 +792,8 @@ const canonicalJson = computed(() => {
                           <span v-if="valuesOf(example).length" class="okval">
                             <i aria-hidden="true">✓</i>{{ valuesOf(example).join(' · ') }}
                           </span>
-                          <span v-else-if="example.errors.length" class="errval" :title="example.errors.join(' · ')">
-                            <i aria-hidden="true">⚠</i>{{ example.errors[0] }}
+                          <span v-else-if="example.errors.length" class="errval" :title="example.errors.map(meldung).join(' · ')">
+                            <i aria-hidden="true">⚠</i>{{ meldung(example.errors[0]!) }}
                           </span>
                           <span v-else class="dim">{{ t('mapping.branch.noValue') }}</span>
                         </template>
@@ -863,8 +864,8 @@ const canonicalJson = computed(() => {
                                 :class="entry.origin === 'land' ? 'idchip-land' : ''"
                                 :title="idTitle(entry)" :aria-label="idTitle(entry)">{{ entry.id }}</span>
                         </span>
-                        <span v-else-if="example.errors.length" class="errval" :title="example.errors.join(' · ')">
-                          <i aria-hidden="true">⚠</i>{{ example.errors[0] }}
+                        <span v-else-if="example.errors.length" class="errval" :title="example.errors.map(meldung).join(' · ')">
+                          <i aria-hidden="true">⚠</i>{{ meldung(example.errors[0]!) }}
                         </span>
                         <span v-else class="dim">{{ t('mapping.branch.noValue') }}</span>
                       </div>

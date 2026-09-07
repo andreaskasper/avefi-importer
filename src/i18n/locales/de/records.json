@@ -284,6 +284,16 @@
       "forbidden": "Für diesen Schritt fehlt die Berechtigung.",
       "network": "Der Server war nicht erreichbar. Die Änderungen im Formular sind noch da — bitte erneut speichern.",
       "unexpected": "Unerwarteter Fehler ({status}). Bitte den Vorgang wiederholen."
+    },
+    "hint": {
+      "noPrimaryTitle": "Haupttitel fehlt",
+      "noWorkType": "Werkart fehlt",
+      "noProductionYear": "Produktionsjahr empfohlen",
+      "noSubjects": "Schlagwörter oder Personen empfohlen",
+      "noActivities": "Beteiligte (Regie o. Ä.) empfohlen",
+      "noManifestation": "Keine Manifestation erfasst",
+      "noItem": "Kein Exemplar erfasst",
+      "complete": "Grunddaten vollständig"
     }
   }
 }

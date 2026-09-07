@@ -210,6 +210,7 @@ export class ProfileTableConverter implements Converter {
             code: 'identifier.duplicate',
             row: rowNumber,
             value: id.slice(0, 120),
+            params: { kennung, id, zeile: first, mehrzahl },
             message: `Die ${kennung} „${id}" steht schon in Zeile ${first}. Zwei ${mehrzahl} mit `
               + 'derselben Kennung bestehen die Schemapruefung nicht. Entweder meinen die Zeilen '
               + 'dasselbe Objekt — dann gehoert die Werkbildung darauf eingestellt — oder die Spalte '

@@ -11,7 +11,13 @@ import type { RecordListItem } from './types'
 
 defineProps<{ records: RecordListItem[]; importId: string }>()
 
-const { t } = useI18n()
+const { t, te } = useI18n()
+
+/** Die Liste bekommt Codes; der Satz dazu steht in records.hint.*. */
+function fehlendLabel(code: string): string {
+  const key = `records.${code}`
+  return te(key) ? t(key) : code
+}
 const zeit = useDateTime()
 
 /** Beschriftung eines Kernfelds — die Schluessel kommen vom Server. */
@@ -52,7 +58,7 @@ function coreTitle(r: RecordListItem): string {
             <div class="fn">
               <span>{{ r.title && r.title.trim() !== '' ? r.title : t('records.table.untitled') }}</span>
               <span v-if="r.missing.length > 0" class="badge b-danger" style="padding:1px 7px;margin-left:6px"
-                    :title="t('records.table.missingTitle', { list: r.missing.join(', ') })">
+                    :title="t('records.table.missingTitle', { list: r.missing.map(fehlendLabel).join(', ') })">
                 {{ t('records.table.missing') }}</span>
               <span v-if="r.editedAt" class="badge b-info" style="padding:1px 7px;margin-left:6px"
                     :title="t('records.table.editedAt', { when: zeit(r.editedAt) })">

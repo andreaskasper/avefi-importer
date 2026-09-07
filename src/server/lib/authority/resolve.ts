@@ -286,7 +286,7 @@ export async function resolveAuthorities(
           + `(${e instanceof Error ? e.message : String(e)}) — ohne ID uebernommen`,
           {
             severity: 'info', code: 'authority.unreachable', sourceField: req.column,
-            value: value.slice(0, 120),
+            value: value.slice(0, 120), params: { quelle: source.toUpperCase() },
             message: `Normdatenquelle ${source.toUpperCase()} war nicht erreichbar — kein Treffer eingetragen.`
           }
         )
@@ -304,7 +304,7 @@ export async function resolveAuthorities(
     note(
       `Obergrenze von ${limit} Normdatenabfragen je Import erreicht — ${stats.skipped} Werte blieben ungeprueft.`,
       {
-        severity: 'info', code: 'authority.limit',
+        severity: 'info', code: 'authority.limit', params: { grenze: limit },
         message: `Obergrenze von ${limit} Normdatenabfragen je Import erreicht (AUTHORITY_LIMIT).`
       }
     )

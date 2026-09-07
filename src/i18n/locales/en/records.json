@@ -284,6 +284,16 @@
       "forbidden": "You do not have permission for this step.",
       "network": "The server could not be reached. The changes in the form are still there — please save again.",
       "unexpected": "Unexpected error ({status}). Please repeat the action."
+    },
+    "hint": {
+      "noPrimaryTitle": "Primary title missing",
+      "noWorkType": "Work type missing",
+      "noProductionYear": "Production year recommended",
+      "noSubjects": "Subjects or persons recommended",
+      "noActivities": "Contributors (director etc.) recommended",
+      "noManifestation": "No manifestation recorded",
+      "noItem": "No item recorded",
+      "complete": "Core data complete"
     }
   }
 }

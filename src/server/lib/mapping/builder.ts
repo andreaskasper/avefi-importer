@@ -25,7 +25,7 @@ import { validateTargetValue, writerAcceptsAuthority } from './targets.js'
  * auf Typisierung, weil ein Name zwei Dinge meinte. Jetzt gibt es zwei.
  */
 export type { AvefiNode, AvefiRecord, AvefiValue } from '#shared/types/domain'
-import type { AvefiNode, AvefiValue } from '#shared/types/domain'
+import type { AvefiNode, AvefiValue, MappingMessage } from '#shared/types/domain'
 
 
 type Level = 'work' | 'manifestation' | 'item'
@@ -80,7 +80,7 @@ export class AvefiBuilder {
    * @param sameAs Normdaten-Treffer zu genau diesem Wert.
    * @returns Beanstandungen; eine leere Liste heisst: geschrieben oder leer.
    */
-  write(target: TargetDefinition, value: unknown, sameAs: readonly EnrichHit[] = []): string[] {
+  write(target: TargetDefinition, value: unknown, sameAs: readonly EnrichHit[] = []): MappingMessage[] {
     const w = target.writer
     let effective = value
 

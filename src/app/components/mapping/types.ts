@@ -7,7 +7,7 @@
  * fuer denselben Feldnamen waere ein zweiter Ort, an dem er abweichen kann.
  */
 import type {
-  BaseFormat, MappingJson, ProfileSample, TargetEntry, TransformStep, ValidationIssue
+  BaseFormat, MappingJson, MappingMessage, ProfileSample, TargetEntry, TransformStep, ValidationIssue
 } from '#shared/types/domain'
 
 export type { MappingJson, ProfileSample, TargetEntry, TransformStep, ValidationIssue }
@@ -108,7 +108,7 @@ export interface PreviewExample {
   /** Der Wert nach der gemeinsamen Kette — die Zwischenstufe der Herkunft. */
   pre: string
   outputs: CellOutput[]
-  errors: string[]
+  errors: MappingMessage[]
 }
 
 export interface PreviewColumn {

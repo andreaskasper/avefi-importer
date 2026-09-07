@@ -127,7 +127,7 @@ describe('runRow', () => {
     const m = emptyMapping(['Farbe'], '1.2.3')
     m.columns['Farbe'] = { pre: [], targets: [{ target: 'item.colour_type', post: [] }] }
     const r = runRow(m, { Farbe: 'sepia' }, 'x', services)
-    expect(r.issues.some((i) => i.code === 'value.invalid')).toBe(true)
+    expect(r.issues.some((i) => i.code === 'target.valueNotAllowed')).toBe(true)
     expect(r.canonical.items.length).toBe(0)
   })
 })

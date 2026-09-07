@@ -32,6 +32,7 @@ const router = useRouter()
 const { t, te } = useI18n()
 const zeit = useDateTime()
 const keepFocus = useKeepFocus()
+const { hinweis } = useMeldungstext()
 
 const importId = computed(() => String(route.params.id ?? ''))
 const recordId = computed(() => String(route.params.recordId ?? ''))
@@ -488,7 +489,7 @@ function backToList() {
           <p class="note" style="margin-top:0">{{ t('records.editor.check.hintsExplain') }}</p>
           <p v-if="hints.length === 0" class="okval">{{ t('records.editor.check.hintsOk') }}</p>
           <ul v-else class="ed-errs">
-            <li v-for="(hint, i) in hints" :key="i">{{ hint.text }}</li>
+            <li v-for="(hint, i) in hints" :key="i">{{ hinweis(hint) }}</li>
           </ul>
         </div>
       </section>

@@ -118,6 +118,12 @@ export interface ValidationIssue {
   /** Stabiler Bezeichner fuer Uebersetzung und Gruppierung. */
   code?: string
   /**
+   * Bausteine des Satzes, damit die Oberflaeche ihn in ihrer Sprache bauen
+   * kann. Bis zum 07.09.2026 trug `message` den fertigen deutschen Satz des
+   * Mappingkerns, und die englische Oberflaeche zeigte ihn unveraendert.
+   */
+  params?: Record<string, string | number>
+  /**
    * Anzahl, auf die sich der Befund bezieht, etwa die Zahl der Normdaten-
    * Treffer. Sie steht getrennt, damit die Oberflaeche den Satz selbst bauen
    * kann; sonst muesste sie den deutschen Serversatz stehen lassen.
@@ -336,6 +342,22 @@ export interface TargetEntry {
  * Jetzt gibt es zwei Namen fuer die zwei Dinge.
  */
 
+/**
+ * Eine Meldung des Mappingkerns als Code und Bausteine, nicht als fertiger
+ * Satz. Den deutschen Text dazu baut server/lib/mapping/meldungen.ts, die
+ * englische Oberflaeche baut ihren eigenen.
+ */
+export interface MappingMessage {
+  code: string
+  params?: Record<string, string | number>
+  /**
+   * Der deutsche Satz, am Rand der API eingesetzt. Rueckfallebene fuer den
+   * Fall, dass zu einem Code keine Uebersetzung vorliegt — dann steht dort
+   * ein Satz und nicht der Code.
+   */
+  text?: string
+}
+
 /** Ein Wertobjekt im Baum: Titel, Schlagwort, Sprache, Kennung. Ohne category. */
 export type AvefiValue = Record<string, unknown>
 
@@ -405,6 +427,9 @@ export interface CoreScore {
 /** Hinweis zur Belegung, wie ihn der Datensatz-Editor anzeigt. */
 export interface CompletenessHint {
   level: Severity | 'ok'
+  /** Stabiler Bezeichner, damit die Oberflaeche den Satz selbst waehlt. */
+  code: string
+  /** Der deutsche Satz als Rueckfallebene. */
   text: string
 }
 

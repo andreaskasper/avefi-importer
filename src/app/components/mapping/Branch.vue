@@ -43,6 +43,7 @@ const emit = defineEmits<{
 }>()
 
 const { t, te } = useI18n()
+const { meldung } = useMeldungstext()
 const root = ref<HTMLElement | null>(null)
 
 /**
@@ -290,8 +291,8 @@ function authorityOpen(i: number): number {
               <span v-if="outputsFor(example, binding.target).length" class="okval">
                 <i aria-hidden="true">✓</i>{{ outputsFor(example, binding.target).map((o) => o.value).join(' · ') }}
               </span>
-              <span v-else-if="example.errors.length" class="errval" :title="example.errors.join(' · ')">
-                <i aria-hidden="true">⚠</i>{{ example.errors[0] }}
+              <span v-else-if="example.errors.length" class="errval" :title="example.errors.map(meldung).join(' · ')">
+                <i aria-hidden="true">⚠</i>{{ meldung(example.errors[0]!) }}
               </span>
               <span v-else class="dim">{{ t('mapping.branch.noValue') }}</span>
             </div>
