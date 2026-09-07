@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const api = useApi()
+import { dokuPfade, type DokuUebersicht } from '~/services/doku'
+const doku = dokuPfade()
 /**
  * Uebersicht des Handbuchs.
  *
@@ -7,14 +8,8 @@ const api = useApi()
  * wird kein Markdown verarbeitet — ein Vorlesewerkzeug soll Ueberschriften,
  * Listen und Tabellen vorfinden und nicht Rauten und Sternchen.
  */
-interface UebersichtDaten {
-  titel: string
-  html: string
-  kapitel: Array<{ kennung: string; titel: string }>
-}
-
 const { t } = useI18n()
-const { data, error } = await useFetch<UebersichtDaten>(api('/doku/handbuch'))
+const { data, error } = await useFetch<DokuUebersicht>(doku.handbuch())
 
 useHead({ title: () => t('doku.handbuch.pageTitle') })
 

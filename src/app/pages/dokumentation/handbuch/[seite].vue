@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const api = useApi()
+import { dokuPfade, type DokuKapitel } from '~/services/doku'
+const doku = dokuPfade()
 /**
  * Ein einzelnes Handbuchkapitel.
  *
@@ -10,19 +11,11 @@ const api = useApi()
  * Die Ueberschriften des Servers tragen Kennungen. Der Pruefbericht verweist
  * darauf, etwa .../03-bearbeiten-und-validieren#kennung-ist-nicht-eindeutig.
  */
-interface KapitelDaten {
-  kennung: string
-  titel: string
-  html: string
-  vorher: { kennung: string; titel: string } | null
-  nachher: { kennung: string; titel: string } | null
-}
-
 const { t } = useI18n()
 const route = useRoute()
 const kennung = computed(() => String(route.params.seite ?? ''))
 
-const { data, error } = await useFetch<KapitelDaten>(() => api(`/doku/handbuch/${kennung.value}`))
+const { data, error } = await useFetch<DokuKapitel>(() => doku.handbuchKapitel(kennung.value))
 
 if (error.value) {
   throw createError({ statusCode: 404, statusMessage: t('doku.error.missing'), fatal: true })

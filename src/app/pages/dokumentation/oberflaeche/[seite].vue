@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const api = useApi()
+import { dokuPfade, type DokuKapitel } from '~/services/doku'
+const doku = dokuPfade()
 /**
  * Eine einzelne Oberflaechenbeschreibung.
  *
@@ -7,20 +8,11 @@ const api = useApi()
  * der Anwendung steht; der Server liefert den Rest ab Stufe 2. So bleibt die
  * Stufenfolge lueckenlos.
  */
-interface KapitelDaten {
-  kennung: string
-  titel: string
-  html: string
-  vorher: { kennung: string; titel: string } | null
-  nachher: { kennung: string; titel: string } | null
-  bild: boolean
-}
-
 const { t } = useI18n()
 const route = useRoute()
 const kennung = computed(() => String(route.params.seite ?? ''))
 
-const { data, error } = await useFetch<KapitelDaten>(() => api(`/doku/oberflaeche/${kennung.value}`))
+const { data, error } = await useFetch<DokuKapitel>(() => doku.oberflaecheSeite(kennung.value))
 
 if (error.value) {
   throw createError({ statusCode: 404, statusMessage: t('doku.error.missing'), fatal: true })
@@ -28,7 +20,7 @@ if (error.value) {
 
 useHead({ title: () => t('doku.page.pageTitle', { name: data.value?.titel ?? '' }) })
 
-const bildAdresse = computed(() => api(`/doku/oberflaeche/bild/${kennung.value}`))
+const bildAdresse = computed(() => doku.oberflaecheBild(kennung.value))
 </script>
 
 <template>
