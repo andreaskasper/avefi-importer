@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { mappingsService, type MappingListResponse, type ProfileRow } from '~/services/mappings'
 /**
  * Uebersicht der Mappingprofile.
  *
@@ -8,26 +9,12 @@
  */
 import { failureText, mappingFailure, type MappingFailure } from '~/components/mapping/errors'
 
-const api = useApi()
+const zuordnungen = mappingsService()
 
 const { t, te, locale } = useI18n()
 useHead({ title: () => t('mapping.list.title') })
 
-interface ProfileRow {
-  id: number
-  name: string
-  base_format: string
-  version: number
-  complete: boolean
-  updated_at: string
-  institution_name: string
-  user_name: string | null
-  use_count: number
-  has_sample: boolean
-  own: boolean
-}
-
-const { data, error, refresh } = await useFetch<{ profiles: ProfileRow[]; own: number }>(api('/mappings'))
+const { data, error, refresh } = await useFetch<MappingListResponse>(zuordnungen.listePfad())
 
 const loadError = computed(() => (error.value ? failureText(t, te, mappingFailure(error.value)) : ''))
 const profiles = computed(() => data.value?.profiles ?? [])
@@ -54,11 +41,7 @@ async function onProfileFile(event: Event) {
       importFailure.value = { code: 'export_unreadable', params: {}, status: 422 }
       return
     }
-    const res = await $fetch<{
-      profile: { id: number; name: string }
-      created: boolean
-      hasSample: boolean
-    }>(api('/mappings'), { method: 'POST', body: { profile: document } })
+    const res = await zuordnungen.einfuehren(document)
     await refresh()
     importMessage.value = res.hasSample
       ? t(res.created ? 'mapping.list.imported' : 'mapping.list.updated', { name: res.profile.name })
@@ -175,7 +158,7 @@ function formatDate(value: string): string {
                           :aria-label="t('mapping.list.viewFor', { name: profile.name })">
                   {{ t('mapping.list.view') }}
                 </NuxtLink>
-                <a class="btn btn-outline btn-sm" :href="api(`/mappings/${profile.id}/export`)"
+                <a class="btn btn-outline btn-sm" :href="zuordnungen.ausfuhrPfad(profile.id)"
                    :title="t('mapping.list.exportFor', { name: profile.name })"
                    :aria-label="t('mapping.list.exportFor', { name: profile.name })"><span
                      aria-hidden="true">⭳</span></a>

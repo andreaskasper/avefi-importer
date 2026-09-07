@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { mappingsService } from '~/services/mappings'
 /**
  * Neues Mappingprofil aus einer Beispieldatei.
  *
@@ -11,7 +12,7 @@
  */
 import { failureText, mappingFailure, type MappingFailure } from '~/components/mapping/errors'
 
-const api = useApi()
+const zuordnungen = mappingsService()
 
 const { t, te } = useI18n()
 useHead({ title: () => t('mapping.new.title') })
@@ -58,16 +59,7 @@ async function submit() {
   busy.value = true
   failure.value = null
   try {
-    const res = await $fetch<{
-      profile: { id: number; name: string }
-      created: boolean
-      columns: number
-      rows: number
-    }>(api(`/mappings/new?name=${encodeURIComponent(chosen.name)}`), {
-      method: 'POST',
-      body: chosen,
-      headers: { 'content-type': 'application/octet-stream' }
-    })
+    const res = await zuordnungen.anlegen(chosen.name, chosen)
     await navigateTo({
       path: `/mappings/${res.profile.id}/edit`,
       query: { created: res.created ? '1' : '0' }

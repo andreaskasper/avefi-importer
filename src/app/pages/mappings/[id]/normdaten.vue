@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { mappingsService, type EditorAntwort } from '~/services/mappings'
 /**
  * Normdaten eines Profils zuordnen — als eigener Schritt.
  *
@@ -21,13 +22,13 @@ import type {
   AuthorityCandidate, AuthorityRequest, AuthorityValuesResponse, CandidateResponse, EditorPayload
 } from '~/components/mapping/types'
 
-const api = useApi()
+const zuordnungen = mappingsService()
 
 const route = useRoute()
 const { t, te } = useI18n()
 const id = computed(() => String(route.params.id ?? ''))
 
-const { data, error } = await useFetch<{ payload: EditorPayload }>(() => api(`/mappings/${id.value}/editor`))
+const { data, error } = await useFetch<EditorAntwort>(() => zuordnungen.editorPfad(id.value))
 const failure = computed(() => (error.value ? mappingFailure(error.value) : null))
 const loadError = computed(() => failureText(t, te, failure.value))
 const subject = computed(() => data.value?.payload.subject ?? id.value)
@@ -47,9 +48,7 @@ const noteKind = ref<'ok' | 'bad'>('ok')
 async function load() {
   busy.value = true
   try {
-    const res = await $fetch<AuthorityValuesResponse>(api(`/mappings/${id.value}/authority-values`), {
-      method: 'POST', body: { mapping: mapping.value }
-    })
+    const res = await zuordnungen.normdatenWerte(id.value, mapping.value)
     groups.value = res.groups
     open.value = res.open
   } catch (e) {
@@ -92,9 +91,7 @@ async function openDialog(column: string, value: string, source: string, kind: s
   dialogError.value = ''
   dialogBusy.value = true
   try {
-    const res = await $fetch<CandidateResponse>(api(`/mappings/${id.value}/candidates`), {
-      method: 'POST', body: { value, kind, sources: [source] }
-    })
+    const res = await zuordnungen.kandidaten(id.value, { value, kind, sources: [source] })
     candidates.value = res.candidates
   } catch (e) {
     dialogError.value = failureText(t, te, mappingFailure(e))
@@ -121,7 +118,7 @@ function reset(column: string, value: string, source: string) {
 async function save() {
   busy.value = true
   try {
-    await $fetch(api(`/mappings/${id.value}/save`), { method: 'POST', body: { mapping: mapping.value } })
+    await zuordnungen.speichern(id.value, mapping.value)
     note.value = t('mapping.authority.saved')
     noteKind.value = 'ok'
   } catch (e) {

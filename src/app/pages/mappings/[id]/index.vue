@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { mappingsService, type MappingDetail } from '~/services/mappings'
 /**
  * Ein Zuordnungsprofil: Zuordnungen, Versionen, Verwaltung.
  *
@@ -8,38 +9,13 @@
  */
 import { failureText, mappingFailure, type MappingFailure } from '~/components/mapping/errors'
 
-const api = useApi()
+const zuordnungen = mappingsService()
 
 const route = useRoute()
 const { t, te } = useI18n()
 const id = computed(() => String(route.params.id ?? ''))
 
-interface Detail {
-  profile: {
-    id: number
-    name: string
-    base_format: string
-    header_hash: string
-    version: number
-    complete: boolean
-    created_at: string
-    updated_at: string
-    institution_name: string
-    avefiSchemaVersion: string | null
-    profileFormatVersion: number | null
-  }
-  own: boolean
-  hasSample: boolean
-  useCount: number
-  columns: Array<{ name: string; state: string; targets: string[]; ops: string[] }>
-  open: string[]
-  defaults: Array<{ target: string; value: string }>
-  grouping: string[]
-  targets: Record<string, { label: string; path: string; schemaPath: string }>
-  versions: Array<{ version: number; name: string; created_at: string; user_name: string | null }>
-}
-
-const { data, error, refresh } = await useFetch<Detail>(() => api(`/mappings/${id.value}`))
+const { data, error, refresh } = await useFetch<MappingDetail>(() => zuordnungen.einerPfad(id.value))
 
 const loadError = computed(() => (error.value ? failureText(t, te, mappingFailure(error.value)) : ''))
 const profile = computed(() => data.value?.profile ?? null)
@@ -69,7 +45,7 @@ async function run(action: () => Promise<string>) {
 
 function rename() {
   void run(async () => {
-    await $fetch(api(`/mappings/${id.value}`), { method: 'PATCH', body: { name: newName.value } })
+    await zuordnungen.umbenennen(id.value, newName.value)
     return t('mapping.detail.renamed')
   })
 }
@@ -78,7 +54,7 @@ const confirmDelete = ref(false)
 function remove() {
   confirmDelete.value = false
   void run(async () => {
-    await $fetch(api(`/mappings/${id.value}`), { method: 'DELETE' })
+    await zuordnungen.loeschen(id.value)
     await navigateTo('/mappings')
     return t('mapping.detail.deleted')
   })
@@ -88,7 +64,7 @@ const restoring = ref<number | null>(null)
 function restore(version: number) {
   restoring.value = null
   void run(async () => {
-    await $fetch(api(`/mappings/${id.value}/restore`), { method: 'POST', body: { version } })
+    await zuordnungen.zuruecksetzen(id.value, version)
     return t('mapping.detail.restored', { n: version })
   })
 }
@@ -104,11 +80,7 @@ async function uploadSample(event: Event) {
   sampleFailure.value = null
   busy.value = true
   try {
-    await $fetch(api(`/mappings/${id.value}/sample?name=${encodeURIComponent(file.name)}`), {
-      method: 'POST',
-      body: file,
-      headers: { 'content-type': 'application/octet-stream' }
-    })
+    await zuordnungen.beispielSetzen(id.value, file)
     await navigateTo(`/mappings/${id.value}/edit`)
   } catch (e) {
     sampleFailure.value = mappingFailure(e)
@@ -241,7 +213,7 @@ function opLabel(op: string): string {
             <div style="display:flex;gap:8px;flex-wrap:wrap">
               <NuxtLink v-if="data.own && data.hasSample" class="btn btn-primary btn-sm"
                         :to="`/mappings/${profile.id}/edit`">{{ t('mapping.detail.edit') }}</NuxtLink>
-              <a class="btn btn-outline btn-sm" :href="api(`/mappings/${profile.id}/export`)">
+              <a class="btn btn-outline btn-sm" :href="zuordnungen.ausfuhrPfad(profile.id)">
                 {{ t('mapping.list.export') }}
               </a>
               <button v-if="data.own" type="button" class="btn btn-outline btn-sm"
