@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const api = useApi()
+import { reviewsService } from '~/services/reviews'
 /** Rahmen fuer angemeldete Seiten. Kopfzeile, Navigation, Nutzermenue. */
 const { user, logout } = useAuth()
 const route = useRoute()
@@ -49,7 +49,7 @@ const initials = computed(() => {
   return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase() || n[0]!.toUpperCase()
 })
 
-const { data: reviewCount } = await useFetch<{ open: number }>(api('/reviews/count'), {
+const { data: reviewCount } = await useFetch<{ open: number }>(reviewsService().anzahlPfad(), {
   default: () => ({ open: 0 }),
   immediate: true
 })

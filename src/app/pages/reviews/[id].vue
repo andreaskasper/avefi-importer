@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { reviewsService, type ReviewDetail } from '~/services/reviews'
 /**
  * Eine Aufgabe der Formatpruefung entscheiden.
  *
@@ -8,38 +9,14 @@
  */
 import { apiFailure, failureText } from '~/components/records/errors'
 
-const api = useApi()
-
-interface ReviewDetail {
-  review: {
-    id: number
-    status: string
-    fingerprint: string
-    createdAt: string
-    institutionId: number
-    institutionName: string | null
-    importId: string
-    filename: string
-    baseFormat: string | null
-    headerHash: string | null
-    importStatus: string
-    uploadedAt: string
-  }
-  sample: {
-    columns: string[]
-    rows: string[][]
-    tree: { root: string; namespace: string; children: string[] } | null
-  }
-  converters: Array<{ key: string; label: string }>
-  waiting: Array<{ reviewId: number; importId: string; filename: string; uploadedAt: string; importStatus: string }>
-}
+const pruefung = reviewsService()
 
 const route = useRoute()
 const router = useRouter()
 const { t, te } = useI18n()
 
 const id = computed(() => String(route.params.id ?? ''))
-const { data, error } = await useFetch<ReviewDetail>(() => api(`/reviews/${id.value}`))
+const { data, error } = await useFetch<ReviewDetail>(() => pruefung.einerPfad(id.value))
 
 const loadError = computed(() => (error.value ? failureText(t, te, apiFailure(error.value), ['admin', 'imports']) : ''))
 const review = computed(() => data.value?.review ?? null)
@@ -62,10 +39,7 @@ async function assign() {
   busy.value = true
   actionError.value = ''
   try {
-    const res = await $fetch<{ ok: true; label: string; started: number }>(api(`/reviews/${id.value}/assign`), {
-      method: 'POST',
-      body: { converterKey: converterKey.value, scope: scope.value }
-    })
+    const res = await pruefung.zuweisen(id.value, { converterKey: converterKey.value, scope: scope.value })
     await router.push({ path: '/reviews', query: { assigned: res.label, count: String(res.started) } })
   } catch (e) {
     actionError.value = failureText(t, te, apiFailure(e), ['admin', 'imports'])
@@ -79,10 +53,7 @@ async function reject() {
   busy.value = true
   actionError.value = ''
   try {
-    const res = await $fetch<{ ok: true; rejected: number }>(api(`/reviews/${id.value}/reject`), {
-      method: 'POST',
-      body: { scope: 'file' }
-    })
+    const res = await pruefung.ablehnen(id.value, { scope: 'file' })
     rejectOpen.value = false
     await router.push({ path: '/reviews', query: { rejected: String(res.rejected) } })
   } catch (e) {
@@ -177,7 +148,7 @@ async function reject() {
           </form>
 
           <div style="display:flex;gap:8px;align-items:center;margin-top:14px">
-            <a class="btn btn-outline btn-sm" :href="api(`/imports/${review.importId}/original`)">
+            <a class="btn btn-outline btn-sm" :href="pruefung.originalPfad(review.importId)">
               <span aria-hidden="true">⤓</span> {{ t('admin.reviews.detail.download') }}
             </a>
             <button class="btn btn-outline btn-sm" type="button" style="margin-left:auto"

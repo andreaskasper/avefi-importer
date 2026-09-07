@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { reviewsService, type ReviewListResponse, type ReviewTask } from '~/services/reviews'
 /**
  * Warteschlange der Formatpruefung.
  *
@@ -11,35 +12,12 @@
  */
 import { apiFailure, failureText } from '~/components/records/errors'
 
-const api = useApi()
-
-interface ReviewFile {
-  reviewId: number
-  importId: string
-  filename: string
-  uploadedAt: string
-  importStatus: string
-}
-
-interface ReviewTask {
-  id: number
-  fingerprint: string
-  shortFingerprint: string
-  baseFormat: string | null
-  institutionId: number
-  institutionName: string | null
-  importId: string
-  filename: string
-  uploadedAt: string
-  columns: number
-  waiting: number
-  files: ReviewFile[]
-}
+const pruefung = reviewsService()
 
 const { t, te } = useI18n()
 const route = useRoute()
 
-const { data, error } = await useFetch<{ tasks: ReviewTask[]; rows: number; duplicates: number }>(api('/reviews'))
+const { data, error } = await useFetch<ReviewListResponse>(pruefung.listePfad())
 
 const loadError = computed(() => (error.value ? failureText(t, te, apiFailure(error.value), ['admin', 'imports']) : ''))
 const tasks = computed(() => data.value?.tasks ?? [])
