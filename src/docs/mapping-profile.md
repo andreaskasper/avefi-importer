@@ -217,6 +217,65 @@ und ein nicht passender Wert wird beanstandet. `flags` versteht `i`
 
 | `op` | herein → heraus | Parameter |
 |---|---|---|
+| `only` | any → gleich | `pattern` (Pflicht), `negate`, `capture`, `flags` |
+
+Der Waechter. Er laesst den Wert durch oder macht ihn leer — und weil leere
+Ergebnisse ohnehin wegfallen, waehlt er damit einen Zweig aus. Mit `negate`
+kehrt sich die Bedingung um, mit `capture` wird zugleich eine Klammergruppe
+herausgeloest. Beides zusammen ist widerspruechlich und wird beanstandet: Was
+nicht passt, hat keine Gruppe.
+
+Ein nicht passender Wert wird **nicht** beanstandet. Das ist der Unterschied
+zu `regex` mit `capture`, und er ist beabsichtigt: In einem Zweigpaar passt
+eine Seite naturgemaess nie. Sichtbar wird die Aufteilung stattdessen als
+Bilanz im Pruefbericht (siehe unten). Ein leerer Wert bleibt leer, auch beim
+umgekehrten Waechter — sonst zoege der jede leere Zelle in seinen Zweig.
+
+```jsonc
+{ "op": "only", "pattern": "^\\[(.*)\\]$", "capture": 1 }   // "[Titel]" -> "Titel", sonst leer
+{ "op": "only", "pattern": "^\\[.*\\]$", "negate": true }   // "[Titel]" -> leer, sonst unveraendert
+```
+
+### Eine Spalte, zwei Bedeutungen
+
+Der Anlass war eine Titelspalte, in der eingeklammerte Werte Archivtitel sind
+und alle uebrigen Haupttitel. Beide Ziele liegen auf `has_primary_title`, und
+das ist einwertig: Bekaemen beide denselben Wert, verschwaende einer davon.
+
+```jsonc
+"Titel": {
+  "pre": [ { "op": "trim" } ],
+  "targets": [
+    { "target": "work.title.primary",
+      "post": [ { "op": "only", "pattern": "^\\[.*\\]$", "negate": true } ] },
+    { "target": "work.title.supplied",
+      "post": [ { "op": "only", "pattern": "^\\[(.*)\\]$", "capture": 1 } ] }
+  ]
+}
+```
+
+Je Zeile liefert genau ein Zweig etwas. Es gibt bewusst kein `if`-`then`-`else`
+im Profil: Die Verzweigung liegt weiterhin in `targets`, jeder Zweig bleibt
+eine gerade Schrittfolge, und der Editor kann den Ausgangstyp einer Kette
+weiterhin bestimmen, ohne sie auszufuehren.
+
+Zwei Dinge, auf die es dabei ankommt. Die Muster muessen **komplementaer**
+sein, sonst faellt eine Zeile durch beide Zweige und steht hinterher nirgends;
+genau dafuer gibt es die Zweigbilanz. Und sie sollten **verankert** sein:
+`^\[.*\]$` trifft `[ohne Titel]`, aber nicht `Der blaue Engel [Fragment]` —
+der ist ein Haupttitel mit einem Zusatz, kein Archivtitel.
+
+Sobald eine Spalte mehrere Ziele hat und mindestens eine Kette einen Waechter
+traegt, nennt der Pruefbericht die Aufteilung im Klartext:
+
+    Aufteilung der Spalte in den 55 betrachteten Zeilen:
+    Haupttitel: 43, Archivtitel: 12. Jede davon wurde einem Zweig zugeordnet.
+
+Die letzte Angabe ist die eigentliche Pruefung. Steht dort stattdessen, dass
+Zeilen keinen Zweig getroffen haben, decken die Muster nicht alles ab.
+
+| `op` | herein → heraus | Parameter |
+|---|---|---|
 | `prefix` | any → gleich | `value` (Pflicht) |
 | `suffix` | any → gleich | `value` (Pflicht) |
 
@@ -572,9 +631,35 @@ Die Schluessel folgen dem Muster `<ebene>.<gruppe>.<name>`:
 
 | Ebene | Beispiele |
 |---|---|
-| `work.` | `work.title.primary`, `work.title.alternative`, `work.type`, `work.form`, `work.genre`, `work.production.date`, `work.production.place`, `work.activity.director`, `work.subject.topic`, `work.identifier.local`, `work.same_as.gnd` |
+| `work.` | `work.title.primary`, `work.title.supplied`, `work.title.alternative`, `work.type`, `work.form`, `work.genre`, `work.production.date`, `work.production.place`, `work.activity.director`, `work.subject.topic`, `work.identifier.local`, `work.same_as.gnd` |
 | `manifestation.` | `manifestation.title.primary`, `manifestation.publication.date`, `manifestation.note`, `manifestation.webresource`, `manifestation.identifier.local` |
 | `item.` | `item.identifier.local`, `item.element_type`, `item.colour_type`, `item.sound_type`, `item.frame_rate`, `item.access_status`, `item.duration`, `item.extent.metre`, `item.language.spoken`, `item.language.subtitles`, `item.note` |
+
+### Titel
+
+`TitleTypeEnum` kennt dreizehn Typen (FIAF Moving Image Cataloguing Manual
+A.2). Sie verteilen sich auf zwei Schemaplaetze, und der Unterschied ist
+wichtig.
+
+`has_primary_title` ist einwertig und am Werk Pflicht. Dorthin fuehren je
+Ebene genau zwei Ziele: der ebenentypische Titel (`work.title.primary` mit
+`PreferredTitle`, an Manifestation und Exemplar `TitleProper`) und
+`*.title.supplied` mit `SuppliedDevisedTitle` — der Archivtitel, den das
+Schema ausdruecklich fuer den Fall vorsieht, dass ein Film keinen eigenen
+Titel traegt.
+
+Formal erzwungen ist diese Beschraenkung nicht; `has_primary_title` ist im
+Schema schlicht ein `Title`, und `efi-conv check` liesse auch einen
+Arbeitstitel durch. Der Katalog haelt sie trotzdem ein, und zwar aus einem
+praktischen Grund: Auf dem einwertigen Platz gewinnt der erste Wert, spaetere
+werden nicht uebernommen. Dreizehn Ziele auf einem Platz hiessen zwoelf
+moegliche Verluste, deren Ausgang an der Reihenfolge im Profil haengt. Kommt
+es dort trotzdem zum Zusammenstoss, nennt der Pruefbericht ihn.
+
+Die uebrigen zehn Typen sind mehrwertig und fuehren auf
+`has_alternative_title`: `alternative`, `series`, `working`, `translated`,
+`transliterated`, `abbreviated`, `acquisition`, `corrected`, `prerelease`,
+`search`. Sie gibt es auf allen drei Ebenen.
 
 Jeder Eintrag traegt Bezeichnung, Ebene, Gruppe, Typ, ob er mehrwertig ist, und
 den vollstaendigen Schemapfad; den zeigt der Editor an, wie es der Vertrag

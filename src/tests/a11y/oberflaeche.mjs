@@ -1169,8 +1169,15 @@ let browser = null
 let seite = null
 
 async function browserStarten() {
+  // Playwrights mitgeliefertes Chromium ist gegen glibc gebaut und laeuft
+  // deshalb nicht im Alpine-Container der Anwendung. Mit OBF_CHROME laesst
+  // sich ein vorhandenes Chromium angeben (im Container: apk add chromium,
+  // dann OBF_CHROME=/usr/bin/chromium). Ohne die Angabe bleibt alles wie
+  // bisher.
+  const eigenes = process.env.OBF_CHROME ?? ''
   browser = await chromium.launch({
-    args: ['--ignore-certificate-errors', '--disable-dev-shm-usage']
+    args: ['--ignore-certificate-errors', '--disable-dev-shm-usage'],
+    ...(eigenes !== '' ? { executablePath: eigenes } : {})
   })
   const kontext = await browser.newContext({
     viewport: { width: BREITE, height: HOEHE },
