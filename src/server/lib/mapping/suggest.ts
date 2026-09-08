@@ -32,10 +32,14 @@ const KEYWORDS: Record<string, readonly string[]> = {
   'work.title.working': ['arbeitstitel', 'workingtitle'],
   'work.title.translated': ['uebersetztertitel', 'uebersetzt', 'uebersetzung', 'englischertitel',
     'translatedtitle', 'fremdsprachigertitel'],
-  'work.title.transliterated': ['transkribiertertitel', 'transkribiert', 'transliteriert',
-    'transliteratedtitle', 'umschrift'],
+  // Transliteration ist Zeichen-fuer-Zeichen zwischen Schriftsystemen,
+  // Transkription die lautliche Wiedergabe. Der Katalog des Verbunds sagt
+  // "Transliterierter Titel"; die transkribierte Form bleibt als Schluesselwort
+  // stehen, weil Haeuser sie in Spaltennamen benutzen.
+  'work.title.transliterated': ['transliteriertertitel', 'transliteriert', 'transkribiertertitel',
+    'transkribiert', 'transliteratedtitle', 'umschrift'],
   'work.title.abbreviated': ['abgekuerztertitel', 'abkuerzung', 'kurztitel', 'abbreviatedtitle'],
-  'work.title.acquisition': ['erwerbstitel', 'erwerbungstitel', 'acquisitiontitle'],
+  'work.title.acquisition': ['uebernahmetitel', 'erwerbstitel', 'erwerbungstitel', 'acquisitiontitle'],
   'work.title.corrected': ['korrigiertertitel', 'korrekturtitel', 'correctedtitle'],
   'work.title.prerelease': ['vorabtitel', 'prereleasetitle'],
   'work.title.search': ['suchtitel', 'searchtitle'],
@@ -103,7 +107,8 @@ const TITLE_QUALIFIERS: readonly string[] = ['diverse', 'weitere', 'sonstige', '
   // Vorschlag uebernahm, schrieb einen uebersetzten Titel als bevorzugten
   // Titel ins Pflichtfeld.
   'uebersetzt', 'transkribiert', 'transliteriert', 'abgekuerzt', 'abkuerzung', 'kurz',
-  'erwerb', 'korrigiert', 'korrektur', 'such', 'vorab', 'englisch', 'fremdsprachig', 'umschrift']
+  'erwerb', 'uebernahme', 'korrigiert', 'korrektur', 'such', 'vorab', 'englisch', 'fremdsprachig',
+  'umschrift']
 
 /**
  * Bewertet ein Wort gegen ein Schluesselwort.

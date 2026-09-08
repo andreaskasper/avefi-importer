@@ -220,9 +220,9 @@ const ALTERNATIVE_TITLES: ReadonlyArray<readonly [string, string, string]> = [
   ['series', 'SeriesTitle', 'Reihentitel'],
   ['working', 'WorkingTitle', 'Arbeitstitel'],
   ['translated', 'TranslatedTitle', 'Uebersetzter Titel'],
-  ['transliterated', 'TransliteratedTitle', 'Transkribierter Titel'],
+  ['transliterated', 'TransliteratedTitle', 'Transliterierter Titel'],
   ['abbreviated', 'AbbreviatedTitle', 'Abgekuerzter Titel'],
-  ['acquisition', 'AcquisitionTitle', 'Erwerbstitel'],
+  ['acquisition', 'AcquisitionTitle', 'Uebernahmetitel'],
   ['corrected', 'CorrectedTitle', 'Korrigierter Titel'],
   ['prerelease', 'PreReleaseTitle', 'Titel vor der Veroeffentlichung'],
   ['search', 'SearchTitle', 'Suchtitel']
