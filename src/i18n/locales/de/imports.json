@@ -92,7 +92,8 @@
       "avefiDraft": "Zwischenstand herunterladen (nicht validiert)",
       "reconvert": "Neu konvertieren",
       "delete": "Löschen",
-      "detail": "Details ansehen"
+      "detail": "Details ansehen",
+      "rename": "Umbenennen"
     },
     "confirm": {
       "cancel": "Abbrechen",
@@ -146,7 +147,15 @@
       "positionCol": "Zeile {line}, Spalte {column}",
       "hint": "Lösung",
       "reupload": "Berichtigte Datei hochladen",
-      "reuploadHint": "Die Datei an den markierten Stellen berichtigen und hier erneut hochladen. Der fehlgeschlagene Import bleibt zum Nachsehen bestehen, bis du ihn löschst."
+      "reuploadHint": "Die Datei an den markierten Stellen berichtigen und hier erneut hochladen. Der fehlgeschlagene Import bleibt zum Nachsehen bestehen, bis du ihn löschst.",
+      "name": {
+        "heading": "Anzeigename",
+        "label": "Anzeigename",
+        "hint": "Ein eigener Name hilft, mehrere Läufe derselben Datei auseinanderzuhalten. Der Dateiname bleibt daneben stehen — er ist die Verbindung zur Lieferung des Archivs. Leer lassen entfernt den Namen wieder.",
+        "save": "Namen speichern",
+        "saved": "Gespeichert: „{name}“",
+        "cleared": "Der Anzeigename wurde entfernt."
+      }
     },
     "stage": {
       "worker/download": "Herunterladen der Datei",

@@ -138,7 +138,8 @@ function isUploading(item: ImportListItem): boolean {
         <tbody>
           <tr v-for="item in props.items" :key="item.id">
             <td>
-              <div class="fn" :title="item.filename">{{ item.filename }}</div>
+              <div class="fn" :title="item.filename">{{ item.label || item.filename }}</div>
+              <div v-if="item.label" class="dim small mono" :title="item.filename">{{ item.filename }}</div>
               <div v-if="sizeOf(item.filesize) !== null" class="dim small">
                 {{ t(sizeOf(item.filesize)!.key, sizeOf(item.filesize)!.params) }}
               </div>

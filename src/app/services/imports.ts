@@ -40,6 +40,8 @@ export function importsService(): {
   avefiJsonPfad: (id: string) => string
   hochladenPfad: (dateiname: string) => string
   loeschen: (id: string) => Promise<unknown>
+  /** Anzeigename setzen oder — mit leerer Angabe — wieder entfernen. */
+  benennen: (id: string, label: string) => Promise<{ id: string; label: string | null }>
   neuKonvertieren: (id: string) => Promise<unknown>
   vonAdresse: (url: string) => Promise<unknown>
   blaetterWaehlen: (id: string, sheets: string[]) => Promise<BlattAuswahlAntwort>
@@ -62,6 +64,7 @@ export function importsService(): {
     // meldet; deshalb hier nur die Adresse.
     hochladenPfad: (dateiname) => api(`/imports/upload?name=${encodeURIComponent(dateiname)}`),
     loeschen: (id) => $fetch(api(`/imports/${id}`), { method: 'DELETE' }),
+    benennen: (id, label) => $fetch(api(`/imports/${id}`), { method: 'PATCH', body: { label } }),
     neuKonvertieren: (id) => $fetch(api(`/imports/${id}/reconvert`), { method: 'POST' }),
     vonAdresse: (url) => $fetch(api('/imports/url'), { method: 'POST', body: { url } }),
     blaetterWaehlen: (id, sheets) =>

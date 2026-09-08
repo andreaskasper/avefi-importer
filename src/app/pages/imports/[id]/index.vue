@@ -27,6 +27,34 @@ const report = computed(() => data.value?.report ?? null)
 const failed = computed(() => data.value?.failed ?? null)
 const diagnostics = computed(() => data.value?.diagnostics ?? null)
 
+/*
+ * Anzeigename NEBEN dem Dateinamen (#1, Matti Stoehr). Mehrere Laeufe
+ * derselben Datei standen in der Liste als gleichnamige Zeilen nebeneinander,
+ * unterscheidbar nur am Zeitstempel. Der Dateiname bleibt trotzdem stehen: Er
+ * ist die Verbindung zur Lieferung des Archivs, und ein selbst gewaehlter Name
+ * darf sie nicht ersetzen.
+ */
+const nameEntwurf = ref('')
+const nameBusy = ref(false)
+const nameMeldung = ref('')
+watch(item, (neu) => { nameEntwurf.value = neu?.label ?? '' }, { immediate: true })
+
+async function benennen() {
+  nameBusy.value = true
+  nameMeldung.value = ''
+  try {
+    const res = await importe.benennen(id.value, nameEntwurf.value.trim())
+    nameMeldung.value = res.label === null
+      ? t('imports.detail.name.cleared')
+      : t('imports.detail.name.saved', { name: res.label })
+    await refresh()
+  } catch (e) {
+    nameMeldung.value = failureText(t, te, apiFailure(e))
+  } finally {
+    nameBusy.value = false
+  }
+}
+
 useHead({ title: () => (item.value ? `${item.value.filename} · ${t('imports.detail.crumb')}` : t('imports.detail.crumb')) })
 
 /** Der Absatz, der zum Stand passt — Titel und Text kommen aus einem Schluesselpaar. */
@@ -104,7 +132,10 @@ const formatLabel = computed(() => {
 
     <template v-else-if="item !== null">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
-        <h1 style="font-size:19px">{{ item.filename }}</h1>
+        <div>
+          <h1 style="font-size:19px;margin:0">{{ item.label || item.filename }}</h1>
+          <div v-if="item.label" class="dim small mono">{{ item.filename }}</div>
+        </div>
         <span v-if="formatLabel !== ''" class="fmt">{{ formatLabel }}</span>
         <ImportsStatusBadge :status="item.status" :stale="item.stale"
                               :ran-with-version="item.ranWithVersion" :profile-version="item.profileVersion" />
@@ -180,11 +211,31 @@ const formatLabel = computed(() => {
         </div>
       </section>
 
+      <!-- Anzeigename -->
+      <h2 id="name" class="side-h" style="margin:0 0 8px">{{ t('imports.detail.name.heading') }}</h2>
+      <div class="ui-card" style="margin-bottom:18px">
+        <p class="note" style="margin:0 0 10px">{{ t('imports.detail.name.hint') }}</p>
+        <form class="stackform" @submit.prevent="benennen">
+          <div class="field" style="width:100%">
+            <label for="ilabel">{{ t('imports.detail.name.label') }}</label>
+            <input id="ilabel" v-model="nameEntwurf" class="ui-input" maxlength="200"
+                   :placeholder="item.filename">
+          </div>
+          <button class="btn btn-outline btn-sm" type="submit" :disabled="nameBusy">
+            {{ t('imports.detail.name.save') }}
+          </button>
+        </form>
+        <p v-if="nameMeldung" class="dim small" aria-live="polite" style="margin:8px 0 0">{{ nameMeldung }}</p>
+      </div>
+
       <!-- Eckdaten -->
       <h2 class="side-h" style="margin:0 0 8px">{{ t('imports.detail.meta') }}</h2>
       <div class="ui-card" style="margin-bottom:18px">
         <div class="frow" style="grid-template-columns:200px 1fr;padding:7px 0">
           <span>{{ t('imports.detail.file') }}</span><span class="fval">{{ item.filename }}</span>
+        </div>
+        <div v-if="item.label" class="frow" style="grid-template-columns:200px 1fr;padding:7px 0">
+          <span>{{ t('imports.detail.name.label') }}</span><span class="fval">{{ item.label }}</span>
         </div>
         <div v-if="size !== null" class="frow" style="grid-template-columns:200px 1fr;padding:7px 0">
           <span>{{ t('imports.detail.size') }}</span>

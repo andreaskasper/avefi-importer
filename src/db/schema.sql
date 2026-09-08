@@ -139,6 +139,11 @@ CREATE TABLE IF NOT EXISTS authority_cache (
 -- Profil auch ohne den zugehörigen Import bearbeiten und die Vorschau bleibt echt.
 ALTER TABLE mapping_profiles ADD COLUMN IF NOT EXISTS sample_json JSONB;
 
+-- Anzeigename NEBEN dem Dateinamen, nicht statt seiner: Der Dateiname ist die
+-- Verbindung zur Lieferung des Archivs und darf nicht überschrieben werden.
+-- Gewünscht von Matti Stöhr, weil mehrere Läufe derselben Datei in der Liste
+-- nur am Zeitstempel zu unterscheiden waren.
+ALTER TABLE imports ADD COLUMN IF NOT EXISTS label              TEXT;
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS sheet_name         TEXT;   -- gewähltes Tabellenblatt
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS header_hash        TEXT;
 ALTER TABLE imports ADD COLUMN IF NOT EXISTS mapping_profile_id INTEGER REFERENCES mapping_profiles(id) ON DELETE SET NULL;

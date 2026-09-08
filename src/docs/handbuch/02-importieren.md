@@ -19,6 +19,20 @@ Beispieldateien zum Ausprobieren liegen im Repository unter
 [`samples/`](../samples/) (`films.csv`, `films.tsv`, `films.xlsx`, `films.json`,
 `films.marcxml`, `films.ead`, `avefi-native.json`).
 
+## Anzeigename
+
+Ein Import trägt den Dateinamen, mit dem er hochgeladen wurde. Läuft dieselbe Datei
+mehrmals, stehen in der Liste gleichnamige Zeilen nebeneinander, unterscheidbar nur am
+Zeitstempel.
+
+Auf der Detailseite lässt sich unter **Anzeigename** ein eigener Name vergeben — aus der
+Liste führt der Weg über **„…" › „Umbenennen"**. Der Name steht danach in der Liste und
+in der Überschrift, der Dateiname darunter.
+
+Der Dateiname wird dabei **nicht** ersetzt. Er ist die Verbindung zur Lieferung des
+Archivs; wer später fragt, aus welcher Datei ein Datensatz stammt, braucht ihn. Ein
+leeres Feld entfernt den Anzeigenamen wieder.
+
 ## Import via URL
 
 Neben dem Datei-Upload gibt es das Feld **„oder per URL"**: eine öffentlich

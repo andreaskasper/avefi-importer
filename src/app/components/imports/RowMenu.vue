@@ -143,6 +143,15 @@ function pick(fn: () => void) {
           <template v-else>{{ t('imports.menu.avefiDraft') }}</template>
         </a>
 
+        <!--
+          Das Umbenennen fuehrt auf die Detailseite statt in ein weiteres
+          Fenster: Dort steht das Formular ohnehin, und ein Dialog mehr in
+          einer Liste mit achtzig Zeilen hilft niemandem.
+        -->
+        <NuxtLink class="ui-menu-item" role="menuitem" :to="`/imports/${item.id}#name`" @click="close()">
+          <span class="mi" aria-hidden="true">✎</span>{{ t('imports.menu.rename') }}
+        </NuxtLink>
+
         <button v-if="item.canReconvert" type="button" class="ui-menu-item" role="menuitem"
                 @click="pick(() => emit('reconvert'))">
           <span class="mi" aria-hidden="true">↻</span>{{ t('imports.menu.reconvert') }}

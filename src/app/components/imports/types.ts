@@ -10,6 +10,8 @@ import type { FormatDetail, ImportReport, Severity, ValidationIssue } from '#sha
 export interface ImportListItem {
   id: string
   filename: string
+  /** Frei gewaehlter Anzeigename neben dem Dateinamen, sonst null. */
+  label: string | null
   filesize: number
   base_format: string | null
   detected_format: string | null

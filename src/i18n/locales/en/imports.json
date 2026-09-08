@@ -92,7 +92,8 @@
       "avefiDraft": "Download draft (not validated)",
       "reconvert": "Convert again",
       "delete": "Delete",
-      "detail": "View details"
+      "detail": "View details",
+      "rename": "Rename"
     },
     "confirm": {
       "cancel": "Cancel",
@@ -146,7 +147,15 @@
       "positionCol": "Line {line}, column {column}",
       "hint": "Remedy",
       "reupload": "Upload a corrected file",
-      "reuploadHint": "Correct the file at the marked spots and upload it again here. The failed import stays around for reference until you delete it."
+      "reuploadHint": "Correct the file at the marked spots and upload it again here. The failed import stays around for reference until you delete it.",
+      "name": {
+        "heading": "Display name",
+        "label": "Display name",
+        "hint": "A name of your own helps tell several runs of the same file apart. The file name stays alongside it — it is the link to the archive’s delivery. Leave empty to remove the name.",
+        "save": "Save name",
+        "saved": "Saved: “{name}”",
+        "cleared": "The display name was removed."
+      }
     },
     "stage": {
       "worker/download": "Fetching the file",

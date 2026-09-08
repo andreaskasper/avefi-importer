@@ -22,6 +22,11 @@ export interface ImportRow {
   institution_id: number
   user_id: number | null
   filename: string
+  /**
+   * Frei gewaehlter Anzeigename, neben dem Dateinamen und nicht statt
+   * seiner. Der Dateiname ist die Verbindung zur Lieferung des Archivs.
+   */
+  label: string | null
   filesize: number
   base_format: BaseFormat | null
   fingerprint: string | null

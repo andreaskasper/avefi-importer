@@ -14,6 +14,8 @@ import { requireInstitution } from './_lib'
 export interface ImportListItem {
   id: string
   filename: string
+  /** Frei gewaehlter Anzeigename neben dem Dateinamen, sonst null. */
+  label: string | null
   filesize: number
   base_format: string | null
   detected_format: string | null
@@ -63,6 +65,7 @@ export function toListItem(row: ImportRow, edited: number, profileVersion: numbe
   return {
     id: row.id,
     filename: row.filename,
+    label: row.label ?? null,
     filesize: Number(row.filesize ?? 0),
     base_format: row.base_format,
     detected_format: row.detected_format,
