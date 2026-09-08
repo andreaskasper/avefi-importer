@@ -364,6 +364,19 @@
       "hinweise": "{n} Hinweis | {n} Hinweise",
       "validiert": "keine Beanstandungen",
       "gotoReport": "Prüfbericht zu {file} öffnen — {state}"
+    },
+    "filter": {
+      "heading": "Liste einschränken",
+      "search": "Suche im Namen",
+      "searchPlaceholder": "Datei- oder Anzeigename …",
+      "apply": "Suchen",
+      "onlyIssues": "Nur mit Beanstandungen",
+      "status": "Verarbeitungsstand",
+      "anyStatus": "Jeder Stand",
+      "clear": "Auswahl aufheben",
+      "shownOf": "{shown} von {total} Importen",
+      "all": "{total} Importe",
+      "truncated": "Es werden {loaded} von {total} Importen geladen. Ältere sind hier nicht sichtbar."
     }
   }
 }

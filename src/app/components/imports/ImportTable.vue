@@ -14,8 +14,27 @@ import type { ImportListItem } from './types'
 
 const importe = importsService()
 
-const props = defineProps<{ items: ImportListItem[] }>()
-const emit = defineEmits<{ changed: []; message: [string] }>()
+const props = defineProps<{
+  items: ImportListItem[]
+  sort?: { field: string; dir: 'asc' | 'desc' }
+}>()
+const emit = defineEmits<{ changed: []; message: [string]; sort: [feld: string] }>()
+
+/**
+ * Ein Spaltenkopf, nach dem sich sortieren laesst.
+ *
+ * aria-sort sagt einem Vorlesewerkzeug, wonach die Tabelle geordnet ist; ohne
+ * das ist die Sortierung eine rein optische Angelegenheit.
+ */
+function sortState(feld: string): 'ascending' | 'descending' | 'none' {
+  if (props.sort?.field !== feld) return 'none'
+  return props.sort.dir === 'asc' ? 'ascending' : 'descending'
+}
+
+function sortPfeil(feld: string): string {
+  const z = sortState(feld)
+  return z === 'ascending' ? '▲' : z === 'descending' ? '▼' : ''
+}
 
 const { t, te, locale } = useI18n()
 
@@ -126,12 +145,28 @@ function isUploading(item: ImportListItem): boolean {
         </colgroup>
         <thead>
           <tr>
-            <th scope="col">{{ t('imports.table.file') }}</th>
+            <th scope="col" :aria-sort="sortState('filename')">
+              <button type="button" class="th-sort" @click="emit('sort', 'filename')">
+                {{ t('imports.table.file') }}<span aria-hidden="true">{{ sortPfeil('filename') }}</span>
+              </button>
+            </th>
             <th scope="col">{{ t('imports.table.format') }}</th>
             <th scope="col">{{ t('imports.table.upload') }}</th>
-            <th scope="col">{{ t('imports.table.processing') }}</th>
-            <th scope="col">{{ t('imports.table.records') }}</th>
-            <th scope="col">{{ t('imports.table.created') }}</th>
+            <th scope="col" :aria-sort="sortState('status')">
+              <button type="button" class="th-sort" @click="emit('sort', 'status')">
+                {{ t('imports.table.processing') }}<span aria-hidden="true">{{ sortPfeil('status') }}</span>
+              </button>
+            </th>
+            <th scope="col" :aria-sort="sortState('records')">
+              <button type="button" class="th-sort" @click="emit('sort', 'records')">
+                {{ t('imports.table.records') }}<span aria-hidden="true">{{ sortPfeil('records') }}</span>
+              </button>
+            </th>
+            <th scope="col" :aria-sort="sortState('created')">
+              <button type="button" class="th-sort" @click="emit('sort', 'created')">
+                {{ t('imports.table.created') }}<span aria-hidden="true">{{ sortPfeil('created') }}</span>
+              </button>
+            </th>
             <th scope="col" style="text-align:right">{{ t('imports.table.actions') }}</th>
           </tr>
         </thead>

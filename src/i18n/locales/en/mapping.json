@@ -425,7 +425,10 @@
       "footer": "Profiles are visible to every institution. When a file with a known header is uploaded, your own profile wins; foreign ones are offered for adoption and copied in the process, so changes never alter anyone else's imports.",
       "editFor": "Edit mapping “{name}”",
       "viewFor": "View mapping “{name}”",
-      "exportFor": "Export mapping “{name}” as JSON"
+      "exportFor": "Export mapping “{name}” as JSON",
+      "search": "Search profile names",
+      "searchPlaceholder": "Profile or institution name …",
+      "shownOf": "{shown} of {total} profiles"
     },
     "new": {
       "title": "New mapping",

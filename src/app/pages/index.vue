@@ -17,9 +17,58 @@ const { t, te, locale } = useI18n()
 const route = useRoute()
 useHead({ title: () => t('imports.pageTitle') })
 
-const { data, refresh, error } = await useFetch<ImportListResponse>(importe.listePfad(), {
-  default: () => ({ imports: [], kpi: { records: 0, awaiting: 0 } })
+/*
+ * Sortierung und Filter stehen in der Adresse (#2, Matti Stoehr). Wer eine
+ * gefilterte Liste weitergibt, gibt die Auswahl mit — und wer die Seite neu
+ * laedt, bekommt dieselbe zurueck. Gerechnet wird auf dem Server, ueber den
+ * ganzen Bestand statt ueber das, was gerade sichtbar ist.
+ */
+const auswahl = computed<Record<string, string>>(() => {
+  const q = route.query
+  const raus: Record<string, string> = {}
+  for (const k of ['sort', 'dir', 'status', 'issues', 'q'] as const) {
+    const v = String(q[k] ?? '').trim()
+    if (v !== '') raus[k] = v
+  }
+  return raus
 })
+
+const { data, refresh, error } = await useFetch<ImportListResponse>(
+  () => importe.listePfad(auswahl.value),
+  {
+    default: () => ({
+      imports: [],
+      sort: { field: 'created' as const, dir: 'desc' as const },
+      counts: { total: 0, loaded: 0, shown: 0 },
+      kpi: { records: 0, awaiting: 0 }
+    })
+  }
+)
+
+const sortierung = computed(() => data.value?.sort ?? { field: 'created' as const, dir: 'desc' as const })
+const counts = computed(() => data.value?.counts ?? { total: 0, loaded: 0, shown: 0 })
+const suche = ref(String(route.query.q ?? ''))
+const nurBeanstandet = computed(() => String(route.query.issues ?? '') === '1')
+
+/** Auswahl aendern heisst: Adresse aendern. Alles andere folgt daraus. */
+async function setzeAuswahl(teil: Record<string, string | null>) {
+  const q: Record<string, string> = { ...auswahl.value }
+  for (const [k, v] of Object.entries(teil)) {
+    if (v === null || v === '') delete q[k]
+    else q[k] = v
+  }
+  await navigateTo({ path: '/', query: q })
+}
+
+function sortiereNach(feld: string) {
+  const gleich = sortierung.value.field === feld
+  // Beim Wechsel des Feldes die naheliegende Richtung: Namen aufsteigend,
+  // Zahlen und Zeitpunkte absteigend — das Groesste zuerst ist dort das,
+  // wonach jemand sucht.
+  const start = feld === 'filename' || feld === 'status' ? 'asc' : 'desc'
+  const dir = gleich ? (sortierung.value.dir === 'asc' ? 'desc' : 'asc') : start
+  return setzeAuswahl({ sort: feld === 'created' && dir === 'desc' ? null : feld, dir })
+}
 
 const loadFailure = computed<ApiFailure | null>(() => (error.value ? apiFailure(error.value) : null))
 const loadError = computed(() => failureText(t, te, loadFailure.value))
@@ -161,7 +210,54 @@ async function afterUpload() {
 
     <p class="sr-only" role="status" aria-live="polite">{{ announcement }}</p>
 
-    <ImportsImportTable :items="items" @changed="refresh" @message="setNotice" />
+    <!--
+      Filter ueber der Liste, Sortierung an den Spaltenkoepfen. Beides steht in
+      der Adresse, damit sich eine Auswahl weitergeben laesst.
+    -->
+    <section class="listfilter" :aria-label="t('imports.filter.heading')">
+      <form class="ff" role="search" @submit.prevent="setzeAuswahl({ q: suche.trim() || null })">
+        <label class="sr-only" for="isuche">{{ t('imports.filter.search') }}</label>
+        <input id="isuche" v-model="suche" class="ui-input" type="search"
+               :placeholder="t('imports.filter.searchPlaceholder')">
+        <button class="btn btn-outline btn-sm" type="submit">{{ t('imports.filter.apply') }}</button>
+      </form>
+
+      <button type="button" class="btn btn-sm" :class="nurBeanstandet ? 'btn-primary' : 'btn-outline'"
+              :aria-pressed="nurBeanstandet"
+              @click="setzeAuswahl({ issues: nurBeanstandet ? null : '1' })">
+        {{ t('imports.filter.onlyIssues') }}
+      </button>
+
+      <div class="field" style="margin:0">
+        <label class="sr-only" for="istatus">{{ t('imports.filter.status') }}</label>
+        <select id="istatus" class="ui-input"
+                :value="String(route.query.status ?? '')"
+                @change="setzeAuswahl({ status: ($event.target as HTMLSelectElement).value || null })">
+          <option value="">{{ t('imports.filter.anyStatus') }}</option>
+          <option value="converted">{{ t('imports.status.converted') }}</option>
+          <option value="error">{{ t('imports.status.error') }}</option>
+          <option value="awaiting_format_review">{{ t('imports.status.awaiting_format_review') }}</option>
+          <option value="awaiting_sheet_choice">{{ t('imports.status.awaiting_sheet_choice') }}</option>
+        </select>
+      </div>
+
+      <p class="dim small" style="margin:0 0 0 auto" aria-live="polite">
+        <template v-if="counts.shown !== counts.total">
+          {{ t('imports.filter.shownOf', { shown: counts.shown, total: counts.total }) }}
+          <button type="button" class="linklike" @click="setzeAuswahl({ q: null, issues: null, status: null })">
+            {{ t('imports.filter.clear') }}
+          </button>
+        </template>
+        <template v-else>{{ t('imports.filter.all', { total: counts.total }) }}</template>
+      </p>
+    </section>
+
+    <p v-if="counts.loaded < counts.total" class="ui-alert ui-alert-warn" style="margin-bottom:12px">
+      {{ t('imports.filter.truncated', { loaded: counts.loaded, total: counts.total }) }}
+    </p>
+
+    <ImportsImportTable :items="items" :sort="sortierung" @changed="refresh" @message="setNotice"
+                        @sort="sortiereNach" />
 
     <ImportsPipeline />
   </main>

@@ -364,6 +364,19 @@
       "hinweise": "{n} hint | {n} hints",
       "validiert": "no findings",
       "gotoReport": "Open validation report for {file} — {state}"
+    },
+    "filter": {
+      "heading": "Narrow the list",
+      "search": "Search by name",
+      "searchPlaceholder": "File or display name …",
+      "apply": "Search",
+      "onlyIssues": "Only with findings",
+      "status": "Processing state",
+      "anyStatus": "Any state",
+      "clear": "Clear selection",
+      "shownOf": "{shown} of {total} imports",
+      "all": "{total} imports",
+      "truncated": "{loaded} of {total} imports are loaded. Older ones are not visible here."
     }
   }
 }

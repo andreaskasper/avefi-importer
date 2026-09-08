@@ -43,12 +43,33 @@ export async function createImport(
   return row
 }
 
-export async function listImports(sql: Sql, institutionId: number, limit = 200): Promise<ImportRow[]> {
+/**
+ * Alle Importe einer Einrichtung, neueste zuerst.
+ *
+ * Die Grenze ist grosszuegig und absichtlich weit oberhalb dessen, was ein
+ * Haus in absehbarer Zeit hochlaedt. Sie stand bis zum 08.09.2026 bei 200 und
+ * schnitt still ab: Wer 201 Importe hatte, sah 200 und erfuhr es nicht. Wieviel
+ * tatsaechlich da ist, sagt jetzt countImports, und die Liste weist es aus.
+ *
+ * Sortiert und gefiltert wird danach ueber den ganzen Bestand — nicht in der
+ * Abfrage, weil die interessanten Merkmale (Beanstandungen, Ergebnis der
+ * Schemapruefung) erst aus report_json abgeleitet werden und in keiner Spalte
+ * stehen. Waechst der Bestand in eine Groessenordnung, in der das nicht mehr
+ * traegt, gehoeren diese Merkmale in Spalten, nicht die Sortierung in SQL.
+ */
+export async function listImports(sql: Sql, institutionId: number, limit = 5000): Promise<ImportRow[]> {
   return sql<ImportRow[]>`
     SELECT * FROM imports
      WHERE institution_id = ${institutionId}
      ORDER BY created_at DESC
      LIMIT ${limit}`
+}
+
+/** Wieviele Importe die Einrichtung wirklich hat — fuer den Abgleich mit der Grenze. */
+export async function countImports(sql: Sql, institutionId: number): Promise<number> {
+  const rows = await sql<Array<{ n: string }>>`
+    SELECT count(*)::text AS n FROM imports WHERE institution_id = ${institutionId}`
+  return Number(rows[0]?.n ?? 0)
 }
 
 export async function setStatus(sql: Sql, id: string, status: ImportStatus, progress?: number): Promise<void> {

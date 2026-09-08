@@ -19,6 +19,21 @@ Beispieldateien zum Ausprobieren liegen im Repository unter
 [`samples/`](../samples/) (`films.csv`, `films.tsv`, `films.xlsx`, `films.json`,
 `films.marcxml`, `films.ead`, `avefi-native.json`).
 
+## Liste einschränken
+
+Über der Liste stehen eine Suche, ein Schalter **„Nur mit Beanstandungen"** und die Wahl
+des Verarbeitungsstands. Sortiert wird über die Spaltenköpfe — Datei, Verarbeitung,
+Datensätze und Anlage. Ein zweiter Klick dreht die Richtung um.
+
+Beides wirkt auf den **ganzen Bestand**, nicht auf das gerade Sichtbare. Rechts steht,
+wie viele Importe die Auswahl trifft.
+
+Die Einstellung steht in der Adresse. Eine gefilterte Liste lässt sich damit
+weitergeben — `?issues=1&sort=records&dir=desc` zeigt bei allen dasselbe.
+
+Dieselben Möglichkeiten gibt es bei den Zuordnungsprofilen, dort mit Suche über Profil-
+und Einrichtungsnamen.
+
 ## Anzeigename
 
 Ein Import trägt den Dateinamen, mit dem er hochgeladen wurde. Läuft dieselbe Datei

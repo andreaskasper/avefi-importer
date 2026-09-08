@@ -17,7 +17,85 @@ useHead({ title: () => t('mapping.list.title') })
 const { data, error, refresh } = await useFetch<MappingListResponse>(zuordnungen.listePfad())
 
 const loadError = computed(() => (error.value ? failureText(t, te, mappingFailure(error.value)) : ''))
-const profiles = computed(() => data.value?.profiles ?? [])
+const alleProfile = computed(() => data.value?.profiles ?? [])
+
+/*
+ * Suchen und Sortieren (#2, Matti Stoehr).
+ *
+ * Anders als bei den Importen wird hier im Browser gerechnet, und das ist kein
+ * Versehen: Die Liste ist vollstaendig da — sie kommt nicht seitenweise und
+ * hat keine Obergrenze —, also ordnet eine Sortierung im Browser den ganzen
+ * Bestand und nicht nur einen Ausschnitt. Genau davor warnt das Issue, und
+ * genau der Fall liegt hier nicht vor. Waechst die Liste doch in eine
+ * Groessenordnung mit Seiten, gehoert sie auf den Weg der Importliste.
+ *
+ * Die Auswahl steht trotzdem in der Adresse, damit sich eine gefilterte Liste
+ * weitergeben laesst.
+ */
+const route = useRoute()
+const suche = ref(String(route.query.q ?? ''))
+const sortFeld = computed(() => String(route.query.sort ?? 'changed'))
+/*
+ * Ohne ausdrueckliche Richtung die naheliegende: Namen aufsteigend, Zahlen und
+ * Zeitpunkte absteigend. Wer nach „zuletzt geaendert" sortiert, meint das
+ * Neueste zuerst; wer nach Namen sortiert, meint A vor Z.
+ */
+const ABSTEIGEND_ZUERST = new Set(['changed', 'used'])
+const sortAb = computed(() => {
+  const dir = String(route.query.dir ?? '')
+  if (dir !== '') return dir === 'desc'
+  return ABSTEIGEND_ZUERST.has(sortFeld.value)
+})
+
+async function setzeAuswahl(teil: Record<string, string | null>) {
+  const q: Record<string, string> = {}
+  for (const k of ['q', 'sort', 'dir'] as const) {
+    const v = String(route.query[k] ?? '')
+    if (v !== '') q[k] = v
+  }
+  for (const [k, v] of Object.entries(teil)) {
+    if (v === null || v === '') delete q[k]
+    else q[k] = v
+  }
+  await navigateTo({ path: '/mappings', query: q })
+}
+
+function sortiereNach(feld: string) {
+  const gleich = sortFeld.value === feld
+  const start = feld === 'name' || feld === 'institution' ? 'asc' : 'desc'
+  const dir = gleich ? (sortAb.value ? 'asc' : 'desc') : start
+  return setzeAuswahl({ sort: feld === 'changed' && dir === 'desc' ? null : feld, dir })
+}
+
+function sortState(feld: string): 'ascending' | 'descending' | 'none' {
+  if (sortFeld.value !== feld) return 'none'
+  return sortAb.value ? 'descending' : 'ascending'
+}
+
+function sortPfeil(feld: string): string {
+  const z = sortState(feld)
+  return z === 'ascending' ? '▲' : z === 'descending' ? '▼' : ''
+}
+
+function vergleiche(a: ProfileRow, b: ProfileRow): number {
+  switch (sortFeld.value) {
+    case 'name': return a.name.localeCompare(b.name, 'de')
+    case 'institution': return a.institution_name.localeCompare(b.institution_name, 'de')
+    case 'used': return a.use_count - b.use_count
+    case 'base': return a.base_format.localeCompare(b.base_format)
+    default: return String(a.updated_at).localeCompare(String(b.updated_at))
+  }
+}
+
+const profiles = computed(() => {
+  const q = suche.value.trim().toLowerCase()
+  const gefiltert = q === ''
+    ? [...alleProfile.value]
+    : alleProfile.value.filter(
+        (p) => `${p.name} ${p.institution_name}`.toLowerCase().includes(q)
+      )
+  return gefiltert.sort((a, b) => (sortAb.value ? -1 : 1) * vergleiche(a, b))
+})
 
 /* -------------------------------------------------- Exportiertes Profil einlesen */
 
@@ -98,6 +176,23 @@ function formatDate(value: string): string {
       </details>
     </div>
 
+    <section class="listfilter" :aria-label="t('imports.filter.heading')">
+      <form class="ff" role="search" @submit.prevent="setzeAuswahl({ q: suche.trim() || null })">
+        <label class="sr-only" for="psuche">{{ t('mapping.list.search') }}</label>
+        <input id="psuche" v-model="suche" class="ui-input" type="search"
+               :placeholder="t('mapping.list.searchPlaceholder')">
+        <button class="btn btn-outline btn-sm" type="submit">{{ t('imports.filter.apply') }}</button>
+      </form>
+      <p class="dim small" style="margin:0 0 0 auto" aria-live="polite">
+        <template v-if="profiles.length !== alleProfile.length">
+          {{ t('mapping.list.shownOf', { shown: profiles.length, total: alleProfile.length }) }}
+          <button type="button" class="linklike" @click="suche = ''; setzeAuswahl({ q: null })">
+            {{ t('imports.filter.clear') }}
+          </button>
+        </template>
+      </p>
+    </section>
+
     <div v-if="profiles.length === 0" class="tablewrap">
       <div class="empty">
         <p class="ic" aria-hidden="true">🗺</p>
@@ -111,12 +206,32 @@ function formatDate(value: string): string {
         <caption class="sr-only">{{ t('mapping.list.caption') }}</caption>
         <thead>
           <tr>
-            <th scope="col">{{ t('mapping.list.name') }}</th>
-            <th scope="col">{{ t('mapping.list.institution') }}</th>
-            <th scope="col">{{ t('mapping.list.base') }}</th>
+            <th scope="col" :aria-sort="sortState('name')">
+              <button type="button" class="th-sort" @click="sortiereNach('name')">
+                {{ t('mapping.list.name') }}<span aria-hidden="true">{{ sortPfeil('name') }}</span>
+              </button>
+            </th>
+            <th scope="col" :aria-sort="sortState('institution')">
+              <button type="button" class="th-sort" @click="sortiereNach('institution')">
+                {{ t('mapping.list.institution') }}<span aria-hidden="true">{{ sortPfeil('institution') }}</span>
+              </button>
+            </th>
+            <th scope="col" :aria-sort="sortState('base')">
+              <button type="button" class="th-sort" @click="sortiereNach('base')">
+                {{ t('mapping.list.base') }}<span aria-hidden="true">{{ sortPfeil('base') }}</span>
+              </button>
+            </th>
             <th scope="col">{{ t('mapping.list.state') }}</th>
-            <th scope="col">{{ t('mapping.list.used') }}</th>
-            <th scope="col">{{ t('mapping.list.changed') }}</th>
+            <th scope="col" :aria-sort="sortState('used')">
+              <button type="button" class="th-sort" @click="sortiereNach('used')">
+                {{ t('mapping.list.used') }}<span aria-hidden="true">{{ sortPfeil('used') }}</span>
+              </button>
+            </th>
+            <th scope="col" :aria-sort="sortState('changed')">
+              <button type="button" class="th-sort" @click="sortiereNach('changed')">
+                {{ t('mapping.list.changed') }}<span aria-hidden="true">{{ sortPfeil('changed') }}</span>
+              </button>
+            </th>
             <th scope="col" style="text-align:right">{{ t('mapping.list.action') }}</th>
           </tr>
         </thead>

@@ -425,7 +425,10 @@
       "footer": "Profile sind für alle Einrichtungen sichtbar. Wird eine Datei mit bekannter Kopfzeile hochgeladen, greift zuerst das eigene Profil; fremde werden zur Übernahme angeboten und dabei kopiert, damit Änderungen keine fremden Importe verändern.",
       "editFor": "Zuordnung „{name}“ bearbeiten",
       "viewFor": "Zuordnung „{name}“ ansehen",
-      "exportFor": "Zuordnung „{name}“ als JSON exportieren"
+      "exportFor": "Zuordnung „{name}“ als JSON exportieren",
+      "search": "Suche im Profilnamen",
+      "searchPlaceholder": "Profil- oder Einrichtungsname …",
+      "shownOf": "{shown} von {total} Profilen"
     },
     "new": {
       "title": "Neue Zuordnung",

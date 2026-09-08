@@ -28,7 +28,7 @@ export interface BlattAuswahlAntwort {
 }
 
 export function importsService(): {
-  listePfad: () => string
+  listePfad: (auswahl?: Record<string, string>) => string
   standPfad: () => string
   stand: <T>() => Promise<T | null>
   einerPfad: (id: string) => string
@@ -48,7 +48,11 @@ export function importsService(): {
 } {
   const api = useApi()
   return {
-    listePfad: () => api('/imports'),
+    listePfad: (auswahl) => {
+      const p = new URLSearchParams(auswahl ?? {})
+      const s = p.toString()
+      return s === '' ? api('/imports') : `${api('/imports')}?${s}`
+    },
     standPfad: () => api('/imports/status'),
     // Faellt die Abfrage aus, bleibt die Anzeige stehen statt zu blinken:
     // Der Stand wird im Takt geholt, ein Aussetzer ist kein Ereignis.

@@ -37,8 +37,26 @@ export interface ImportListItem {
   profileVersion: number | null
 }
 
+export type SortFeld = 'created' | 'filename' | 'status' | 'records' | 'validation'
+
+/** Was der Anwender an der Liste eingestellt hat. Steht in der Adresse. */
+export interface ListAuswahl {
+  sort: SortFeld
+  dir: 'asc' | 'desc'
+  status: string[]
+  issues: boolean
+  q: string
+}
+
 export interface ImportListResponse {
   imports: ImportListItem[]
+  sort: { field: SortFeld; dir: 'asc' | 'desc' }
+  /**
+   * total  Importe der Einrichtung insgesamt
+   * loaded wieviele davon geladen wurden (Grenze der Abfrage)
+   * shown  wieviele nach Filter uebrig sind
+   */
+  counts: { total: number; loaded: number; shown: number }
   kpi: { records: number; awaiting: number }
 }
 

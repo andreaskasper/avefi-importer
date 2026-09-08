@@ -410,6 +410,20 @@ tbody tr:hover{background:var(--surface-2)}
 .ui-alert-warn{border:1px solid var(--warn);background:var(--warn-bg);color:var(--warn);border-radius:9px;
   padding:10px 12px;font-size:13px;font-weight:600}
 
+/* ------- Filterleiste ueber der Importliste ------- */
+.listfilter{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.listfilter .ff{display:flex;gap:6px;align-items:center}
+.listfilter .ui-input{height:32px;font-size:13px}
+/* Ein Knopf, der wie ein Verweis aussieht: Er aendert die Auswahl, laedt aber
+   keine andere Seite — ein <a> waere hier eine Luege gegenueber der Tastatur. */
+.linklike{background:none;border:0;padding:0;color:var(--primary);cursor:pointer;
+  font:inherit;text-decoration:underline}
+/* Sortierbare Spaltenkoepfe. Der Pfeil steht im Text, damit ihn auch ein
+   Vorlesewerkzeug erreicht, das keine Pseudoelemente liest. */
+.th-sort{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;
+  display:inline-flex;gap:4px;align-items:center}
+.th-sort:hover{text-decoration:underline}
+
 /* ------- record editor ------- */
 .editbar{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .jsonprev{background:#0b1216;color:#e6edf0;border-radius:10px;padding:14px 16px;overflow:auto;max-height:340px;

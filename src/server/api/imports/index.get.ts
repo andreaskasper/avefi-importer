@@ -6,7 +6,7 @@
  * Was die Zeile anzeigt, wird hier ausgerechnet, nicht in der Oberflaeche.
  */
 import { db } from '../../db'
-import { listImports } from '../../lib/imports'
+import { countImports, listImports } from '../../lib/imports'
 import { editedCounts } from '../../lib/records'
 import { isTabular, type FormatDetail, type ImportRow, type Severity } from '#shared/types/domain'
 import { requireInstitution } from './_lib'
@@ -94,12 +94,73 @@ export function toListItem(row: ImportRow, edited: number, profileVersion: numbe
   }
 }
 
+/*
+ * Sortieren und Filtern (#2, gewuenscht von Matti Stoehr).
+ *
+ * Beides laeuft ueber den ganzen Bestand, nicht ueber die sichtbare Auswahl.
+ * Eine Sortierung, die nur ordnet, was gerade da ist, sagt etwas anderes, als
+ * sie zu sagen scheint — und bei ueber achtzig Importen ist genau das der Fall,
+ * in dem jemand sich darauf verlaesst.
+ *
+ * Gerechnet wird in JavaScript und nicht in SQL, weil die interessanten
+ * Merkmale erst aus report_json abgeleitet werden: ob es Beanstandungen gibt
+ * und ob die Schemapruefung bestanden ist, steht in keiner Spalte. Sie erst in
+ * die Abfrage zu heben hiesse, dieselbe Ableitung zweimal zu haben.
+ */
+const SORTIERBAR = ['created', 'filename', 'status', 'records', 'validation'] as const
+type SortFeld = (typeof SORTIERBAR)[number]
+
+function sortFeld(raw: unknown): SortFeld {
+  const wert = String(raw ?? '')
+  return (SORTIERBAR as readonly string[]).includes(wert) ? (wert as SortFeld) : 'created'
+}
+
+/** Rang der Schemapruefung, damit sich „ungeprueft" von „bestanden" trennt. */
+function pruefRang(item: ImportListItem): number {
+  if (!item.hasAvefi) return 0
+  if (item.issues.error > 0) return 1
+  return item.validated ? 3 : 2
+}
+
+function vergleiche(a: ImportListItem, b: ImportListItem, feld: SortFeld): number {
+  switch (feld) {
+    case 'filename':
+      // Der Anzeigename steht in der Liste oben, also ordnet er auch.
+      return (a.label ?? a.filename).localeCompare(b.label ?? b.filename, 'de')
+    case 'status':
+      return a.status.localeCompare(b.status)
+    case 'records':
+      return a.record_count - b.record_count
+    case 'validation':
+      return pruefRang(a) - pruefRang(b)
+    default:
+      return String(a.created_at).localeCompare(String(b.created_at))
+  }
+}
+
+export interface ListFilter {
+  status: string[]
+  nurBeanstandet: boolean
+  suche: string
+}
+
+function passt(item: ImportListItem, f: ListFilter): boolean {
+  if (f.status.length > 0 && !f.status.includes(item.status)) return false
+  if (f.nurBeanstandet && item.issues.error === 0) return false
+  if (f.suche !== '') {
+    const heu = `${item.label ?? ''} ${item.filename}`.toLowerCase()
+    if (!heu.includes(f.suche)) return false
+  }
+  return true
+}
+
 export default defineEventHandler(async (event) => {
   const user = await requireInstitution(event)
   const sql = db()
-  const [rows, edited] = await Promise.all([
+  const [rows, edited, gesamt] = await Promise.all([
     listImports(sql, user.institution_id),
-    editedCounts(sql, user.institution_id)
+    editedCounts(sql, user.institution_id),
+    countImports(sql, user.institution_id)
   ])
 
   // Die heutigen Versionen der beteiligten Profile — daraus faellt ab, welche
@@ -112,16 +173,35 @@ export default defineEventHandler(async (event) => {
     for (const p of found) versions.set(p.id, p.version)
   }
 
-  const imports = rows.map((r) => toListItem(
+  const alle = rows.map((r) => toListItem(
     r,
     edited[r.id] ?? 0,
     r.mapping_profile_id !== null ? versions.get(r.mapping_profile_id) ?? null : null
   ))
+
+  const q = getQuery(event)
+  const filter: ListFilter = {
+    status: String(q.status ?? '').split(',').map((x) => x.trim()).filter((x) => x !== ''),
+    nurBeanstandet: String(q.issues ?? '') === '1',
+    suche: String(q.q ?? '').trim().toLowerCase()
+  }
+  const feld = sortFeld(q.sort)
+  const absteigend = String(q.dir ?? (feld === 'created' ? 'desc' : 'asc')) === 'desc'
+
+  const imports = alle
+    .filter((i) => passt(i, filter))
+    .sort((a, b) => (absteigend ? -1 : 1) * vergleiche(a, b, feld))
+
   return {
     imports,
+    sort: { field: feld, dir: absteigend ? 'desc' : 'asc' },
+    // Die Kennzahlen beschreiben den ganzen Bestand, nicht die Auswahl: Sonst
+    // aenderte ein Filter die Gesamtzahl der Datensaetze, und das waere eine
+    // andere Aussage als die, die dort steht.
+    counts: { total: gesamt, loaded: alle.length, shown: imports.length },
     kpi: {
-      records: imports.reduce((n, i) => n + i.record_count, 0),
-      awaiting: imports.filter(
+      records: alle.reduce((n, i) => n + i.record_count, 0),
+      awaiting: alle.filter(
         (i) => i.status === 'awaiting_format_review' || i.status === 'awaiting_sheet_choice'
       ).length
     }
