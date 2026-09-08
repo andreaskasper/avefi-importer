@@ -113,6 +113,40 @@ sein eigenes Ziel. Unter jedem Zweig steht, was für die erste Beispielzeile dab
 herauskommt. In der zusammengeklappten Zeile erscheinen die Ziele als Kürzel, bei mehr
 als einem zusätzlich die Zahl der Zweige.
 
+### Titel in eckigen Klammern
+
+Viele Häuser kennzeichnen in ihren Tabellen mit eckigen Klammern, dass ein Titel nicht
+vom Film stammt, sondern vom Archiv vergeben wurde — etwa `[Aufnahmen vom Betriebsausflug]`.
+
+Zwei Dinge passieren damit.
+
+**Die Klammern fallen immer weg.** Sie sind Kennzeichnung in der Quelldatei, nicht Teil
+des Namens; im AVefi-Datensatz sagt der Titeltyp dasselbe. Das gilt unabhängig davon,
+welches Ziel Sie wählen, und Sie müssen nichts dafür einstellen. Ein Titel, der nur
+teilweise eingeklammert ist — `Der blaue Engel [Fragment]` —, bleibt unverändert: Dort
+ist die Klammer ein Zusatz im Titel.
+
+**Den Typ entscheiden Sie.** Findet die Anwendung eingeklammerte Werte in einer
+Titelspalte, schlägt sie etwas vor, führt es aber nicht von selbst aus:
+
+- Stehen **alle** Werte in Klammern, ist die Spalte durchgehend ein Archivtitel. Der
+  Vorschlag hängt sie auf „Archivtitel" um.
+- Sind sie **gemischt**, teilt der Vorschlag die Spalte in zwei Zweige: eingeklammerte
+  Werte werden zum Archivtitel, alle anderen bleiben Haupttitel.
+
+Beides können Sie ablehnen. Die Ablehnung steht im Profil und wird nicht erneut
+vorgeschlagen — auch nicht, wenn jemand anderes dasselbe Profil weiterverwendet.
+
+Nach dem Annehmen nennt der Prüfbericht die Aufteilung:
+
+```
+Aufteilung der Spalte in den 55 betrachteten Zeilen:
+Haupttitel: 43, Archivtitel: 12. Jede davon wurde einem Zweig zugeordnet.
+```
+
+Der letzte Satz ist wichtig. Steht dort stattdessen, dass Zeilen keinen Zweig getroffen
+haben, fehlen diese Werte im Ergebnis.
+
 ### Konverter
 
 Zwischen Quellwert und Ziel liegt eine Kette von Konvertern. Sie gliedert sich in

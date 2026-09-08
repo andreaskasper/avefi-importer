@@ -102,8 +102,20 @@ describe('Der Plan selbst', () => {
     const plan = pruefe(GEMISCHT)[0]?.fixPlan ?? []
     const haupt = plan.find((p) => p.target === 'work.title.primary')
     const archiv = plan.find((p) => p.target === 'work.title.supplied')
-    expect(haupt?.post?.[0]).toMatchObject({ op: 'only', negate: true })
-    expect(archiv?.post?.[0]).toMatchObject({ op: 'only', capture: 1 })
+    // Exakte Spiegelbilder: dasselbe Muster, einmal umgekehrt. Dass die
+    // Aufteilung vollstaendig ist, laesst sich damit ablesen statt pruefen.
+    expect(haupt?.post?.[0]).toMatchObject({ op: 'only', pattern: '^\\[.*\\]$', negate: true })
+    expect(archiv?.post?.[0]).toMatchObject({ op: 'only', pattern: '^\\[.*\\]$' })
+    expect(archiv?.post?.[0]?.negate).toBeUndefined()
+  })
+
+  it('kuemmert sich nicht mehr um die Klammern selbst', () => {
+    // Die schneidet der Importer beim Schreiben ohnehin ab. Ein capture im
+    // Vorschlag waere doppelt gemoppelt und im Editor verwirrend.
+    for (const teil of pruefe(GEMISCHT)[0]?.fixPlan ?? []) {
+      expect(teil.post?.some((st) => 'capture' in (st as object))).toBe(false)
+    }
+    expect(pruefe(ALLE)[0]?.fixPlan?.[0]?.post).toEqual([])
   })
 
   it('verankert beide Muster auf den ganzen Wert', () => {

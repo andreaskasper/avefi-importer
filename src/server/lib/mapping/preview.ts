@@ -457,15 +457,16 @@ export function bracketTitleChecks(
       if (kette.some((st) => canonicalOp(String(st?.op ?? '')) === 'only')) continue
       if (kette.some((st) => String(st?.pattern ?? '').includes('\\['))) continue
 
+      // Die Klammern schneidet der Importer beim Schreiben eines Titels
+      // ohnehin ab, unabhaengig vom Profil. Die Vorschlaege muessen sich also
+      // nur noch um den Typ kuemmern — und die beiden Zweige werden dadurch
+      // exakte Spiegelbilder, an denen sich die Vollstaendigkeit ablesen
+      // laesst, statt zwei aehnliche Muster vergleichen zu muessen.
       const fixPlan: MappingFixPart[] = alle
-        ? [{
-            target: ersatz,
-            replaces: key,
-            post: [{ op: 'regex', pattern: '^\\[(.*)\\]$', capture: 1 }]
-          }]
+        ? [{ target: ersatz, replaces: key, post: [] }]
         : [
             { target: key, post: [{ op: 'only', pattern: '^\\[.*\\]$', negate: true }] },
-            { target: ersatz, post: [{ op: 'only', pattern: '^\\[(.*)\\]$', capture: 1 }] }
+            { target: ersatz, post: [{ op: 'only', pattern: '^\\[.*\\]$' }] }
           ]
 
       out.push({
@@ -477,8 +478,8 @@ export function bracketTitleChecks(
         message: alle
           ? `Alle betrachteten Werte stehen in eckigen Klammern. In vielen Katalogen heisst das: `
             + `vom Archiv vergebener Titel. Als "${target.label}" bekommen sie den Typ `
-            + `${target.writer.titleType}; als Archivtitel bekommen sie SuppliedDevisedTitle, `
-            + 'und die Klammern fallen weg.'
+            + `${target.writer.titleType}, als Archivtitel SuppliedDevisedTitle. `
+            + 'Die Klammern selbst fallen in beiden Faellen weg.'
           : `${geklammert} von ${gefuellt.length} betrachteten Werten stehen in eckigen Klammern, `
             + 'die uebrigen nicht. Eingeklammerte Titel sind in vielen Katalogen vom Archiv '
             + 'vergeben. Die Spalte laesst sich aufteilen: eingeklammerte Werte als Archivtitel, '

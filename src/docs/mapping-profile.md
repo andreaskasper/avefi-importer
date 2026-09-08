@@ -249,15 +249,42 @@ das ist einwertig: Bekaemen beide denselben Wert, verschwaende einer davon.
     { "target": "work.title.primary",
       "post": [ { "op": "only", "pattern": "^\\[.*\\]$", "negate": true } ] },
     { "target": "work.title.supplied",
-      "post": [ { "op": "only", "pattern": "^\\[(.*)\\]$", "capture": 1 } ] }
+      "post": [ { "op": "only", "pattern": "^\\[.*\\]$" } ] }
   ]
 }
 ```
+
+Beide Zweige tragen dasselbe Muster, einer davon umgekehrt. Dass die Aufteilung
+vollstaendig ist, laesst sich daran ablesen; zwei nur aehnliche Muster muesste
+man vergleichen. Um die Klammern selbst kuemmert sich das Profil nicht — dazu
+der naechste Abschnitt.
 
 Je Zeile liefert genau ein Zweig etwas. Es gibt bewusst kein `if`-`then`-`else`
 im Profil: Die Verzweigung liegt weiterhin in `targets`, jeder Zweig bleibt
 eine gerade Schrittfolge, und der Editor kann den Ausgangstyp einer Kette
 weiterhin bestimmen, ohne sie auszufuehren.
+
+### Eckige Klammern am Titel
+
+Steht ein Titel **vollstaendig** in eckigen Klammern, entfernt der Importer sie
+beim Schreiben — immer, unabhaengig vom Profil, vom getroffenen Ziel und davon,
+ob jemand einen Vorschlag angenommen hat. Aus `[Betriebsausflug 1962]` wird
+`Betriebsausflug 1962`.
+
+Der Grund: Die Klammer kennzeichnet in einer Tabelle, dass das Archiv den Titel
+selbst vergeben hat. Sie ist Notation der Quelldatei, nicht Bestandteil des
+Namens. Im AVefi-Datensatz traegt der **Typ** diese Information; die Klammern
+wuerden sie doppeln und in Sortierung, Suche und Werkbildung mitlaufen.
+
+Nur der ganze Wert zaehlt. `Der blaue Engel [Fragment]` behaelt seine Klammern:
+Dort ist sie ein Zusatz im Titel, keine Kennzeichnung der Zeile. Geprueft wird
+dabei die Verschachtelung, damit aus `[a] und [b]` nicht `a] und [b` wird.
+
+Es gilt nur an Titelzielen. Eine Anmerkung `[siehe Akte 5]` bleibt unberuehrt —
+dort ist die Klammer Inhalt.
+
+Was das Profil entscheidet, ist damit nur noch der **Typ**: ob ein Wert als
+Haupttitel oder als Archivtitel gilt. Der Text ist in beiden Faellen derselbe.
 
 Zwei Dinge, auf die es dabei ankommt. Die Muster muessen **komplementaer**
 sein, sonst faellt eine Zeile durch beide Zweige und steht hinterher nirgends;

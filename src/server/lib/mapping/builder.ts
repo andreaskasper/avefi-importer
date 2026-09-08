@@ -61,6 +61,45 @@ function categoryOf(entry: AvefiValue): string {
 
 /* ------------------------------------------------------------- Der Builder */
 
+/**
+ * Umschliessende eckige Klammern entfernen.
+ *
+ * In der Katalogpraxis kennzeichnet die Klammer in einer Tabelle, dass das
+ * Archiv den Titel selbst vergeben hat. Sie ist Notation der Quelldatei, nicht
+ * Bestandteil des Namens — im AVefi-Datensatz traegt der Typ diese Information,
+ * und die Klammern wuerden sie doppeln und in Sortierung, Suche und
+ * Werkbildung mitlaufen. Deshalb fallen sie immer, unabhaengig davon, welches
+ * Ziel die Spalte trifft und ob jemand einen Vorschlag angenommen hat.
+ *
+ * Nur der **ganze** Wert zaehlt. "Der blaue Engel [Fragment]" behaelt seine
+ * Klammern: Dort ist sie ein Zusatz im Titel, keine Kennzeichnung der Zeile,
+ * und "Der blaue Engel Fragment" waere ein Titel, den es nicht gibt.
+ *
+ * Geprueft wird dabei die Verschachtelung. "[a] und [b]" faengt mit einer
+ * Klammer an und hoert mit einer auf, ist aber nicht als Ganzes geklammert;
+ * ein blosses startsWith/endsWith machte daraus "a] und [b".
+ */
+export function ohneAussenklammern(wert: string): string {
+  const s = wert.trim()
+  if (!s.startsWith('[') || !s.endsWith(']')) return wert
+  let tiefe = 0
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i]
+    if (c === '[') tiefe++
+    else if (c === ']') {
+      tiefe--
+      // Schliesst die erste Klammer vor dem Ende, ist der Wert nicht als
+      // Ganzes geklammert.
+      if (tiefe === 0 && i < s.length - 1) return wert
+      if (tiefe < 0) return wert
+    }
+  }
+  if (tiefe !== 0) return wert
+  const innen = s.slice(1, -1).trim()
+  // Aus "[]" wird nichts — ein leerer Titel waere schlechter als ein seltsamer.
+  return innen === '' ? wert : innen
+}
+
 export class AvefiBuilder {
   private readonly schema: SchemaModel
   private work: AvefiNode = { category: 'avefi:WorkVariant' }
@@ -123,6 +162,7 @@ export class AvefiBuilder {
   private apply(node: AvefiNode, level: Level, w: TargetWriter, v: string, sameAs: readonly EnrichHit[]): void {
     switch (w.kind) {
       case 'title': {
+        const name = ohneAussenklammern(v)
         if (w.primary) {
           // Einwertig: der erste Titel gewinnt, spaetere ueberschreiben nicht.
           //
@@ -133,17 +173,17 @@ export class AvefiBuilder {
           // stillschweigend zu entscheiden waere hier das Falsche.
           const vorhanden = node['has_primary_title']
           if (vorhanden === undefined) {
-            node['has_primary_title'] = { has_name: v, type: w.titleType }
+            node['has_primary_title'] = { has_name: name, type: w.titleType }
           } else {
             const alt = typeof vorhanden === 'object' && vorhanden !== null
               ? String((vorhanden as AvefiValue)['has_name'] ?? '')
               : ''
-            if (alt !== v) {
-              this.verdraengt.push(meldung('target.primaryTitleTaken', { behalten: alt, verworfen: v }))
+            if (alt !== name) {
+              this.verdraengt.push(meldung('target.primaryTitleTaken', { behalten: alt, verworfen: name }))
             }
           }
         } else {
-          nodeList(node, 'has_alternative_title').push({ has_name: v, type: w.titleType })
+          nodeList(node, 'has_alternative_title').push({ has_name: name, type: w.titleType })
         }
         return
       }
