@@ -35,6 +35,9 @@
     "vue-router": "^5.2.0",
     "zod": "^4.4.3"
   },
+  "overrides": {
+    "uuid": "^11.1.1"
+  },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "@types/bcryptjs": "^2.4.6",
