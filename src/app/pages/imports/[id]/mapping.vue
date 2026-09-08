@@ -28,6 +28,28 @@ const loadError = computed(() => (error.value ? failureText(t, te, mappingFailur
  * gelaufen ist. Deshalb sagt die Seite es, statt es offenzulassen (#6).
  */
 const version = computed(() => data.value?.version ?? null)
+
+/*
+ * Die Adresszeile liest die Seite, nicht der Editor. Aus dem Pruefbericht
+ * kommt man mit ?spalte=… hierher; dass die Angabe von dort stammt, ist
+ * Sache dieser Stelle, nicht der fachlichen Komponente (#13).
+ */
+const startSpalte = computed(() => String(route.query.spalte ?? ''))
+
+/*
+ * Nach dem Speichern mit Konvertieren zurueck auf die Importliste, die
+ * daraus ihre Meldung baut und die Parameter danach wegraeumt.
+ */
+async function konvertierungGestartet(profile: { id: number; name: string; version: number }) {
+  await navigateTo({
+    path: '/',
+    query: {
+      converting: profile.id,
+      gespeichert: profile.name,
+      version: String(profile.version)
+    }
+  })
+}
 const filename = computed(() => data.value?.import.filename ?? id.value)
 
 useHead({ title: () => `${filename.value} · ${t('mapping.crumb')}` })
@@ -57,6 +79,8 @@ useHead({ title: () => `${filename.value} · ${t('mapping.crumb')}` })
       </p>
     </div>
 
-    <MappingEditor v-else-if="data" :payload="data.payload" back-to="/" :back-label="t('mapping.nav.imports')" />
+    <MappingEditor v-else-if="data" :payload="data.payload" back-to="/"
+                   :back-label="t('mapping.nav.imports')" :initial-column="startSpalte"
+                   @started="konvertierungGestartet" />
   </main>
 </template>

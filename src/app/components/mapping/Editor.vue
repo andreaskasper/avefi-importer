@@ -34,13 +34,32 @@ const props = defineProps<{
   payload: EditorPayload
   backTo: string
   backLabel: string
+  /**
+   * Spalte, die beim Oeffnen aufgeklappt und angesprungen wird.
+   *
+   * Aus dem Pruefbericht kommt man mit einer bestimmten Quellspalte
+   * hierher. Woher die Angabe stammt — Adresszeile, Aufruf im Programm,
+   * Test — entscheidet die einbettende Seite; die Komponente muss davon
+   * nichts wissen (#13, gemeldet von Stefan Stretz).
+   */
+  initialColumn?: string
+}>()
+
+const emit = defineEmits<{
+  /**
+   * Gespeichert und die Konvertierung angestossen.
+   *
+   * Wohin es danach geht, entscheidet die Seite. Bisher navigierte die
+   * Komponente selbst auf "/" — damit war sie an eine Stelle der
+   * Anwendung gebunden, an der sie haengen musste, um zu funktionieren.
+   */
+  started: [profile: { id: number; name: string; version: number }]
 }>()
 
 const { t, te } = useI18n()
 const { meldung } = useMeldungstext()
 const zuordnungen = mappingsService()
 const keepFocus = useKeepFocus()
-const route = useRoute()
 
 /* ---------------------------------------------------------------- Zustand */
 
@@ -303,11 +322,12 @@ function removeTarget(column: string, index: number) {
 }
 
 /**
- * Aus dem Pruefbericht kommt man mit ?spalte=… hierher. Die Beanstandung nennt
- * eine Quellspalte; ohne diesen Einstieg muesste man sie in der Tabelle suchen.
+ * Aus dem Pruefbericht kommt man mit einer bestimmten Spalte hierher. Die
+ * Beanstandung nennt eine Quellspalte; ohne diesen Einstieg muesste man sie in
+ * der Tabelle suchen.
  */
 onMounted(() => {
-  const gewuenscht = String(route.query.spalte ?? '')
+  const gewuenscht = props.initialColumn ?? ''
   if (gewuenscht !== '') gotoColumn(gewuenscht)
 })
 
@@ -606,11 +626,12 @@ async function saveInner(start: boolean) {
        * Speichern MIT Konvertieren sprang die Seite bisher zurueck, und dass
        * eine neue Profilversion entstanden ist, erfuhr niemand. Gemeldet von
        * Jasper Stratil am 01.09.2026. Die Importliste macht daraus ihre
-       * eigene Meldung und raeumt die Parameter danach weg. */
-      await navigateTo({
-        path: '/',
-        query: { converting: res.profile.id, gespeichert: res.profile.name, version: String(res.profile.version) }
-      })
+       * eigene Meldung und raeumt die Parameter danach weg.
+       *
+       * Wohin gewechselt wird, entscheidet die Seite: Der Editor haengt am
+       * Import und am Profil, und nur die erste der beiden Stellen hat eine
+       * Liste, auf der eine laufende Konvertierung etwas zu suchen hat. */
+      emit('started', res.profile)
       return
     }
     message.value = t('mapping.save.done', { name: res.profile.name, version: res.profile.version })
