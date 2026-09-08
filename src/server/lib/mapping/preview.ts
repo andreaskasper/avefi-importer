@@ -320,11 +320,23 @@ function dedupeChecks(checks: readonly MappingCheck[]): MappingCheck[] {
  * Mensch annimmt oder ablehnt — und der angenommen im Profil sichtbar bleibt
  * und mit ihm zur naechsten Testperson reist.
  *
- * Das Muster ist auf den ganzen Wert verankert. "Der blaue Engel [Fragment]"
- * ist ein Haupttitel mit einem Zusatz; ein unverankertes Muster wuerde ihn zum
- * Archivtitel umdeuten.
+ * Das Muster ist auf den ganzen Wert verankert und laesst innen keine weiteren
+ * Klammern zu. Beides ist noetig:
+ *
+ *   "Der blaue Engel [Fragment]"  ein Haupttitel mit einem Zusatz. Ohne
+ *                                 Verankerung wuerde er umgedeutet.
+ *   "[a] und [b]"                 faengt mit einer Klammer an und hoert mit
+ *                                 einer auf, ist aber nicht als Ganzes
+ *                                 geklammert. Ein Muster mit .* dazwischen ist
+ *                                 gierig und machte beim Abschneiden
+ *                                 "a] und [b" daraus.
+ *
+ * Erkennung, Waechter und Abschneiden verwenden dasselbe Muster. Ein solcher
+ * Wert faellt damit einheitlich durch: Er gilt nicht als Klammertitel, der
+ * Waechter des Haupttitel-Zweigs laesst ihn durch, und er behaelt seine
+ * Klammern. Sichtbar, statt zerlegt.
  */
-const KLAMMERTITEL = /^\[.*\]$/u
+const KLAMMERTITEL = /^\[[^\[\]]*\]$/u
 
 function isBracketed(raw: string): boolean {
   return KLAMMERTITEL.test(raw.trim())
@@ -462,11 +474,23 @@ export function bracketTitleChecks(
       // nur noch um den Typ kuemmern — und die beiden Zweige werden dadurch
       // exakte Spiegelbilder, an denen sich die Vollstaendigkeit ablesen
       // laesst, statt zwei aehnliche Muster vergleichen zu muessen.
+      // Das Abschneiden steht im Profil, nicht im Code. Ob eine Klammer
+      // Kennzeichnung oder Titelbestandteil ist, entscheidet sich daran, ob
+      // jemand den Wert als Archivtitel liest — und das ist eine Entscheidung,
+      // keine Konvention (Elias Oltmanns in #5). Wer den Vorschlag ablehnt und
+      // die Spalte beim Haupttitel laesst, behaelt seine Klammern; im
+      // Zweigpaar stellt sich die Frage gar nicht, weil der Haupttitel-Zweig
+      // nur die nicht eingeklammerten Werte bekommt.
+      //
+      // Beide Zweige tragen dasselbe Muster, einer davon umgekehrt. Nur so
+      // sind sie komplementaer.
+      const MUSTER = '^\\[[^\\[\\]]*\\]$'
+      const MIT_GRUPPE = '^\\[([^\\[\\]]*)\\]$'
       const fixPlan: MappingFixPart[] = alle
-        ? [{ target: ersatz, replaces: key, post: [] }]
+        ? [{ target: ersatz, replaces: key, post: [{ op: 'regex', pattern: MIT_GRUPPE, capture: 1 }] }]
         : [
-            { target: key, post: [{ op: 'only', pattern: '^\\[.*\\]$', negate: true }] },
-            { target: ersatz, post: [{ op: 'only', pattern: '^\\[.*\\]$' }] }
+            { target: key, post: [{ op: 'only', pattern: MUSTER, negate: true }] },
+            { target: ersatz, post: [{ op: 'only', pattern: MIT_GRUPPE, capture: 1 }] }
           ]
 
       out.push({
@@ -478,8 +502,8 @@ export function bracketTitleChecks(
         message: alle
           ? `Alle betrachteten Werte stehen in eckigen Klammern. In vielen Katalogen heisst das: `
             + `vom Archiv vergebener Titel. Als "${target.label}" bekommen sie den Typ `
-            + `${target.writer.titleType}, als Archivtitel SuppliedDevisedTitle. `
-            + 'Die Klammern selbst fallen in beiden Faellen weg.'
+            + `${target.writer.titleType}, als Archivtitel SuppliedDevisedTitle `
+            + 'ohne die Klammern.'
           : `${geklammert} von ${gefuellt.length} betrachteten Werten stehen in eckigen Klammern, `
             + 'die uebrigen nicht. Eingeklammerte Titel sind in vielen Katalogen vom Archiv '
             + 'vergeben. Die Spalte laesst sich aufteilen: eingeklammerte Werte als Archivtitel, '

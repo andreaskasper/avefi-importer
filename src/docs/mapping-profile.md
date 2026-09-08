@@ -247,17 +247,17 @@ das ist einwertig: Bekaemen beide denselben Wert, verschwaende einer davon.
   "pre": [ { "op": "trim" } ],
   "targets": [
     { "target": "work.title.primary",
-      "post": [ { "op": "only", "pattern": "^\\[.*\\]$", "negate": true } ] },
+      "post": [ { "op": "only", "pattern": "^\\[[^\\[\\]]*\\]$", "negate": true } ] },
     { "target": "work.title.supplied",
-      "post": [ { "op": "only", "pattern": "^\\[.*\\]$" } ] }
+      "post": [ { "op": "only", "pattern": "^\\[([^\\[\\]]*)\\]$", "capture": 1 } ] }
   ]
 }
 ```
 
-Beide Zweige tragen dasselbe Muster, einer davon umgekehrt. Dass die Aufteilung
-vollstaendig ist, laesst sich daran ablesen; zwei nur aehnliche Muster muesste
-man vergleichen. Um die Klammern selbst kuemmert sich das Profil nicht — dazu
-der naechste Abschnitt.
+Beide Zweige tragen dasselbe Muster, einer davon umgekehrt — nur so sind sie
+komplementaer. Der Archivtitel-Zweig loest zugleich die Klammergruppe heraus
+und schneidet die Klammern damit ab; warum das hier steht und nicht im Code,
+sagt der naechste Abschnitt.
 
 Je Zeile liefert genau ein Zweig etwas. Es gibt bewusst kein `if`-`then`-`else`
 im Profil: Die Verzweigung liegt weiterhin in `targets`, jeder Zweig bleibt
@@ -266,25 +266,27 @@ weiterhin bestimmen, ohne sie auszufuehren.
 
 ### Eckige Klammern am Titel
 
-Steht ein Titel **vollstaendig** in eckigen Klammern, entfernt der Importer sie
-beim Schreiben — immer, unabhaengig vom Profil, vom getroffenen Ziel und davon,
-ob jemand einen Vorschlag angenommen hat. Aus `[Betriebsausflug 1962]` wird
-`Betriebsausflug 1962`.
+Das Abschneiden steht im Profil, nicht im Code, und das hat einen Grund. Ob
+eine Klammer Kennzeichnung oder Titelbestandteil ist, ist keine Konvention,
+sondern eine Entscheidung:
 
-Der Grund: Die Klammer kennzeichnet in einer Tabelle, dass das Archiv den Titel
-selbst vergeben hat. Sie ist Notation der Quelldatei, nicht Bestandteil des
-Namens. Im AVefi-Datensatz traegt der **Typ** diese Information; die Klammern
-wuerden sie doppeln und in Sortierung, Suche und Werkbildung mitlaufen.
+* Liest jemand den Wert als **Archivtitel**, hat die Klammer ihren Zweck
+  erfuellt — der Typ `SuppliedDevisedTitle` sagt dasselbe — und gehoert weg.
+* Bleibt der Wert ein **Haupttitel**, sagt derjenige damit „das sind keine
+  Archivtitel". Dann war die Klammer nie Kennzeichnung, sondern ein Zeichen im
+  Titel, und sie zu entfernen veraenderte Daten.
 
-Nur der ganze Wert zaehlt. `Der blaue Engel [Fragment]` behaelt seine Klammern:
-Dort ist sie ein Zusatz im Titel, keine Kennzeichnung der Zeile. Geprueft wird
-dabei die Verschachtelung, damit aus `[a] und [b]` nicht `a] und [b` wird.
+Im Zweigpaar stellt sich die Frage gar nicht: Der Haupttitel-Zweig bekommt nur
+die nicht eingeklammerten Werte. Sichtbar wird der Unterschied nur, wenn jemand
+den Vorschlag ablehnt und die Spalte beim Haupttitel laesst — dann bleiben die
+Klammern stehen, und genau so ist es gemeint.
 
-Es gilt nur an Titelzielen. Eine Anmerkung `[siehe Akte 5]` bleibt unberuehrt —
-dort ist die Klammer Inhalt.
-
-Was das Profil entscheidet, ist damit nur noch der **Typ**: ob ein Wert als
-Haupttitel oder als Archivtitel gilt. Der Text ist in beiden Faellen derselbe.
+Das Muster laesst innen keine weiteren Klammern zu: `^\[[^\[\]]*\]$`. Sonst
+zerlegte das gierige `.*` einen Wert wie `[a] und [b]` beim Abschneiden zu
+`a] und [b`. Weil Erkennung, Waechter und Abschneiden dasselbe Muster
+verwenden, faellt ein solcher Wert einheitlich durch: Er gilt nicht als
+Klammertitel, der Waechter des Haupttitel-Zweigs laesst ihn durch, und er
+behaelt seine Klammern.
 
 Zwei Dinge, auf die es dabei ankommt. Die Muster muessen **komplementaer**
 sein, sonst faellt eine Zeile durch beide Zweige und steht hinterher nirgends;

@@ -102,20 +102,23 @@ describe('Der Plan selbst', () => {
     const plan = pruefe(GEMISCHT)[0]?.fixPlan ?? []
     const haupt = plan.find((p) => p.target === 'work.title.primary')
     const archiv = plan.find((p) => p.target === 'work.title.supplied')
-    // Exakte Spiegelbilder: dasselbe Muster, einmal umgekehrt. Dass die
-    // Aufteilung vollstaendig ist, laesst sich damit ablesen statt pruefen.
-    expect(haupt?.post?.[0]).toMatchObject({ op: 'only', pattern: '^\\[.*\\]$', negate: true })
-    expect(archiv?.post?.[0]).toMatchObject({ op: 'only', pattern: '^\\[.*\\]$' })
-    expect(archiv?.post?.[0]?.negate).toBeUndefined()
+    expect(haupt?.post?.[0]).toMatchObject({ op: 'only', negate: true })
+    expect(archiv?.post?.[0]).toMatchObject({ op: 'only', capture: 1 })
   })
 
-  it('kuemmert sich nicht mehr um die Klammern selbst', () => {
-    // Die schneidet der Importer beim Schreiben ohnehin ab. Ein capture im
-    // Vorschlag waere doppelt gemoppelt und im Editor verwirrend.
+  it('verwendet in beiden Zweigen dasselbe Muster, damit sie komplementaer sind', () => {
+    const plan = pruefe(GEMISCHT)[0]?.fixPlan ?? []
+    const ohneGruppe = (m: string) => m.replace('(', '').replace(')', '')
+    const muster = plan.map((t) => ohneGruppe(String(t.post?.[0]?.pattern ?? '')))
+    expect(new Set(muster).size).toBe(1)
+  })
+
+  it('laesst innen keine weiteren Klammern zu', () => {
+    // Sonst zerlegte das gierige .* einen Wert wie "[a] und [b]" beim
+    // Abschneiden zu "a] und [b".
     for (const teil of pruefe(GEMISCHT)[0]?.fixPlan ?? []) {
-      expect(teil.post?.some((st) => 'capture' in (st as object))).toBe(false)
+      expect(String(teil.post?.[0]?.pattern ?? '')).toContain('[^\\[\\]]')
     }
-    expect(pruefe(ALLE)[0]?.fixPlan?.[0]?.post).toEqual([])
   })
 
   it('verankert beide Muster auf den ganzen Wert', () => {
@@ -170,6 +173,80 @@ describe('Der angenommene Vorschlag im fertigen Datensatz', () => {
 
   it('erzeugt nie zwei Primaertitel und beanstandet nichts', () => {
     for (const wert of GEMISCHT) {
+      const r = runRow(mitPlan(), { Titel: wert }, 'z', services)
+      expect(r.canonical.work['has_primary_title']).toBeDefined()
+      expect(r.canonical.work['has_alternative_title']).toBeUndefined()
+      expect(r.errors ?? []).toEqual([])
+    }
+  })
+})
+
+describe('Klammern: was das Profil entscheidet', () => {
+  /*
+   * Elias Oltmanns in #5: Wird der Vorschlag angenommen, sind die Klammern
+   * Kennzeichnung und gehoeren weg. Wird er abgelehnt und der Wert bleibt ein
+   * PreferredTitle, sind sie Bestandteil des Titels und bleiben stehen.
+   *
+   * Deshalb steht das Abschneiden im Profil und nicht im Builder. Im Zweigpaar
+   * stellt sich die Frage ohnehin nicht: Der Haupttitel-Zweig bekommt nur die
+   * nicht eingeklammerten Werte.
+   */
+  const services = { schema: testSchema }
+
+  function mitPlan(werte: string[] = GEMISCHT) {
+    const m = emptyMapping(['Titel'], '1.2.3')
+    const plan = pruefe(werte)[0]?.fixPlan ?? []
+    m.columns['Titel'] = {
+      pre: [],
+      targets: plan.map((t) => ({
+        ...(t.replaces !== undefined ? {} : {}),
+        target: t.target,
+        post: (t.post ?? []) as never
+      }))
+    }
+    return m
+  }
+
+  function ohnePlan() {
+    const m = emptyMapping(['Titel'], '1.2.3')
+    m.columns['Titel'] = { pre: [], targets: [{ target: 'work.title.primary', post: [] }] }
+    return m
+  }
+
+  it('angenommen: Archivtitel ohne Klammern', () => {
+    const r = runRow(mitPlan(), { Titel: '[Betriebsausflug 1962]' }, 'z', services)
+    expect(r.canonical.work['has_primary_title'])
+      .toEqual({ has_name: 'Betriebsausflug 1962', type: 'SuppliedDevisedTitle' })
+  })
+
+  it('abgelehnt: Haupttitel behaelt seine Klammern', () => {
+    const r = runRow(ohnePlan(), { Titel: '[Betriebsausflug 1962]' }, 'z', services)
+    expect(r.canonical.work['has_primary_title'])
+      .toEqual({ has_name: '[Betriebsausflug 1962]', type: 'PreferredTitle' })
+  })
+
+  it('durchgehend eingeklammerte Spalte wird umgehaengt und abgeschnitten', () => {
+    const r = runRow(mitPlan(ALLE), { Titel: '[ohne Titel]' }, 'z', services)
+    expect(r.canonical.work['has_primary_title'])
+      .toEqual({ has_name: 'ohne Titel', type: 'SuppliedDevisedTitle' })
+  })
+
+  it('zerlegt keinen Wert aus mehreren geklammerten Teilen', () => {
+    // "[a] und [b]" ist nicht als Ganzes geklammert. Er faellt nicht in den
+    // Archivzweig, sondern bleibt Haupttitel — mit seinen Klammern.
+    const r = runRow(mitPlan(), { Titel: '[a] und [b]' }, 'z', services)
+    expect(r.canonical.work['has_primary_title'])
+      .toEqual({ has_name: '[a] und [b]', type: 'PreferredTitle' })
+  })
+
+  it('deutet einen Zusatz in Klammern nicht um', () => {
+    const r = runRow(mitPlan(), { Titel: 'Der blaue Engel [Fragment]' }, 'z', services)
+    expect(r.canonical.work['has_primary_title'])
+      .toEqual({ has_name: 'Der blaue Engel [Fragment]', type: 'PreferredTitle' })
+  })
+
+  it('erzeugt in keinem Fall zwei Primaertitel oder eine Beanstandung', () => {
+    for (const wert of [...GEMISCHT, '[a] und [b]', 'Der blaue Engel [Fragment]']) {
       const r = runRow(mitPlan(), { Titel: wert }, 'z', services)
       expect(r.canonical.work['has_primary_title']).toBeDefined()
       expect(r.canonical.work['has_alternative_title']).toBeUndefined()

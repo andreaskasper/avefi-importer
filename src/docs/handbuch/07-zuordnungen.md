@@ -120,22 +120,26 @@ vom Film stammt, sondern vom Archiv vergeben wurde — etwa `[Aufnahmen vom Betr
 
 Zwei Dinge passieren damit.
 
-**Die Klammern fallen immer weg.** Sie sind Kennzeichnung in der Quelldatei, nicht Teil
-des Namens; im AVefi-Datensatz sagt der Titeltyp dasselbe. Das gilt unabhängig davon,
-welches Ziel Sie wählen, und Sie müssen nichts dafür einstellen. Ein Titel, der nur
-teilweise eingeklammert ist — `Der blaue Engel [Fragment]` —, bleibt unverändert: Dort
-ist die Klammer ein Zusatz im Titel.
-
-**Den Typ entscheiden Sie.** Findet die Anwendung eingeklammerte Werte in einer
-Titelspalte, schlägt sie etwas vor, führt es aber nicht von selbst aus:
+**Sie entscheiden, was die Klammer bedeutet.** Findet die Anwendung eingeklammerte
+Werte in einer Titelspalte, schlägt sie etwas vor, führt es aber nicht von selbst aus:
 
 - Stehen **alle** Werte in Klammern, ist die Spalte durchgehend ein Archivtitel. Der
   Vorschlag hängt sie auf „Archivtitel" um.
 - Sind sie **gemischt**, teilt der Vorschlag die Spalte in zwei Zweige: eingeklammerte
   Werte werden zum Archivtitel, alle anderen bleiben Haupttitel.
 
-Beides können Sie ablehnen. Die Ablehnung steht im Profil und wird nicht erneut
-vorgeschlagen — auch nicht, wenn jemand anderes dasselbe Profil weiterverwendet.
+Nehmen Sie den Vorschlag an, fallen die Klammern weg: Der Titeltyp sagt dann schon,
+dass das Archiv den Titel vergeben hat, und die Klammern würden dieselbe Aussage ein
+zweites Mal treffen und in Sortierung und Suche mitlaufen.
+
+Lehnen Sie ab, bleiben sie stehen. Damit sagen Sie, dass es keine Archivtitel sind —
+und dann ist die Klammer kein Hinweis, sondern ein Zeichen im Titel. Die Ablehnung
+steht im Profil und wird nicht erneut vorgeschlagen, auch nicht, wenn jemand anderes
+dasselbe Profil weiterverwendet.
+
+Ein Titel, der nur teilweise eingeklammert ist — `Der blaue Engel [Fragment]` —, gilt
+nicht als Archivtitel und bleibt unverändert. Dasselbe gilt für Werte, die aus mehreren
+geklammerten Teilen bestehen, etwa `[a] und [b]`.
 
 Nach dem Annehmen nennt der Prüfbericht die Aufteilung:
 
