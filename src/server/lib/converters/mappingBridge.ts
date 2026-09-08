@@ -18,6 +18,7 @@ import {
   runRow,
   workKey,
   type AuthorityRequest,
+  type MergeConflict,
   type MappingServices,
   type RunTally
 } from '../mapping/runner'
@@ -81,7 +82,7 @@ export class ProfileRun {
     return workKey(this.mapping, row, canonical)
   }
 
-  merge(base: CanonicalRecord, add: CanonicalRecord): CanonicalRecord {
+  merge(base: CanonicalRecord, add: CanonicalRecord): { record: CanonicalRecord; conflicts: MergeConflict[] } {
     return mergeRecords(base, add)
   }
 

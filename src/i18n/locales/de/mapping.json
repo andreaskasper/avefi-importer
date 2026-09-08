@@ -945,7 +945,8 @@
       "data_branchBalance": "Aufteilung der Spalte in den {zeilen} betrachteten Zeilen: {verteilung}. Jede davon wurde einem Zweig zugeordnet.",
       "data_branchGap": "Aufteilung der Spalte in den {zeilen} betrachteten Zeilen: {verteilung}. {ohne} davon haben keinen Zweig getroffen und stehen daher in keinem Datensatz. Die Muster decken nicht alle Werte ab.",
       "record_workTypeDefaulted": "Die Werkart war nicht belegt; eingetragen wurde „{wert}“, weil das Schema sie verlangt",
-      "record_titleBorrowed": "Das Werk hatte keinen eigenen Titel; übernommen wurde „{titel}“ von der Ebene {ebene} als Archivtitel"
+      "record_titleBorrowed": "Das Werk hatte keinen eigenen Titel; übernommen wurde „{titel}“ von der Ebene {ebene} als Archivtitel",
+      "merge_conflict": "Die Zeilen {zeile} und {andere} wurden zu einem Werk zusammengefasst, widersprechen sich aber in „{feld}“: „{behalten}“ gegen „{verworfen}“. Übernommen wurde „{behalten}“."
     }
   }
 }

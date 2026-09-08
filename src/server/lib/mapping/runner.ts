@@ -805,11 +805,52 @@ export function readTarget(canonical: AvefiRecord, key: string): string {
 }
 
 /**
+ * Ein Werksfeld, das beim Zusammenfassen einen Wert verloren hat.
+ *
+ * Nur einwertige Felder koennen das. Listen werden vereinigt — zwei Zeilen mit
+ * verschiedenen Regisseurinnen ergeben ein Werk mit beiden, und das ist der
+ * Sinn des Zusammenfassens.
+ */
+export interface MergeConflict {
+  /** Schemafeld, etwa has_primary_title. */
+  feld: string
+  behalten: string
+  verworfen: string
+}
+
+/** Beschriftungen der einwertigen Werksfelder, die realistisch kollidieren. */
+const FELDNAMEN: Record<string, string> = {
+  has_primary_title: 'Haupttitel',
+  type: 'Werkart',
+  variant_type: 'Variantentyp'
+}
+
+export function feldName(feld: string): string {
+  return FELDNAMEN[feld] ?? feld
+}
+
+/** Lesbare Form eines Werts fuer die Meldung: bei Titeln der Name, sonst der Wert. */
+function wertText(v: unknown): string {
+  if (typeof v === 'object' && v !== null && !Array.isArray(v)) {
+    const name = (v as AvefiValue)['has_name']
+    if (typeof name === 'string' && name.trim() !== '') return name
+  }
+  return String(v ?? '')
+}
+
+/**
  * Fuehrt zwei kanonische Datensaetze desselben Werks zusammen: Werkangaben werden
  * ergaenzt (nicht ueberschrieben), Manifestationen und Exemplare angehaengt.
+ *
+ * Widersprechen sich die beiden in einem einwertigen Werksfeld, gewinnt der
+ * erste Wert — und der zweite steht in `conflicts`. Bis zum 08.09.2026
+ * verschwand er kommentarlos; welcher Wert "der erste" ist, haengt an der
+ * Zeilenreihenfolge in der Datei und damit an nichts, was der Bearbeiter
+ * sehen kann (Elias Oltmanns im Telefonat, #16).
  */
-export function mergeRecords(base: AvefiRecord, add: AvefiRecord): AvefiRecord {
-  const work = mergeNode(base.work, add.work)
+export function mergeRecords(base: AvefiRecord, add: AvefiRecord): { record: AvefiRecord; conflicts: MergeConflict[] } {
+  const conflicts: MergeConflict[] = []
+  const work = mergeNode(base.work, add.work, conflicts)
 
   let workId: string | null = null
   for (const i of asList(work['has_identifier'])) {
@@ -826,11 +867,14 @@ export function mergeRecords(base: AvefiRecord, add: AvefiRecord): AvefiRecord {
     manifestations.push(copy)
   }
 
-  return { work, manifestations, items: [...base.items, ...add.items] }
+  return { record: { work, manifestations, items: [...base.items, ...add.items] }, conflicts }
 }
 
-/** Ergaenzt fehlende Felder; Listen werden vereinigt, Skalare nicht ueberschrieben. */
-function mergeNode(a: AvefiNode, b: AvefiNode): AvefiNode {
+/**
+ * Ergaenzt fehlende Felder; Listen werden vereinigt, Einwertiges nicht
+ * ueberschrieben. Was dabei verdraengt wird, landet in `conflicts`.
+ */
+function mergeNode(a: AvefiNode, b: AvefiNode, conflicts?: MergeConflict[]): AvefiNode {
   const out: AvefiNode = { ...a }
   for (const [k, v] of Object.entries(b)) {
     if (!(k in out)) {
@@ -844,6 +888,11 @@ function mergeNode(a: AvefiNode, b: AvefiNode): AvefiNode {
         if (!merged.some((x) => sameValue(x, e))) merged.push(e)
       }
       out[k] = merged
+      continue
+    }
+    // Einwertig und verschieden: Der erste bleibt, der zweite geht verloren.
+    if (conflicts !== undefined && !sameValue(mine, v)) {
+      conflicts.push({ feld: k, behalten: wertText(mine), verworfen: wertText(v) })
     }
   }
   return out

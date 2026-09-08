@@ -9,6 +9,7 @@
 import { basename } from 'node:path'
 import type { BaseFormat, MappingJson, MappingProfileRow, ValidationIssue } from '#shared/types/domain'
 import type { AuthorityRequest, MappingServices } from '../mapping/runner'
+import { feldName } from '../mapping/runner'
 import type { SourceRow } from '../mapping/header'
 import type { CanonicalRecord, Converter, ConvertedRecord } from './types'
 import { ohneWerk } from './types'
@@ -71,6 +72,7 @@ export class ProfileTableConverter implements Converter {
   private authorityDropped = 0
   /** Kennung -> Zeile, in der sie zuerst stand. Fuer die Eindeutigkeitspruefung. */
   private readonly seenIds = new Map<string, number>()
+  private mergeConflicts = 0
   private duplicateIds = 0
 
   constructor(
@@ -149,7 +151,31 @@ export class ProfileTableConverter implements Converter {
       }
       const target = bucket[at]
       if (target) {
-        target.canonical = this.run.merge(target.canonical, outcome.canonical)
+        const zusammen = this.run.merge(target.canonical, outcome.canonical)
+        target.canonical = zusammen.record
+        // Was beim Zusammenfassen verdraengt wurde, gehoert in den Bericht.
+        // Die Zeilen stehen mit dabei, sonst waere der Widerspruch nicht
+        // aufzuloesen: Ohne sie weiss niemand, welche beiden Zeilen sich
+        // widersprechen.
+        for (const c of zusammen.conflicts) {
+          this.mergeConflicts++
+          target.issues.push({
+            severity: 'warning',
+            code: 'merge.conflict',
+            row: rowNumber,
+            value: c.verworfen.slice(0, 120),
+            params: {
+              feld: feldName(c.feld),
+              behalten: c.behalten,
+              verworfen: c.verworfen,
+              zeile: target.rows[0] ?? 0,
+              andere: rowNumber
+            },
+            message: `Die Zeilen ${target.rows[0] ?? 0} und ${rowNumber} wurden zu einem Werk `
+              + `zusammengefasst, widersprechen sich aber in "${feldName(c.feld)}": `
+              + `"${c.behalten}" gegen "${c.verworfen}". Uebernommen wurde "${c.behalten}".`
+          })
+        }
         target.rows.push(rowNumber)
         target.issues.push(...outcome.issues)
       }
@@ -257,7 +283,8 @@ export class ProfileTableConverter implements Converter {
       idOrigins: tally.idOrigins,
       authorityValues: this.authorityValues,
       authorityValuesDropped: this.authorityDropped,
-      duplicateIds: this.duplicateIds
+      duplicateIds: this.duplicateIds,
+      mergeConflicts: this.mergeConflicts
     }
   }
 }

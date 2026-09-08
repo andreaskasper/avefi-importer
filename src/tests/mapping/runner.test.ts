@@ -1,6 +1,7 @@
 /* Runner — Ausfuehrung, statische Pruefung, Werkbildung. */
 
 import { describe, expect, it } from 'vitest'
+import type { AvefiRecord } from '../../server/lib/mapping/builder.js'
 import type { MappingJson } from '#shared/types/domain'
 import {
   addToTally, authorityInventory, collectAuthorityLookups, groupingLabel, groupsWorks, hasBlocker,
@@ -230,12 +231,66 @@ describe('Werkbildung', () => {
     const m = demoMapping()
     const a = runRow(m, demoRows[0]!, 'z1', services)
     const b = runRow(m, demoRows[1]!, 'z2', services)
-    const merged = mergeRecords(a.canonical, b.canonical)
+    const { record: merged } = mergeRecords(a.canonical, b.canonical)
     expect((merged.work['has_primary_title'] as any).has_name).toBe('Die Wilden Kerle')
     expect(merged.manifestations.length).toBe(2)
     expect(merged.items.length).toBe(2)
     const workId = (merged.work['has_identifier'] as any[])[0].id
     expect((merged.manifestations[1]?.['is_manifestation_of'] as any[])[0].id).toBe(workId)
+  })
+
+  /*
+   * Was beim Zusammenfassen verdraengt wird, verschwand bis zum 08.09.2026
+   * kommentarlos. Welcher Wert "der erste" ist, haengt an der Zeilenreihenfolge
+   * in der Datei — fuer den Bearbeiter also an nichts Erkennbarem (#16).
+   */
+  const werk = (titel: string, extra: Record<string, unknown> = {}): AvefiRecord => ({
+    work: { has_primary_title: { has_name: titel, type: 'PreferredTitle' }, type: 'Monographic', ...extra },
+    manifestations: [],
+    items: []
+  })
+
+  it('meldet einen verdraengten Titel und behaelt den ersten', () => {
+    const { record, conflicts } = mergeRecords(werk('Der blaue Engel'), werk('Der blaue Engel (1930)'))
+    expect(conflicts).toEqual([
+      { feld: 'has_primary_title', behalten: 'Der blaue Engel', verworfen: 'Der blaue Engel (1930)' }
+    ])
+    expect((record.work['has_primary_title'] as any).has_name).toBe('Der blaue Engel')
+  })
+
+  it('schweigt, wenn beide Zeilen dasselbe sagen', () => {
+    expect(mergeRecords(werk('M'), werk('M')).conflicts).toEqual([])
+  })
+
+  it('schweigt, wenn die zweite Zeile das Feld gar nicht belegt', () => {
+    const ohneTitel: AvefiRecord = { work: { type: 'Monographic' }, manifestations: [], items: [] }
+    expect(mergeRecords(werk('M'), ohneTitel).conflicts).toEqual([])
+  })
+
+  it('meldet auch die Werkart', () => {
+    const a = werk('M')
+    const b = werk('M')
+    b.work['type'] = 'Serial'
+    expect(mergeRecords(a, b).conflicts).toEqual([
+      { feld: 'type', behalten: 'Monographic', verworfen: 'Serial' }
+    ])
+  })
+
+  it('meldet Listen nicht — dort wird vereinigt, nichts geht verloren', () => {
+    // Zwei Zeilen mit verschiedenen Regisseurinnen ergeben ein Werk mit beiden.
+    // Genau dafuer fasst man zusammen.
+    const a = werk('M', { has_note: ['aus Zeile 1'] })
+    const b = werk('M', { has_note: ['aus Zeile 2'] })
+    const { record, conflicts } = mergeRecords(a, b)
+    expect(conflicts).toEqual([])
+    expect(record.work['has_note']).toEqual(['aus Zeile 1', 'aus Zeile 2'])
+  })
+
+  it('meldet jeden widerspruechlichen Wert einzeln', () => {
+    const a = werk('M', { variant_type: 'Original' })
+    const b = werk('Metropolis', { variant_type: 'Restauriert' })
+    const felder = mergeRecords(a, b).conflicts.map((c) => c.feld)
+    expect(felder).toEqual(['has_primary_title', 'variant_type'])
   })
 })
 

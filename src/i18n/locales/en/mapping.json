@@ -945,7 +945,8 @@
       "data_branchBalance": "Column split across the {zeilen} sampled rows: {verteilung}. Every one of them was assigned to a branch.",
       "data_branchGap": "Column split across the {zeilen} sampled rows: {verteilung}. {ohne} of them matched no branch and therefore appear in no record. The patterns do not cover every value.",
       "record_workTypeDefaulted": "The work type was not set; “{wert}” was entered because the schema requires it",
-      "record_titleBorrowed": "The work had no title of its own; “{titel}” was taken from the {ebene} level as an archive title"
+      "record_titleBorrowed": "The work had no title of its own; “{titel}” was taken from the {ebene} level as an archive title",
+      "merge_conflict": "Rows {zeile} and {andere} were merged into one work but disagree on “{feld}”: “{behalten}” versus “{verworfen}”. “{behalten}” was kept."
     }
   }
 }
