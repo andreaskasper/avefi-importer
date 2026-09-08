@@ -4,15 +4,26 @@
 
 Bei einem konvertierten Import öffnet **„✎ Bearbeiten"** die Liste der erzeugten
 AVefi-Werke. Je Zeile: Titel (+ Beteiligte), Jahr, Typ, AVefi-PID, Anzahl
-Manifestationen/Exemplare, **Vollständigkeit** (Ring) und ein **„ungültig"-Marker**,
-falls der Datensatz das Schema noch nicht erfüllt.
+Manifestationen/Exemplare, die **Belegung der Kernfelder** und ein
+**„ungültig"-Marker**, falls der Datensatz das Schema noch nicht erfüllt.
 
 - **Suche**: filtert die Liste nach Titel/PID.
 - **⬇ AVefi-JSON**: lädt das Konvertierungsergebnis des Imports herunter
   (`/imports/<uuid>/avefi.json`).
 
-Vollständigkeit = Anteil ausgefüllter Pflicht- + empfohlener Felder:
-Rot < 50 %, Gelb < 80 %, Grün ≥ 80 %.
+Die Plakette nennt, wie viele der vier Kernfelder belegt sind — Titel, Regie,
+Produktionsdatum und Produktionsland — und färbt sich nach der Verbindlichkeit
+des Fehlenden:
+
+| Farbe | Bedeutung |
+|---|---|
+| Grün | alle vier Kernfelder belegt |
+| Gelb | empfohlene Felder fehlen |
+| Rot | ein Pflichtfeld fehlt — so lässt sich der Datensatz nicht nach AVefi übernehmen |
+
+Pflicht sind die Felder, die das AVefi-Schema zwingend verlangt: der Haupttitel
+und die Werkart. Ein Datensatz, der nur einen Alternativtitel trägt, ist deshalb
+rot, auch wenn sonst viel ausgefüllt ist.
 
 ## Editor (AVefi-Schema)
 

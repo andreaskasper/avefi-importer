@@ -269,6 +269,24 @@ Die verwendete Regel und ihr Ergebnis stehen anschließend im Prüfbericht
 („4312 Zeilen → 3717 Werke, Regel: Haupttitel + Regie"). Damit ist eine abweichende
 Werkzahl nachvollziehbar statt Verhandlungssache.
 
+Beim Zusammenfassen werden die Angaben der Zeilen vereinigt: Was die eine Zeile hat
+und die andere nicht, wird ergänzt. Mehrwertige Felder sammeln beides ein — zwei
+Zeilen mit verschiedenen Regisseurinnen ergeben ein Werk mit beiden.
+
+Widersprechen sich zwei zusammengefasste Zeilen dagegen in einem **einwertigen** Feld,
+etwa im Haupttitel, kann nur ein Wert stehen bleiben. Die erste Zeile gewinnt, und der
+Prüfbericht nennt den Fall mit beiden Zeilennummern:
+
+```
+Die Zeilen 61 und 62 wurden zu einem Werk zusammengefasst, widersprechen sich
+aber in „Haupttitel": „Der blaue Engel" gegen „Der blaue Engel (1930)".
+Übernommen wurde „Der blaue Engel".
+```
+
+Das ist meist ein Hinweis auf die Gruppierungsregel selbst: Wenn zwei Zeilen
+denselben Schlüssel haben, aber verschiedene Titel tragen, meinen sie
+möglicherweise gar nicht dasselbe Werk.
+
 ## Profile verwalten
 
 Der Menüpunkt **Zuordnungen** listet alle Profile, eigene zuerst: Name, Einrichtung,
