@@ -171,11 +171,11 @@
           "VariableFrameRate": "variable frame rate"
         },
         "ItemAccessStatusEnum": {
-          "Archive": "Archive copy",
-          "Distribution": "Distribution copy",
+          "Archive": "Archive",
+          "Distribution": "Distribution",
           "Master": "Master",
           "Removed": "Removed",
-          "Viewing": "Viewing copy"
+          "Viewing": "Viewing"
         },
         "ItemElementTypeEnum": {
           "ColourNegative": "Colour Negative",
@@ -189,7 +189,7 @@
           "DuplicatePositive": "Duplicate Positive",
           "EditDecisionList": "Edit Decision List",
           "ImageNegative": "Image Negative",
-          "Lavender": "Lavender print",
+          "Lavender": "Lavender",
           "OriginalNegative": "Original Negative",
           "OriginalPositiveReversalFilm": "Original Positive (reversal film)",
           "Positive": "Positive",
@@ -204,7 +204,7 @@
           "Intertitles": "Intertitles",
           "NoDialogue": "No Dialogue",
           "OpeningCredits": "Opening Credits",
-          "SDHSubtitles": "Subtitles for the deaf and hard of hearing",
+          "SDHSubtitles": "SDH Subtitles",
           "SignedLanguage": "Signed Language",
           "SpokenLanguage": "Spoken Language",
           "Subtitles": "Subtitles",
@@ -216,21 +216,21 @@
           "Uncertain": "Uncertain"
         },
         "SoundTypeEnum": {
-          "Combined": "Picture and sound on one carrier",
-          "CombinedAsMute": "Combined, without sound track",
-          "CombinedAsSound": "Combined, with sound track",
+          "Combined": "Combined",
+          "CombinedAsMute": "Combined as Mute",
+          "CombinedAsSound": "Combined as Sound",
           "MixedSound": "Mixed Sound",
-          "Mute": "Copy without sound track",
-          "Silent": "Shot silent",
+          "Mute": "Mute",
+          "Silent": "Silent",
           "Sound": "Sound",
-          "Temporary": "Temporary sound"
+          "Temporary": "Temporary"
         },
         "TitleTypeEnum": {
           "AbbreviatedTitle": "Abbreviated Title",
           "AcquisitionTitle": "Acquisition Title",
           "AlternativeTitle": "Alternative Title",
           "CorrectedTitle": "Corrected Title",
-          "PreReleaseTitle": "Pre-release title",
+          "PreReleaseTitle": "Pre-Release Title",
           "PreferredTitle": "Preferred Title",
           "SearchTitle": "Search Title",
           "SeriesTitle": "Series Title",
@@ -268,7 +268,7 @@
           "Feature": "Feature",
           "Featurette": "Featurette",
           "Fiction": "Fiction",
-          "HomeMovie": "Home movie",
+          "HomeMovie": "Home Movie",
           "Outtake": "Outtake",
           "ScreenTest": "Screen Test",
           "Series": "Series",
@@ -288,7 +288,7 @@
         "WorkVariantTypeEnum": {
           "Analytic": "Analytic",
           "Collection": "Collection",
-          "Monographic": "Single work",
+          "Monographic": "Monographic",
           "Serial": "Serial"
         }
       },

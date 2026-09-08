@@ -171,71 +171,71 @@
           "VariableFrameRate": "variable Bildrate"
         },
         "ItemAccessStatusEnum": {
-          "Archive": "Archivexemplar",
-          "Distribution": "Verleihexemplar",
+          "Archive": "Archiv",
+          "Distribution": "Distribution",
           "Master": "Master",
-          "Removed": "Ausgesondert",
-          "Viewing": "Sichtungsexemplar"
+          "Removed": "Entfernt",
+          "Viewing": "Sichtung"
         },
         "ItemElementTypeEnum": {
           "ColourNegative": "Farbnegativ",
           "ColourPositive": "Farbpositiv",
           "CopperTonedPositive": "Kupfergetontes Positiv",
-          "CyanMatrix": "Cyan-Matrize",
+          "CyanMatrix": "Cyan-Matrix",
           "DCDM": "DCDM",
           "DCP": "DCP",
-          "DirectBWPositive": "Direktes Schwarzweißpositiv",
+          "DirectBWPositive": "Direktes SW Positiv",
           "DuplicateNegative": "Dupliziertes Negativ",
           "DuplicatePositive": "Dupliziertes Positiv",
           "EditDecisionList": "Schnittliste",
           "ImageNegative": "Bildnegativ",
-          "Lavender": "Lavendelkopie",
+          "Lavender": "Lavendel",
           "OriginalNegative": "Originalnegativ",
-          "OriginalPositiveReversalFilm": "Originalumkehrpositiv",
+          "OriginalPositiveReversalFilm": "Originalpositiv (Umkehrfilm)",
           "Positive": "Positiv",
           "SoundNegative": "Tonnegativ",
           "Subtitles": "Untertitel"
         },
         "LanguageUsageEnum": {
           "AudioDescription": "Audiodeskription",
-          "Captions": "Untertitel für Hörende",
+          "Captions": "Untertitel",
           "ClosingCredits": "Abspann",
           "Dubbed": "Synchronisiert",
           "Intertitles": "Zwischentitel",
           "NoDialogue": "Ohne Dialog",
           "OpeningCredits": "Vorspann",
-          "SDHSubtitles": "Untertitel für Hörgeschädigte",
+          "SDHSubtitles": "SDH-Untertitel",
           "SignedLanguage": "Gebärdensprache",
           "SpokenLanguage": "Gesprochene Sprache",
           "Subtitles": "Untertitel",
           "SungLanguage": "Gesungene Sprache",
-          "VoiceOver": "Voiceover"
+          "VoiceOver": "Voice-over"
         },
         "PrecisionEnum": {
           "Approximate": "Ungefähr",
           "Uncertain": "Unsicher"
         },
         "SoundTypeEnum": {
-          "Combined": "Bild und Ton auf einem Träger",
-          "CombinedAsMute": "Kombiniert, ohne Tonspur",
-          "CombinedAsSound": "Kombiniert, mit Tonspur",
+          "Combined": "Kombiniert",
+          "CombinedAsMute": "Kombiniert als ohne Ton",
+          "CombinedAsSound": "Kombiniert als Ton",
           "MixedSound": "Gemischter Ton",
-          "Mute": "Kopie ohne Tonspur",
-          "Silent": "Stumm gedreht",
+          "Mute": "Ohne Ton",
+          "Silent": "Stumm",
           "Sound": "Ton",
-          "Temporary": "Vorläufiger Ton"
+          "Temporary": "Temporär"
         },
         "TitleTypeEnum": {
           "AbbreviatedTitle": "Abgekürzter Titel",
           "AcquisitionTitle": "Übernahmetitel",
           "AlternativeTitle": "Alternativtitel",
           "CorrectedTitle": "Korrigierter Titel",
-          "PreReleaseTitle": "Titel vor der Veröffentlichung",
+          "PreReleaseTitle": "Pre-Release Titel",
           "PreferredTitle": "Bevorzugter Titel",
           "SearchTitle": "Suchtitel",
           "SeriesTitle": "Serientitel",
           "SuppliedDevisedTitle": "Archivtitel",
-          "TitleProper": "Haupttitel",
+          "TitleProper": "Title Proper",
           "TranslatedTitle": "Übersetzter Titel",
           "TransliteratedTitle": "Transliterierter Titel",
           "WorkingTitle": "Arbeitstitel"
@@ -249,15 +249,15 @@
           "TeraByte": "Terabyte"
         },
         "VariantTypeEnum": {
-          "AbridgedCondensed": "Gekürzt/Zusammengefasst",
+          "AbridgedCondensed": "Gekürzt",
           "Augmented": "Erweitert",
-          "BlackAndWhiteCopyOfWorkOriginallyIssuedInColour": "Schwarzweißkopie eines Werks, das im Original in Farbe ausgegeben wurde",
+          "BlackAndWhiteCopyOfWorkOriginallyIssuedInColour": "Schwarz-Weiß-Kopie eines ursprünglich in Farbe erschienenen Werks",
           "Censored": "Zensiert",
           "Colourized": "Koloriert",
-          "DifferentSoundTrack": "Anderer Soundtrack",
+          "DifferentSoundTrack": "Andere Tonspur",
           "Dubbed": "Synchronisiert",
-          "PreservationRestoration": "Präservierung/Restaurierung",
-          "Sonorized": "Sonorisierung",
+          "PreservationRestoration": "Sicherung/Restaurierung",
+          "Sonorized": "Vertont",
           "Subtitled": "Untertitelt"
         },
         "WorkFormEnum": {
@@ -266,10 +266,10 @@
           "Documentary": "Dokumentarfilm",
           "Excerpt": "Filmausschnitt",
           "Feature": "Langfilm",
-          "Featurette": "Mittellangfilm",
+          "Featurette": "Featurette",
           "Fiction": "Spielfilm",
-          "HomeMovie": "Familienfilm",
-          "Outtake": "Ausschussmaterial",
+          "HomeMovie": "Heimvideo",
+          "Outtake": "Outtake",
           "ScreenTest": "Probeaufnahmen",
           "Series": "Serie",
           "Short": "Kurzfilm",
@@ -277,7 +277,7 @@
           "Trailer": "Trailer",
           "UneditedFootage": "Unbearbeitetes Material",
           "AnthologyFilm": "Episodenfilm",
-          "Commercial": "Werbung",
+          "Commercial": "Werbespot",
           "EducationalFilm": "Lehrfilm",
           "EssayFilm": "Essayfilm",
           "ExperimentalFilm": "Experimentalfilm",
@@ -286,10 +286,10 @@
           "Newsreel": "Wochenschau"
         },
         "WorkVariantTypeEnum": {
-          "Analytic": "Unselbstständiger Teil",
+          "Analytic": "Analytisch",
           "Collection": "Sammlung",
-          "Monographic": "Einzelwerk",
-          "Serial": "Fortlaufendes Werk"
+          "Monographic": "Monographisch",
+          "Serial": "Seriell"
         }
       },
       "orphan": "nicht in dieser Datei",
