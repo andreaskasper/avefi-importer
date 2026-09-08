@@ -85,9 +85,9 @@ const resourceTypes = computed(() => Object.keys(config.value?.resourceTypes ?? 
 
 /* ------------------------------------------------------------------- Pruefung */
 
-const completeness = ref(0)
 /** Kernfelder des Datensatzes — dieselbe Angabe wie in der Liste. */
 const core = ref<{ filled: number; total: number; missing: string[] } | null>(null)
+const coreState = ref<'danger' | 'part' | 'full'>('part')
 function coreLabel(key: string): string {
   return t(`records.table.coreField.${key}`)
 }
@@ -100,8 +100,8 @@ const actionError = ref('')
 
 watch(detail, (d) => {
   if (d == null) return
-  completeness.value = d.record.completeness
   core.value = d.record.core ?? null
+  coreState.value = d.record.coreState ?? 'part'
   editedAt.value = d.record.editedAt
   check.value = null
 }, { immediate: true })
@@ -138,8 +138,8 @@ async function saveInner() {
   actionError.value = ''
   try {
     const res = await datensaetze.speichern(importId.value, recordId.value, output.value)
-    completeness.value = res.completeness
     core.value = res.core ?? null
+    coreState.value = res.coreState ?? 'part'
     editedAt.value = res.editedAt
     check.value = res
     baseline.value = JSON.stringify(output.value)
@@ -402,7 +402,7 @@ function backToList() {
              der Detailansicht stand er weiter — gemeldet von Stefan Stretz
              am 01.09.2026. -->
         <p v-if="core !== null" class="ed-core">
-          <span class="core" :class="core.filled === core.total ? 'core-full' : 'core-part'">
+          <span class="core" :class="`core-${coreState}`">
             {{ t('records.table.coreValue', { filled: core.filled, total: core.total }) }}
           </span>
           <span v-if="core.missing.length" class="dim small core-missing">{{

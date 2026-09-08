@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import type { AvefiRecord } from '../../server/lib/mapping/builder.js'
 import {
   addToCoreTally, completeness, completenessIssues, coreCoverage,
-  corePresence, coreScore, finishCoreTally, newCoreTally, ringClass
+  corePresence, coreScore, coreState, finishCoreTally, newCoreTally
 } from '../../server/lib/mapping/completeness.js'
 
 const leer: AvefiRecord = { work: {}, manifestations: [], items: [] }
@@ -42,10 +42,49 @@ describe('Vollstaendigkeit', () => {
     ])
   })
 
-  it('stuft den Fortschrittsring ein', () => {
-    expect(ringClass(30)).toBe('low')
-    expect(ringClass(60)).toBe('mid')
-    expect(ringClass(90)).toBe('')
+  /*
+   * Die Ampel folgt seit dem 08.09.2026 der Verbindlichkeit, nicht dem Anteil.
+   * Anlass war ein Datensatz aus Paderborn ohne jeden Haupttitel: Er stand auf
+   * Gelb, weil sein Prozentwert ueber 50 lag, waehrend direkt daneben
+   * "Pflichtangabe fehlt" in Rot stand.
+   */
+  it('faerbt rot, sobald ein Pflichtfeld fehlt', () => {
+    expect(coreState(leer)).toBe('danger')
+    // Nur ein Alternativtitel, kein Haupttitel — genau der Paderborner Fall.
+    const nurAlternativtitel: AvefiRecord = {
+      work: { type: 'Monographic', has_alternative_title: [{ has_name: 'Expo 2000', type: 'AlternativeTitle' }] },
+      manifestations: [{}],
+      items: [{}]
+    }
+    expect(coreState(nurAlternativtitel)).toBe('danger')
+  })
+
+  it('faerbt gelb, wenn nur empfohlene Felder fehlen', () => {
+    const ohneLand: AvefiRecord = {
+      work: {
+        has_primary_title: { has_name: 'Der Film' },
+        type: 'Monographic',
+        has_event: [{
+          category: 'avefi:ProductionEvent',
+          has_date: '1953',
+          has_activity: [{ category: 'avefi:DirectingActivity', has_agent: [{ has_name: 'Lang' }] }]
+        }]
+      },
+      manifestations: [{}],
+      items: [{}]
+    }
+    expect(coreState(ohneLand)).toBe('part')
+  })
+
+  it('faerbt gruen, wenn alle vier Kernfelder belegt sind', () => {
+    expect(coreState(voll)).toBe('full')
+  })
+
+  it('laesst rot vor gelb gehen, auch bei vielen belegten Feldern', () => {
+    // Ein Datensatz kann viel enthalten und trotzdem kein Werk sein.
+    const reichOhneTitel: AvefiRecord = JSON.parse(JSON.stringify(voll))
+    delete reichOhneTitel.work['has_primary_title']
+    expect(coreState(reichOhneTitel)).toBe('danger')
   })
 })
 

@@ -123,11 +123,35 @@ export function completenessIssues(record: AvefiRecord): CompletenessHint[] {
   return codes.map((h) => ({ ...h, text: HINWEISE[h.code] ?? h.code }))
 }
 
-/** Klasse fuer den Fortschrittsring: low (unter 50), mid (unter 80), sonst leer. */
-export function ringClass(percent: number): string {
-  if (percent < 50) return 'low'
-  if (percent < 80) return 'mid'
-  return ''
+/**
+ * Ampel der Kernfeld-Plakette.
+ *
+ * Bis zum 08.09.2026 richtete sich die Farbe nach dem Anteil ausgefuellter
+ * Felder (ringClass: rot unter 50 %, gelb unter 80 %). Das passte nicht mehr zu
+ * dem, was danebensteht: Die Plakette nennt seit dem 31.08. benannte Felder
+ * statt eines Anteils, und die Legende beschrieb weiterhin Prozentgrenzen. Ein
+ * Datensatz ohne jeden Titel stand deshalb auf Gelb, obwohl direkt daneben
+ * "Pflichtangabe fehlt" in Rot stand (gefunden von Matti Stoehr, im Telefonat
+ * mit Elias Oltmanns am 08.09. besprochen).
+ *
+ * Jetzt folgt die Farbe der Verbindlichkeit statt der Menge:
+ *
+ *   rot    ein Pflichtfeld fehlt — der Datensatz ist so nicht schemakonform
+ *   gelb   empfohlene Felder fehlen
+ *   gruen  alle vier Kernfelder belegt
+ *
+ * Welche Felder Pflicht sind, sagt nicht diese Funktion, sondern
+ * completenessIssues: Was dort 'error' ist, ist Pflicht. Heute sind das
+ * Haupttitel und Werkart, also genau die beiden, die das AVefi-Schema
+ * zwingend verlangt. Kommt ein drittes dazu, faerbt sich die Plakette von
+ * selbst mit.
+ */
+export type CoreState = 'danger' | 'part' | 'full'
+
+export function coreState(record: AvefiRecord): CoreState {
+  if (completenessIssues(record).some((h) => h.level === 'error')) return 'danger'
+  const { filled, total } = coreScore(record)
+  return filled === total ? 'full' : 'part'
 }
 
 /* -------------------------------------------------------------- Kernfelder */

@@ -86,8 +86,7 @@ function coreTitle(r: RecordListItem): string {
             <!-- Benannte Angaben statt eines Prozentwerts: "3 von 4" sagt, dass
                  etwas fehlt, und der Zusatz sagt, WAS. Ein Anteil bewertet die
                  Daten eines Hauses, ohne etwas zu erklaeren. -->
-            <span class="core" :class="r.core.filled === r.core.total ? 'core-full' : 'core-part'"
-                  :title="coreTitle(r)">
+            <span class="core" :class="`core-${r.coreState}`" :title="coreTitle(r)">
               {{ t('records.table.coreValue', { filled: r.core.filled, total: r.core.total }) }}
             </span>
             <span v-if="r.core.missing.length" class="dim small core-missing">

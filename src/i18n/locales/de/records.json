@@ -59,7 +59,7 @@
       "text": "Dieser Import ist noch nicht konvertiert oder hat keine Werke erzeugt.",
       "toImport": "Zum Import"
     },
-    "note": "Vollständigkeit ist der Anteil ausgefüllter Pflicht- und empfohlener Felder. Rot unter 50 %, Gelb unter 80 %, Grün ab 80 %.",
+    "note": "Die Plakette nennt, wie viele der vier Kernfelder belegt sind: Titel, Regie, Produktionsdatum und Produktionsland. Grün heißt, alle vier stehen da. Gelb heißt, es fehlen empfohlene Felder. Rot heißt, es fehlt ein Pflichtfeld — so lässt sich der Datensatz nicht nach AVefi übernehmen.",
     "editor": {
       "crumb": "Bearbeiten",
       "aria": {

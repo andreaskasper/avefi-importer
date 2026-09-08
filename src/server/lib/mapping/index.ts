@@ -187,6 +187,6 @@ export {
   corePresence,
   finishCoreTally,
   newCoreTally,
-  ringClass
+  coreState
 } from './completeness.js'
 export type { CoreFieldKey, CoreSummary, CoreTally } from './completeness.js'

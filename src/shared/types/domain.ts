@@ -445,6 +445,18 @@ export interface RecordImportInfo {
 }
 
 /** Kopfdaten eines Datensatzes im Editor. */
+/**
+ * Ampel der Kernfeld-Plakette.
+ *
+ *   danger  ein Pflichtfeld fehlt — der Datensatz ist so nicht schemakonform
+ *   part    empfohlene Felder fehlen
+ *   full    alle vier Kernfelder belegt
+ *
+ * Loeste am 08.09.2026 den Fortschrittsring ab, dessen Farbe sich nach dem
+ * Anteil ausgefuellter Felder richtete. Begruendung in completeness.ts.
+ */
+export type CoreState = 'danger' | 'part' | 'full'
+
 export interface RecordDetailInfo {
   id: number
   title: string | null
@@ -453,7 +465,7 @@ export interface RecordDetailInfo {
   pid: string | null
   completeness: number
   core: CoreScore
-  ring: string
+  coreState: CoreState
   sourceRow: number | null
   editedAt: string | null
   createdAt: string
@@ -486,7 +498,7 @@ export interface SaveResponse extends CheckResponse {
   ok: true
   completeness: number
   core: CoreScore
-  ring: string
+  coreState: CoreState
   editedAt: string | null
   title: string | null
   avefi: AvefiRecord

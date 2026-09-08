@@ -16,7 +16,7 @@ import { z } from 'zod'
 import type { AvefiNode } from '#shared/types/domain'
 import { db } from '../../../../db'
 import { findRecord, saveRecord } from '../../../../lib/records'
-import { completenessIssues, coreScore, ringClass } from '../../../../lib/mapping/index'
+import { completenessIssues, coreScore, coreState } from '../../../../lib/mapping/index'
 import type { SaveResponse } from '#shared/types/domain'
 import { checkRecords } from '../../../../worker/validate'
 import { fail, ownedImport } from '../../_lib'
@@ -74,7 +74,7 @@ export default defineEventHandler(async (event): Promise<SaveResponse> => {
     ok: true,
     completeness: saved?.completeness ?? existing.completeness,
     core: coreScore(record),
-    ring: ringClass(saved?.completeness ?? existing.completeness),
+    coreState: coreState(record),
     editedAt: saved?.edited_at ?? null,
     title: saved?.work_title ?? null,
     avefi: stored,

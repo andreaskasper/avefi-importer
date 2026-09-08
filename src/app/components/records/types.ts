@@ -1,7 +1,7 @@
 /*
  * Was die Oberflaeche von den Datensatz-Endpunkten erwartet.
  */
-import type { AvefiNode, AvefiRecord, CoreScore, ValidationIssue } from '#shared/types/domain'
+import type { AvefiNode, AvefiRecord, CoreScore, CoreState, ValidationIssue } from '#shared/types/domain'
 import type { TargetEntry } from '#shared/types/domain'
 
 /*
@@ -10,7 +10,7 @@ import type { TargetEntry } from '#shared/types/domain'
  * standen, kannten sie nur die Oberflaeche — und `core` konnte aus der Antwort
  * verschwinden, ohne dass es auffiel.
  */
-export type { AvefiNode, AvefiRecord, CoreScore, ValidationIssue }
+export type { AvefiNode, AvefiRecord, CoreScore, CoreState, ValidationIssue }
 export type {
   CheckResponse, CompletenessHint, RecordDetailInfo, RecordDetailResponse,
   RecordImportInfo, SaveResponse
@@ -67,7 +67,7 @@ export interface RecordListItem {
   completeness: number
   /** Belegte Kernfelder statt eines Prozentwerts. */
   core: CoreScore
-  ring: string
+  coreState: CoreState
   contributors: string[]
   sourceRow: number | null
   editedAt: string | null

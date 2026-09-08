@@ -59,7 +59,7 @@
       "text": "This import has not been converted yet, or it produced no works.",
       "toImport": "Back to import"
     },
-    "note": "Completeness is the share of filled required and recommended fields. Red below 50 %, amber below 80 %, green from 80 %.",
+    "note": "The badge shows how many of the four core fields are filled: title, directing, production date and production place. Green means all four are there. Yellow means recommended fields are missing. Red means a mandatory field is missing — the record cannot go to AVefi in this state.",
     "editor": {
       "crumb": "Edit",
       "aria": {

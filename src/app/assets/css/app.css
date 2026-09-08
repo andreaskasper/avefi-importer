@@ -213,6 +213,7 @@ a:not(.btn){color:inherit}
 .core{display:inline-block;font-weight:700;font-size:12.5px;padding:2px 8px;border-radius:999px}
 .core-full{color:var(--ok);background:var(--ok-bg)}
 .core-part{color:var(--warn);background:var(--warn-bg)}
+.core-danger{color:var(--danger);background:var(--danger-bg)}
 .core-missing{display:block;margin-top:3px}
 
 /* completeness ring */
