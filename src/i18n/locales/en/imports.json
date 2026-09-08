@@ -357,6 +357,11 @@
       "missing_identifier": "The record has no identifier. Without has_identifier no PID can be assigned later. In the mapping a column has to point at an identifier, or a fixed value has to supply one.",
       "validation_unavailable": "The validation service could not be reached. The file was produced but not checked — this report says nothing about schema conformance. “Reconvert” starts the check again."
     },
+    "fieldHelp": {
+      "lead": "About the field",
+      "values": "Allowed values:",
+      "more": "and {count} more"
+    },
     "validation": {
       "laeuft": "validation running",
       "ungeprueft": "not validated",

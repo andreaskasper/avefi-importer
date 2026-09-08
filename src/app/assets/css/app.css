@@ -474,7 +474,10 @@ textarea.ui-input{resize:vertical;line-height:1.5}
    Hinweis ist zu lesen, nicht zu ueberfliegen. */
 .issue-advice{display:block;margin-top:6px;padding:6px 0 6px 10px;
   border-left:2px solid var(--border-strong);color:var(--ink);font-size:12px;line-height:1.5}
-.issue-advice strong{font-weight:600}
+/* Der Abstand gehoert hierher und nicht in die Vorlage: Vue faltet Leerraum
+   an Elementgrenzen weg, und "Was zu tun ist:Zwei Saetze" stand seit jeher so
+   da. */
+.issue-advice strong{font-weight:600;margin-right:4px}
 .issue-advice a{margin-left:4px;white-space:nowrap}
 
 @media (max-width:820px){

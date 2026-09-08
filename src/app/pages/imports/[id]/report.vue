@@ -28,6 +28,9 @@ const issues = computed(() => data.value?.issues ?? [])
 // Quellzeile -> Datensatz, vom Server abgeleitet. Damit wird aus der Angabe
 // „Zeile 53" ein Weg zum Satz und nicht nur eine Beschreibung.
 const rowRecords = computed(() => data.value?.rowRecords ?? {})
+// Auskunft zu den Zielfeldern, die in den Befunden vorkommen. Nur zu diesen —
+// der Katalog hat 91 Ziele, und die anderen 90 interessieren hier niemanden.
+const fieldHelp = computed(() => data.value?.fieldHelp ?? {})
 
 useHead({ title: () => (item.value ? `${item.value.filename} · ${t('imports.report.crumb')}` : t('imports.report.crumb')) })
 
@@ -164,7 +167,7 @@ function percent(entry: { filled: number; total: number }): number {
         </section>
 
         <ImportsIssueList :issues="issues" :counts="counts" :row-records="rowRecords"
-                          :import-id="item.id" :has-mapping="item.hasMapping" />
+                          :import-id="item.id" :has-mapping="item.hasMapping" :field-help="fieldHelp" />
 
         <section style="margin-top:18px">
           <h2 class="side-h" style="margin:0 0 8px">{{ t('imports.report.meta.heading') }}</h2>

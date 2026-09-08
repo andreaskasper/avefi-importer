@@ -107,6 +107,20 @@ export type Severity = 'error' | 'warning' | 'info'
  * Schweregrad, Meldung sowie — soweit zuordenbar — Zeile bzw. Datensatz,
  * Quellfeld und AVefi-Schemafeld.
  */
+/**
+ * Auskunft zu einem Zielfeld, das in den Beanstandungen vorkommt.
+ *
+ * Steht hier und nicht je einmal auf beiden Seiten: Server und Oberflaeche
+ * muessen sich ueber die Felder einig sein, und zwei Kopien derselben vier
+ * Zeilen laufen frueher oder spaeter auseinander.
+ */
+export interface FieldHelp {
+  label: string
+  description: string | null
+  /** Zulaessige Werte, wenn das Feld eine Werteliste hat. Sonst null. */
+  values: string[] | null
+}
+
 export interface ValidationIssue {
   severity: Severity
   message: string

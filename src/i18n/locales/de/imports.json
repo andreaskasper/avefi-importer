@@ -357,6 +357,11 @@
       "missing_identifier": "Der Satz hat keine Kennung. Ohne has_identifier lässt sich später kein PID vergeben. In der Zuordnung muss eine Spalte auf eine Kennung zeigen, oder ein Festwert muss sie liefern.",
       "validation_unavailable": "Der Prüfdienst war nicht erreichbar. Die Datei wurde erzeugt, aber nicht geprüft — über die Schemakonformität sagt dieser Bericht also nichts. „Neu konvertieren“ startet die Prüfung erneut."
     },
+    "fieldHelp": {
+      "lead": "Zum Feld",
+      "values": "Zulässig sind:",
+      "more": "und {count} weitere"
+    },
     "validation": {
       "laeuft": "Prüfung läuft",
       "ungeprueft": "ungeprüft",

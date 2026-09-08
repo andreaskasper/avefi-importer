@@ -10,6 +10,8 @@ import type { Severity, ValidationIssue } from '#shared/types/domain'
 import { db } from '../../../db'
 import { countEdited } from '../../../lib/records'
 import type { ExtendedImportReport } from '../../../lib/imports'
+import { fieldHelpFor } from '../../../lib/fieldhelp'
+import { loadSchemaModel } from '../../../lib/schema'
 import { ownedImport } from '../_lib'
 import { toListItem } from '../index.get'
 
@@ -60,6 +62,7 @@ export default defineEventHandler(async (event) => {
     issues,
     counts,
     rowRecords,
+    fieldHelp: fieldHelpFor(issues, await loadSchemaModel()),
     summary: report?.summary ?? null,
     mapping: report?.mapping ?? null,
     coverage: report?.coverage ?? null

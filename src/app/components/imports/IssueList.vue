@@ -17,8 +17,18 @@
  * Der Loesungshinweis steht einmal je Code, beim ersten Befund. Bei zwanzig
  * gleichartigen Meldungen zwanzigmal denselben Satz zu wiederholen macht die
  * Liste laenger, aber nicht verstaendlicher.
+ *
+ * Daneben steht, ebenfalls einmal, die Auskunft zum betroffenen Feld: was es
+ * bedeutet und welche Werte es annehmen darf (#3). Der Hinweis zum Code sagt,
+ * was zu tun ist; die Feldauskunft sagt, womit. "\u201eBetacam SP\u201c ist kein
+ * zulaessiger Wert fuer \u201eOptischer Datentraeger\u201c" wird erst dann zur
+ * Handlungsanweisung, wenn daneben steht, dass dort DVD oder Blu-ray stuende
+ * und Betacam SP an das Videoband gehoert.
+ *
+ * Beides ist Auskunft, kein Eingriff: Automatische Korrektur ist vertraglich
+ * ausgeschlossen. Es wird gesagt, was zulaessig waere; gesetzt wird nichts.
  */
-import type { Severity, ValidationIssue } from '#shared/types/domain'
+import type { FieldHelp, Severity, ValidationIssue } from '#shared/types/domain'
 
 const props = withDefaults(
   defineProps<{
@@ -29,9 +39,11 @@ const props = withDefaults(
     importId?: string
     /** Ob es zu diesem Import eine Zuordnung gibt, in die gesprungen werden kann. */
     hasMapping?: boolean
+    /** Zielfeldschluessel -> Auskunft. Fehlt der Schluessel, entfaellt die Auskunft. */
+    fieldHelp?: Record<string, FieldHelp>
     pageSize?: number
   }>(),
-  { pageSize: 100, rowRecords: () => ({}), importId: '', hasMapping: false }
+  { pageSize: 100, rowRecords: () => ({}), importId: '', hasMapping: false, fieldHelp: () => ({}) }
 )
 const { t, te } = useI18n()
 
@@ -134,6 +146,50 @@ function hinweis(issue: ValidationIssue): string {
   return t(`imports.advice.${schluessel(issue)}`)
 }
 
+/**
+ * Beim wievielten Befund eines Zielfeldes die Auskunft steht.
+ *
+ * Dieselbe Rechnung wie beim Codehinweis, und aus demselben Grund auf der
+ * gefilterten Liste: Wer nur die Fehler ansieht, findet die Auskunft am ersten
+ * sichtbaren Fehler.
+ */
+const ersteFeldstelle = computed(() => {
+  const stellen = new Map<string, number>()
+  filtered.value.forEach((issue, index) => {
+    const key = String(issue.targetField ?? '')
+    if (key !== '' && props.fieldHelp[key] !== undefined && !stellen.has(key)) stellen.set(key, index)
+  })
+  return stellen
+})
+
+function feld(issue: ValidationIssue): FieldHelp | null {
+  const key = String(issue.targetField ?? '')
+  return key === '' ? null : (props.fieldHelp[key] ?? null)
+}
+
+function zeigtFeld(issue: ValidationIssue, index: number): boolean {
+  const key = String(issue.targetField ?? '')
+  return key !== '' && ersteFeldstelle.value.get(key) === index
+}
+
+/*
+ * Lange Wertelisten werden gekuerzt.
+ *
+ * FormatFilmTypeEnum hat 30 Werte. Vollstaendig ausgeschrieben verdraengt eine
+ * einzige Auskunft die halbe Liste der Befunde. Wer alle Werte braucht, findet
+ * sie in der Auswahlliste des Ziels; hier geht es darum, die Groessenordnung
+ * und die ersten Kandidaten zu zeigen.
+ */
+const WERTE_MAX = 12
+
+function werte(hilfe: FieldHelp): string[] {
+  return (hilfe.values ?? []).slice(0, WERTE_MAX)
+}
+
+function weitereWerte(hilfe: FieldHelp): number {
+  return Math.max(0, (hilfe.values ?? []).length - WERTE_MAX)
+}
+
 function handbuchZiel(issue: ValidationIssue): string | null {
   const ziel = HANDBUCH[schluessel(issue)]
   return ziel === undefined ? null : `/dokumentation/handbuch/${ziel}`
@@ -209,6 +265,16 @@ function setFilter(value: Filter) {
                 {{ hinweis(issue) }}
                 <NuxtLink v-if="handbuchZiel(issue) !== null" :to="handbuchZiel(issue) ?? ''">
                   {{ t('imports.advice.doc') }}</NuxtLink>
+              </span>
+              <span v-if="zeigtFeld(issue, index) && feld(issue) !== null" class="issue-advice">
+                <strong>{{ t('imports.fieldHelp.lead') }}:</strong>
+                <template v-if="feld(issue)?.description"> {{ feld(issue)?.description }}</template>
+                <span v-if="feld(issue)?.values" style="display:block;margin-top:2px">
+                  {{ t('imports.fieldHelp.values') }}
+                  <span class="mono">{{ werte(feld(issue) as FieldHelp).join(', ') }}</span>
+                  <template v-if="weitereWerte(feld(issue) as FieldHelp) > 0">
+                    {{ t('imports.fieldHelp.more', { count: weitereWerte(feld(issue) as FieldHelp) }) }}</template>
+                </span>
               </span>
             </span>
           </li>

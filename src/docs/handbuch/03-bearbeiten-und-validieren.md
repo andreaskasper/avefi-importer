@@ -87,6 +87,35 @@ ein Exemplar. Aus Zeile 53 werden also die Prüfsätze 157 bis 159. Für den Abg
 `efi-conv check` auf der Kommandozeile ist die Nummer nützlich, zum Auffinden im
 Importer die Zeile.
 
+## Auskunft zum betroffenen Feld
+
+Beim ersten Befund zu einem Zielfeld steht im Bericht, was das Feld bedeutet und —
+wenn es eine feste Werteliste hat — welche Werte dort zulässig sind. Bei zwanzig
+gleichartigen Meldungen steht die Auskunft einmal, nicht zwanzigmal.
+
+Der Nutzen zeigt sich, wo die Meldung allein nicht weiterhilft:
+
+> „Betacam SP" ist kein zulässiger Wert für „Optischer Datenträger (DVD, Blu-ray …)"
+>
+> **Zum Feld:** Träger oder Datei, auf der das Exemplar vorliegt.
+> **Zulässig sind:** BluRay, CD, DVD, LaserDisc
+
+Betacam SP ist kein optischer Datenträger, sondern ein Videoband. Die Spalte gehört
+also nicht auf **Exemplar › Optischer Datenträger**, sondern auf
+**Exemplar › Videoband**. Ohne die Werteliste daneben liest sich dieselbe Meldung wie
+ein Tippfehler im Wert.
+
+Lange Wertelisten werden nach zwölf Einträgen gekürzt; vollständig stehen sie in der
+Auswahlliste des Ziels im Zuordnungs-Editor.
+
+Die Auskunft ist ausdrücklich eine Auskunft und kein Eingriff: Sie sagt, was zulässig
+wäre. Gesetzt wird nichts — automatische Korrektur von Validierungsfehlern ist
+vertraglich ausgeschlossen.
+
+Zu Beanstandungen, deren Schemafeld kein Ziel des Katalogs ist (etwa `has_identifier`
+aus der Schemaprüfung), gibt es keine Feldauskunft. Dort hängt der Hinweis am Code und
+steht ohnehin daneben.
+
 ## Beanstandungen und ihre Behebung
 
 Beim ersten Auftreten einer Beanstandung steht im Bericht ein kurzer Hinweis, was zu

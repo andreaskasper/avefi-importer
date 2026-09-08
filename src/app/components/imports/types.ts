@@ -5,7 +5,7 @@
  * Pruefbericht nicht mit, und sie bekommt Felder, die es in der Tabelle nicht
  * gibt (etwa ob sich neu konvertieren laesst).
  */
-import type { FormatDetail, ImportReport, Severity, ValidationIssue } from '#shared/types/domain'
+import type { FieldHelp, FormatDetail, ImportReport, Severity, ValidationIssue } from '#shared/types/domain'
 
 export interface ImportListItem {
   id: string
@@ -135,6 +135,8 @@ export interface ImportReportResponse {
   counts: Record<Severity, number>
   /** Quellzeile -> Datensatz-Nummer, fuer den Sprung aus einer Beanstandung. */
   rowRecords: Record<number, number>
+  /** Zielfeldschluessel -> Auskunft. Nur die Felder, die in den Befunden vorkommen. */
+  fieldHelp: Record<string, FieldHelp>
   summary: ReportSummary | null
   mapping: Record<string, unknown> | null
   coverage: Record<string, { filled: number; total: number }> | null
