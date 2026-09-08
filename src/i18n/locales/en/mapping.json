@@ -505,7 +505,9 @@
       "no_file_chosen": "Please choose a file first.",
       "no_sheet": "The workbook contains no readable sheet.",
       "hash_mismatch": "The header of this file does not match the profile. {summary} Missing: {missing} · Additional: {extra}",
-      "profile_create_failed": "The profile could not be created."
+      "profile_create_failed": "The profile could not be created.",
+      "profile_bad_version": "Not a valid version number.",
+      "profile_version_not_found": "This profile has no version {version}."
     },
     "targets": {
       "work": {
@@ -947,6 +949,28 @@
       "record_workTypeDefaulted": "The work type was not set; “{wert}” was entered because the schema requires it",
       "record_titleBorrowed": "The work had no title of its own; “{titel}” was taken from the {ebene} level as an archive title",
       "merge_conflict": "Rows {zeile} and {andere} were merged into one work but disagree on “{feld}”: “{behalten}” versus “{verworfen}”. “{behalten}” was kept."
+    },
+    "versionView": {
+      "crumb": "Version {n}",
+      "heading": "Mapping as of version {n}",
+      "readOnly": "This view cannot be changed. It shows what the mapping looked like at this version. Use the editor on the profile to make changes, and “Restore” in the history to bring a version back.",
+      "olderThan": "older version, current is {n}",
+      "grouping": "Work grouping",
+      "noGrouping": "no grouping — every row its own work",
+      "byColumn": "column “{name}”",
+      "columns": "{n} columns",
+      "column": "Column",
+      "target": "Target",
+      "chain": "Converters",
+      "pre": "for all targets",
+      "ignored": "explicitly ignored",
+      "untouched": "not mapped",
+      "tableCaption": "Columns and targets of version {n}",
+      "loadError": "This version cannot be loaded.",
+      "view": "View",
+      "viewVersion": "View version {n}",
+      "hint": "This view shows the profile in its current version {gezeigt}. This import was converted with version {verwendet}.",
+      "viewUsed": "View version {n}, the one used for the conversion"
     }
   }
 }

@@ -505,7 +505,9 @@
       "no_file_chosen": "Bitte zuerst eine Datei auswählen.",
       "no_sheet": "Die Arbeitsmappe enthält kein lesbares Tabellenblatt.",
       "hash_mismatch": "Die Kopfzeile dieser Datei passt nicht zum Profil. {summary} Fehlend: {missing} · Zusätzlich: {extra}",
-      "profile_create_failed": "Das Profil konnte nicht angelegt werden."
+      "profile_create_failed": "Das Profil konnte nicht angelegt werden.",
+      "profile_bad_version": "Keine gültige Versionsnummer.",
+      "profile_version_not_found": "Version {version} gibt es zu diesem Profil nicht."
     },
     "targets": {
       "work": {
@@ -947,6 +949,28 @@
       "record_workTypeDefaulted": "Die Werkart war nicht belegt; eingetragen wurde „{wert}“, weil das Schema sie verlangt",
       "record_titleBorrowed": "Das Werk hatte keinen eigenen Titel; übernommen wurde „{titel}“ von der Ebene {ebene} als Archivtitel",
       "merge_conflict": "Die Zeilen {zeile} und {andere} wurden zu einem Werk zusammengefasst, widersprechen sich aber in „{feld}“: „{behalten}“ gegen „{verworfen}“. Übernommen wurde „{behalten}“."
+    },
+    "versionView": {
+      "crumb": "Version {n}",
+      "heading": "Zuordnung in Version {n}",
+      "readOnly": "Diese Ansicht ist unveränderlich. Sie zeigt, wie die Zuordnung zum Zeitpunkt dieser Version aussah. Zum Bearbeiten dient der Editor am Profil, zum Wiederherstellen „Zurücksetzen\" im Verlauf.",
+      "olderThan": "ältere Version, aktuell ist {n}",
+      "grouping": "Werkbildung",
+      "noGrouping": "keine Zusammenfassung — jede Zeile ein eigenes Werk",
+      "byColumn": "Spalte „{name}\"",
+      "columns": "{n} Spalten",
+      "column": "Spalte",
+      "target": "Ziel",
+      "chain": "Konverter",
+      "pre": "für alle Ziele",
+      "ignored": "ausdrücklich ignoriert",
+      "untouched": "nicht zugeordnet",
+      "tableCaption": "Spalten und Ziele der Version {n}",
+      "loadError": "Diese Version lässt sich nicht laden.",
+      "view": "Ansehen",
+      "viewVersion": "Version {n} ansehen",
+      "hint": "Diese Ansicht zeigt das Profil in seiner heutigen Version {gezeigt}. Konvertiert wurde dieser Import mit Version {verwendet}.",
+      "viewUsed": "Version {n} ansehen, mit der konvertiert wurde"
     }
   }
 }

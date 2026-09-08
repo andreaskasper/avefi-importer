@@ -236,17 +236,28 @@ function opLabel(op: string): string {
                   <template v-if="entry.user_name"> · {{ entry.user_name }}</template>
                 </div>
               </div>
-              <span v-if="entry.version === profile.version" class="badge b-ok">
-                <span class="bd" />{{ t('mapping.detail.active') }}
-              </span>
+              <div style="display:flex;gap:6px;align-items:center">
+                <!--
+                  Ansehen vor Zuruecksetzen. Bis zum 08.09.2026 bot der Verlauf
+                  nur das Zuruecksetzen an — man setzte also auf einen Stand
+                  zurueck, den man nicht kannte.
+                -->
+                <NuxtLink class="btn btn-outline btn-sm" :to="`/mappings/${id}/versionen/${entry.version}`"
+                          :aria-label="t('mapping.versionView.viewVersion', { n: entry.version })">
+                  {{ t('mapping.versionView.view') }}
+                </NuxtLink>
+                <span v-if="entry.version === profile.version" class="badge b-ok">
+                  <span class="bd" />{{ t('mapping.detail.active') }}
+                </span>
               <!--
                 Der Verlauf hat je Version einen Knopf. Ohne die Versionsnummer
                 im Namen steht im Vorlesewerkzeug eine lange Reihe gleich
                 lautender Eintraege, die nichts unterscheidet.
               -->
-              <button v-else-if="data.own" type="button" class="btn btn-outline btn-sm" :disabled="busy"
-                      :aria-label="t('mapping.detail.restoreVersion', { n: entry.version })"
-                      @click="restoring = entry.version">{{ t('mapping.detail.restore') }}</button>
+                <button v-else-if="data.own" type="button" class="btn btn-outline btn-sm" :disabled="busy"
+                        :aria-label="t('mapping.detail.restoreVersion', { n: entry.version })"
+                        @click="restoring = entry.version">{{ t('mapping.detail.restore') }}</button>
+              </div>
             </div>
           </section>
         </div>

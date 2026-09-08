@@ -292,10 +292,25 @@ möglicherweise gar nicht dasselbe Werk.
 Der Menüpunkt **Zuordnungen** listet alle Profile, eigene zuerst: Name, Einrichtung,
 Basisformat, Zustand, Zahl der damit verarbeiteten Importe.
 
-Auf der Detailseite stehen alle Zuordnungen, der **Versionsverlauf** und die
-Möglichkeit, eine frühere Version wiederherzustellen. Jedes Speichern erhöht die
-Version; jeder Import merkt sich, mit welchem Profil und welcher Version er entstanden
-ist.
+Auf der Detailseite stehen alle Zuordnungen und der **Versionsverlauf**. Jedes
+Speichern erhöht die Version; jeder Import merkt sich, mit welchem Profil und welcher
+Version er entstanden ist.
+
+Im Verlauf lässt sich jede Version **ansehen** und eine frühere **wiederherstellen**.
+Das Ansehen zeigt die Zuordnung so, wie sie damals aussah — Spalten, Ziele und
+Konverter als unveränderliche Tabelle. Es lohnt sich vor dem Wiederherstellen: Sonst
+setzt man auf einen Stand zurück, den man nicht kennt.
+
+Kommen Sie von einem Import über **„Zuordnung ansehen"**, zeigt der Editor immer den
+**heutigen** Stand des Profils, nicht den, mit dem dieser Import konvertiert wurde.
+Das ist Absicht — bearbeiten lässt sich nur der aktuelle Stand, alles andere würde
+beim Speichern das Profil unbemerkt zurückdrehen. Fallen die beiden auseinander, sagt
+die Seite es und verlinkt die verwendete Version:
+
+```
+Diese Ansicht zeigt das Profil in seiner heutigen Version 70.
+Konvertiert wurde dieser Import mit Version 65.
+```
 
 Ein geändertes Profil konvertiert **bestehende Importe nicht automatisch neu** — bei
 global sichtbaren Profilen würde das fremde Importe im Hintergrund verändern. Wer den

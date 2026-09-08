@@ -10,6 +10,16 @@ import type { EditorPayload } from '~/components/mapping/types'
 
 export interface ImportMappingResponse {
   import: { id: string; filename: string; status: string; base_format: string | null }
+  /**
+   * Welche Profilversion diese Seite zeigt und mit welcher konvertiert wurde.
+   * `abweichend` ist nur dann wahr, wenn es dasselbe Profil ist.
+   */
+  version: {
+    verwendet: number | null
+    aktuell: number | null
+    profilId: number | null
+    abweichend: boolean
+  }
   payload: EditorPayload
 }
 

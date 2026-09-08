@@ -405,6 +405,10 @@ tbody tr:hover{background:var(--surface-2)}
 .userform > button{grid-column:1/-1;justify-self:start}
 .ui-alert-ok{border:1px solid var(--ok);background:var(--ok-bg);color:var(--ok);border-radius:9px;
   padding:10px 12px;font-size:13px;font-weight:600}
+/* Hinweis, kein Fehler: Die Seite ist in Ordnung, sie zeigt nur etwas anderes,
+   als der Weg hierher erwarten laesst. */
+.ui-alert-warn{border:1px solid var(--warn);background:var(--warn-bg);color:var(--warn);border-radius:9px;
+  padding:10px 12px;font-size:13px;font-weight:600}
 
 /* ------- record editor ------- */
 .editbar{display:flex;align-items:center;gap:12px;margin-bottom:14px}

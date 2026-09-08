@@ -78,6 +78,8 @@ export function mappingsService(): {
   einerPfad: (id: string | number) => string
   editorPfad: (id: string | number) => string
   ausfuhrPfad: (id: string | number) => string
+  /** Pfad einer gespeicherten Version — nur lesend, fuer die Ansicht. */
+  versionPfad: (id: string | number, version: number) => string
   normdatenWertePfad: (id: string | number) => string
   kandidatenPfad: (id: string | number) => string
   einfuehren: (profil: unknown) => Promise<EinfuhrAntwort>
@@ -111,6 +113,7 @@ export function mappingsService(): {
         { method: 'POST', body: datei, ...ALS_DATEI }),
     umbenennen: (id, name) => $fetch(api(`/mappings/${id}`), { method: 'PATCH', body: { name } }),
     loeschen: (id) => $fetch(api(`/mappings/${id}`), { method: 'DELETE' }),
+    versionPfad: (id, version) => api(`/mappings/${id}/versions/${version}`),
     zuruecksetzen: (id, version) =>
       $fetch(api(`/mappings/${id}/restore`), { method: 'POST', body: { version } }),
     beispielSetzen: (id, datei) =>
