@@ -1,7 +1,26 @@
 <script setup lang="ts">
+import type { Vorgabebefund } from '~/components/imports/types'
 import { reviewsService } from '~/services/reviews'
 /** Rahmen fuer angemeldete Seiten. Kopfzeile, Navigation, Nutzermenue. */
 const { user, logout } = useAuth()
+
+/*
+ * Hinweis auf Werte aus der Beispielkonfiguration.
+ *
+ * Am 09.09.2026 lief die oeffentlich erreichbare Testinstanz mit dem
+ * Administratorpasswort aus der Dokumentation. Die Anleitung sagte das
+ * Richtige, gelesen hatte es niemand. Deshalb steht es jetzt dort, wo man
+ * arbeitet — aber nur fuer Administratoren, denn niemand sonst kann etwas
+ * daran aendern, und ein Hinweis fuer alle waere ein Wegweiser fuer Fremde.
+ *
+ * `default: []` statt eines Fehlers: Der Streifen ist eine Beigabe. Wenn der
+ * Endpunkt nicht antwortet, faellt er weg und nicht die Seite.
+ */
+const { data: vorgabewerte } = await useFetch<{ befunde: Vorgabebefund[] }>(
+  '/api/system/vorgabewerte',
+  { default: () => ({ befunde: [] }), server: false, immediate: true }
+)
+const befunde = computed(() => (user.value?.is_admin ? vorgabewerte.value?.befunde ?? [] : []))
 const route = useRoute()
 const { t } = useI18n()
 
@@ -170,6 +189,17 @@ function toggleTheme() {
 <template>
   <div>
     <a class="skip-link" href="#main">{{ t('skipToContent') }}</a>
+
+    <!-- Siehe oben. Steht vor der Kopfzeile, damit er nicht wegzuscrollen ist. -->
+    <div v-if="befunde.length > 0" class="ui-alert" role="status" style="margin:0;border-radius:0">
+      <p class="fn">{{ t('defaults.heading') }}</p>
+      <ul style="margin:6px 0 0;padding-left:18px">
+        <li v-for="(b, i) in befunde" :key="i" class="small">
+          {{ t(`defaults.${b.code}`, { betrifft: b.betrifft ?? '' }) }}
+        </li>
+      </ul>
+      <p class="small dim" style="margin-top:6px">{{ t('defaults.hint') }}</p>
+    </div>
 
     <header class="apphead">
       <NuxtLink class="logo" to="/" :aria-label="t('toStart')">

@@ -26,5 +26,18 @@ Die Compose-Datei liegt bewusst nicht im Repository — sie enthält Domain,
 Traefik-Labels und Zugangsdaten. `src/.env.example` zeigt, welche Variablen
 gesetzt sein müssen.
 
+## Vor dem ersten Produktivstart
+
+Für einen Testaufbau reicht das oben. Für eine Installation, die von aussen
+erreichbar ist, sind vorher drei Werte zu ändern: das Sitzungsgeheimnis, das
+Datenbankpasswort und das Passwort des ersten Kontos. Die Liste mit Fundstellen
+und Prüfbefehl steht in [`../deployment.md`](../deployment.md), Abschnitt „Vor
+dem ersten Produktivstart".
+
+Die Anwendung prüft das beim Start selbst. Steht noch ein Vorgabewert in
+Gebrauch, meldet sie es im Protokoll, und angemeldete Administratoren sehen
+einen Hinweisstreifen über der Kopfzeile. Ist `NODE_ENV=production` gesetzt und
+das Sitzungsgeheimnis noch der Vorgabewert, startet sie nicht.
+
 Die Kapitel 2 bis 5 und 7 beschreiben die Bedienung, und die hat sich mit der
 Neufassung nicht geändert.

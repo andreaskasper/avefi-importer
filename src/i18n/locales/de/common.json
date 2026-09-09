@@ -35,5 +35,12 @@
     "loading": "Wird geladen …",
     "empty": "Nichts vorhanden.",
     "error": "Das hat nicht geklappt."
+  },
+  "defaults": {
+    "heading": "Diese Installation läuft mit Werten aus der Beispielkonfiguration.",
+    "session_secret": "Das Sitzungsgeheimnis ist der Vorgabewert. Wer ihn kennt, kann sich als beliebiges Konto ausgeben.",
+    "db_pass": "Das Datenbankpasswort ist der Vorgabewert.",
+    "konto_passwort": "Das Konto {betrifft} lässt sich mit einem Passwort aus der Dokumentation anmelden.",
+    "hint": "Vor dem ersten Produktivstart ändern. Die Anleitung steht in docs/deployment.md, Abschnitt „Vor dem ersten Produktivstart“."
   }
 }

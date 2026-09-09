@@ -6,6 +6,46 @@ wo etwas nicht funktioniert, steht das dabei.
 
 Alle Befehle laufen im Verzeichnis `src/`.
 
+## Vor dem ersten Produktivstart
+
+Drei Werte stehen im Auslieferungszustand auf einer Vorgabe aus der
+Beispielkonfiguration. Wer sie stehen laesst, betreibt eine Installation, bei
+der Fremde sich anmelden koennen.
+
+| Was | Wo | Vorgabe | Warum es zwingend ist |
+|-----|----|---------|------------------------|
+| `SESSION_SECRET` / `NUXT_SESSION_SECRET` | Umgebung, siehe unten | `entwicklung-nur-lokal-aendern` (`nuxt.config.ts`) | Die Sitzungscookies sind damit verschluesselt. Wer den Wert kennt, erzeugt sich ein gueltiges Cookie fuer jedes Konto. Die Anmeldung ist dann Kulisse. |
+| `DB_PASS` / `NUXT_DB_PASS` | Umgebung | `avefi` | Zugriff auf alle Importe, Profile und Konten, sobald die Datenbank erreichbar ist. |
+| Passwort des ersten Kontos | Nutzerverwaltung oder `SEED_PASSWORD` | keine — `npm run seed` erzeugt eines und zeigt es genau einmal | Ein Konto mit einem Passwort aus der Dokumentation ist eine offene Tuer. |
+
+Eigene Werte erzeugen:
+
+```bash
+openssl rand -base64 48   # SESSION_SECRET
+openssl rand -base64 24   # DB_PASS
+```
+
+**Die Anwendung prueft das beim Start selbst.** `server/plugins/vorgabewerte.ts`
+haelt Umgebung und aktive Administratorkonten gegen die bekannten Vorgabewerte:
+
+* `SESSION_SECRET` auf einer Vorgabe **und** `NODE_ENV=production` — der Start
+  bricht ab. Ein Server, der so hochkommt, sieht gesund aus und faellt erst
+  auf, wenn ihn jemand benutzt hat.
+* Alles andere — eine Warnung im Protokoll, und fuer angemeldete
+  Administratoren ein Streifen ueber der Kopfzeile.
+
+Im Entwicklungsbetrieb bleibt es in allen Faellen bei der Warnung.
+
+Nachsehen, was die laufende Installation meldet:
+
+```bash
+docker compose -f docker-compose.dev.yml logs web | grep vorgabewerte
+```
+
+Diese Anleitung sagte das Richtige schon, bevor es die Pruefung gab. Am
+09.09.2026 lief die oeffentlich erreichbare Testinstanz trotzdem mit allen drei
+Vorgabewerten. Deshalb steht es jetzt zusaetzlich im Programm.
+
 ## Voraussetzungen
 
 * Docker mit Compose-Plugin. Ohne Docker: Node ab 22.19.0 (`package.json`,

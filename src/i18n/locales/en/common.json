@@ -35,5 +35,12 @@
     "loading": "Loading …",
     "empty": "Nothing here.",
     "error": "That did not work."
+  },
+  "defaults": {
+    "heading": "This installation is running with values from the example configuration.",
+    "session_secret": "The session secret is the default value. Anyone who knows it can impersonate any account.",
+    "db_pass": "The database password is the default value.",
+    "konto_passwort": "The account {betrifft} can be signed in to with a password from the documentation.",
+    "hint": "Change these before the first production start. See docs/deployment.md, section “Vor dem ersten Produktivstart”."
   }
 }
