@@ -94,7 +94,8 @@
       "reconvert": "Neu konvertieren",
       "delete": "Löschen",
       "detail": "Details ansehen",
-      "rename": "Umbenennen"
+      "rename": "Umbenennen",
+      "origin": "Herkunft ansehen"
     },
     "confirm": {
       "cancel": "Abbrechen",
@@ -156,6 +157,27 @@
         "save": "Namen speichern",
         "saved": "Gespeichert: „{name}“",
         "cleared": "Der Anzeigename wurde entfernt."
+      },
+      "origin": {
+        "heading": "Herkunft des Ergebnisses",
+        "lead": "Womit dieser Import erzeugt wurde. Nicht der heutige Stand, sondern der des Laufs.",
+        "notRecorded": "Für diesen Import wurde nicht aufgezeichnet, womit er erzeugt wurde. Das gilt für alles, was vor der Einführung dieser Aufzeichnung konvertiert wurde. Neu konvertieren trägt die Angaben nach.",
+        "formatProfile": "Formatprofil",
+        "mappingProfile": "Zuordnungsprofil",
+        "versionUsed": "Version {version}",
+        "versionUnknown": "Version nicht aufgezeichnet",
+        "versionStale": "verwendet: Version {used} · heute: Version {now}",
+        "staleHint": "Das Profil hat sich seit diesem Lauf geändert.",
+        "schemaVersion": "AVefi-Schema",
+        "delimiter": "Trennzeichen",
+        "authority": "Normdaten",
+        "authorityOn": "eingeschaltet, höchstens {limit} frische Nachschlagevorgänge",
+        "authorityOnNoLimit": "eingeschaltet",
+        "authorityOff": "ausgeschaltet",
+        "convertedAt": "Konvertiert am",
+        "none": "keins",
+        "unknown": "nicht aufgezeichnet",
+        "openProfile": "Profil ansehen"
       }
     },
     "stage": {

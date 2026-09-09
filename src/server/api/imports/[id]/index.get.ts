@@ -15,6 +15,7 @@ import { analyzeParse, type ParseDiagnostics } from '../../../lib/converters/par
 import type { ExtendedImportReport } from '../../../lib/imports'
 import { ownedImport } from '../_lib'
 import { toListItem } from '../index.get'
+import { herkunft } from './_herkunft'
 
 export default defineEventHandler(async (event) => {
   const { row } = await ownedImport(event)
@@ -35,8 +36,18 @@ export default defineEventHandler(async (event) => {
 
   const original = await firstOrgFile(row.id)
 
+  /*
+   * Der heutige Stand des Zuordnungsprofils, damit die Seite "veraltet" sagen
+   * kann. `toListItem` bekam ihn hier bisher nicht, deshalb war `stale` auf der
+   * Detailseite immer falsch — ausgerechnet auf der Seite, auf der die Auskunft
+   * am ehesten gesucht wird.
+   */
+  const spur = await herkunft(sql, row)
+  const profilVersion = spur.zuordnungsProfil?.aktuelleVersion ?? null
+
   return {
-    import: toListItem(row, edited),
+    import: toListItem(row, edited, profilVersion),
+    herkunft: spur,
     report,
     sheets: report?.sheets ?? [],
     failed,

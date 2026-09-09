@@ -1,5 +1,28 @@
+/**
+ * Womit ein Ergebnis entstanden ist.
+ *
+ * Spiegelt server/api/imports/[id]/_herkunft.ts. `aufgezeichnet` unterscheidet
+ * "es gab keine Zuordnung" von "es wurde nicht mitgeschrieben" — vor der
+ * Einfuehrung von `run_config` konvertierte Importe koennen das zweite sein.
+ */
+export interface Herkunft {
+  aufgezeichnet: boolean
+  konvertiertAm: string | null
+  formatProfil: { label: string; converterKey: string } | null
+  zuordnungsProfil: {
+    id: number
+    name: string
+    verwendeteVersion: number | null
+    aktuelleVersion: number | null
+  } | null
+  schemaVersion: string | null
+  trennzeichen: string | null
+  normdaten: { aktiv: boolean; obergrenze: number | null } | null
+}
+
 export interface ImportDetailResponse {
   import: ImportListItem
+  herkunft: Herkunft
   report: ExtendedReport | null
   sheets: SheetInfo[]
   failed: FailedJob | null

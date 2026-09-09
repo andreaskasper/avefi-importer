@@ -94,7 +94,8 @@
       "reconvert": "Convert again",
       "delete": "Delete",
       "detail": "View details",
-      "rename": "Rename"
+      "rename": "Rename",
+      "origin": "View provenance"
     },
     "confirm": {
       "cancel": "Cancel",
@@ -156,6 +157,27 @@
         "save": "Save name",
         "saved": "Saved: “{name}”",
         "cleared": "The display name was removed."
+      },
+      "origin": {
+        "heading": "How this result came about",
+        "lead": "What produced this import. The state of that run, not of today.",
+        "notRecorded": "For this import it was not recorded what produced it. That applies to everything converted before this recording was introduced. Converting again fills the values in.",
+        "formatProfile": "Format profile",
+        "mappingProfile": "Mapping profile",
+        "versionUsed": "Version {version}",
+        "versionUnknown": "Version not recorded",
+        "versionStale": "used: version {used} · today: version {now}",
+        "staleHint": "The profile has changed since this run.",
+        "schemaVersion": "AVefi schema",
+        "delimiter": "Delimiter",
+        "authority": "Authority data",
+        "authorityOn": "enabled, at most {limit} fresh lookups",
+        "authorityOnNoLimit": "enabled",
+        "authorityOff": "disabled",
+        "convertedAt": "Converted on",
+        "none": "none",
+        "unknown": "not recorded",
+        "openProfile": "View profile"
       }
     },
     "stage": {

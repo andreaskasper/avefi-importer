@@ -28,6 +28,23 @@ const failed = computed(() => data.value?.failed ?? null)
 const diagnostics = computed(() => data.value?.diagnostics ?? null)
 
 /*
+ * Herkunft des Ergebnisses (#6, Jasper Stratil).
+ *
+ * `convert.ts` schreibt seit laengerem ein `run_config` je Lauf, gelesen hat es
+ * niemand. Fuer tabellarische Importe fuehrte der Weg zur Zuordnungsseite, fuer
+ * MARC-XML und AVefi-nativ nirgendwohin: Dort gibt es keine Spaltenzuordnung,
+ * und damit gab es auf die Frage "wie kam das zustande" gar keine Antwort.
+ */
+const herkunft = computed(() => data.value?.herkunft ?? null)
+
+/** Trennzeichen lesbar machen. Ein Tabulator sieht sonst aus wie nichts. */
+const trennzeichenLabel = computed(() => {
+  const z = herkunft.value?.trennzeichen ?? null
+  if (z === null || z === '') return null
+  return z === '\t' ? 'Tab' : z
+})
+
+/*
  * Anzeigename NEBEN dem Dateinamen (#1, Matti Stoehr). Mehrere Laeufe
  * derselben Datei standen in der Liste als gleichnamige Zeilen nebeneinander,
  * unterscheidbar nur am Zeitstempel. Der Dateiname bleibt trotzdem stehen: Er
@@ -262,6 +279,73 @@ const formatLabel = computed(() => {
         <div class="frow" style="grid-template-columns:200px 1fr;padding:7px 0;border-bottom:0">
           <span>{{ t('imports.detail.rowErrors') }}</span>
           <span class="fval tnum">{{ formatNumber(item.error_count, locale) }}</span>
+        </div>
+      </div>
+
+      <!--
+        Herkunft. Steht hinter den Eckdaten, weil sie die Datei beschreiben und
+        dies den Lauf. Der Abschnitt erscheint immer, auch ohne Aufzeichnung:
+        "nicht aufgezeichnet" ist eine Auskunft, ein fehlender Abschnitt ist
+        genau der Fehler, der gemeldet wurde.
+      -->
+      <h2 id="herkunft" class="side-h" style="margin:0 0 8px">{{ t('imports.detail.origin.heading') }}</h2>
+      <p class="small dim" style="margin:0 0 8px">{{ t('imports.detail.origin.lead') }}</p>
+      <div v-if="herkunft" class="ui-card" style="margin-bottom:18px">
+        <p v-if="!herkunft.aufgezeichnet" class="small" style="margin:0 0 10px">
+          {{ t('imports.detail.origin.notRecorded') }}
+        </p>
+
+        <div v-if="herkunft.formatProfil" class="frow" style="grid-template-columns:200px 1fr;padding:7px 0">
+          <span>{{ t('imports.detail.origin.formatProfile') }}</span>
+          <span class="fval">{{ herkunft.formatProfil.label }}
+            <span class="mono small dim">{{ herkunft.formatProfil.converterKey }}</span></span>
+        </div>
+
+        <div class="frow" style="grid-template-columns:200px 1fr;padding:7px 0">
+          <span>{{ t('imports.detail.origin.mappingProfile') }}</span>
+          <span v-if="herkunft.zuordnungsProfil" class="fval">
+            <NuxtLink :to="`/mappings/${herkunft.zuordnungsProfil.id}`">{{ herkunft.zuordnungsProfil.name }}</NuxtLink>
+            <template v-if="herkunft.zuordnungsProfil.verwendeteVersion === null">
+              <span class="small dim"> · {{ t('imports.detail.origin.versionUnknown') }}</span>
+            </template>
+            <template v-else-if="herkunft.zuordnungsProfil.aktuelleVersion !== herkunft.zuordnungsProfil.verwendeteVersion">
+              <span class="small"> · {{ t('imports.detail.origin.versionStale', {
+                used: herkunft.zuordnungsProfil.verwendeteVersion,
+                now: herkunft.zuordnungsProfil.aktuelleVersion }) }}</span>
+              <span class="small dim" style="display:block">{{ t('imports.detail.origin.staleHint') }}</span>
+            </template>
+            <template v-else>
+              <span class="small dim"> · {{ t('imports.detail.origin.versionUsed', {
+                version: herkunft.zuordnungsProfil.verwendeteVersion }) }}</span>
+            </template>
+          </span>
+          <span v-else class="fval dim">{{ t('imports.detail.origin.none') }}</span>
+        </div>
+
+        <div class="frow" style="grid-template-columns:200px 1fr;padding:7px 0">
+          <span>{{ t('imports.detail.origin.schemaVersion') }}</span>
+          <span class="fval mono small">{{ herkunft.schemaVersion ?? t('imports.detail.origin.unknown') }}</span>
+        </div>
+
+        <div v-if="trennzeichenLabel !== null" class="frow" style="grid-template-columns:200px 1fr;padding:7px 0">
+          <span>{{ t('imports.detail.origin.delimiter') }}</span>
+          <span class="fval mono">{{ trennzeichenLabel }}</span>
+        </div>
+
+        <div class="frow" style="grid-template-columns:200px 1fr;padding:7px 0">
+          <span>{{ t('imports.detail.origin.authority') }}</span>
+          <span v-if="herkunft.normdaten === null" class="fval dim">{{ t('imports.detail.origin.unknown') }}</span>
+          <span v-else-if="!herkunft.normdaten.aktiv" class="fval">{{ t('imports.detail.origin.authorityOff') }}</span>
+          <span v-else-if="herkunft.normdaten.obergrenze === null" class="fval">
+            {{ t('imports.detail.origin.authorityOnNoLimit') }}</span>
+          <span v-else class="fval">
+            {{ t('imports.detail.origin.authorityOn', { limit: herkunft.normdaten.obergrenze }) }}</span>
+        </div>
+
+        <div class="frow" style="grid-template-columns:200px 1fr;padding:7px 0;border-bottom:0">
+          <span>{{ t('imports.detail.origin.convertedAt') }}</span>
+          <span class="fval tnum"><ImportsTimeStamp :value="herkunft.konvertiertAm"
+                                                    :fallback="t('imports.detail.origin.unknown')" /></span>
         </div>
       </div>
 

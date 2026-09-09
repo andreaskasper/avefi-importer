@@ -108,6 +108,39 @@ flowchart TD
     OUT --> REPORT["Report-Seite:<br/>Schema-Validierung"]
 ```
 
+## Herkunft eines Ergebnisses
+
+Auf der Detailseite eines Imports steht unter **Herkunft des Ergebnisses**, womit
+diese Datei konvertiert wurde. Gemeint ist der Stand des Laufs, nicht der von
+heute — genau das ist der Unterschied, um den es geht, wenn ein Ergebnis nicht
+mehr zu erklären ist.
+
+Der Abschnitt nennt:
+
+* **Formatprofil** — bei Formaten mit festem Konverter, etwa MARC-XML oder
+  AVefi-nativ. Daneben steht der interne Schlüssel, damit man im Zweifel weiß,
+  welcher Konverter gemeint ist.
+* **Zuordnungsprofil** samt der Version, mit der gearbeitet wurde. Steht das
+  Profil heute auf einer anderen Version, sagt die Zeile beide Zahlen und weist
+  darauf hin, dass sich seither etwas geändert hat. Der Name führt zum Profil.
+* **AVefi-Schema**, gegen das geprüft wurde.
+* **Trennzeichen**, bei CSV. Ein Tabulator steht als `Tab` da, sonst wäre die
+  Angabe von „leer" nicht zu unterscheiden.
+* **Normdaten** — ob die Anreicherung bei diesem Lauf eingeschaltet war und mit
+  welcher Obergrenze. Ein Ergebnis mit und eines ohne Anreicherung sehen
+  verschieden aus, ohne dass sich Datei oder Profil geändert haben.
+* **Konvertiert am**.
+
+Bei Importen, die vor Einführung dieser Aufzeichnung liefen, steht in den Zeilen
+„nicht aufgezeichnet". Der Abschnitt bleibt trotzdem stehen: Dass nichts
+mitgeschrieben wurde, ist eine Auskunft. Ein erneutes Konvertieren trägt die
+Angaben nach.
+
+Bei tabellarischen Formaten führt der Weg zur vollständigen Spaltenzuordnung
+weiter über **Zuordnung ansehen** im Menü der Importzeile. Bei allen anderen
+Formaten gibt es keine Spaltenzuordnung; dort steht im Menü stattdessen
+**Herkunft ansehen** und springt direkt an diesen Abschnitt.
+
 ## Format-Erkennung
 
 Das erkannte Format/Schema erscheint als **Badge** in der Import-Übersicht — genauer

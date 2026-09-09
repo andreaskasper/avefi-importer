@@ -151,6 +151,17 @@ function pick(fn: () => void) {
           <span v-if="issueCount > 0" class="dim"> {{ t('imports.menu.reportIssues') }}</span>
         </NuxtLink>
 
+        <!--
+          Fuer nicht-tabellarische Importe gibt es keine Spaltenzuordnung. Die
+          Frage "wie kam dieses Ergebnis zustande" stellt sich trotzdem, und der
+          Abschnitt auf der Detailseite beantwortet sie. Gesprungen wird an den
+          Anker, so wie beim Umbenennen weiter unten.
+        -->
+        <NuxtLink v-if="!item.tabular" class="ui-menu-item" role="menuitem"
+                  :to="`/imports/${item.id}#herkunft`" @click="close()">
+          <span class="mi" aria-hidden="true">⚙</span>{{ t('imports.menu.origin') }}
+        </NuxtLink>
+
         <NuxtLink class="ui-menu-item" role="menuitem" :to="`/imports/${item.id}`" @click="close()">
           <span class="mi" aria-hidden="true">☰</span>{{ t('imports.menu.detail') }}
         </NuxtLink>
