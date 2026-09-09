@@ -37,13 +37,17 @@ const props = withDefaults(
     /** Quellzeile -> Datensatz-Nummer. Leer, solange kein Satz erzeugt wurde. */
     rowRecords?: Record<number, number>
     importId?: string
-    /** Ob es zu diesem Import eine Zuordnung gibt, in die gesprungen werden kann. */
-    hasMapping?: boolean
+    /**
+     * Ob der Import ein tabellarisches Format hat. Nur dann gibt es eine
+     * Zuordnungsseite, in die gesprungen werden kann; bei XML oder AVefi-nativ
+     * antwortet sie mit 409 `not_tabular`.
+     */
+    tabular?: boolean
     /** Zielfeldschluessel -> Auskunft. Fehlt der Schluessel, entfaellt die Auskunft. */
     fieldHelp?: Record<string, FieldHelp>
     pageSize?: number
   }>(),
-  { pageSize: 100, rowRecords: () => ({}), importId: '', hasMapping: false, fieldHelp: () => ({}) }
+  { pageSize: 100, rowRecords: () => ({}), importId: '', tabular: false, fieldHelp: () => ({}) }
 )
 const { t, te } = useI18n()
 
@@ -96,7 +100,7 @@ function datensatzZiel(issue: ValidationIssue): string | null {
 
 /** Adresse der Spalte in der Zuordnung, oder null. */
 function spaltenZiel(issue: ValidationIssue): string | null {
-  if (props.importId === '' || !props.hasMapping || !issue.sourceField) return null
+  if (props.importId === '' || !props.tabular || !issue.sourceField) return null
   return `/imports/${props.importId}/mapping?spalte=${encodeURIComponent(issue.sourceField)}`
 }
 

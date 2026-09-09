@@ -33,7 +33,6 @@ export interface ImportListItem {
   hasReport: boolean
   issues: Record<Severity, number>
   hasSheets: boolean
-  hasMapping: boolean
   canReconvert: boolean
   hasAvefi: boolean
   /** false = der Stand ist nicht gegen das Schema geprueft und darf nur zur Fehlersuche herunter. */
@@ -81,7 +80,14 @@ export function toListItem(row: ImportRow, edited: number, profileVersion: numbe
     hasReport: report !== null,
     issues,
     hasSheets: Array.isArray(report?.sheets) && report.sheets.length > 0,
-    hasMapping: row.mapping_profile_id !== null,
+    /*
+     * Kein `hasMapping` mehr. Das Feld sagte nur, ob `mapping_profile_id`
+     * gesetzt ist, und wurde in der Oberflaeche als "es gibt hier eine
+     * Zuordnung zu sehen" gelesen. Das stimmte in beide Richtungen nicht:
+     * ueber ein Formatprofil konvertierte Importe haben keins, im Editor
+     * gespeicherte ohne Konvertierung haben eins. Wer die Zuordnungsseite
+     * verlinken will, fragt `tabular`.
+     */
     canReconvert: settled && (row.mapping_profile_id !== null || row.format_profile_id !== null),
     hasAvefi,
     validated: converted && issues.error === 0,

@@ -84,6 +84,7 @@
       "editFor": "Edit records of {name}"
     },
     "menu": {
+      "map": "Map",
       "mapping": "View mapping",
       "report": "Validation report",
       "reportIssues": "· findings",

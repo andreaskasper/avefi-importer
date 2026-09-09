@@ -84,6 +84,7 @@
       "editFor": "Datensätze von {name} bearbeiten"
     },
     "menu": {
+      "map": "Zuordnen",
       "mapping": "Zuordnung ansehen",
       "report": "Prüfbericht",
       "reportIssues": "· Beanstandungen",

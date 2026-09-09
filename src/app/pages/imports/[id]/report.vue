@@ -167,7 +167,7 @@ function percent(entry: { filled: number; total: number }): number {
         </section>
 
         <ImportsIssueList :issues="issues" :counts="counts" :row-records="rowRecords"
-                          :import-id="item.id" :has-mapping="item.hasMapping" :field-help="fieldHelp" />
+                          :import-id="item.id" :tabular="item.tabular" :field-help="fieldHelp" />
 
         <section style="margin-top:18px">
           <h2 class="side-h" style="margin:0 0 8px">{{ t('imports.report.meta.heading') }}</h2>

@@ -160,7 +160,10 @@ const formatLabel = computed(() => {
                       :to="`/imports/${item.id}/records`">{{ t('imports.detail.openRecords') }}</NuxtLink>
             <NuxtLink v-if="item.hasReport" class="btn btn-outline btn-sm" :to="`/imports/${item.id}/report`">
               {{ t('imports.detail.openReport') }}</NuxtLink>
-            <NuxtLink v-if="item.hasMapping" class="btn btn-outline btn-sm" :to="`/imports/${item.id}/mapping`">
+            <!-- Siehe RowMenu.vue: es entscheidet das Format, nicht das gespeicherte Profil.
+                 Der Zustand "Zuordnung noetig" hat weiter oben schon seinen eigenen Knopf. -->
+            <NuxtLink v-if="item.tabular && item.status !== 'awaiting_format_review'"
+                      class="btn btn-outline btn-sm" :to="`/imports/${item.id}/mapping`">
               {{ t('imports.detail.openMapping') }}</NuxtLink>
           </p>
         </div>

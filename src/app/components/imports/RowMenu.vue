@@ -25,6 +25,29 @@ const pos = ref({ top: 0, left: 0 })
 
 const issueCount = computed(() => props.item.issues.error + props.item.issues.warning)
 
+/*
+ * Wann der Weg zur Zuordnung offensteht.
+ *
+ * Nicht `hasMapping`. Die Spalte `mapping_profile_id` sagt nur, ob zu diesem
+ * Import schon ein Profil gespeichert wurde. Sie ist auch bei einem fertig
+ * konvertierten Import leer, wenn er ueber ein Formatprofil lief (MARC-XML,
+ * AVefi nativ), und sie ist gefuellt, wenn im Editor gespeichert wurde, ohne
+ * zu konvertieren (mapping/save.post.ts setzt das Profil unabhaengig von
+ * `start`). Beides beantwortet die Frage nicht, ob es hier etwas zu sehen gibt.
+ *
+ * Die Seite haengt am Format, nicht am Profil: `/imports/:id/mapping` liest die
+ * Tabelle des Imports und sucht das Profil ueber den Kopfzeilen-Hash. Bei einem
+ * nicht-tabellarischen Format wirft sie 409 `not_tabular` (mapping/_source.ts).
+ * Also entscheidet `tabular` — so, wie ImportTable.vue es beim Knopf
+ * "Zuordnen" schon macht.
+ *
+ * Gemeldet von Jasper Stratil am 09.09.2026: Bei SLUBcollection.xml fehlte der
+ * Eintrag, obwohl der Import konvertiert war.
+ */
+const zuordnungBeschriftung = computed(() => props.item.status === 'awaiting_format_review'
+  ? 'imports.menu.map'
+  : 'imports.menu.mapping')
+
 function place() {
   const rect = button.value?.getBoundingClientRect()
   if (!rect) return
@@ -117,9 +140,9 @@ function pick(fn: () => void) {
       <div v-if="open" ref="menu" class="ui-menu ui-menu-float" role="menu"
            :aria-label="t('imports.action.menuLabel', { name: item.filename })"
            :style="{ top: pos.top + 'px', left: pos.left + 'px' }" @keydown="onMenuKey">
-        <NuxtLink v-if="item.hasMapping" class="ui-menu-item" role="menuitem" :to="`/imports/${item.id}/mapping`"
+        <NuxtLink v-if="item.tabular" class="ui-menu-item" role="menuitem" :to="`/imports/${item.id}/mapping`"
                   @click="close()">
-          <span class="mi" aria-hidden="true">⇄</span>{{ t('imports.menu.mapping') }}
+          <span class="mi" aria-hidden="true">⇄</span>{{ t(zuordnungBeschriftung) }}
         </NuxtLink>
 
         <NuxtLink v-if="item.hasReport" class="ui-menu-item" role="menuitem" :to="`/imports/${item.id}/report`"
