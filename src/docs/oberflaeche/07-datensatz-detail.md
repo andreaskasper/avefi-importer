@@ -158,6 +158,8 @@ Keine Tabellen.
 
 Das wird angesagt, ohne dass die Seite wechselt:
 
+- Statusbereich (status), Ansageart polite (aus role).
+  Aktueller Inhalt: „Diese Installation läuft mit Werten aus der Beispielkonfiguration. Das Sitzungsgeheimnis ist der Vorgabewert. Wer ihn kennt, kann sich als beliebiges Konto au…".
 - Meldungsbereich (alert), Ansageart assertive.
   Aktueller Inhalt: leer, meldet also gerade nichts.
 - Meldungsbereich (alert), Ansageart assertive.
@@ -181,7 +183,7 @@ Nichts, was beim Bedienen im Weg steht.
 
 ## Teil 2 — Wie es raeumlich angeordnet ist
 
-Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1819 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Der Bereich „Prüfung gegen das AVefi-Schema" liegt oben mittig und ist 1084 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungsprofile", „Importe". Die breiten Schaltflaechen im Inhalt sind „Jetzt prüfen" (oben rechts), „Ort hinzufügen" (unten links), „Weiteren Titel hinzufügen" (unten links), „Alle offenen Einträge abgleichen" (unten rechts).
+Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1944 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 211 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Der Bereich „Prüfung gegen das AVefi-Schema" liegt auf halber Hoehe mittig und ist 1084 Pixel breit. Oben links stehen: „Zum Inhalt springen". Die breiten Schaltflaechen im Inhalt sind „Jetzt prüfen" (oben rechts), „Ort hinzufügen" (unten links), „Weiteren Titel hinzufügen" (unten links), „Alle offenen Einträge abgleichen" (rechts, erst nach dem Scrollen sichtbar).
 
 Der Bildschirmabzug `07-datensatz-detail.png` im selben Verzeichnis zeigt denselben Stand fuer alle, die in einer Besprechung auf denselben Bildschirm schauen wollen.
 

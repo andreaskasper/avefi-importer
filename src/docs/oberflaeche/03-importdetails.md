@@ -21,7 +21,9 @@ In Dokumentreihenfolge, also so, wie sie beim Wandern ueber die Bereiche kommen:
 
 - Stufe 1: „UPB_Test_Archivtitel.csv"
 - Stufe 2: „Was jetzt zu tun ist"
+- Stufe 2: „Anzeigename"
 - Stufe 2: „Eckdaten"
+- Stufe 2: „Herkunft des Ergebnisses"
 - Stufe 2: „Herunterladen"
 
 ### Tab-Reihenfolge
@@ -48,8 +50,11 @@ vergroessert, bekommt die schmale Variante, auch am grossen Bildschirm.
 10. „Datensätze bearbeiten" — Link, im main
 11. „Prüfbericht öffnen" — Link, im main
 12. „Zuordnung bearbeiten" — Link, im main
-13. „Original herunterladen" — Link, im main
-14. „AVefi-JSON herunterladen" — Link, im main
+13. „Anzeigename" — Eingabefeld, im main
+14. „Namen speichern" — Schaltflaeche, im main
+15. „Test Matti auf Basis - Test Luca 31.08." — Link, im main
+16. „Original herunterladen" — Link, im main
+17. „AVefi-JSON herunterladen" — Link, im main
 
 #### Schmales Fenster (800 Pixel)
 
@@ -63,12 +68,17 @@ vergroessert, bekommt die schmale Variante, auch am grossen Bildschirm.
 8. „Datensätze bearbeiten" — Link, im main
 9. „Prüfbericht öffnen" — Link, im main
 10. „Zuordnung bearbeiten" — Link, im main
-11. „Original herunterladen" — Link, im main
-12. „AVefi-JSON herunterladen" — Link, im main
+11. „Anzeigename" — Eingabefeld, im main
+12. „Namen speichern" — Schaltflaeche, im main
+13. „Test Matti auf Basis - Test Luca 31.08." — Link, im main
+14. „Original herunterladen" — Link, im main
+15. „AVefi-JSON herunterladen" — Link, im main
 
 ### Formularfelder
 
-Keine Formularfelder.
+- „Anzeigename" — Eingabefeld, Typ text, kein Pflichtfeld.
+  Beschriftung kommt aus: label.
+  Kein verknuepfter Hinweis und keine verknuepfte Fehlermeldung.
 
 ### Tabellen
 
@@ -78,6 +88,8 @@ Keine Tabellen.
 
 Das wird angesagt, ohne dass die Seite wechselt:
 
+- Statusbereich (status), Ansageart polite (aus role).
+  Aktueller Inhalt: „Diese Installation läuft mit Werten aus der Beispielkonfiguration. Das Sitzungsgeheimnis ist der Vorgabewert. Wer ihn kennt, kann sich als beliebiges Konto au…".
 - Statusbereich (status), Ansageart polite (aus role).
   Aktueller Inhalt: „Der Import ist konvertiert. Die Datensätze lassen sich bearbeiten, der Prüfbericht zeigt Beanstandungen, und die AVefi-JSON steht zum Herunterladen bereit. Da…".
 - Statusbereich (status), Ansageart polite.
@@ -95,7 +107,7 @@ Nichts, was beim Bedienen im Weg steht.
 
 ## Teil 2 — Wie es raeumlich angeordnet ist
 
-Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1100 Pixel hoch und passt damit ohne Scrollen. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Oben rechts stehen, von links nach rechts: „Zur Übersicht" (Link), „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Importe", „Zuordnungsprofile", „Importe".
+Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 1396 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 211 Pixel unter dem Seitenanfang und ist 1120 Pixel breit; er ist mittig gesetzt und laesst links und rechts je rund 190 Pixel frei. Oben links stehen: „Zum Inhalt springen". Die breiten Schaltflaechen im Inhalt sind „Namen speichern" (auf halber Hoehe links).
 
 Der Bildschirmabzug `03-importdetails.png` im selben Verzeichnis zeigt denselben Stand fuer alle, die in einer Besprechung auf denselben Bildschirm schauen wollen.
 

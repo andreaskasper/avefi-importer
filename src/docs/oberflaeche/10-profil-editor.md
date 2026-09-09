@@ -749,6 +749,8 @@ vergroessert, bekommt die schmale Variante, auch am grossen Bildschirm.
 
 Das wird angesagt, ohne dass die Seite wechselt:
 
+- Statusbereich (status), Ansageart polite (aus role).
+  Aktueller Inhalt: „Diese Installation läuft mit Werten aus der Beispielkonfiguration. Das Sitzungsgeheimnis ist der Vorgabewert. Wer ihn kennt, kann sich als beliebiges Konto au…".
 - Statusbereich (status), Ansageart polite.
   Aktueller Inhalt: „Vorschau fertig, 11 Zeilen gerechnet.".
 - Statusbereich (status), Ansageart polite.
@@ -776,7 +778,7 @@ Was beim Bedienen stoert. Das ist eine Beschreibung, keine Wertung nach WCAG —
 
 ## Teil 2 — Wie es raeumlich angeordnet ist
 
-Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 5279 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 85 Pixel unter dem Seitenanfang und ist 1480 Pixel breit. Der Nebenbereich „Ergebnis und Einstellungen" liegt unten rechts und ist 340 Pixel breit. Der Bereich „Erzeugter AVefi-Datensatz (erste Zeile)" liegt rechts, erst nach dem Scrollen sichtbar und ist 304 Pixel breit. Oben rechts stehen, von links nach rechts: „Design wechseln" (Schaltflaeche), „Benutzermenü: Administrator" (Schaltflaeche). Oben links stehen: „Zum Inhalt springen", „Zur Startseite", „Zuordnungsprofile", „Importe", „Test Matti auf Basis - Test Luca 31.08.". Die breiten Schaltflaechen im Inhalt sind „Speichern" (oben rechts), „Vorschlag „Aufteilen“ übernehmen" (oben rechts), „Beispiel und Ergebnis zusammen" (auf halber Hoehe links), „Werk › Titel › Haupttitel — Spalte „Titel“ bearbeiten" (auf halber Hoehe mittig).
+Gemessen in einem Fenster von 1500 mal 1100 Pixeln. Die Seite ist 5435 Pixel hoch, muss also gescrollt werden. Der Kopfbereich liegt am oberen Rand ueber die volle Breite und ist 63 Pixel hoch. Die Navigation „Hauptnavigation" sitzt innerhalb der Kopfzeile, oben links. Der Hauptbereich beginnt 211 Pixel unter dem Seitenanfang und ist 1480 Pixel breit. Der Nebenbereich „Ergebnis und Einstellungen" liegt unten rechts und ist 340 Pixel breit. Der Bereich „Erzeugter AVefi-Datensatz (erste Zeile)" liegt rechts, erst nach dem Scrollen sichtbar und ist 304 Pixel breit. Oben links stehen: „Zum Inhalt springen". Die breiten Schaltflaechen im Inhalt sind „Speichern" (oben rechts), „Vorschlag „Aufteilen“ übernehmen" (auf halber Hoehe rechts), „Beispiel und Ergebnis zusammen" (auf halber Hoehe links), „Werk › Titel › Haupttitel — Spalte „Titel“ bearbeiten" (auf halber Hoehe mittig).
 
 Der Bildschirmabzug `10-profil-editor.png` im selben Verzeichnis zeigt denselben Stand fuer alle, die in einer Besprechung auf denselben Bildschirm schauen wollen.
 

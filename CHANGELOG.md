@@ -129,13 +129,177 @@ des Ergebnisses", der Menüpunkt „Herkunft ansehen" und die geänderten
 Beschriftungen stehen dort noch nicht. Nachziehen mit `tests/a11y/oberflaeche.mjs`
 in einem Durchlauf, nicht einzeln von Hand.
 
-**Die Runde vom 08.09. fehlt in diesem Protokoll.** Acht Commits, darunter #1,
-#2, #3, #6, #12, #13, #15 und #16, sind hier nie eingetragen worden. Nachzutragen.
+**Nachgetragen am 10.09.:** die Runde vom 08.09., die hier nie eingetragen
+worden war. Weiterhin offen sind die Runden vom **02.09.** (Jaspers Punkte,
+Terminologie, Doku-Lücken) und vom **07.09.** (Umbau auf Services, Wächter,
+Mappingkern mit Codes statt Sätzen). Beide sind überwiegend Umbau aus eigenem
+Antrieb, aber der Nachweis gehört vollständig.
 
 **`avefiSchemaVersion` enthält eine Adresse, keine Version.** `core/check.py` in
 efi-conv holt das Schema vom `main`-Branch. Solange das so ist, sagt die Zeile in
 der Herkunft nur, wogegen geprüft wurde, und eine Konvertierung ist nicht
 reproduzierbar.
+
+---
+
+## 2026-09-08 — Matti Stöhr, Jasper Stratil, Elias Oltmanns, Jonas von Pitz und Stefan Stretz
+
+Commits `1e73163` bis `bd39068`. Live auf `https://avefiimporter.goo1.de`.
+
+Nachgetragen am 10.09.2026. Die Runde ist an dem Tag selbst nicht ins Protokoll
+gekommen — vermerkt, weil eine Lücke im Nachweis selbst ein Befund ist.
+
+### Gleichnamige Zeilen ließen sich nur am Zeitstempel unterscheiden
+
+**Gewünscht von Matti Stöhr (Issue #1).** Läuft dieselbe Datei mehrmals, stehen
+in der Liste gleichnamige Zeilen nebeneinander.
+
+Neu ist ein Anzeigename **neben** dem Dateinamen, nicht statt seiner. Der
+Dateiname ist die Verbindung zur Lieferung des Archivs; wer später fragt, aus
+welcher Datei ein Datensatz stammt, braucht ihn. Neue Spalte `imports.label`,
+gesetzt über `PATCH /api/imports/:id`, ein leerer Wert entfernt ihn wieder.
+Commit `e56783d`.
+
+### Bei über achtzig Importen findet man einen bestimmten nur durch Scrollen
+
+**Gewünscht von Matti Stöhr (Issue #2).** Sortieren und Filtern über den ganzen
+Bestand, die Auswahl steht in der Adresse und lässt sich weitergeben.
+
+Beim Nachsehen kam ein Fehler dazu, den niemand gemeldet hatte: `listImports`
+holte `LIMIT 200`, und die Seite zeigte alles davon — ohne Seitenzahlen und ohne
+Hinweis. Wer 201 Importe hat, sieht 200 und erfährt es nicht. Mit einer
+Sortierung wäre daraus ein echter Schaden geworden: „nach Dateiname" hätte die
+200 alphabetisch ersten geliefert und den Rest verschwiegen. Die Antwort nennt
+jetzt `total`, `loaded` und `shown`, und die Seite sagt es, wenn `loaded` unter
+`total` fällt. Commit `b7be5d6`.
+
+### Der Bericht sagte, was falsch ist, aber nicht, wie es richtig geht
+
+**Gewünscht von Matti Stöhr (Issue #3),** festgehalten im Pad unter „Test 2 —
+Matti Stöhr (TIB)" und im Termin am 01.09. als „Advisories weiter ausbauen"
+wiederholt.
+
+„»Betacam SP« ist kein zulässiger Wert für »Optischer Datenträger«" liest sich
+wie ein Tippfehler im Wert; tatsächlich hängt die Spalte am falschen Ziel. Beim
+ersten Befund je Zielfeld steht jetzt, was das Feld bedeutet und welche Werte es
+annehmen darf — einmal je Feld, nicht bei jeder der zwanzig gleichartigen
+Meldungen. Beschreibung und Werteliste kommen aus dem Zielkatalog und dem
+Schemamodell; erfunden wird nichts. Commit `bd39068`.
+
+Abgegrenzt bleibt die automatische Korrektur: vertraglich ausgeschlossen,
+vorgeschlagen wird, nie angewandt.
+
+### „Zuordnung ansehen" zeigte die heutige Profilfassung, nicht die verwendete
+
+**Gemeldet von Jasper Stratil (Issue #6),** beim Test am 07.09.
+
+Beim Nachsehen war es dieselbe Lücke von zwei Seiten. Am Profil bot der
+Versionsverlauf nur „Zurücksetzen" an — man setzte also auf einen Stand zurück,
+den man nicht kannte. Der Inhalt lag in `mapping_profile_versions` und war
+nirgends sichtbar.
+
+Neu ist eine eigene, unveränderliche Ansicht auf eine bestimmte Version:
+`GET /api/mappings/:id/versions/:version` und `/mappings/:id/versionen/:n`. Die
+Zuordnungsseite eines Imports sagt jetzt, mit welcher Version konvertiert wurde,
+und zeigt die heutige daneben, wenn beide auseinanderfallen. Commit `2876909`.
+
+**Abnahmekriterium:** „Veraltete Konvertierungsergebnisse nach Änderungen am
+Mappingprofil werden als solche gekennzeichnet."
+
+### Eckige Klammern am Titel: die Entscheidung gehört ins Profil
+
+**Elias Oltmanns in Issue #5.** Wird der Vorschlag „Archivtitel" angenommen, sind
+die Klammern Kennzeichnung und gehören weg. Wird er abgelehnt und der Wert bleibt
+ein `PreferredTitle`, sind sie Bestandteil des Titels und bleiben stehen.
+
+Das nimmt `cd75606` vom selben Tag zurück, wo das Abschneiden noch im Code stand.
+Ob eine Klammer Kennzeichnung oder Titelbestandteil ist, ist keine Konvention,
+sondern eine Entscheidung — und sie gehört dorthin, wo die Entscheidung fällt.
+Commit `e7ce560`.
+
+### Ein Datensatz ohne Haupttitel stand auf Gelb
+
+**Gefunden von Matti Stöhr (Issue #15),** im Telefonat mit Elias am 08.09.
+besprochen. Ein Datensatz aus Paderborn ohne jeden Haupttitel stand auf Gelb,
+während direkt daneben „Pflichtangabe fehlt" in Rot stand.
+
+Eine Anzeige war ihrer eigenen Legende davongelaufen. Die Plakette nannte seit
+dem 31.08. benannte Felder („0 von 4"), die Farbe kam weiter aus dem Prozentwert,
+und die Legende beschrieb noch die Prozentgrenzen. Drei Stellen, drei Aussagen.
+Die Farbe folgt jetzt der Verbindlichkeit statt der Menge: rot, wenn ein
+Pflichtfeld fehlt, gelb bei fehlenden Empfehlungen, grün bei allen vier
+Kernfeldern. Welche Felder Pflicht sind, entscheidet `completenessIssues`, nicht
+eine zweite Liste. Commit `21a391c`.
+
+### Beim Zusammenfassen gewann stillschweigend die erste Zeile
+
+**Aus dem Telefonat mit Elias Oltmanns am 08.09. (Issue #16).** Stimmen die zur
+Werkbildung gewählten Spalten überein, sollte geprüft werden, ob die übrigen
+gemappten Werksfelder das auch tun.
+
+Der Ist-Zustand war genau der stille Fall. `mergeNode` ergänzt fehlende Felder,
+vereinigt Listen und überschreibt Skalare nicht — bei einem Widerspruch hieß das:
+Die erste Zeile gewinnt, kommentarlos. Welche „die erste" ist, hängt an der
+Zeilenreihenfolge in der Datei und damit an nichts, was der Bearbeiter sehen
+kann. Dieselbe Fehlerklasse wie der verdrängte Primärtitel aus `adb444d`, nur
+eine Ebene höher: dort innerhalb einer Zeile, hier zwischen Zeilen.
+
+Gemeldet wird nur, was verloren geht. Listen werden vereinigt, da verschwindet
+nichts — zwei Zeilen mit verschiedenen Regisseurinnen ergeben ein Werk mit
+beiden, und genau dafür fasst man zusammen. Commit `aa9c38a`.
+
+### Die Beschriftungen sollen die des gedruckten FIAF-Katalogs sein
+
+**Jonas von Pitz in Issue #12.** Alle Beschriftungen stammen aus der deutschen
+Ausgabe des FIAF Cataloguing Manual, jeweils von der ersten Stelle, an der der
+Begriff im englischen Original vorkommt. Aus Konsistenzgründen sollen die
+Originalübersetzungen gelten.
+
+Sein Argument ist besser als meins. Ich hatte für Verständlichkeit plädiert
+(„Bild und Ton auf einem Träger" statt „Kombiniert"), er für Übereinstimmung mit
+dem Katalog, den die Archivarinnen benutzen. Wer den Manual kennt, sucht
+„Featurette", nicht „Mittellangfilm". 31 deutsche und 14 englische Beschriftungen
+übernommen, über acht Vokabulare. Commit `020a15c`.
+
+Vorher am selben Tag drei Beschriftungen aus der Gegenrichtung: Von 114 deutschen
+Beschriftungen des Verbundkatalogs wichen 38 von unseren ab, übernommen sind die
+drei, in denen der Katalog recht hat — „Archivtitel" statt „Gelieferter/
+Entworfener Titel", „Transliterierter Titel" statt „Transkribierter Titel",
+„Übernahmetitel" statt „Erwerbstitel". Der mittlere war ein Fachfehler von mir.
+`model.schema.json` blieb dabei byte-identisch. Commit `3d57c23`.
+
+### Der Zuordnungseditor kannte seine Einbaustelle
+
+**Aus Stefan Stretz' Frontend-Abnahme (Issue #13).** `components/mapping/Editor.vue`
+griff auf `useRoute()`, `route.query.spalte` und `navigateTo()` zu. Die Komponente
+wusste damit, an welcher Stelle der Anwendung sie hängt, und ließ sich ohne diese
+Stelle nicht verwenden. Stefan hat es ausdrücklich nicht als Abnahmemangel
+eingestuft.
+
+Beides sind jetzt Schnittstellen statt Annahmen: `initialColumn` und `@started`.
+Die Adresszeile liest die Importseite, nicht der Editor. Commit `e493d56`.
+
+### Aus eigenem Antrieb
+
+**Alle dreizehn Titeltypen aus `TitleTypeEnum`** als Zielfelder, dazu die
+Erkennung mehrteiliger Klammervorschläge, der Konverter „Nur wenn" als Wächter
+über einem Zweig, die Zweigbilanz und die Meldung des verdrängten Primärtitels.
+Commits `1e73163` bis `cd75606`.
+
+**Handbuch nachgezogen** an Ampel und Zusammenfassen. Kapitel 3 nannte noch
+„Vollständigkeit (Ring)" und „Rot unter 50 %". Kapitel 7 bekam dazu, was beim
+Zusammenfassen mit widersprüchlichen Angaben passiert, samt dem Hinweis, der beim
+Lesen der eigentliche Wert ist: Tragen zwei Zeilen denselben
+Gruppierungsschlüssel, aber verschiedene Titel, meinen sie möglicherweise gar
+nicht dasselbe Werk. Commit `0784909`.
+
+**Zwei Sicherheitshinweise von GitHub** zu `uuid < 11.1.1` als transitive
+Abhängigkeit von `exceljs`. `npm audit fix --force` hätte `exceljs` auf 3.4.0
+herabgestuft, also genau die Bibliothek gebrochen, die unsere Excel-Dateien
+liest. Ein Sicherheitshinweis ist kein Grund, eine Kernabhängigkeit um eine
+Hauptversion zurückzudrehen. Stattdessen ein `overrides`-Eintrag, der `uuid`
+hochzieht, ohne `exceljs` anzufassen. Der verwundbare Pfad liegt ohnehin im
+Schreiben bedingter Formatierung; wir lesen. Commit `cf0bb80`.
 
 ---
 
