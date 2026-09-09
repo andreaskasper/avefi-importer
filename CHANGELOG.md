@@ -28,6 +28,117 @@ Zeitzone durchgängig Europe/Berlin. Commits verweisen auf
 
 ---
 
+## 2026-09-10 — Jasper Stratil und Elias Oltmanns, ein fehlender Menüpunkt und ein echtes Passwort
+
+Commits `2312b5c` (Menüpunkt), `8dbbb10` (Herkunft), `e6b2ca6` (Vorgabewerte).
+Live auf `https://avefiimporter.goo1.de`.
+
+### „Zuordnung ansehen" wurde nicht angezeigt
+
+**Gemeldet von Jasper Stratil (09.09., 18:52), im Anschluss an Issue #6.** Die
+Aktion fehlte im Menü der Importe-Seite. Der Import war konvertiert, die Seite
+existierte, der Menüpunkt war verborgen.
+
+Die Bedingung fragte `hasMapping`, und das war nichts anderes als
+`mapping_profile_id !== null`. Diese Spalte beantwortet die Frage nicht. Sie ist
+leer, wenn über ein Formatprofil konvertiert wurde — MARC-XML, AVefi-nativ, aber
+auch CSV auf diesem Weg —, und sie ist gefüllt, wenn im Zuordnungseditor
+gespeichert wurde, ohne zu konvertieren. Neun fertig konvertierte Importe waren
+betroffen, darunter beide SLUB-Lieferungen und zwei CSV-Dateien.
+
+Entschieden wird jetzt über `tabular`, so wie `ImportTable.vue` es beim
+„Zuordnen"-Knopf schon tat. Der Menüpunkt heißt im Zustand „Zuordnung nötig"
+jetzt „Zuordnen" und sonst „Zuordnung ansehen"; #6 hatte die Benennung als
+mitverantwortlich benannt. `hasMapping` ist aus der Nutzlast entfernt, damit die
+Verwechslung nicht wiederkommt. Issue #17.
+
+**Abnahmekriterium:** berührt die Nachvollziehbarkeit des Ergebnisses aus #6.
+
+### Für MARC-XML und AVefi-nativ gab es die Antwort weiterhin nicht
+
+**Aus eigenem Antrieb, im Anschluss an dieselbe Meldung.** Der Menüpunkt bleibt
+bei nicht-tabellarischen Formaten zu Recht verborgen — dort gibt es keine
+Spaltenzuordnung. Jaspers eigentliche Frage aus #6, wie ein Ergebnis zustande
+kam, blieb für diese Formate damit unbeantwortet. Genau diese Formate hatte er
+zuletzt getestet.
+
+`convert.ts` schreibt seit Längerem nach jedem Lauf ein `run_config` in die
+Importzeile: Profilversion, AVefi-Schemaversion, Trennzeichen,
+Normdateneinstellungen, Zeitpunkt. **Gelesen wurde die Spalte nirgends.** Kein
+Endpunkt gab sie aus, keine Seite zeigte sie.
+
+Neu ist ein Abschnitt „Herkunft des Ergebnisses" auf der Detailseite jedes
+Imports, mit Formatprofil, Zuordnungsprofil samt verwendeter und heutiger
+Version, Schemaversion, Trennzeichen, Normdaten und Zeitpunkt. Für
+nicht-tabellarische Importe führt ein eigener Menüpunkt „Herkunft ansehen"
+dorthin. Von dreiundzwanzig konvertierten Importen haben zehn ein `run_config`;
+bei den übrigen steht „nicht aufgezeichnet", denn dass nichts mitgeschrieben
+wurde, ist auch eine Auskunft. Issue #18.
+
+Dabei fiel auf, dass `imports/[id]/index.get.ts` die heutige Profilversion nie
+durchreichte. Auf der Detailseite war `stale` deshalb immer falsch.
+
+**Abnahmekriterium:** „Veraltete Konvertierungsergebnisse nach Änderungen am
+Mappingprofil werden als solche gekennzeichnet" galt bisher nur in der Liste,
+nicht auf der Detailseite. Und die Kopplung des Ergebnisses an die
+Konfigurationsrevision war zwar gespeichert, aber nicht sichtbar.
+
+### Das Beispielpasswort aus der Dokumentation war das echte
+
+**Ausgelöst durch Elias Oltmanns (09.09., 18:29).** Für die Übergabe des
+Repositorys an die AV-EFI-Organisation wies er darauf hin, dass die Zugangsdaten
+des Deployments im Repository stünden und vorher zu ändern seien.
+
+Geprüft über die gesamte Historie: keine Tokens, keine Schlüssel, keine URL mit
+eingebetteten Zugangsdaten, keine jemals eingecheckte `.env`. Der einzige Fund
+war `docs/barrierefreiheit.md`, das zweimal `admin@av-efi.net` / `changeme` als
+Beispielanmeldung gegen die laufende Instanz nennt. Die Gegenprobe antwortete
+mit HTTP 200 — das Beispiel war das echte Passwort. Dazu standen `DB_PASS` und
+`SESSION_SECRET` beide auf ihrem Vorgabewert.
+
+Die Anleitung sagte das Richtige bereits: `deployment.md` schreibt zu `DB_PASS`
+wörtlich „Die Vorgabe ist ein Entwicklungswert und gehoert ersetzt", und die
+Tabelle der Umgebungsvariablen hat eine Pflicht-Spalte. Trotzdem lief die
+öffentlich erreichbare Instanz wochenlang so. Mehr Dokumentation auf ein Problem
+zu legen, das keines der Dokumentation war, hätte daran nichts geändert.
+
+Die Anwendung prüft es jetzt beim Start selbst, abgestuft: `SESSION_SECRET` auf
+einem Vorgabewert bricht den Start ab, aber nur unter `NODE_ENV=production` —
+wer den Wert kennt, baut sich ein gültiges Sitzungscookie für jedes Konto. Bei
+`DB_PASS` und bei einem Administratorkonto mit bekanntem Passwort bleibt es bei
+einer Warnung im Protokoll und einem Hinweisstreifen, den nur angemeldete
+Administratoren sehen. Neu ist außerdem der Abschnitt „Vor dem ersten
+Produktivstart" in `deployment.md`. Issue #19.
+
+`SESSION_SECRET` hatte drei verschiedene Platzhalter, verteilt auf
+`nuxt.config.ts`, die Compose-Datei und `.env.example`. Alle drei stehen jetzt
+in der Prüfliste, und zwei Tests lesen die Vorgabewerte aus den Quelldateien,
+statt sie zu wiederholen.
+
+### Offen geblieben
+
+**Das Passwort der Demo-Instanz bleibt `changeme`, `DEMO_PASSWORD` bleibt
+ungesetzt.** Bewusste Entscheidung: Es ist eine Vorführinstanz mit Testbeständen,
+und die Tester arbeiten gerade damit. Sobald das Repository öffentlich ist, kann
+sich damit jeder als Administrator anmelden, der die Datei liest. Für die
+Produktivinstallation greift die neue Prüfung.
+
+**`docs/oberflaeche/` ist nicht nachgezogen.** Die Beschreibungen sind aus der
+laufenden Anwendung ausgelesen, Stand `6e89117`. Die neue Überschrift „Herkunft
+des Ergebnisses", der Menüpunkt „Herkunft ansehen" und die geänderten
+Beschriftungen stehen dort noch nicht. Nachziehen mit `tests/a11y/oberflaeche.mjs`
+in einem Durchlauf, nicht einzeln von Hand.
+
+**Die Runde vom 08.09. fehlt in diesem Protokoll.** Acht Commits, darunter #1,
+#2, #3, #6, #12, #13, #15 und #16, sind hier nie eingetragen worden. Nachzutragen.
+
+**`avefiSchemaVersion` enthält eine Adresse, keine Version.** `core/check.py` in
+efi-conv holt das Schema vom `main`-Branch. Solange das so ist, sagt die Zeile in
+der Herkunft nur, wogegen geprüft wurde, und eine Konvertierung ist nicht
+reproduzierbar.
+
+---
+
 ## 2026-09-01 — Andreas Kasper, Sprungziele im Prüfbericht
 
 Commits `26e0038` (Oberfläche, Handbuch) und `b6480a8` (Prüfung).
