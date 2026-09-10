@@ -24,7 +24,119 @@ Antrieb". Was offen blieb, steht unter „Offen geblieben" — auch dann, wenn e
 unangenehm ist.
 
 Zeitzone durchgängig Europe/Berlin. Commits verweisen auf
-`github.com/andreaskasper/avefi-importer`.
+`github.com/AV-EFI/avefi-importer`. Das Repository lag bis zum 10.09.2026 unter
+`github.com/andreaskasper/avefi-importer`; Verweise auf den alten Pfad leitet
+GitHub weiter.
+
+---
+
+## 2026-09-10, nachmittags — Luca Wollny, ein Titel, den niemand vermisste
+
+Commits `9fc75ef` (Titel), `8176d6b` (Umzug und Zugangsdaten).
+Live auf `https://avefiimporter.goo1.de`.
+
+An diesem Tag ist das Repository an die Organisation **AV-EFI** übergegangen und
+öffentlich geworden. Es liegt jetzt unter
+[`AV-EFI/avefi-importer`](https://github.com/AV-EFI/avefi-importer).
+
+### Eine Konvertierung ohne jede Titelangabe galt als beanstandungsfrei
+
+**Gemeldet von Luca Wollny (10.09., 13:21),** Pad unter „Test 1.1".
+
+Der zweite Teil seiner Beobachtung führte in die Irre, und das war der
+eigentliche Fund. Er schrieb, im Gegenfall — Zeilen mit Werks- oder
+Manifestfeldern, aber ohne Exemplarinhalt — greife die Validierung korrekt. Die
+Meldung dort ist aber `no_items_associated` aus dem satzübergreifenden
+Durchgang, also das **fehlende Exemplar**. Der fehlende Titel wurde in keinem
+der beiden Fälle beanstandet.
+
+Nachgeprüft gegen den laufenden Prüfdienst: **Das AVefi-Schema verlangt
+`has_primary_title` am `WorkVariant` nicht.** Ein Werk ohne jeden Titel kommt
+mit `ok=true` zurück, allein und im Verbund mit Manifestation und Exemplar.
+
+Die Anwendung wusste es besser und sagte es an der falschen Stelle.
+`completenessIssues` stuft den Fall als Fehler ein und färbt seit #15 die
+Kernfeld-Plakette rot — nur speiste das den Datensatz-Editor und die Liste, nicht
+den Prüfbericht. Auf derselben Seite stand die Belegungsstatistik „Haupttitel
+0 von N" neben der Plakette „keine Beanstandungen".
+
+Behoben an beiden Enden. Der Zuordnungseditor zählt jetzt je Ebene, ob ein Ziel
+gemappt ist, das den Haupttitel füllt: am Werk ist gut, nur an Manifestation
+oder Exemplar bleibt die bisherige Warnung, nirgends ist ein Fehler und sperrt
+„Speichern und konvertieren" — Speichern bleibt erlaubt, weil ein Zwischenstand
+ohne Titel eine normale Etappe beim Aufbau einer Zuordnung ist. Und nach der
+Konvertierung wandern die Vollständigkeitsfehler mit Zeilennummer in den
+Bericht; der Import ist dann nicht mehr „validiert". Issue #20.
+
+Dabei fiel ein zweiter, älterer Fehler weg: Die Prüfung zählte nur
+`work.title.primary`, obwohl `work.title.supplied` („Archivtitel") dasselbe Feld
+füllt. Wer nur den Archivtitel mappte, bekam die Meldung, es fehle ein
+Haupttitel.
+
+**Abnahmekriterium:** betrifft die Validierung der gemappten Daten.
+
+### Jede Beanstandung sagt jetzt, welche Regel sie erhebt
+
+**Aus eigenem Antrieb, als Folge desselben Befunds.** Der Prüfbericht mischt
+vier Quellen: das AVefi-Schema, den satzübergreifenden Durchgang, die
+Vollständigkeit und die Konvertierung. Die ersten beiden prüft der Dienst
+`efi-conv` gegen das Schema des Verbunds, die letzten beiden sind Regeln dieser
+Anwendung.
+
+Der Unterschied ist keine Förmlichkeit. Ein Werk ohne Haupttitel ist
+schemakonform; dass wir es trotzdem beanstanden, ist unsere Entscheidung. Stünde
+sie ohne Kennzeichnung im Bericht, sähe sie aus wie eine Vorgabe des Verbunds,
+und eine Diskussion darüber liefe mit dem falschen Argument.
+
+Ob `has_primary_title` im Schema verpflichtend werden sollte, steht als Frage an
+Elias Oltmanns in Issue #21.
+
+### Das Beispielpasswort in der Anleitung war der echte Zugang
+
+**Folge des Übertrags.** `docs/barrierefreiheit.md` nannte an vier Stellen ein
+Verwaltungskonto samt Passwort als Beispiel für die Barrierefreiheitsläufe,
+mitsamt der Adresse der laufenden Instanz. Mit dem Übergang an die AV-EFI wurde
+das Repository öffentlich.
+
+Beide Werkzeuge lesen die Anmeldung jetzt aus der Umgebung, und die Anleitung
+zeigt `read -s` statt einer Zuweisung — so landet das Passwort weder auf dem
+Bildschirm noch in der Verlaufsdatei der Shell. Der Test dazu hat sich umgedreht:
+Er verlangte bisher, dass die Beispielwerte in der Prüfliste stehen, und
+verlangt jetzt, dass in der Anleitung überhaupt keiner mehr steht.
+
+Das Passwort auf der Instanz selbst zu ändern liegt bei der Organisation, die
+sie übernimmt.
+
+### Aus eigenem Antrieb
+
+**Die Adresse des Repositorys** in `handbuch/01-installation.md`, `abnahme.md`
+und in diesem Protokoll auf den neuen Pfad gezogen. Die zweite Stelle war die
+unangenehme: Ein Abnahmedokument, das den Liefergegenstand „Vollständiger
+Quellcode" mit einer Adresse benennt, unter der er nicht mehr liegt, ist an
+genau der Stelle unbrauchbar, an der es gebraucht wird.
+
+**Issue #12 geschlossen.** Elias Oltmanns hat die Kleinschreibung in `UnitEnum`
+upstream übernommen; damit sind Anwendung und Message-Katalog des Verbunds
+deckungsgleich und unsere letzte Ausnahme entfällt.
+
+### Offen geblieben
+
+**`docs/oberflaeche/` kennt die Herkunftsangabe im Prüfbericht noch nicht.** Die
+Beschreibungen sind vom Vormittag, Stand `cfb363b`. Beim nächsten Durchlauf
+mitziehen.
+
+**Die Berichte der bestehenden Importe werden nicht nachgerechnet.** `report_json`
+hält den Stand des Laufs, und das soll so bleiben — ein Bericht sagt, was beim
+Lauf herauskam. Lucas beide Importe vom Vormittag zeigen ihr altes Ergebnis, bis
+jemand „Neu konvertieren" anstößt.
+
+**Das Wiki des Repositorys ist leer und eingeschaltet.** Die Dokumentation liegt
+vollständig in `src/docs/`, weil sie zum Werk gehört, mit dem Code versioniert
+ist und von `tests/doku` geprüft wird. Ein leeres Wiki im Menü ist eine
+Einladung, sie ein zweites Mal anzulegen. Abschalten braucht Rechte an der
+Organisation.
+
+**Die Runden vom 02.09. und 07.09.** fehlen weiterhin in diesem Protokoll.
 
 ---
 
@@ -91,10 +203,11 @@ des Deployments im Repository stünden und vorher zu ändern seien.
 
 Geprüft über die gesamte Historie: keine Tokens, keine Schlüssel, keine URL mit
 eingebetteten Zugangsdaten, keine jemals eingecheckte `.env`. Der einzige Fund
-war `docs/barrierefreiheit.md`, das zweimal `admin@av-efi.net` / `changeme` als
-Beispielanmeldung gegen die laufende Instanz nennt. Die Gegenprobe antwortete
-mit HTTP 200 — das Beispiel war das echte Passwort. Dazu standen `DB_PASS` und
-`SESSION_SECRET` beide auf ihrem Vorgabewert.
+war `docs/barrierefreiheit.md`, das an vier Stellen ein Verwaltungskonto samt
+Passwort als Beispielanmeldung gegen die laufende Instanz nannte. Die Gegenprobe
+antwortete mit HTTP 200 — das Beispiel war der echte Zugang. Dazu standen
+`DB_PASS` und `SESSION_SECRET` beide auf ihrem Vorgabewert. Der Wert steht hier
+bewusst nicht; das Protokoll ist oeffentlich.
 
 Die Anleitung sagte das Richtige bereits: `deployment.md` schreibt zu `DB_PASS`
 wörtlich „Die Vorgabe ist ein Entwicklungswert und gehoert ersetzt", und die
@@ -117,11 +230,13 @@ statt sie zu wiederholen.
 
 ### Offen geblieben
 
-**Das Passwort der Demo-Instanz bleibt `changeme`, `DEMO_PASSWORD` bleibt
-ungesetzt.** Bewusste Entscheidung: Es ist eine Vorführinstanz mit Testbeständen,
-und die Tester arbeiten gerade damit. Sobald das Repository öffentlich ist, kann
-sich damit jeder als Administrator anmelden, der die Datei liest. Für die
-Produktivinstallation greift die neue Prüfung.
+**Das Passwort der Demo-Instanz und `DEMO_PASSWORD` bleiben zunächst
+unverändert.** Bewusste Entscheidung am 09.09.: Es ist eine Vorführinstanz mit
+Testbeständen, und die Tester arbeiten gerade damit. Mit dem Übertrag an die
+AV-EFI am 10.09. wurde das Repository öffentlich; das Ändern liegt seither bei
+der Organisation, die die Instanz übernimmt. Aus der Dokumentation ist der Wert
+entfernt (siehe Runde vom 10.09.), und für jede Produktivinstallation greift die
+Startprüfung.
 
 **`docs/oberflaeche/` ist nicht nachgezogen.** Die Beschreibungen sind aus der
 laufenden Anwendung ausgelesen, Stand `6e89117`. Die neue Überschrift „Herkunft
