@@ -12,7 +12,7 @@ Umgebungsvariablen und die fünf Container (`web`, `worker`, `efi-conv`, `db`,
 Kurzfassung für Ungeduldige:
 
 ```bash
-git clone https://github.com/andreaskasper/avefi-importer.git
+git clone https://github.com/AV-EFI/avefi-importer.git
 cd avefi-importer/src
 docker compose -f docker-compose.dev.yml up -d --build
 docker compose -f docker-compose.dev.yml exec web npm run migrate

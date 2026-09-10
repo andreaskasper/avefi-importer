@@ -75,15 +75,27 @@ describe('Vorgabewerte erkennen', () => {
     expect(zeile).toContain('openssl rand')
   })
 
-  it('kennt das Passwort, das in der Dokumentation steht', () => {
-    // docs/barrierefreiheit.md nennt A11Y_PASS und OBF_PASS als Beispiel. Genau
-    // dieser Wert war auf der Testinstanz in Gebrauch.
+  it('findet kein Passwort in der Dokumentation', () => {
+    /*
+     * Die Umkehrung des urspruenglichen Tests, und der Grund dafuer steht in
+     * der Datei selbst: Bis zum 10.09.2026 nannte docs/barrierefreiheit.md an
+     * vier Stellen ein Konto samt Passwort als Beispiel fuer die Testlaeufe.
+     * Der Wert war der echte Zugang der Demo-Instanz, und mit dem Uebertrag an
+     * die Organisation AV-EFI wurde das Repository oeffentlich.
+     *
+     * Seitdem kommen die Werte aus der Umgebung. Dieser Test haelt das fest:
+     * Wer wieder einen Wert einsetzt, damit der Aufruf zum Kopieren taugt,
+     * bekommt einen roten Test statt eines veroeffentlichten Zugangs.
+     */
     const doku = lies('docs/barrierefreiheit.md')
-    const treffer = [...doku.matchAll(/(?:A11Y|OBF)_PASS=([^\s\\]+)/g)].map((m) => m[1])
-    expect(treffer.length, 'kein Beispielpasswort mehr in der Doku — Test anpassen').toBeGreaterThan(0)
-    for (const wert of treffer) {
-      expect(VORGABE_PASSWOERTER, `${wert} steht in der Doku, aber nicht in der Liste`).toContain(wert)
-    }
+    const treffer = [...doku.matchAll(/(?:A11Y|OBF)_(?:PASS|USER)=(?!"?\$)([^\s\\]+)/g)].map((m) => m[1])
+    expect(treffer, `Zugangsdaten stehen wieder in der Anleitung: ${treffer.join(', ')}`).toEqual([])
+  })
+
+  it('behaelt die bekannten Passwoerter in der Liste', () => {
+    // Aus der Doku entfernt heisst nicht aus der Welt: Solange irgendwo eine
+    // Instanz mit einem dieser Werte laeuft, soll der Start es sagen.
+    expect(VORGABE_PASSWOERTER).toContain('changeme')
   })
 
   it('kennt den Vorgabewert aus nuxt.config.ts', () => {

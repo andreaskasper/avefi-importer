@@ -25,13 +25,38 @@ Die Kennungen von Import, Profil, Datensatz und Format-Review liest das Skript
 aus der laufenden Anwendung. Es muss also nicht angepasst werden, wenn ein
 Testimport wegfaellt.
 
+## Zugangsdaten
+
+Beide Werkzeuge melden sich an der laufenden Instanz an und brauchen dafuer ein
+Konto. Die Werte stehen **nicht** in diesem Repository, sondern kommen aus der
+Umgebung:
+
+```bash
+read -rp  'Konto: '    A11Y_USER
+read -rsp 'Passwort: ' A11Y_PASS; echo
+export A11Y_USER A11Y_PASS             # bzw. OBF_USER / OBF_PASS
+```
+
+`read -s` schreibt das Passwort nicht auf den Bildschirm und nicht in die
+Verlaufsdatei der Shell. Eine Zuweisung in der Befehlszeile taete beides.
+
+Bis zum 10.09.2026 nannte diese Datei an vier Stellen ein Konto samt Passwort
+als Beispiel. Das Beispiel war der echte Zugang der Demo-Instanz, und mit dem
+Uebertrag an die Organisation AV-EFI wurde das Repository oeffentlich. Ein
+Beispielwert, der auf einer erreichbaren Instanz funktioniert, ist kein
+Beispiel.
+
+Die Anwendung erkennt beim Start, wenn ein aktives Verwaltungskonto ein
+Passwort aus dieser Dokumentation traegt, und meldet es (siehe
+`server/lib/vorgabewerte.ts`).
+
 ### Aufruf
 
 ```bash
 docker run --rm --network host \
   -v /var/www/avefi-importer/src:/app -w /app \
   -e A11Y_BASE=https://avefiimporter.goo1.de \
-  -e A11Y_USER=admin@av-efi.net -e A11Y_PASS=changeme \
+  -e A11Y_USER="$A11Y_USER" -e A11Y_PASS="$A11Y_PASS" \
   mcr.microsoft.com/playwright:v1.50.0-noble node tests/a11y/axe.mjs
 ```
 
@@ -45,7 +70,7 @@ Stellschrauben:
 | Umgebungsvariable | Vorgabe | Wirkung |
 | --- | --- | --- |
 | `A11Y_BASE` | `http://localhost:3000` | Adresse der Anwendung. Ueber HTTPS aufrufen, sonst greift das Sitzungscookie nicht. |
-| `A11Y_USER` / `A11Y_PASS` | `admin@av-efi.net` / `changeme` | Anmeldung. |
+| `A11Y_USER` / `A11Y_PASS` | keine | Anmeldung. Aus der Umgebung, siehe unten. |
 | `A11Y_THEMES` | `light,dark` | Farbschemata, die geprueft werden. |
 
 ### Ergebnis
@@ -119,7 +144,7 @@ zugeklappt, gespeichert wird nirgends.
 docker run -d --name oberflaeche --ipc=host --shm-size=1g --network host \
   -v /var/www/avefi-importer/src:/app -w /app \
   -e OBF_BASE=https://avefiimporter.goo1.de \
-  -e OBF_USER=admin@av-efi.net -e OBF_PASS=changeme \
+  -e OBF_USER="$OBF_USER" -e OBF_PASS="$OBF_PASS" \
   -e OBF_COMMIT=$(git -C /var/www/avefi-importer rev-parse --short HEAD) \
   mcr.microsoft.com/playwright:v1.50.0-noble node tests/a11y/oberflaeche.mjs
 docker logs -f oberflaeche
@@ -180,7 +205,7 @@ Stellschrauben:
 | Umgebungsvariable | Vorgabe | Wirkung |
 | --- | --- | --- |
 | `OBF_BASE` | `http://localhost:3000` | Adresse der Anwendung. Ueber HTTPS aufrufen, sonst greift das Sitzungscookie nicht. |
-| `OBF_USER` / `OBF_PASS` | `admin@av-efi.net` / `changeme` | Anmeldung. |
+| `OBF_USER` / `OBF_PASS` | keine | Anmeldung. Aus der Umgebung, siehe unten. |
 | `OBF_OUT` | `docs/oberflaeche` | Ablage der Beschreibungen und Abzuege. |
 | `OBF_WIDTH` / `OBF_HEIGHT` | `1500` / `1100` | Fenstergroesse. Steht in jeder Beschreibung, weil der raeumliche Teil davon abhaengt. |
 | `OBF_MAXTABS` | `400` | Obergrenze fuer die Tab-Reihenfolge je Seite. Wird sie erreicht, sagt die Beschreibung das. |

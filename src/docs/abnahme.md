@@ -14,7 +14,7 @@ Oltmanns, Jasper Stratil und Matti Stoehr mit Schreibrecht.
 
 | Liefergegenstand | Wo | Stand |
 |---|---|---|
-| Vollstaendiger Quellcode | `github.com/andreaskasper/avefi-importer`, Zweig `main` | liegt vor |
+| Vollstaendiger Quellcode | `github.com/AV-EFI/avefi-importer`, Zweig `main` | liegt vor, am 10.09.2026 an die Organisation AV-EFI uebertragen |
 | Eigenstaendiges Repository fuer den CSV-Importer | dasselbe Repository | liegt vor |
 | Pull Request fuer das LIDO-Modul | [AV-EFI/efi-conv#34](https://github.com/AV-EFI/efi-conv/pull/34) | liegt vor, offen seit 01.09.2026 |
 | Abhaengigkeits- und Lock-Dateien | `src/package.json`, `src/package-lock.json` | liegt vor |
