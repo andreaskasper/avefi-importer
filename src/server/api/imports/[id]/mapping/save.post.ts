@@ -35,6 +35,13 @@ export default defineEventHandler(async (event) => {
     throw fail(409, 'not_complete', { open: prepared.open }, 'Profil noch nicht vollstaendig.')
   }
 
+  // Und nicht mit einer Zuordnung, die garantiert Saetze ohne Titel erzeugt.
+  // Speichern bleibt erlaubt, siehe ERST_BEIM_KONVERTIEREN in runner.ts.
+  if (start && prepared.startBlocked) {
+    throw fail(409, 'start_blocked', { checks: prepared.checks },
+      'Mit dieser Zuordnung laesst sich nicht konvertieren.')
+  }
+
   let profile = await findOwnProfile(sql, user.institution_id, source.headerHash)
   if (profile === null) {
     const name = wantedName !== ''

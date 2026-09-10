@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import type { AvefiRecord } from '../../server/lib/mapping/builder.js'
 import type { MappingJson } from '#shared/types/domain'
 import {
-  addToTally, authorityInventory, collectAuthorityLookups, groupingLabel, groupsWorks, hasBlocker,
+  addToTally, authorityInventory, collectAuthorityLookups, groupingLabel, groupsWorks, hasBlocker, hasStartBlocker,
   mergeRecords, newRunTally, readTarget, runRow, staticCheck
 } from '../../server/lib/mapping/runner.js'
 import { emptyMapping } from '../../server/lib/mapping/profile.js'
@@ -159,7 +159,12 @@ describe('staticCheck', () => {
   })
 
   it('schlaegt den duration-Konverter vor, blockiert aber nicht', () => {
-    const m = emptyMapping(['Laufzeit'], '1.2.3')
+    // Mit Titel, weil dieser Test den Konverter prueft und nicht die
+    // Titelregel: Ohne Titel auf irgendeiner Ebene blockiert seit dem
+    // 10.09.2026 `title.nowhere`, und der Test wuerde am falschen Grund
+    // scheitern.
+    const m = emptyMapping(['Laufzeit', 'Titel'], '1.2.3')
+    m.columns['Titel'] = { pre: [], targets: [{ target: 'work.title.primary', post: [] }] }
     m.columns['Laufzeit'] = { pre: [], targets: [{ target: 'item.duration', post: [] }] }
     const checks = staticCheck(m, testSchema)
     const hit = checks.find((c) => c.code === 'chain.duration')
@@ -186,10 +191,62 @@ describe('staticCheck', () => {
     expect(staticCheck(m, testSchema).some((c) => c.code === 'authority.unsupported')).toBe(true)
   })
 
-  it('warnt, wenn kein Haupttitel gemappt ist', () => {
+  /*
+   * Der Titel, drei Faelle.
+   *
+   * Bis zum 10.09.2026 gab es nur zwei Zustaende: am Werk gemappt, oder eine
+   * Warnung mit dem Hinweis, ersatzweise werde der Titel der Manifestation oder
+   * des Exemplars uebernommen. Fehlte der Titel ueberall, war die Warnung eine
+   * Luege — es gab nichts zu uebernehmen, und das Ergebnis war ein Datensatz
+   * ohne jeden Titel, den das AVefi-Schema anstandslos durchlaesst.
+   * Gefunden von Luca Wollny.
+   */
+  it('sagt nichts, wenn der Haupttitel am Werk haengt', () => {
+    const m = emptyMapping(['Titel'], '1.2.3')
+    m.columns['Titel'] = { pre: [], targets: [{ target: 'work.title.primary', post: [] }] }
+    const checks = staticCheck(m, testSchema)
+    expect(checks.some((c) => c.code === 'work.no-title')).toBe(false)
+    expect(checks.some((c) => c.code === 'title.nowhere')).toBe(false)
+  })
+
+  it('nimmt auch den Archivtitel als Haupttitel des Werks', () => {
+    // work.title.supplied traegt in targets.ts primary: true und fuellt
+    // has_primary_title genauso. Vorher zaehlte nur work.title.primary, und der
+    // Archivtitel loeste falschen Alarm aus.
+    const m = emptyMapping(['Archivtitel'], '1.2.3')
+    m.columns['Archivtitel'] = { pre: [], targets: [{ target: 'work.title.supplied', post: [] }] }
+    const checks = staticCheck(m, testSchema)
+    expect(checks.some((c) => c.code === 'work.no-title')).toBe(false)
+    expect(checks.some((c) => c.code === 'title.nowhere')).toBe(false)
+  })
+
+  it('warnt, wenn der Titel nur an Manifestation oder Exemplar haengt', () => {
+    const m = emptyMapping(['Titel'], '1.2.3')
+    m.columns['Titel'] = { pre: [], targets: [{ target: 'item.title.primary', post: [] }] }
+    const checks = staticCheck(m, testSchema)
+    expect(checks.find((c) => c.code === 'work.no-title')?.severity).toBe('warning')
+    expect(hasBlocker(checks)).toBe(false)
+  })
+
+  it('verhindert das Konvertieren, wenn auf keiner Ebene ein Titel gemappt ist', () => {
     const m = emptyMapping(['Signatur'], '1.2.3')
     m.columns['Signatur'] = { pre: [], targets: [{ target: 'item.identifier.local', post: [] }] }
-    expect(staticCheck(m, testSchema).some((c) => c.code === 'work.no-title')).toBe(true)
+    const checks = staticCheck(m, testSchema)
+    expect(checks.find((c) => c.code === 'title.nowhere')?.severity).toBe('error')
+    expect(hasStartBlocker(checks)).toBe(true)
+    // Speichern bleibt erlaubt: Wer eine Zuordnung von oben nach unten aufbaut,
+    // hat irgendwann die Kennung und noch keinen Titel. Diesen Zwischenstand
+    // nicht parken zu duerfen waere eine Strafe fuer die Reihenfolge der Arbeit.
+    expect(hasBlocker(checks)).toBe(false)
+    // Und nicht beides: Die Warnung waere hier gegenstandslos.
+    expect(checks.some((c) => c.code === 'work.no-title')).toBe(false)
+  })
+
+  it('nimmt einen Festwert als Titel an', () => {
+    const m = emptyMapping(['Signatur'], '1.2.3')
+    m.columns['Signatur'] = { pre: [], targets: [{ target: 'item.identifier.local', post: [] }] }
+    m.defaults = [{ target: 'work.title.primary', value: 'Ohne Titel' }]
+    expect(staticCheck(m, testSchema).some((c) => c.code === 'title.nowhere')).toBe(false)
   })
 })
 

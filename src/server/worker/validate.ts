@@ -98,6 +98,7 @@ export async function checkRecords(
       merged.unavailable = e instanceof Error ? e.message : String(e)
       merged.issues.push({
         severity: 'warning',
+        source: 'schema',
         code: 'validation_unavailable',
         message: `Die Pruefung gegen das AVefi-Schema war nicht moeglich: ${merged.unavailable}. Die Datei wurde erzeugt, aber nicht geprueft.`
       })
@@ -111,7 +112,13 @@ export async function checkRecords(
     merged.schema = response.schema ?? merged.schema
     // Die Nummern des Dienstes zaehlen je Buendel — hier auf die Gesamtfolge heben.
     for (const issue of response.issues) {
-      merged.issues.push(issue.record === undefined ? issue : { ...issue, record: issue.record + offset })
+      // Herkunft festhalten: Der Bericht mischt Schema, Querlauf, Vollstaendigkeit
+      // und Konvertierung, und die haben verschiedenes Gewicht.
+      merged.issues.push({
+        source: 'schema',
+        ...issue,
+        ...(issue.record === undefined ? {} : { record: issue.record + offset })
+      })
     }
   }
 
@@ -167,12 +174,13 @@ export async function checkCrossref(
   if (records.length === 0) return { issues: [], unavailable: null }
   try {
     const antwort = await postCrossref(records.map(querSicht), rowMap, timeoutMs)
-    return { issues: antwort.issues, unavailable: null }
+    return { issues: antwort.issues.map((i) => ({ source: 'crossref' as const, ...i })), unavailable: null }
   } catch (e) {
     const grund = e instanceof Error ? e.message : String(e)
     return {
       issues: [{
         severity: 'warning',
+        source: 'crossref',
         code: 'validation_unavailable',
         message: `Die satzuebergreifende Pruefung war nicht moeglich: ${grund}. Kennungen und Verweise wurden nicht geprueft.`
       }],

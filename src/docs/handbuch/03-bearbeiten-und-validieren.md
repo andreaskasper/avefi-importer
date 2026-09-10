@@ -116,6 +116,31 @@ Zu Beanstandungen, deren Schemafeld kein Ziel des Katalogs ist (etwa `has_identi
 aus der Schemaprüfung), gibt es keine Feldauskunft. Dort hängt der Hinweis am Code und
 steht ohnehin daneben.
 
+## Woher eine Beanstandung kommt
+
+Jede Meldung im Prüfbericht trägt ihre Herkunft, weil die vier Quellen
+verschiedenes Gewicht haben:
+
+| Herkunft | Wer prüft | Bedeutung |
+|---|---|---|
+| **AVefi-Schema** | der Dienst `efi-conv` | Verstoß gegen das Schema des Verbunds. |
+| **Satzübergreifend** | derselbe Dienst, über den ganzen Bestand | Eindeutigkeit der Kennungen, auflösbare Verweise, Exemplar je Manifestation. |
+| **Vollständigkeit** | diese Anwendung | Regeln, die über das Schema hinausgehen. |
+| **Konvertierung** | diese Anwendung | Beim Lesen und Umsetzen der Datei aufgefallen. |
+
+Der Unterschied ist keine Förmlichkeit. **Ein Werk ohne Haupttitel ist
+schemakonform** — `has_primary_title` ist am `WorkVariant` nicht verlangt, und
+der Prüfdienst gibt einen solchen Datensatz ohne Beanstandung zurück. Diese
+Anwendung beanstandet ihn trotzdem, weil ein Werk ohne Titel im Verbund nicht
+auffindbar ist. Steht die Herkunft nicht dabei, sieht diese Entscheidung aus wie
+eine Vorgabe des Schemas, und eine Diskussion darüber liefe mit dem falschen
+Argument.
+
+Bis zum 10.09.2026 speiste die Vollständigkeitsprüfung nur die Plakette in der
+Datensatzliste und den Editor, nicht den Bericht. Ein Import ohne jede
+Titelangabe wurde deshalb als „keine Beanstandungen" ausgewiesen, während auf
+derselben Seite in der Belegungsstatistik „Haupttitel 0 von N" stand.
+
 ## Beanstandungen und ihre Behebung
 
 Beim ersten Auftreten einer Beanstandung steht im Bericht ein kurzer Hinweis, was zu
@@ -181,6 +206,19 @@ Häufig fehlt nur ein Konverter in der Zuordnung:
 | Wert aus einer festen Liste | `map` mit Wertetabelle |
 | Sprachcode | `language` |
 | Ländercode | `country` |
+
+### Kein Haupttitel
+
+**Herkunft: Vollständigkeit.** Der Datensatz trägt keinen Haupttitel.
+
+Zwei Ursachen kommen infrage. Entweder führt keine Spalte auf einen Titel — dann
+meldet das schon der Zuordnungseditor, und „Speichern und konvertieren" ist
+gesperrt. Oder die Spalte ist zugeordnet und die Zelle dieser Zeile ist leer;
+dann steht die Zeilennummer an der Meldung, und die Korrektur gehört in die
+Quelldatei oder in den Datensatz-Editor.
+
+Als Ersatz kann das Werk den Titel der Manifestation oder des Exemplars
+übernehmen — das passiert von selbst, sobald dort einer steht.
 
 ### Kennung fehlt
 

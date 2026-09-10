@@ -29,6 +29,7 @@ import { buildFromInternal } from '../../lib/converters/avefi'
 import { analyzeParse, diagnosticsToIssues } from '../../lib/converters/parseDiagnostics'
 import { IssueCollector, type AvefiNode } from '../../lib/converters/types'
 import { checkCrossref, checkRecords, querSicht } from '../validate'
+import { BERICHTSTEXT, completenessIssues } from '../../lib/mapping/index'
 
 /** So viele Datensaetze gehen in einem Rutsch in die Datenbank. */
 const INSERT_BATCH = 200
@@ -152,6 +153,9 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
       recordCount++
       let nodes: AvefiNode[]
       let source
+      // Eine Zeile zaehlt hoechstens einmal als fehlerhaft, egal aus wie vielen
+      // Quellen Beanstandungen zu ihr kommen.
+      let zeileFehlerhaft = false
 
       if (converted.kind === 'canonical') {
         source = converted.source
@@ -161,7 +165,7 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
           ...converted.canonical.items
         ]
         issues.addAll(converted.issues)
-        if (converted.issues?.some((i) => i.severity === 'error')) rowErrors++
+        if (converted.issues?.some((i) => i.severity === 'error')) zeileFehlerhaft = true
         pendingRecords.push({
           work: converted.canonical.work,
           manifestations: converted.canonical.manifestations,
@@ -173,7 +177,7 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
         const built = buildFromInternal(converted.record, baseId(record.id, recordCount), recordCount)
         issues.addAll(converted.issues)
         issues.addAll(built.issues)
-        if (built.issues.some((i) => i.severity === 'error')) rowErrors++
+        if (built.issues.some((i) => i.severity === 'error')) zeileFehlerhaft = true
         nodes = built.nodes
         const [work, ...rest] = built.nodes
         pendingRecords.push({
@@ -184,10 +188,12 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
         })
       }
 
+      let werkKnoten: number | undefined
       if (writer !== null) {
         await writer.write(nodes)
         for (const node of nodes) {
           nodeCount++
+          if (werkKnoten === undefined) werkKnoten = nodeCount
           // Der Dienst zaehlt die Datensaetze eines Buendels ab 1; darueber
           // findet eine Meldung zurueck zur Zeile der Quelldatei.
           if (source.row !== undefined) pendingRowMap[String(pendingNodes.length + 1)] = source.row
@@ -196,6 +202,38 @@ export async function run(sql: Sql, payload: Record<string, unknown>): Promise<v
           querNodes.push(querSicht(node as unknown as Record<string, unknown>))
         }
       }
+
+      /*
+       * Vollstaendigkeit: unsere eigenen Pflichtangaben.
+       *
+       * Der Dienst efi-conv prueft das AVefi-Schema, und das verlangt
+       * `has_primary_title` am WorkVariant nicht — nachgeprueft am 10.09.2026
+       * gegen den laufenden Dienst, ein Werk ohne jeden Titel kommt dort mit
+       * ok=true zurueck. Ein Datensatz ohne Titel ging deshalb als "keine
+       * Beanstandungen" durch, waehrend die Plakette daneben rot war und die
+       * Belegungsstatistik "Haupttitel 0 von N" zeigte (Luca Wollny, 10.09.).
+       *
+       * Die Meldung traegt `source: 'completeness'`, damit im Bericht steht,
+       * dass hier unsere Regel greift und nicht die des Verbunds.
+       */
+      const kanon = pendingRecords[pendingRecords.length - 1]
+      if (kanon !== undefined) {
+        for (const hinweis of completenessIssues(kanon)) {
+          if (hinweis.level !== 'error') continue
+          issues.add({
+            severity: 'error',
+            source: 'completeness',
+            code: hinweis.code,
+            message: BERICHTSTEXT[hinweis.code] ?? hinweis.text,
+            ...(source.row !== undefined ? { row: source.row } : {}),
+            ...(werkKnoten !== undefined ? { record: werkKnoten } : {})
+          })
+          if (werkKnoten !== undefined) fehlerhaft.add(werkKnoten)
+          zeileFehlerhaft = true
+        }
+      }
+
+      if (zeileFehlerhaft) rowErrors++
 
       if (pendingRecords.length >= INSERT_BATCH) await flushRecords()
       await flushValidation()

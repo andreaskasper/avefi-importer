@@ -114,7 +114,33 @@ function valuemapFilled(step: TransformStep): boolean {
  */
 export function staticCheck(mapping: MappingJson, schema: SchemaModel = getSchemaModel()): MappingCheck[] {
   const out: MappingCheck[] = []
-  let hasWorkTitle = false
+
+  /*
+   * Auf welchen Ebenen ein Titel ankommt, der `has_primary_title` fuellt.
+   *
+   * Bis zum 10.09.2026 stand hier ein Flag, das nur bei `work.title.primary`
+   * gesetzt wurde. Zwei Fehler steckten darin.
+   *
+   * Der erste: `work.title.supplied` ("Archivtitel") fuellt dasselbe Feld —
+   * targets.ts gibt beiden `primary: true`. Wer nur den Archivtitel mappte,
+   * bekam trotzdem die Meldung, es fehle ein Haupttitel.
+   *
+   * Der zweite wog schwerer und wurde von Luca Wollny am 10.09. gefunden: Fehlt
+   * der Titel auf ALLEN Ebenen, war die Meldung trotzdem nur eine Warnung, mit
+   * dem Hinweis, ersatzweise werde der Titel der Manifestation oder des
+   * Exemplars uebernommen. Genau das kann dann aber nicht passieren — es gibt
+   * keinen. Das Ergebnis war ein Datensatz ohne jeden Titel, und weil das
+   * AVefi-Schema `has_primary_title` am WorkVariant nicht verlangt, ging er
+   * ohne Beanstandung durch die Pruefung.
+   *
+   * Deshalb wird jetzt je Ebene gezaehlt: Am Werk ist alles gut, auf einer
+   * anderen Ebene greift die Uebernahme (Warnung), nirgends ist ein Fehler.
+   */
+  const titelEbenen = new Set<string>()
+  const merkeTitel = (key: string): void => {
+    const t = getTarget(key)
+    if (t !== undefined && t.writer.kind === 'title' && t.writer.primary) titelEbenen.add(t.level)
+  }
 
   for (const [col, spec] of columnsOf(mapping)) {
     if (spec.ignore === true) continue
@@ -130,7 +156,7 @@ export function staticCheck(mapping: MappingJson, schema: SchemaModel = getSchem
         })
         continue
       }
-      if (key === 'work.title.primary') hasWorkTitle = true
+      merkeTitel(key)
 
       const post = Array.isArray(binding.post) ? binding.post : []
       const chain = [...pre, ...post]
@@ -256,7 +282,7 @@ export function staticCheck(mapping: MappingJson, schema: SchemaModel = getSchem
 
   for (const d of mapping.defaults ?? []) {
     const key = String(d.target ?? '')
-    if (key === 'work.title.primary') hasWorkTitle = true
+    merkeTitel(key)
     if (!targetExists(key)) {
       out.push({
         severity: 'error', code: 'default.unknown-target',
@@ -265,12 +291,26 @@ export function staticCheck(mapping: MappingJson, schema: SchemaModel = getSchem
     }
   }
 
-  if (!hasWorkTitle) {
-    out.push({
-      severity: 'warning', code: 'work.no-title',
-      message: 'Keine Spalte auf "Werk > Haupttitel" gemappt. Ersatzweise wird der Titel der Manifestation '
-        + 'oder des Exemplars uebernommen.'
-    })
+  if (!titelEbenen.has('work')) {
+    if (titelEbenen.size > 0) {
+      out.push({
+        severity: 'warning', code: 'work.no-title',
+        message: 'Keine Spalte auf "Werk > Haupttitel" gemappt. Ersatzweise wird der Titel der Manifestation '
+          + 'oder des Exemplars uebernommen.'
+      })
+    } else {
+      // Blockiert das Speichern. Ein Lauf, der garantiert Datensaetze ohne
+      // Titel erzeugt, soll gar nicht erst starten: Der Fehler steckt in der
+      // Zuordnung, nicht in den Daten, und er ist hier zu sehen, bevor jemand
+      // zehntausend Saetze konvertiert.
+      out.push({
+        severity: 'error', code: 'title.nowhere',
+        message: 'Auf keiner Ebene ist eine Spalte auf einen Haupttitel gemappt — weder am Werk noch an '
+          + 'Manifestation oder Exemplar. Die Datensaetze haetten dann keinen Titel, und ohne Titel ist ein '
+          + 'Werk im Verbund nicht auffindbar. Infrage kommen "Haupttitel" oder "Archivtitel" auf einer der '
+          + 'drei Ebenen; ein Festwert geht auch.'
+      })
+    }
   }
 
   return out
@@ -284,8 +324,28 @@ function opLabel(op: string): string {
   return op
 }
 
+/*
+ * Zwei Stufen von "Fehler".
+ *
+ * Die meisten Fehler sind Fehlgriffe: ein unbekanntes Ziel, ein Typkonflikt,
+ * eine Kette, die nicht aufgeht. Sie zu speichern hat keinen Sinn, deshalb
+ * blockieren sie das Speichern.
+ *
+ * `title.nowhere` ist anders. Es ist keine falsche Angabe, sondern eine
+ * fehlende — wer eine Zuordnung von oben nach unten aufbaut, hat irgendwann
+ * die Kennung und noch keinen Titel. Diesen Zwischenstand nicht parken zu
+ * duerfen waere eine Strafe fuer die Reihenfolge der Arbeit. Verhindert werden
+ * muss nur das eine: dass mit einer solchen Zuordnung konvertiert wird.
+ */
+const ERST_BEIM_KONVERTIEREN: ReadonlySet<string> = new Set(['title.nowhere'])
+
 /** Blockiert eine der Beanstandungen das Speichern? */
 export function hasBlocker(checks: readonly MappingCheck[]): boolean {
+  return checks.some((c) => c.severity === 'error' && !ERST_BEIM_KONVERTIEREN.has(c.code ?? ''))
+}
+
+/** Blockiert eine der Beanstandungen das Konvertieren? */
+export function hasStartBlocker(checks: readonly MappingCheck[]): boolean {
   return checks.some((c) => c.severity === 'error')
 }
 

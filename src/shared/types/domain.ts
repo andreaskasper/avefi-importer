@@ -121,9 +121,30 @@ export interface FieldHelp {
   values: string[] | null
 }
 
+/**
+ * Welche Regel eine Beanstandung erhebt.
+ *
+ * Der Bericht mischt drei Quellen, und sie haben verschiedenes Gewicht:
+ *
+ *   schema        Das AVefi-Schema, geprueft im Dienst efi-conv.
+ *   crossref      Satzuebergreifende Regeln desselben Dienstes: Eindeutigkeit
+ *                 der Kennungen, aufloesbare Verweise, Exemplar je Manifestation.
+ *   completeness  Regeln DIESER Anwendung. Sie gehen ueber das Schema hinaus.
+ *                 Der fehlende Haupttitel ist der Fall dafuer: Am WorkVariant
+ *                 ist `has_primary_title` schemakonform optional, ein Werk ohne
+ *                 Titel ist im Verbund aber nicht auffindbar.
+ *   konvertierung Was beim Lesen und Umsetzen der Datei auffiel.
+ *
+ * Ohne diese Angabe sieht eine eigene Regel aus wie eine des Verbunds, und
+ * irgendwann streitet jemand mit einem falschen Argument.
+ */
+export type IssueSource = 'schema' | 'crossref' | 'completeness' | 'konvertierung'
+
 export interface ValidationIssue {
   severity: Severity
   message: string
+  /** Welche Regel die Meldung erhebt. Fehlt sie, ist es die Konvertierung. */
+  source?: IssueSource
   /** 1-basierte Zeile der Quelldatei, sofern zuordenbar. */
   row?: number
   /** Laufende Nummer des erzeugten Datensatzes, sofern zuordenbar. */

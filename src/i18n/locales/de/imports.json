@@ -292,7 +292,14 @@
       "fix": "Vorschlag: Konverter „{op}“ einsetzen. Anwenden musst du ihn selbst — der Importer verändert keine Werte von sich aus.",
       "noPosition": "ohne Zeilenbezug",
       "gotoRecord": "Zum Datensatz aus Zeile {row} springen",
-      "gotoColumn": "Zur Spalte „{field}“ in der Zuordnung springen"
+      "gotoColumn": "Zur Spalte „{field}“ in der Zuordnung springen",
+      "source": {
+        "schema": "AVefi-Schema",
+        "crossref": "Satzübergreifend",
+        "completeness": "Vollständigkeit",
+        "konvertierung": "Konvertierung"
+      },
+      "sourceLegend": "Woher die Beanstandung kommt: „AVefi-Schema\" und „Satzübergreifend\" prüft der Dienst efi-conv gegen das Schema des Verbunds. „Vollständigkeit\" sind Regeln dieser Anwendung, die darüber hinausgehen — ein Werk ohne Haupttitel ist schemakonform, im Verbund aber nicht auffindbar. „Konvertierung\" ist beim Lesen der Datei aufgefallen."
     },
     "sheets": {
       "crumb": "Tabellenblätter",

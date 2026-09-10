@@ -891,3 +891,15 @@ ul.tight li{margin-bottom:3px;font-size:13px}
    der Liste. Der Prozentring stand hier bis zum 01.09.2026 noch. */
 .ed-core{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0}
 .ed-core .core-missing{flex-basis:100%}
+
+/* Herkunft einer Beanstandung: leise, aber lesbar. Keine Ampelfarbe -- die
+   traegt links schon das Schweregrad-Abzeichen, und zwei Farbsignale
+   nebeneinander lesen sich als Widerspruch. */
+.issue-src {
+  background: var(--surface-2, transparent);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 500;
+  white-space: nowrap;
+}

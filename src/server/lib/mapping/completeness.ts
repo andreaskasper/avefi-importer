@@ -124,6 +124,28 @@ export function completenessIssues(record: AvefiRecord): CompletenessHint[] {
 }
 
 /**
+ * Was ein Vollstaendigkeitsfehler im Pruefbericht sagt.
+ *
+ * Laenger als die Saetze in HINWEISE, weil der Bericht einen anderen Leser hat:
+ * Im Datensatz-Editor steht der Satz neben dem Feld, hier steht er allein.
+ *
+ * Gefunden von Luca Wollny am 10.09.2026: Eine Konvertierung ohne jede
+ * Titelangabe wurde als "keine Beanstandungen" ausgewiesen. Die Anwendung
+ * stufte den Fall intern laengst als Fehler ein — completenessIssues faerbt
+ * seit #15 die Plakette rot —, nur speiste das den Editor und die Liste, nicht
+ * den Bericht. Auf derselben Seite stand die Belegungsstatistik "Haupttitel
+ * 0 von N" neben der Plakette "keine Beanstandungen".
+ */
+export const BERICHTSTEXT: Record<string, string> = {
+  'hint.noPrimaryTitle':
+    'Der Datensatz hat keinen Haupttitel. Das AVefi-Schema verlangt ihn am Werk nicht, aber ohne Titel ist '
+    + 'ein Werk im Verbund nicht auffindbar und mit keinem Bestand abzugleichen. Entweder fuehrt keine Spalte '
+    + 'auf einen Titel, oder die Zelle dieser Zeile ist leer.',
+  'hint.noWorkType':
+    'Der Datensatz hat keine Werkart. Das Schema verlangt sie.'
+}
+
+/**
  * Ampel der Kernfeld-Plakette.
  *
  * Bis zum 08.09.2026 richtete sich die Farbe nach dem Anteil ausgefuellter

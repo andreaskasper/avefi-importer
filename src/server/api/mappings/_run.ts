@@ -12,7 +12,7 @@
 import type { AvefiRecord, MappingJson, ProfileSample } from '#shared/types/domain'
 import {
   authorityInventory, buildPreview, buildProfileSample, collectAuthorityLookups, columnStates,
-  computeComplete, getTarget, hasBlocker, normalizeMapping, openColumns, previewRows, staticCheck,
+  computeComplete, getTarget, hasBlocker, hasStartBlocker, normalizeMapping, openColumns, previewRows, staticCheck,
   type AuthorityInventoryEntry, type MappingCheck, type MappingServices, type PreviewInput,
   type PreviewResult, type SchemaModel, type SourceRow
 } from '../../lib/mapping/index'
@@ -152,6 +152,8 @@ export async function schemaCheck(source: TableSource, raw: unknown): Promise<{
 /* --------------------------------------------------------------- Speichern */
 
 export interface SavePrepared {
+  /** Fehler, die zwar gespeichert, aber nicht konvertiert werden duerfen. */
+  startBlocked: boolean
   mapping: MappingJson
   checks: MappingCheck[]
   complete: boolean
@@ -179,6 +181,7 @@ export async function prepareSave(source: TableSource, raw: unknown): Promise<Sa
   return {
     mapping,
     checks,
+    startBlocked: hasStartBlocker(checks),
     complete: computeComplete(mapping),
     open: openColumns(mapping),
     sample: buildProfileSample(source.columns, source.rows, { totalRows: source.rowCount })

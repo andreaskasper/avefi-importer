@@ -233,6 +233,7 @@ function setFilter(value: Filter) {
       </p>
 
       <div class="tablewrap" style="padding:10px 12px">
+        <p class="note small" style="margin:0 0 10px">{{ t('imports.issue.sourceLegend') }}</p>
         <ul class="val-list" style="list-style:none;margin:0;padding:0">
           <li v-for="(issue, index) in visible" :key="index" class="vi">
             <span class="m badge" :class="BADGE[issue.severity]" style="padding:1px 6px"
@@ -242,6 +243,14 @@ function setFilter(value: Filter) {
             </span>
             <span style="min-width:0">
               <span class="fn">{{ issue.message }}</span>
+              <!--
+                Woher die Meldung kommt. Ohne diese Angabe sieht eine Regel
+                dieser Anwendung aus wie eine des AVefi-Schemas — der fehlende
+                Haupttitel ist genau so ein Fall: schemakonform erlaubt, von uns
+                trotzdem beanstandet.
+              -->
+              <span class="badge issue-src" style="margin-left:6px;padding:0 5px">
+                {{ t(`imports.issue.source.${issue.source ?? 'konvertierung'}`) }}</span>
               <span v-if="hatStelle(issue)" class="dim small">
                 <template v-if="datensatzZiel(issue) !== null">
                   ·

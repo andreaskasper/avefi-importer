@@ -247,6 +247,25 @@ Hinweise **blockieren nicht**. Quelldaten sind selten sauber, und „erstmal gro
 Feinschliff später" ist ein legitimer Arbeitsstand. Blockiert wird nur, was gar nicht
 verarbeitbar wäre — etwa eine Liste in einem einwertigen Ziel ohne Auswahlregel.
 
+### Der Titel
+
+Ein Werk ohne Haupttitel ist im Verbund nicht auffindbar und mit keinem Bestand
+abzugleichen. Die Prüfung im Editor unterscheidet deshalb drei Fälle:
+
+* **Eine Spalte führt auf „Werk › Titel › Haupttitel" oder „Werk › Titel ›
+  Archivtitel".** Alles in Ordnung, beide füllen dasselbe Feld.
+* **Der Titel hängt nur an Manifestation oder Exemplar.** Eine Warnung. Beim
+  Konvertieren wird der Titel von dort ans Werk übernommen und dabei zum
+  Archivtitel (`SuppliedDevisedTitle`), weil das Schema für einen übernommenen
+  Titel diesen Typ vorsieht.
+* **Auf keiner der drei Ebenen ist ein Titel gemappt.** Ein Fehler. Das Profil
+  lässt sich speichern — wer von oben nach unten arbeitet, hat irgendwann die
+  Kennung und noch keinen Titel —, aber **„Speichern und konvertieren" ist
+  gesperrt**. Jeder Datensatz aus diesem Lauf hätte keinen Titel.
+
+Ein Festwert genügt als Titel, wenn die Lieferung keine Titelspalte enthält und
+das Archiv einen einheitlichen Ersatz vergeben will.
+
 ### Festwerte
 
 Füllen Felder, die die Datei nicht liefert: die ISIL der eigenen Einrichtung, ein
